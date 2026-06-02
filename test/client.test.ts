@@ -1,0 +1,49 @@
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { setupServer } from "msw/node";
+import { http, HttpResponse } from "msw";
+import { DynatraceClient } from "../src/http/client.js";
+import { DynatraceApiError } from "../src/http/errors.js";
+import type { Config } from "../src/types.js";
+
+const cfg: Config = {
+  platformUrl: "https://plat.example.com",
+  classicUrl: "https://classic.example.com",
+  platformToken: "PTOK",
+  apiToken: "ATOK",
+  enableWrites: false,
+  timeoutMs: 5000,
+};
+
+const server = setupServer(
+  http.get("https://classic.example.com/api/v2/ping", ({ request }) => {
+    return HttpResponse.json({ auth: request.headers.get("authorization") });
+  }),
+  http.get("https://plat.example.com/platform/ping", ({ request }) => {
+    return HttpResponse.json({ auth: request.headers.get("authorization") });
+  }),
+  http.get("https://classic.example.com/api/v2/boom", () =>
+    HttpResponse.json({ error: { message: "no" } }, { status: 403 }),
+  ),
+);
+
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+describe("DynatraceClient", () => {
+  const c = new DynatraceClient(cfg);
+
+  it("uses Api-Token on classic host", async () => {
+    const r = await c.classic.get<{ auth: string }>("/api/v2/ping");
+    expect(r.auth).toBe("Api-Token ATOK");
+  });
+
+  it("uses Bearer on platform host", async () => {
+    const r = await c.platform.get<{ auth: string }>("/platform/ping");
+    expect(r.auth).toBe("Bearer PTOK");
+  });
+
+  it("throws DynatraceApiError on non-2xx", async () => {
+    await expect(c.classic.get("/api/v2/boom")).rejects.toBeInstanceOf(DynatraceApiError);
+  });
+});

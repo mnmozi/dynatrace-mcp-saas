@@ -30,3 +30,5 @@ export class DynatraceApiError extends Error {
     this.name = "DynatraceApiError";
   }
 }
+
+export type { QueryParams } from "../types.js";
