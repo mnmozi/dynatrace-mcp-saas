@@ -1,0 +1,830 @@
+openapi: "3.0.1"
+info:
+  description: "Documentation of the Dynatrace Resource Store API for Grail.\nTo read\
+    \ about use cases and examples, see\n[Dynatrace Documentation](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail)"
+  title: "Grail - Resource Store"
+  version: "1.0.1"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/resource-store/v1"
+  x-api-gateway-url: "/platform/storage/resource-store/v1"
+tags:
+- description: "Operations related to the storage of lookup data in Grail."
+  name: "Lookup Data"
+paths:
+  /files/tabular/lookup:test-pattern:
+    post:
+      description: "# Test parsing lookup data\n\nTest parsing lookup data without\
+        \ storing the result in the Grail Resource Store.\nThe request body needs\
+        \ to be submitted as `multipart/form-data` with the following parts:\n* request:\
+        \ containing the request parameters (see below) in JSON format\n* content:\
+        \ containing the lookup data in text format\n\nThe uploaded data is parsed\
+        \ using the \n[Dynatrace Pattern Language (DPL)](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-pattern-language).\
+        \ \nFor examples, see the [Dynatrace Documentation](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail).\n\
+        \n## Request parameters\n\n* `parsePattern` (**required**) - The DPL pattern\
+        \ to parse the uploaded data. Every pattern match\n  produces a record. Example:\
+        \ `LD:id ',' LD:value`.\n* `skippedRecords` - The number of initial records\
+        \ to discard. Can be used to skip header rows.\n  Default: 0\n* `lookupField`\
+        \ - The name of the lookup field whose value identifies a record in\n  the\
+        \ lookup data. The uniqueness of the values is ensured by deduplicating records\
+        \ during  \n  upload, if  necessary.\n* `timezone` - The timezone for parsing\
+        \ time and date fields. The list of valid input values\n  matches that of\
+        \ the IANA Time Zone Database (TZDB). Example: UTC.\n* `locale` - The locale\
+        \ for parsing locale-specific day and month names. The input values take the\n\
+        \  ISO-639 Language code with an optional ISO-3166 country code appended to\
+        \ it with an underscore.\n  Example: en_US.\n* `autoFlatten` - Set to true\
+        \ to extract nested fields to the root level when the specified DPL\n  pattern\
+        \ results in a single record-type field. Default: true\n\n## Permissions\n\
+        \nRequired permissions: `storage:files:write`\n"
+      operationId: "uploadToTestPattern"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ResourceTestPatternRequestEnvelope"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Test-pattern success response:
+                  description: "Test-pattern success response"
+                  value:
+                    numberOfRecords: 3
+                    records:
+                    - code: "200"
+                      message: "OK"
+                    - code: "400"
+                      message: "Bad Request"
+                    - code: "500"
+                      message: "Internal Server Error"
+                    types:
+                    - indexRange:
+                      - 0
+                      - 2
+                      mappings:
+                        code:
+                          type: "long"
+                        message:
+                          type: "string"
+              schema:
+                $ref: "#/components/schemas/ResourceTestPatternResponse"
+          description: "The result of applying the pattern to the uploaded file. The\
+            \ schema for the `records` and `types` is the same as in the DQL Query\
+            \ API."
+        "400":
+          content:
+            application/json:
+              examples:
+                Example 400 error:
+                  description: "Example 400 error"
+                  value:
+                    error:
+                      code: 400
+                      message: "Testing pattern failed: Parse pattern must not be\
+                        \ blank."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request for uploading the lookup data."
+        "401":
+          content:
+            application/json:
+              examples:
+                Example 401 error:
+                  description: "Example 401 error"
+                  value:
+                    error:
+                      code: 401
+                      message: "Unauthorized"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized."
+        "403":
+          content:
+            application/json:
+              examples:
+                Example 403 error:
+                  description: "Example 403 error"
+                  value:
+                    error:
+                      code: 403
+                      message: "Testing pattern failed: No permission to upload a\
+                        \ file."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Access forbidden."
+        "413":
+          content:
+            application/json:
+              examples:
+                Example 413 error:
+                  description: "Example 413 error"
+                  value:
+                    error:
+                      code: 413
+                      message: "Testing pattern failed: File size exceeds the maximum\
+                        \ limit of 100000000 bytes."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "The uploaded file or the JSON request were too large."
+        "429":
+          content:
+            application/json:
+              examples:
+                Example 429 error:
+                  description: "Example 429 error"
+                  value:
+                    error:
+                      code: 429
+                      message: "Testing pattern failed: Too many requests. Please\
+                        \ try again later."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Too many concurrent requests."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "500":
+          content:
+            application/json:
+              examples:
+                Example 500 error:
+                  description: "Example 500 error"
+                  value:
+                    error:
+                      code: 500
+                      message: "Testing pattern failed: Something went wrong. Please\
+                        \ try again later."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Internal Server Error"
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error"
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Test parsing lookup data without storing the result in the Grail Resource\
+        \ Store."
+      tags:
+      - "Lookup Data"
+  /files/tabular/lookup:upload:
+    post:
+      description: "# Upload lookup data\n\nUpload lookup data and store it as a new\
+        \ tabular file in the Grail Resource Store or replace an existing one.\nThe\
+        \ request body needs to be submitted as `multipart/form-data` with the following\
+        \ parts:\n* request: containing the request parameters (see below) in JSON\
+        \ format\n* content: containing the lookup data in text format \n\nThe uploaded\
+        \ data is parsed using the\n[Dynatrace Pattern Language (DPL)](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-pattern-language).\n\
+        For examples, see the [Dynatrace Documentation](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail).\n\
+        \n## Request parameters\n \n* `filePath` (**required**)  - The fully qualified\
+        \ file path of the tabular file to store the  \nlookup \ndata in Grail. Example:\
+        \ /lookups/mydata. The following constraints apply:\n  * must only contain\
+        \ alphanumeric characters `[a-zA-Z0-9]`, `-`, `_`, `.`, `/`\n  * must start\
+        \ with `/lookups`\n  * must end with `[a-zA-Z0-9]`\n  * must contain at least\
+        \ two `/` characters\n  * between any two consecutive `/` characters there\
+        \ must be at least one `[a-zA-Z0-9]` character\n  * can be up to 500 characters\
+        \ long\n* `overwrite` - If false and the file already exists, the upload fails.\
+        \ Set to true to allow \n    overwriting existing files. Default: false\n\
+        * `displayName` - An optional name for the file. The length is limited to\
+        \ 500 characters.\n* `description` - An optional description for the file.\
+        \ The length is limited to 500 characters.\n* `parsePattern` (**required**)\
+        \ - The DPL pattern to parse the uploaded data. Every pattern match \nproduces\
+        \ a record. Example: `LD:id ',' LD:value`.\n* `skippedRecords` - The number\
+        \ of initial records to discard. Can be used to skip header rows. \n  Default:\
+        \ 0\n* `lookupField` (**required**) - The name of the lookup field whose value\
+        \ identifies a record in \n  the lookup data. **The uniqueness of the values\
+        \ is ensured by deduplicating records during  \n  upload, if  necessary.**\n\
+        * `timezone` - The timezone for parsing time and date fields. The list of\
+        \ valid input values \nmatches that of the IANA Time Zone Database (TZDB).\
+        \ Example: UTC.\n* `locale` - The locale for parsing locale-specific day and\
+        \ month names. The input values take the \n  ISO-639 Language code with an\
+        \ optional ISO-3166 country code appended to it with an underscore.\n  Example:\
+        \ en_US.\n* `autoFlatten` - Set to true to extract nested fields to the root\
+        \ level when the specified DPL \n  pattern results in a single record-type\
+        \ field. Default: true\n\n## Permissions\n\nRequired permissions: `storage:files:write`\n"
+      operationId: "upload"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ResourceUploadRequestEnvelope"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Upload success response:
+                  description: "Upload success response"
+                  value:
+                    fileSize: 1024
+                    uploadedBytes: 2028
+                    patternMatches: 120
+                    skippedRecords: 5
+                    discardedDuplicates: 20
+                    records: 95
+              schema:
+                $ref: "#/components/schemas/ResourceUploadResponse"
+          description: "The requested table has been saved successfully."
+        "400":
+          content:
+            application/json:
+              examples:
+                Example 400 error:
+                  description: "Example 400 error"
+                  value:
+                    error:
+                      code: 400
+                      message: "Upload failed: Parse pattern must not be blank."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request for uploading the lookup data."
+        "401":
+          content:
+            application/json:
+              examples:
+                Example 401 error:
+                  description: "Example 401 error"
+                  value:
+                    error:
+                      code: 401
+                      message: "Unauthorized"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized."
+        "403":
+          content:
+            application/json:
+              examples:
+                Example 403 error:
+                  description: "Example 403 error"
+                  value:
+                    error:
+                      code: 403
+                      message: "Upload failed: No permission to write file '/lookups/mydata'."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Access forbidden."
+        "409":
+          content:
+            application/json:
+              examples:
+                Example 409 error:
+                  description: "Example 409 error"
+                  value:
+                    error:
+                      code: 409
+                      message: "Upload failed: File '/lookups/mydata' already exists.\
+                        \ Set 'overwrite' to 'true' to overwrite the existing file."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Conflict because the requested table already exists and `override`\
+            \ parameter was set to false."
+        "413":
+          content:
+            application/json:
+              examples:
+                Example 413 error:
+                  description: "Example 413 error"
+                  value:
+                    error:
+                      code: 413
+                      message: "Upload failed: File size exceeds the maximum limit\
+                        \ of 100000000 bytes."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "The uploaded file or the JSON request were too large."
+        "429":
+          content:
+            application/json:
+              examples:
+                Example 429 error:
+                  description: "Example 429 error"
+                  value:
+                    error:
+                      code: 429
+                      message: "Upload failed: Too many requests. Please try again\
+                        \ later."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Too many concurrent requests."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "500":
+          content:
+            application/json:
+              examples:
+                Example 500 error:
+                  description: "Example 500 error"
+                  value:
+                    error:
+                      code: 500
+                      message: "Upload failed: Something went wrong. Please try again\
+                        \ later."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Internal Server Error"
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error"
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Upload lookup data"
+      tags:
+      - "Lookup Data"
+  /files:delete:
+    post:
+      description: "# Delete file\n\nDelete a file from the Grail Resource Store.\n\
+        \n**ATTENTION - This operation is irreversible.**\n\nThe request body needs\
+        \ to contain the request parameters (see below) in JSON format.\n\n## Request\
+        \ parameters\n\n* `filePath` (**required**) - The fully qualified file path\
+        \ of the file. Example: */lookups/mydata*.\n\n## Permissions\n\nRequired permissions:\
+        \ `storage:files:delete`\n"
+      operationId: "delete"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceDeleteRequest"
+        required: true
+      responses:
+        "204":
+          description: "The requested file has been deleted successfully."
+        "400":
+          content:
+            application/json:
+              examples:
+                Example 400 error:
+                  description: "Example 400 error"
+                  value:
+                    error:
+                      code: 400
+                      message: "File path must not be blank."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request for deleting the file."
+        "401":
+          content:
+            application/json:
+              examples:
+                Example 401 error:
+                  description: "Example 401 error"
+                  value:
+                    error:
+                      code: 401
+                      message: "Unauthorized"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized."
+        "403":
+          content:
+            application/json:
+              examples:
+                Example 403 error:
+                  description: "Example 403 error"
+                  value:
+                    error:
+                      code: 403
+                      message: "No permission to delete file '/lookups/mydata'."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Access forbidden."
+        "404":
+          content:
+            application/json:
+              examples:
+                Example 404 error:
+                  description: "Example 404 error"
+                  value:
+                    error:
+                      code: 404
+                      message: "Delete failed: File '/lookups/mydata' doesn't exist."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "The file does not exist."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "500":
+          content:
+            application/json:
+              examples:
+                Example 500 error:
+                  description: "Example 500 error"
+                  value:
+                    error:
+                      code: 500
+                      message: "Delete failed: Something went wrong. Please try again\
+                        \ later."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Internal Server Error"
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error"
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Delete file."
+      tags:
+      - "Lookup Data"
+components:
+  schemas:
+    CustomValidationErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      required:
+      - "message"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ExceptionalReturn"
+    ErrorInfo:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+      required:
+      - "message"
+    ExceptionalReturn:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        errorDetails:
+          type: "array"
+          items:
+            oneOf:
+            - $ref: "#/components/schemas/CustomValidationErrorInfo"
+            - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+            - $ref: "#/components/schemas/MediaTypeErrorInfo"
+            - $ref: "#/components/schemas/ParameterErrorInfo"
+            - $ref: "#/components/schemas/ProxyErrorInfo"
+            - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+            - $ref: "#/components/schemas/RequestBodyErrorInfo"
+          properties:
+            empty:
+              type: "boolean"
+            first:
+              oneOf:
+              - $ref: "#/components/schemas/CustomValidationErrorInfo"
+              - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+              - $ref: "#/components/schemas/MediaTypeErrorInfo"
+              - $ref: "#/components/schemas/ParameterErrorInfo"
+              - $ref: "#/components/schemas/ProxyErrorInfo"
+              - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+              - $ref: "#/components/schemas/RequestBodyErrorInfo"
+            last:
+              oneOf:
+              - $ref: "#/components/schemas/CustomValidationErrorInfo"
+              - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+              - $ref: "#/components/schemas/MediaTypeErrorInfo"
+              - $ref: "#/components/schemas/ParameterErrorInfo"
+              - $ref: "#/components/schemas/ProxyErrorInfo"
+              - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+              - $ref: "#/components/schemas/RequestBodyErrorInfo"
+        message:
+          type: "string"
+      required:
+      - "errorDetails"
+      - "message"
+    InvalidAuditEventsErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          invalidAuditEventIndices:
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
+            properties:
+              empty:
+                type: "boolean"
+              first:
+                type: "integer"
+                format: "int32"
+              last:
+                type: "integer"
+                format: "int32"
+          invalidEventIndices:
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
+            writeOnly: true
+      required:
+      - "invalidAuditEventIndices"
+      - "message"
+    MediaTypeErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          supportedMediaTypes:
+            type: "array"
+            items:
+              type: "string"
+            properties:
+              empty:
+                type: "boolean"
+              first:
+                type: "string"
+              last:
+                type: "string"
+      required:
+      - "message"
+      - "supportedMediaTypes"
+    ParameterErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          parameterDescriptor:
+            type: "string"
+      required:
+      - "message"
+      - "parameterDescriptor"
+    ProxyErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      required:
+      - "message"
+    QueryFrontendRawErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          rawQueryFrontendResponse:
+            type: "string"
+      required:
+      - "rawQueryFrontendResponse"
+    RequestBodyErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          bodyDescriptor:
+            type: "string"
+      required:
+      - "bodyDescriptor"
+      - "message"
+    ResourceDeleteRequest:
+      type: "object"
+      description: "Request Details"
+      properties:
+        filePath:
+          type: "string"
+          description: "The fully qualified file path of the tabular file to store\
+            \ the lookup data in Grail."
+          example: "/lookups/mydata"
+          minLength: 1
+      required:
+      - "filePath"
+    ResourceTestPatternRequest:
+      type: "object"
+      description: "The JSON metadata for the test pattern request."
+      properties:
+        autoFlatten:
+          type: "boolean"
+          default: true
+          description: "Set to true to extract nested fields to the root level when\
+            \ the specified DPL pattern results in a single record-type field."
+        locale:
+          type: "string"
+          description: "The locale for parsing locale-specific day and month names.\
+            \ The input values take the ISO-639 Language code with an optional ISO-3166\
+            \ country code appended to it with an underscore."
+          example: "en_US"
+        lookupField:
+          type: "string"
+          description: "The name of the lookup field whose value identifies a record\
+            \ in the lookup data.The uniqueness of the values is ensured by deduplicating\
+            \ records during upload, if necessary."
+          example: "id"
+          maxLength: 500
+          minLength: 0
+        parsePattern:
+          type: "string"
+          description: "The DPL pattern to parse the uploaded data. Every pattern\
+            \ match produces a record."
+          example: "LD:id ',' LD:value"
+          minLength: 1
+        skippedRecords:
+          type: "integer"
+          format: "int64"
+          default: 0
+          description: "The number of initial records to discard. Can be used to skip\
+            \ header rows."
+        timezone:
+          type: "string"
+          description: "The timezone for parsing time and date fields. The list of\
+            \ valid input values matches that of the IANA Time Zone Database (TZDB)."
+          example: "UTC"
+      required:
+      - "parsePattern"
+    ResourceTestPatternRequestEnvelope:
+      type: "object"
+      description: "Multipart request containing JSON metadata and file content."
+      properties:
+        content:
+          type: "string"
+          format: "binary"
+        request:
+          $ref: "#/components/schemas/ResourceTestPatternRequest"
+      required:
+      - "content"
+      - "request"
+    ResourceTestPatternResponse:
+      type: "object"
+      description: "The result of applying the pattern to the uploaded file."
+      properties:
+        numberOfRecords:
+          type: "integer"
+          format: "int32"
+          description: "The total number of records in the uploaded file that match\
+            \ the provided pattern."
+          example: 1000000
+        records:
+          type: "array"
+          description: "List of records that result from applying the pattern to the\
+            \ uploaded file. If there are more than 100 records, this list contains\
+            \ only the first 100."
+          items:
+            type: "object"
+            additionalProperties:
+              type: "object"
+              description: "List of records that result from applying the pattern\
+                \ to the uploaded file. If there are more than 100 records, this list\
+                \ contains only the first 100."
+            description: "List of records that result from applying the pattern to\
+              \ the uploaded file. If there are more than 100 records, this list contains\
+              \ only the first 100."
+        types:
+          type: "array"
+          description: "The data types for the result records."
+          items:
+            type: "object"
+            additionalProperties:
+              type: "object"
+              description: "The data types for the result records."
+            description: "The data types for the result records."
+    ResourceUploadRequest:
+      type: "object"
+      description: "The JSON metadata for the upload request."
+      properties:
+        autoFlatten:
+          type: "boolean"
+          default: true
+          description: "Set to true to extract nested fields to the root level when\
+            \ the specified DPL pattern results in a single record-type field."
+        description:
+          type: "string"
+          description: "An optional description for the file."
+          example: "Description of my lookup data"
+          maxLength: 500
+          minLength: 0
+        displayName:
+          type: "string"
+          description: "An optional name for the file."
+          example: "My lookup data"
+          maxLength: 500
+          minLength: 0
+        filePath:
+          type: "string"
+          description: "The fully qualified file path of the tabular file to store\
+            \ the lookup data in Grail."
+          example: "/lookups/mydata"
+        locale:
+          type: "string"
+          description: "The locale for parsing locale-specific day and month names.\
+            \ The input values take the ISO-639 Language code with an optional ISO-3166\
+            \ country code appended to it with an underscore."
+          example: "en_US"
+        lookupField:
+          type: "string"
+          description: "The name of the lookup field whose value identifies a record\
+            \ in the lookup data.The uniqueness of the values is ensured by deduplicating\
+            \ records during upload, if necessary."
+          example: "id"
+          maxLength: 500
+          minLength: 0
+        overwrite:
+          type: "boolean"
+          default: false
+          description: "If false and the file already exists, the upload fails. Set\
+            \ to true to allow overwriting existing files."
+        parsePattern:
+          type: "string"
+          description: "The DPL pattern to parse the uploaded data. Every pattern\
+            \ match produces a record."
+          example: "LD:id ',' LD:value"
+          minLength: 1
+        skippedRecords:
+          type: "integer"
+          format: "int64"
+          default: 0
+          description: "The number of initial records to discard. Can be used to skip\
+            \ header rows."
+        timezone:
+          type: "string"
+          description: "The timezone for parsing time and date fields. The list of\
+            \ valid input values matches that of the IANA Time Zone Database (TZDB)."
+          example: "UTC"
+      required:
+      - "filePath"
+      - "lookupField"
+      - "parsePattern"
+    ResourceUploadRequestEnvelope:
+      type: "object"
+      description: "Multipart request containing JSON metadata and file content."
+      properties:
+        content:
+          type: "string"
+          format: "binary"
+        request:
+          $ref: "#/components/schemas/ResourceUploadRequest"
+      required:
+      - "content"
+      - "request"
+    ResourceUploadResponse:
+      type: "object"
+      properties:
+        discardedDuplicates:
+          type: "integer"
+          format: "int64"
+          description: "The number of records that were discarded because their lookup\
+            \ field was not unique."
+        fileSize:
+          type: "integer"
+          format: "int64"
+          description: "The size of the tabular file in the resource store, in bytes."
+        patternMatches:
+          type: "integer"
+          format: "int64"
+          description: "The number of records in the uploaded file that match the\
+            \ parse pattern."
+        records:
+          type: "integer"
+          format: "int64"
+          description: "The number of records in the final lookup data."
+        skippedRecords:
+          type: "integer"
+          format: "int64"
+          description: "The number of records that were skipped, based on the skippedRecords\
+            \ parameter in the request."
+        uploadedBytes:
+          type: "integer"
+          format: "int64"
+          description: "The number of bytes that were sent in the request content."
+      required:
+      - "discardedDuplicates"
+      - "fileSize"
+      - "patternMatches"
+      - "records"
+      - "skippedRecords"
+      - "uploadedBytes"
+  securitySchemes:
+    OAuth2:
+      flows:
+        clientCredentials:
+          scopes:
+            storage:files:delete: "Delete Resources"
+            storage:files:read: "Read Resources"
+            storage:files:write: "Write Resources"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

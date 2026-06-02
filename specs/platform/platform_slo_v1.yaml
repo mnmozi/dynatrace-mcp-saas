@@ -1,0 +1,1130 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.13"
+  title: "Service-Level Objectives"
+  x-summary: "Management API for service-level objectives, templates and evaluating\
+    \ service-level objectives"
+  x-service-category: "Service-Level Objectives"
+  description: "Management API for service-level objectives, templates and evaluating\
+    \ service-level objectives"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/slo/v1"
+  x-api-gateway-url: "/platform/slo/v1"
+paths:
+  /objective-templates:
+    get:
+      summary: "List objective templates"
+      operationId: "getObjectiveTemplates"
+      tags:
+      - "Objective templates"
+      parameters:
+      - name: "page-size"
+        in: "query"
+        description: "How many items to return at one time (max 500)"
+        required: false
+        schema:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+          maximum: 500
+          default: 100
+      - name: "page"
+        in: "query"
+        description: "The page number to retrieve, 1-indexed. Can't be used together\
+          \ with `page-key`."
+        required: false
+        schema:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+      - name: "page-key"
+        in: "query"
+        description: "Cursor for the next page of results, obtained from `nextPageKey`\
+          \ in the previous response. Can't be used together with `page`."
+        required: false
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      - name: "filter"
+        in: "query"
+        description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\
+          \ \n\n Filtering is supported on the following fields: \n * `id` \n  * `name`\
+          \ \n  * `builtIn` \n  * `deprecated` \n  * `applicableScope` \n  * `tag.key`\
+          \ and `tag.value` \n\n"
+        schema:
+          type: "string"
+          maxLength: 1024
+          minLength: 0
+      - name: "sort"
+        in: "query"
+        description: "The sort parameter, as explained [here](https://dt-url.net/platform-services-filtering).\
+          \ \n\n Sorting is supported on the following fields: \n * `name` \n\n"
+        schema:
+          type: "string"
+          maxLength: 1024
+          minLength: 0
+      security:
+      - ssoAuth:
+        - "slo:objective-templates:read"
+      - ssoAuth:
+        - "slo:slos:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A paged array of objective templates"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObjectiveTemplateList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**One of the following scopes is required:**\n+ slo:objective-templates:read\n\
+        + slo:slos:read\n\n"
+  /objective-templates/{id}:
+    get:
+      summary: "Get an objective template by ID"
+      operationId: "getObjectiveTemplateById"
+      tags:
+      - "Objective templates"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "objective template ID"
+        required: true
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      security:
+      - ssoAuth:
+        - "slo:objective-templates:read"
+      - ssoAuth:
+        - "slo:slos:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A single objective template"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObjectiveTemplate"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**One of the following scopes is required:**\n+ slo:objective-templates:read\n\
+        + slo:slos:read\n\n"
+  /slos:
+    get:
+      summary: "List service-level objectives"
+      operationId: "getSlos"
+      tags:
+      - "Service-level objectives"
+      parameters:
+      - name: "page-size"
+        in: "query"
+        description: "How many items to return at one time (max 500)"
+        required: false
+        schema:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+          maximum: 500
+          default: 100
+      - name: "page"
+        in: "query"
+        description: "The page number to retrieve, 1-indexed. Can't be used together\
+          \ with `page-key`."
+        required: false
+        schema:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+      - name: "page-key"
+        in: "query"
+        description: "Cursor for the next page of results, obtained from `nextPageKey`\
+          \ in the previous response. Can't be used together with `page`."
+        required: false
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      - name: "filter"
+        in: "query"
+        description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\
+          \ \n\n Filtering is supported on the following fields: \n * `id` \n  * `name`\
+          \ \n  * `tag.key` and `tag.value` \n\n"
+        schema:
+          type: "string"
+          maxLength: 1024
+          minLength: 0
+      - name: "sort"
+        in: "query"
+        description: "The sort parameter, as explained [here](https://dt-url.net/platform-services-filtering).\
+          \ \n\n Sorting is supported on the following fields: \n * `name` \n\n"
+        schema:
+          type: "string"
+          maxLength: 1024
+          minLength: 0
+      security:
+      - ssoAuth:
+        - "slo:slos:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A paged array of service-level objectives"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SloObjectsList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** slo:slos:read"
+    post:
+      summary: "Add a new service-level objective"
+      operationId: "createSlo"
+      tags:
+      - "Service-level objectives"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SloConfig"
+      security:
+      - ssoAuth:
+        - "slo:slos:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slo"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** slo:slos:write"
+  /slos/{id}:
+    get:
+      summary: "Get a service-level objective by ID"
+      operationId: "getSloById"
+      tags:
+      - "Service-level objectives"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "service-level objective ID"
+        required: true
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      security:
+      - ssoAuth:
+        - "slo:slos:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A single service-level objective"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slo"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** slo:slos:read"
+    put:
+      summary: "Update a service-level objective by ID"
+      operationId: "updateSlo"
+      tags:
+      - "Service-level objectives"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "service-level objective ID"
+        required: true
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      - name: "optimistic-locking-version"
+        in: "query"
+        description: "The version of the object for optimistic locking. You can use\
+          \ it to detect simultaneous modifications by different users. \n\nIt's generated\
+          \ upon retrieval (GET requests). If set on update (PUT request) or deletion,\
+          \ the update/deletion will be allowed only if there wasn't any change between\
+          \ the retrieval and the update."
+        required: true
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SloConfig"
+      security:
+      - ssoAuth:
+        - "slo:slos:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "Updated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** slo:slos:write"
+    delete:
+      summary: "Delete a service-level objective by ID"
+      operationId: "deleteSlo"
+      tags:
+      - "Service-level objectives"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "service-level objective ID"
+        required: true
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      - name: "optimistic-locking-version"
+        in: "query"
+        description: "The version of the object for optimistic locking. You can use\
+          \ it to detect simultaneous modifications by different users. \n\nIt's generated\
+          \ upon retrieval (GET requests). If set on update (PUT request) or deletion,\
+          \ the update/deletion will be allowed only if there wasn't any change between\
+          \ the retrieval and the update."
+        required: true
+        schema:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+      security:
+      - ssoAuth:
+        - "slo:slos:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** slo:slos:write"
+  /slos/evaluation:start:
+    post:
+      summary: "Starts an SLO evaluation"
+      description: "**Required scope:** slo:slos:read<br/><br/>For information about\
+        \ the required Grail permissions, see the [Bucket and table permissions in\
+        \ Grail documentation](https://dt-url.net/hs23z40)."
+      operationId: "startSloEvaluation"
+      tags:
+      - "Service-level objectives Evaluation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SloEvaluationRequest"
+      security:
+      - ssoAuth:
+        - "slo:slos:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "SLO evaluation result"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SloEvaluationResponse"
+        "202":
+          description: "SLO evaluation started"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SloEvaluationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+  /slos/evaluation:poll:
+    get:
+      summary: "Polls an SLO evaluation"
+      description: "**Required scope:** slo:slos:read<br/><br/>For information about\
+        \ the required Grail permissions, see the [Bucket and table permissions in\
+        \ Grail documentation](https://dt-url.net/hs23z40)."
+      operationId: "pollSloEvaluation"
+      tags:
+      - "Service-level objectives Evaluation"
+      parameters:
+      - in: "query"
+        name: "evaluation-token"
+        required: true
+        schema:
+          type: "string"
+          maxLength: 500
+          minLength: 1
+          example: "FQ5aVZERXZNMjR1SzVnPT0ifQ=="
+      - in: "query"
+        name: "request-timeout-milliseconds"
+        description: "How long to wait for the evaluation result before returning\
+          \ in milliseconds. If the evaluation finishes within this time, the result\
+          \ is returned directly (`200`). If not, the response contains the `evaluationToken`\
+          \ for further polling."
+        required: false
+        schema:
+          type: "integer"
+          format: "int32"
+          minimum: 0
+          maximum: 60000
+          default: 1000
+      security:
+      - ssoAuth:
+        - "slo:slos:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "SLO evaluation result"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SloEvaluationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "410":
+          $ref: "#/components/responses/Gone"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+  /slos/evaluation:cancel:
+    post:
+      summary: "Cancels the SLO evaluation and returns the result if the evaluation\
+        \ was already finished, otherwise discards it."
+      description: "**Required scope:** slo:slos:read<br/><br/>For information about\
+        \ the required Grail permissions, see the [Bucket and table permissions in\
+        \ Grail documentation](https://dt-url.net/hs23z40)."
+      operationId: "cancelSloEvaluation"
+      tags:
+      - "Service-level objectives Evaluation"
+      parameters:
+      - in: "query"
+        name: "evaluation-token"
+        required: true
+        schema:
+          type: "string"
+          maxLength: 500
+          minLength: 1
+          example: "FQ5aVZERXZNMjR1SzVnPT0ifQ=="
+      security:
+      - ssoAuth:
+        - "slo:slos:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "SLO evaluation result"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SloEvaluationCancelResponse"
+        "202":
+          description: "The SLO evaluation was still running and is now cancelled."
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "410":
+          $ref: "#/components/responses/Gone"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+components:
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2.0 with the client credentials flow."
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            slo:slos:read: "read service-level objectives"
+            slo:slos:write: "write service-level objectives"
+            slo:objective-templates:read: "read objective templates"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  schemas:
+    VariableScope:
+      description: "The scope of a template variable. Use `SMARTSCAPE_*` variants\
+        \ when referencing Smartscape objective templates."
+      type: "string"
+      enum:
+      - "CUSTOM"
+      - "SERVICE"
+      - "SMARTSCAPE_SERVICE"
+      - "HOST"
+      - "SMARTSCAPE_HOST"
+      - "APPLICATION"
+      - "CLOUD_APPLICATION"
+      - "KUBERNETES_CLUSTER"
+      - "SMARTSCAPE_K8S_CLUSTER"
+      - "CLOUD_APPLICATION_NAMESPACE"
+      - "SMARTSCAPE_K8S_NAMESPACE"
+    TemplateScope:
+      type: "string"
+      enum:
+      - "ALL"
+      - "SERVICE"
+      - "HOST"
+      - "APPLICATION"
+      - "CLOUD_APPLICATION"
+      - "KUBERNETES_CLUSTER"
+      - "CLOUD_APPLICATION_NAMESPACE"
+    TemplateVariable:
+      type: "object"
+      required:
+      - "name"
+      - "scope"
+      properties:
+        name:
+          type: "string"
+          example: "hostIds"
+          maxLength: 60
+          minLength: 1
+        scope:
+          $ref: "#/components/schemas/VariableScope"
+    SliReferenceVariable:
+      type: "object"
+      required:
+      - "name"
+      - "value"
+      properties:
+        name:
+          type: "string"
+          example: "hostIds"
+          maxLength: 60
+          minLength: 1
+        value:
+          type: "string"
+          example: "\"HOST-123456789ABCDEFG\""
+          maxLength: 2000
+          minLength: 1
+    SliReference:
+      type: "object"
+      required:
+      - "templateId"
+      - "variables"
+      properties:
+        templateId:
+          description: "The `id` of the objective template to use as the SLI definition."
+          type: "string"
+          maxLength: 800
+          minLength: 1
+        variables:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SliReferenceVariable"
+    CustomSli:
+      type: "object"
+      required:
+      - "indicator"
+      properties:
+        indicator:
+          type: "string"
+          example: "timeseries sli=avg(dt.host.cpu.idle)"
+          maxLength: 5000
+          minLength: 1
+        filterSegments:
+          $ref: "#/components/schemas/FilterSegments"
+    Timeframe:
+      type: "object"
+      required:
+      - "timeframeFrom"
+      properties:
+        timeframeFrom:
+          description: "The start of the timeframe. Supports relative time expressions\
+            \ (e.g. `now-7d`) and ISO 8601 timestamps."
+          type: "string"
+          example: "now-7d"
+          maxLength: 30
+          minLength: 3
+        timeframeTo:
+          description: "The end of the timeframe. Supports relative time expressions\
+            \ (e.g. `now-7d`) and ISO 8601 timestamps. Defaults to `now` if omitted."
+          type: "string"
+          example: "now"
+          maxLength: 30
+          minLength: 3
+    Criteria:
+      allOf:
+      - $ref: "#/components/schemas/Timeframe"
+      - type: "object"
+        required:
+        - "target"
+        properties:
+          target:
+            type: "number"
+            format: "double"
+            example: 99.8
+            maximum: 100
+            minimum: 0
+          warning:
+            type: "number"
+            format: "double"
+            example: 99.9
+            maximum: 100
+            minimum: 0
+    Deprecation:
+      required:
+      - "deprecated"
+      properties:
+        deprecated:
+          type: "boolean"
+          description: "True if this template is deprecated and shouldn't be used\
+            \ for new SLOs."
+        replacementTemplateId:
+          type: "string"
+          description: "If deprecated=true, this field may contain the ID of the template\
+            \ to use instead."
+          maxLength: 200
+          minLength: 1
+    ObjectiveTemplateConfig:
+      required:
+      - "name"
+      - "indicator"
+      - "variables"
+      - "applicableScope"
+      properties:
+        name:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+          example: "My new Objective Template"
+        description:
+          type: "string"
+          maxLength: 250
+          minLength: 0
+          example: "This is a description"
+        indicator:
+          type: "string"
+          maxLength: 2000
+          minLength: 1
+          example: "timeseries sli=avg(dt.host.cpu.idle), by: {dt.entity.host}| filter\
+            \ in(dt.entity.host, $hostIds)"
+        variables:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TemplateVariable"
+          minItems: 1
+        tags:
+          description: "A list of tags for this objective template. Tags can be plain\
+            \ strings (e.g. `myTag`) or key-value pairs separated by a colon (e.g.\
+            \ `Stage:DEV`). To include a literal colon in a tag, escape it with a\
+            \ backslash (e.g. `key\\:value`)."
+          type: "array"
+          items:
+            type: "string"
+            example: "Stage:DEV"
+            maxLength: 500
+            minLength: 1
+          maxItems: 100
+          minItems: 0
+        applicableScope:
+          $ref: "#/components/schemas/TemplateScope"
+        externalId:
+          type: "string"
+          maxLength: 500
+          minLength: 1
+          description: "An optional user-provided external identifier for the objective\
+            \ template. Must be unique across all objective templates."
+    ObjectiveTemplate:
+      allOf:
+      - $ref: "#/components/schemas/ObjectiveTemplateConfig"
+      - type: "object"
+        required:
+        - "id"
+        - "builtIn"
+        properties:
+          id:
+            type: "string"
+            maxLength: 200
+            minLength: 1
+          version:
+            type: "string"
+            maxLength: 200
+            minLength: 1
+            description: "The version of the object for optimistic locking. You can\
+              \ use it to detect simultaneous modifications by different users. \n\
+              \nIt's generated upon retrieval (GET requests). If set on update (PUT\
+              \ request) or deletion, the update/deletion will be allowed only if\
+              \ there wasn't any change between the retrieval and the update."
+          builtIn:
+            type: "boolean"
+            default: false
+          deprecation:
+            $ref: "#/components/schemas/Deprecation"
+    ObjectiveTemplateList:
+      required:
+      - "totalCount"
+      - "items"
+      properties:
+        totalCount:
+          type: "integer"
+          description: "The total number of entries in the result."
+        nextPageKey:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+          description: "The cursor for the next page of results. Has the value of\
+            \ `null` on the last page. \n\nUse it in the **page-key** query parameter\
+            \ to obtain subsequent pages of the result."
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ObjectiveTemplate"
+    FilterSegments:
+      type: "array"
+      description: "Represents a collection of filter segments."
+      items:
+        $ref: "#/components/schemas/FilterSegment"
+    FilterSegment:
+      required:
+      - "id"
+      type: "object"
+      description: "A filter segment is identified by an ID."
+      properties:
+        id:
+          description: "The identifier of the filter segment."
+          type: "string"
+          example: "Frbo6TNENSC"
+        variables:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FilterSegmentVariable"
+      example:
+        id: "Frbo6TNENSC"
+        variables:
+        - name: "environment"
+          values:
+          - "production"
+        - name: "region"
+          values:
+          - "us-east-1"
+          - "eu-west-1"
+    FilterSegmentVariable:
+      required:
+      - "name"
+      - "values"
+      type: "object"
+      description: "Defines a variable with a name and a list of values."
+      properties:
+        name:
+          description: "The name of the variable."
+          type: "string"
+          example: "environment"
+        values:
+          description: "The list of values for this variable."
+          type: "array"
+          items:
+            type: "string"
+            example: "production"
+          minItems: 1
+    SloConfig:
+      description: "Configuration for a service-level objective. Exactly one of `sliReference`\
+        \ or `customSli` must be provided. Providing both or neither results in a\
+        \ `400 Bad Request`."
+      required:
+      - "name"
+      - "criteria"
+      properties:
+        name:
+          type: "string"
+          example: "New SLO"
+          maxLength: 200
+          minLength: 1
+        description:
+          type: "string"
+          example: "This is a description"
+          maxLength: 250
+          minLength: 1
+        sliReference:
+          $ref: "#/components/schemas/SliReference"
+        customSli:
+          $ref: "#/components/schemas/CustomSli"
+        criteria:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Criteria"
+          maxItems: 1
+          minItems: 1
+        tags:
+          description: "A list of tags for this SLO. Tags can be plain strings (e.g.\
+            \ `myTag`) or key-value pairs separated by a colon (e.g. `Stage:DEV`).\
+            \ To include a literal colon in a tag, escape it with a backslash (e.g.\
+            \ `key\\:value`)."
+          type: "array"
+          items:
+            type: "string"
+            example: "Stage:DEV"
+            maxLength: 500
+            minLength: 1
+          maxItems: 100
+          minItems: 0
+        externalId:
+          type: "string"
+          maxLength: 500
+          minLength: 1
+          description: "An optional user-provided external identifier for the SLO.\
+            \ Must be unique across all SLOs."
+    Slo:
+      allOf:
+      - $ref: "#/components/schemas/SloConfig"
+      - type: "object"
+        required:
+        - "id"
+        - "version"
+        properties:
+          id:
+            type: "string"
+            maxLength: 200
+            minLength: 1
+          version:
+            type: "string"
+            maxLength: 200
+            minLength: 1
+            description: "The version of the object for optimistic locking. You can\
+              \ use it to detect simultaneous modifications by different users. \n\
+              \nIt's generated upon retrieval (GET requests). If set on update (PUT\
+              \ request) or deletion, the update/deletion will be allowed only if\
+              \ there wasn't any change between the retrieval and the update."
+    SloObjectsList:
+      required:
+      - "totalCount"
+      - "slos"
+      properties:
+        totalCount:
+          type: "integer"
+          maximum: 10000
+          minimum: 0
+          description: "The total number of entries in the result."
+        nextPageKey:
+          type: "string"
+          maxLength: 200
+          minLength: 1
+          description: "The cursor for the next page of results. Has the value of\
+            \ `null` on the last page. \n\nUse it in the **page-key** query parameter\
+            \ to obtain subsequent pages of the result."
+        slos:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Slo"
+    EvaluationStatus:
+      description: "The status of an SLO evaluation. `SUCCESS` and `WARNING` indicate\
+        \ the SLO was evaluated successfully (target met or warning threshold breached\
+        \ respectively). `FAILURE` means the SLO target wasn't met. `ERROR` means\
+        \ the evaluation couldn't be completed due to a system or query error."
+      type: "string"
+      enum:
+      - "SUCCESS"
+      - "WARNING"
+      - "FAILURE"
+      - "ERROR"
+    SloEvaluationResult:
+      required:
+      - "criteria"
+      - "status"
+      type: "object"
+      properties:
+        criteria:
+          type: "string"
+          example: "now-7d - now"
+          maxLength: 200
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/EvaluationStatus"
+        value:
+          description: "The evaluated SLO compliance as a percentage (0–100)."
+          type: "number"
+          format: "double"
+          example: 95
+          minimum: 0
+          maximum: 100
+        errorBudget:
+          type: "number"
+          example: 29.99
+          format: "double"
+          minimum: 0
+        message:
+          type: "string"
+          example: "The field sli doesn't exist."
+          maxLength: 500
+          minLength: 1
+    SloEvaluationRequest:
+      required:
+      - "id"
+      properties:
+        id:
+          type: "string"
+          example: "A5LTU5YTVjNTcxODI5OL7vVN4V2t6t"
+        filterSegments:
+          description: "Filter segments to apply during this evaluation. The effective\
+            \ filter for each segment is the intersection of the segment defined on\
+            \ the SLO and the segment provided here. If only one side defines a segment,\
+            \ that segment is used as-is."
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FilterSegment"
+        customTimeframe:
+          $ref: "#/components/schemas/Timeframe"
+        requestTimeoutMilliseconds:
+          description: "How long to wait for the evaluation result before returning\
+            \ in milliseconds. If the evaluation finishes within this time, the result\
+            \ is returned directly (`200`). If not, a `202` is returned with an `evaluationToken`\
+            \ that can be used to poll for the result."
+          type: "integer"
+          format: "int32"
+          minimum: 0
+          maximum: 60000
+          default: 1000
+    MetadataResponse:
+      required:
+      - "metadata"
+      properties:
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+    SloEvaluationBaseResponse:
+      allOf:
+      - $ref: "#/components/schemas/MetadataResponse"
+      - type: "object"
+        properties:
+          evaluationResults:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/SloEvaluationResult"
+    SloEvaluationCancelResponse:
+      required:
+      - "definition"
+      allOf:
+      - $ref: "#/components/schemas/SloEvaluationBaseResponse"
+      - type: "object"
+        properties:
+          definition:
+            $ref: "#/components/schemas/Slo"
+    SloEvaluationResponse:
+      allOf:
+      - $ref: "#/components/schemas/SloEvaluationCancelResponse"
+      - type: "object"
+        properties:
+          evaluationToken:
+            description: "Token to pass to `evaluation:poll` or `evaluation:cancel`\
+              \ to retrieve or discard the evaluation result."
+            type: "string"
+            maxLength: 500
+            minLength: 1
+            example: "FQ5aVZERXZNMjR1SzVnPT0ifQ=="
+          ttlSeconds:
+            type: "integer"
+            format: "int64"
+            example: 300
+    Metadata:
+      required:
+      - "evaluatedSliQuery"
+      properties:
+        evaluatedSliQuery:
+          description: "The resolved DQL query that was actually executed for this\
+            \ evaluation."
+          type: "string"
+          example: "timeseries sli=avg(dt.host.cpu.idle), by: {dt.entity.host} | filter\
+            \ dt.entity.host == \"HOST-123456789ABCDEFG\""
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      required:
+      - "error"
+    Error:
+      type: "object"
+      description: "An error response as defined [here](https://dt-url.net/platform-services-error-handling)."
+      properties:
+        code:
+          type: "integer"
+        message:
+          type: "string"
+          example: "Error while parsing SLO timeframe"
+          maxLength: 500
+          minLength: 1
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+      required:
+      - "code"
+      - "message"
+    ErrorDetails:
+      type: "object"
+      description: "Optional details of the error"
+      properties:
+        errorRef:
+          type: "string"
+          format: "uuid"
+          description: "reference to the error occurrence in the internal self-monitoring,\
+            \ logging, etc."
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations of input parameters (path,\
+            \ query, request body)"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+    ConstraintViolation:
+      type: "object"
+      description: "Contains information about a constraint violation caused by invalid\
+        \ input."
+      properties:
+        path:
+          type: "string"
+          description: "The path of the parameter that caused the constraint violation"
+        message:
+          type: "string"
+          description: "The constraint violation description message"
+      required:
+      - "message"
+  responses:
+    BadRequest:
+      description: "Malformed request or invalid parameters."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Unauthorized:
+      description: "API token or tenant missing or corrupt."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Forbidden:
+      description: "Access forbidden. This usually happens because the user lacks\
+        \ the permission to access the specific endpoint, or because the target entity\
+        \ isn't accessible to the user."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Conflict:
+      description: "Optimistic locking failed, or the document is actively locked\\\
+        \ \\ by another user, or some other conflict."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    NotFound:
+      description: "Not found."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    TooManyRequests:
+      description: "The client has sent too many requests in a given amount of time\
+        \ and has been rate-limited."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Gone:
+      description: "The SLO Evaluation for the given evaluationToken isn't available\
+        \ anymore."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    InternalServerError:
+      description: "Internal server error."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+security:
+- ssoAuth:
+  - "slo:slos:read"
+  - "slo:slos:write"
+  - "slo:objective-templates:read"

@@ -1,0 +1,1539 @@
+openapi: "3.0.3"
+info:
+  version: "0.3.3"
+  title: "Feature Flag Management API"
+  description: "Management APIs for Feature Flag data"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/feature-flag-management/v0.3"
+  x-api-gateway-url: "/platform/feature-flag-management/v0.3"
+paths:
+  /projects:
+    get:
+      summary: "List projects"
+      operationId: "listProjects"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/page"
+      - $ref: "#/components/parameters/pageSize"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "A paged array of projects"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+      description: "**Required scope:** feature-flag:projects:read"
+  /projects/{projectId}:
+    get:
+      summary: "Get a project"
+      operationId: "getProject"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The project configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+      description: "**Required scope:** feature-flag:projects:read"
+    put:
+      summary: "Create or update a project"
+      operationId: "storeProject"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The project has been updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDetails"
+        "201":
+          description: "The project has been created successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+      description: "**Required scope:** feature-flag:projects:write"
+    delete:
+      summary: "Delete a project"
+      description: "**Required scope:** feature-flag:projects:delete<br/><br/>Deletes\
+        \ the specified project."
+      operationId: "deleteProject"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "204":
+          description: "The project was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /stages:
+    get:
+      summary: "List stages"
+      operationId: "listStages"
+      tags:
+      - "Stages"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/page"
+      - $ref: "#/components/parameters/pageSize"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "A paged array of stages"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StageList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+      description: "**Required scope:** feature-flag:projects:read"
+  /stages/{stageId}:
+    get:
+      summary: "Get a stage"
+      operationId: "getStage"
+      tags:
+      - "Stages"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/stageIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The stage configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StageDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+      description: "**Required scope:** feature-flag:projects:read"
+    put:
+      summary: "Create or update a stage"
+      operationId: "storeStage"
+      tags:
+      - "Stages"
+      security:
+      - ssoAuth:
+        - "feature-flag:stages:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/stageIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Stage"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The stage has been updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StageDetails"
+        "201":
+          description: "The stage has been created successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StageDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+      description: "**Required scope:** feature-flag:stages:write"
+    delete:
+      summary: "Delete a stage"
+      description: "**Required scope:** feature-flag:stages:delete<br/><br/>Deletes\
+        \ the specified stage if it is not linked to a project."
+      operationId: "deleteStage"
+      tags:
+      - "Stages"
+      security:
+      - ssoAuth:
+        - "feature-flag:stages:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/stageIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "204":
+          description: "The stage was deleted successfully"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  /projects/{projectId}/contexts:
+    get:
+      summary: "List context attributes"
+      description: "**Required scope:** feature-flag:projects:read<br/><br/>List context\
+        \ attributes for the given project."
+      operationId: "listContexts"
+      tags:
+      - "Contexts"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "An array of context attributes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /projects/{projectId}/contexts/{contextId}:
+    get:
+      summary: "Get a context attribute"
+      description: "**Required scope:** feature-flag:projects:read<br/><br/>Returns\
+        \ a context attribute for the given project."
+      operationId: "getContext"
+      tags:
+      - "Contexts"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/contextIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The context configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    put:
+      summary: "Create or update a context"
+      description: "**Required scope:** feature-flag:context-attributes:write<br/><br/>Creates\
+        \ or updates a context attribute from the given project."
+      operationId: "storeContext"
+      tags:
+      - "Contexts"
+      security:
+      - ssoAuth:
+        - "feature-flag:context-attributes:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/contextIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Context"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The context has been updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextDetails"
+        "201":
+          description: "The context has been created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+    delete:
+      summary: "Delete a context"
+      description: "**Required scope:** feature-flag:context-attributes:delete<br/><br/>Deletes\
+        \ the specified context."
+      operationId: "deleteContext"
+      tags:
+      - "Contexts"
+      security:
+      - ssoAuth:
+        - "feature-flag:context-attributes:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/contextIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "204":
+          description: "The context was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+  /projects/{projectId}/feature-flags:
+    get:
+      summary: "List feature flag definitions"
+      description: "**Required scope:** feature-flag:feature-flags:read<br/><br/>Lists\
+        \ all feature flag definitions for the given project."
+      operationId: "listFeatureFlagDefinitions"
+      tags:
+      - "Feature Flags"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/page"
+      - $ref: "#/components/parameters/pageSize"
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "A paged array of feature flag definitions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagDefinitionList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /projects/{projectId}/feature-flags/{featureFlagId}:
+    get:
+      summary: "Get a feature flag definition"
+      description: "**Required scope:** feature-flag:feature-flags:read<br/><br/>Returns\
+        \ a feature flag definition from the given project."
+      operationId: "getFeatureFlagDefinition"
+      tags:
+      - "Feature Flags"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/featureFlagIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The feature flag definition configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagDefinitionDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    put:
+      summary: "Create or update a feature flag definition"
+      description: "**Required scope:** feature-flag:feature-flags:write<br/><br/>Updates\
+        \ a feature flag definition from the given project. The following limitations\
+        \ apply:\n  - There can be up to 30 variants.\n  - The `in` operator can contain\
+        \ up to 300 values.\n  - There can be up to a total of 20\n    [operators](https://flagd.dev/reference/flag-definitions/#operations)\
+        \ or\n    [conditions](https://flagd.dev/reference/flag-definitions/#conditions).\n\
+        \  - Keys and values can have up to 100 characters each.\n"
+      operationId: "storeFeatureFlagDefinition"
+      tags:
+      - "Feature Flags"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/featureFlagIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureFlagDefinition"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The feature flag definition has been updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagDefinitionDetails"
+        "201":
+          description: "The feature flag definition has been created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagDefinitionDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+    delete:
+      summary: "Delete a feature flag definition"
+      description: "**Required scope:** feature-flag:feature-flags:delete<br/><br/>Deletes\
+        \ a feature flag definition from the given project. The feature flag to delete\
+        \ must not be active in any stages.\n"
+      operationId: "deleteFeatureFlagDefinition"
+      tags:
+      - "Feature Flags"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/featureFlagIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "204":
+          description: "The feature flag definition was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+  /projects/{projectId}/stages:
+    get:
+      summary: "List stages linked to a project"
+      description: "**Required scope:** feature-flag:projects:read<br/><br/>List stages\
+        \ linked to a project"
+      operationId: "listProjectStageLinks"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      - $ref: "#/components/parameters/page"
+      - $ref: "#/components/parameters/pageSize"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "An array of stages."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StageList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /projects/{projectId}/stages/{stageId}:
+    delete:
+      summary: "Unlinks a stage from a project"
+      operationId: "deleteProjectStageLink"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/stageIdPathParam"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "204":
+          description: "The project stage link was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+      description: "**Required scope:** feature-flag:projects:write"
+    put:
+      summary: "Links a stage to a project"
+      operationId: "createProjectStageLink"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-flag:projects:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/stageIdPathParam"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "201":
+          description: "The stage was successfully linked to the project"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+      description: "**Required scope:** feature-flag:projects:write"
+  /projects/{projectId}/stages/{stageId}/feature-flags:
+    get:
+      summary: "List feature flag stage definitions"
+      description: "**Required scope:** feature-flag:feature-flags:read<br/><br/>List\
+        \ feature flag stage definitions that are defined in the specified stage of\
+        \ the given project."
+      operationId: "listFeatureFlagStageDefinitions"
+      tags:
+      - "Feature Flags Stage Definition"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/page"
+      - $ref: "#/components/parameters/pageSize"
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/stageIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "A paged array of feature flag stage definitions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /projects/{projectId}/stages/{stageId}/feature-flags/{featureFlagId}:
+    get:
+      summary: "Get a feature flag stage definition"
+      description: "**Required scope:** feature-flag:feature-flags:read<br/><br/>Get\
+        \ the feature flag's configuration defined in the specified stage of the given\
+        \ project."
+      operationId: "getFeatureFlagStageDefinition"
+      tags:
+      - "Feature Flags Stage Definition"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/stageIdPathParam"
+      - $ref: "#/components/parameters/featureFlagIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The feature flag stage definition configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    put:
+      summary: "Create or update a feature flag stage definition"
+      description: "**Required scope:** feature-flag:feature-flags:write<br/><br/>Create\
+        \ or update the feature flag's configuration defined in the specified stage\
+        \ of the given project."
+      operationId: "storeFeatureFlagStageDefinition"
+      tags:
+      - "Feature Flags Stage Definition"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/stageIdPathParam"
+      - $ref: "#/components/parameters/featureFlagIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureFlagStageDefinition"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The feature flag stage definition has been updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionDetails"
+        "201":
+          description: "The feature flag stage definition has been created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+    delete:
+      summary: "Delete a feature flag stage definition"
+      description: "**Required scope:** feature-flag:feature-flags:delete<br/><br/>Deletes\
+        \ the feature flag's configuration defined in the specified stage of the given\
+        \ project. If a feature flag is requested for this stage after deletion it\
+        \ will fall back to the flag's definition on project level."
+      operationId: "deleteFeatureFlagStageDefinition"
+      tags:
+      - "Feature Flags Stage Definition"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectIdPathParam"
+      - $ref: "#/components/parameters/stageIdPathParam"
+      - $ref: "#/components/parameters/featureFlagIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "204":
+          description: "The feature flag stage definition was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+  /change-requests/feature-flag-stage-definitions:
+    get:
+      summary: "List feature flag stage definition change requests"
+      operationId: "listFeatureFlagStageDefinitionChangeRequests"
+      tags:
+      - "Change Requests"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/filter"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "An array of feature flag stage definition change requests."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionChangeRequestList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+      description: "**Required scope:** feature-flag:feature-flags:read"
+    post:
+      summary: "Create a feature flag stage definition change request"
+      operationId: "createFeatureFlagStageDefinitionChangeRequest"
+      tags:
+      - "Change Requests"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureFlagStageDefinitionChangeRequestCreate"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "201":
+          description: "The change request has been created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionChangeRequestDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+      description: "**Required scope:** feature-flag:feature-flags:read"
+  /change-requests/feature-flag-stage-definitions/{changeRequestId}:
+    get:
+      summary: "Get a feature flag stage definition change request"
+      operationId: "getFeatureFlagStageDefinitionChangeRequest"
+      tags:
+      - "Change Requests"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/changeRequestIdPathParam"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "A feature flag stage definition change request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionChangeRequestDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+      description: "**Required scope:** feature-flag:feature-flags:read"
+    put:
+      summary: "Update a feature flag stage definition change request"
+      operationId: "updateFeatureFlagStageDefinitionChangeRequest"
+      tags:
+      - "Change Requests"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/changeRequestIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureFlagStageDefinitionChangeRequestUpdate"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "200":
+          description: "The change request has been updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagStageDefinitionChangeRequestDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+      description: "**Required scope:** feature-flag:feature-flags:read"
+  /change-requests/feature-flag-stage-definitions/{changeRequestId}:apply:
+    post:
+      summary: "Apply the change request for a feature flag stage definition."
+      operationId: "applyFeatureFlagStageDefinitionChangeRequest"
+      tags:
+      - "Change Requests"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:write"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeRequestTransition"
+      parameters:
+      - $ref: "#/components/parameters/changeRequestIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "202":
+          description: "The change request has been applied successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+      description: "**Required scope:** feature-flag:feature-flags:write"
+  /change-requests/feature-flag-stage-definitions/{changeRequestId}:close:
+    post:
+      summary: "Close the change request for a feature flag stage definition."
+      operationId: "closeFeatureFlagStageDefinitionChangeRequest"
+      tags:
+      - "Change Requests"
+      security:
+      - ssoAuth:
+        - "feature-flag:feature-flags:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/changeRequestIdPathParam"
+      - $ref: "#/components/parameters/optimisticLockingVersion"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeRequestTransition"
+      responses:
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+        "202":
+          description: "The change request has been closed successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+      description: "**Required scope:** feature-flag:feature-flags:read"
+components:
+  parameters:
+    projectIdPathParam:
+      name: "projectId"
+      in: "path"
+      description: "Specify the ID of the project"
+      required: true
+      schema:
+        type: "string"
+        pattern: "^[a-z][a-z0-9.-]{0,254}[a-z0-9]"
+    stageIdPathParam:
+      name: "stageId"
+      in: "path"
+      description: "Specify the ID of the stage"
+      required: true
+      schema:
+        type: "string"
+        pattern: "^[a-z][a-z0-9.-]{0,254}[a-z0-9]"
+    contextIdPathParam:
+      name: "contextId"
+      in: "path"
+      description: "Specify the ID of the context"
+      required: true
+      schema:
+        type: "string"
+        pattern: "^\\$flagd\\.[A-z0-9.-]{0,248}[A-z0-9]$|^[a-z][a-z0-9.-]{0,254}[a-z0-9]$"
+    featureFlagIdPathParam:
+      name: "featureFlagId"
+      in: "path"
+      description: "Specify the ID of the feature flag"
+      required: true
+      schema:
+        type: "string"
+        pattern: "^[a-z][a-z0-9.-]{0,254}[a-z0-9]"
+    changeRequestIdPathParam:
+      name: "changeRequestId"
+      in: "path"
+      description: "Specify the ID of the change request"
+      required: true
+      schema:
+        type: "string"
+    optimisticLockingVersion:
+      name: "optimistic-locking-version"
+      in: "query"
+      description: "The version of the object for optimistic locking.\nThis field\
+        \ is required for update operations (PUT). The update will only be allowed\
+        \ if the version\nmatches the current version of the object. Otherwise, 409\
+        \ will be returned.\nThis field is optional for delete operations (DELETE).\
+        \ If set, the delete operation will only be allowed\nif the version matches\
+        \ the current version of the object. Otherwise, 409 will be returned. If not\
+        \ set,\nthe delete operation will be forced.\n"
+      required: false
+      schema:
+        type: "string"
+        minLength: 1
+    page:
+      name: "page"
+      in: "query"
+      description: "The index of the page to return. The first page will be returned\
+        \ if this parameters isn't specified."
+      schema:
+        type: "integer"
+        default: 1
+        minimum: 1
+      example: 1
+    pageSize:
+      name: "page-size"
+      in: "query"
+      description: "The number of resources to return in a single request. 1000 by\
+        \ default."
+      schema:
+        type: "integer"
+        default: 1000
+        minimum: 1
+      example: 20
+    filter:
+      name: "filter"
+      in: "query"
+      description: "A filter expression to filter the results."
+      schema:
+        type: "string"
+      example: "projectId='my-project' and stageId='prod'"
+    AddFields:
+      name: "add-fields"
+      in: "query"
+      required: false
+      description: "Specify which meta-information to fetch in addition to the default\
+        \ fields.\n\nValid values are:\n* `resourceContext`\n\nAny other field will\
+        \ result in a HTTP 400 response.\n"
+      style: "form"
+      explode: false
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resourceContext"
+      example: "resourceContext"
+  schemas:
+    Project:
+      type: "object"
+      required:
+      - "name"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        owners:
+          type: "array"
+          items:
+            type: "string"
+    ProjectDetails:
+      allOf:
+      - $ref: "#/components/schemas/Project"
+      required:
+      - "id"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ProjectList:
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ProjectDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    Stage:
+      type: "object"
+      required:
+      - "name"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        owners:
+          type: "array"
+          items:
+            type: "string"
+    StageDetails:
+      allOf:
+      - $ref: "#/components/schemas/Stage"
+      required:
+      - "id"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    StageList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/StageDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    ContextType:
+      type: "string"
+      description: "The context's type defines which operators can be used on it (eg.\
+        \ greater-than, ends-with, ..)."
+      enum:
+      - "STRING"
+      - "NUMBER"
+      - "BOOLEAN"
+      - "VERSION"
+    Context:
+      type: "object"
+      description: "A context attribute can be used in targeting rules like a variable."
+      required:
+      - "name"
+      - "type"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        type:
+          $ref: "#/components/schemas/ContextType"
+    ContextDetails:
+      allOf:
+      - $ref: "#/components/schemas/Context"
+      description: "A context attribute can be used in targeting rules like a variable."
+      required:
+      - "id"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ContextList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ContextDetails"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    FlagType:
+      type: "string"
+      enum:
+      - "STRING"
+      - "NUMBER"
+      - "BOOLEAN"
+    Variants:
+      type: "object"
+      minProperties: 1
+      description: "The variants field can contain up to 30 values. All values within\
+        \ the object must be of the same type.\n"
+      additionalProperties: true
+    FeatureFlagDefinition:
+      description: "A definition is the general skeleton of a feature flag that can\
+        \ be defined per stage."
+      required:
+      - "name"
+      - "variants"
+      - "type"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        type:
+          $ref: "#/components/schemas/FlagType"
+        variants:
+          $ref: "#/components/schemas/Variants"
+    FeatureFlagDefinitionDetails:
+      description: "A definition is the general skeleton of a feature flag that can\
+        \ be defined per stage."
+      allOf:
+      - $ref: "#/components/schemas/FeatureFlagDefinition"
+      required:
+      - "id"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    FeatureFlagDefinitionList:
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FeatureFlagDefinitionDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    FeatureFlagStageDefinitionDetails:
+      description: "A feature flag stage definition is a stage specific configuration\
+        \ of a feature flag definition."
+      required:
+      - "id"
+      properties:
+        id:
+          type: "string"
+          description: "The feature flag definition's id where the stage definition\
+            \ should be assigned to"
+        defaultVariant:
+          $ref: "#/components/schemas/DefaultVariant"
+        enabled:
+          type: "boolean"
+          default: false
+        targeting:
+          $ref: "#/components/schemas/Targeting"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    FeatureFlagStageDefinition:
+      description: "A feature flag stage definition is a stage specific configuration\
+        \ of a feature flag definition."
+      properties:
+        defaultVariant:
+          $ref: "#/components/schemas/DefaultVariant"
+        enabled:
+          type: "boolean"
+          default: false
+        targeting:
+          $ref: "#/components/schemas/Targeting"
+    FeatureFlagStageDefinitionList:
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FeatureFlagStageDefinitionDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    ChangeRequestTransition:
+      description: "Additional information for transitioning a change request to a\
+        \ new state, i.e. closing or applying the change request."
+      properties:
+        comment:
+          type: "string"
+          maxLength: 5000
+          description: "An optional comment about the transition"
+    FeatureFlagStageDefinitionChangeRequestCreate:
+      description: "A request to change a feature flag stage definition."
+      required:
+      - "projectId"
+      - "featureFlagId"
+      - "featureFlagStageDefinitionVersion"
+      - "stageId"
+      properties:
+        projectId:
+          type: "string"
+          description: "The id of the project where the change is requested"
+        featureFlagId:
+          type: "string"
+          description: "The id of the feature flag definition where the change is\
+            \ requested"
+        featureFlagStageDefinitionVersion:
+          type: "string"
+          description: "The version of the feature flag stage definition at the point\
+            \ where the change request is created"
+        stageId:
+          type: "string"
+          description: "The id of the stage where the change is requested"
+        comment:
+          type: "string"
+          maxLength: 5000
+          description: "An optional comment describing the reason for the change request"
+        defaultVariant:
+          $ref: "#/components/schemas/DefaultVariant"
+        enabled:
+          type: "boolean"
+          default: false
+        targeting:
+          $ref: "#/components/schemas/Targeting"
+    FeatureFlagStageDefinitionChangeRequestUpdate:
+      description: "A request to change a feature flag stage definition."
+      required:
+      - "featureFlagStageDefinitionVersion"
+      properties:
+        featureFlagStageDefinitionVersion:
+          type: "string"
+          description: "The version of the feature flag stage definition at the point\
+            \ where the change request is created"
+        comment:
+          type: "string"
+          maxLength: 5000
+          description: "An optional comment describing the reason for the change request"
+        defaultVariant:
+          $ref: "#/components/schemas/DefaultVariant"
+        enabled:
+          type: "boolean"
+          default: false
+        targeting:
+          $ref: "#/components/schemas/Targeting"
+    FeatureFlagStageDefinitionChangeRequestDetails:
+      description: "A request to change the targeting of a feature flag stage definition."
+      required:
+      - "id"
+      - "projectId"
+      - "featureFlagId"
+      - "featureFlagStageDefinitionVersion"
+      - "stageId"
+      properties:
+        id:
+          type: "string"
+          description: "The id of the change request"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        projectId:
+          type: "string"
+          description: "The id of the project where the change is requested"
+        featureFlagId:
+          type: "string"
+          description: "The id of the feature flag definition where the change is\
+            \ requested"
+        featureFlagStageDefinitionVersion:
+          type: "string"
+          description: "The version of the feature flag stage definition at the point\
+            \ where the change request is created"
+        stageId:
+          type: "string"
+          description: "The id of the stage where the change is requested"
+        comment:
+          type: "string"
+          maxLength: 5000
+          description: "An optional comment describing the reason for the change request"
+        defaultVariant:
+          $ref: "#/components/schemas/DefaultVariant"
+        enabled:
+          type: "boolean"
+          default: false
+        targeting:
+          $ref: "#/components/schemas/Targeting"
+    FeatureFlagStageDefinitionChangeRequestList:
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FeatureFlagStageDefinitionChangeRequestDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    ModificationInfo:
+      type: "object"
+      readOnly: true
+      properties:
+        createdBy:
+          type: "string"
+        createdTime:
+          type: "string"
+          format: "date-time"
+        lastModifiedBy:
+          type: "string"
+        lastModifiedTime:
+          type: "string"
+          format: "date-time"
+      required:
+      - "createdBy"
+      - "createdTime"
+      - "lastModifiedBy"
+      - "lastModifiedTime"
+      example:
+        createdBy: "123e4567-e89b-12d3-a456-426614174000"
+        createdTime: "2022-05-25T10:24:04.202Z"
+        lastModifiedBy: "123e4567-e89b-12d3-a456-426614174000"
+        lastModifiedTime: "2022-05-25T10:24:04.202Z"
+    OptimisticLockingVersion:
+      type: "string"
+      readOnly: true
+    Targeting:
+      type: "string"
+      description: "Conditions in json logic when the feature flag shall be applied.\
+        \ The following limitations apply:\n  - The `in` operator can contain up to\
+        \ 300 values.\n  - There can be up to a total of 20\n    [operators](https://flagd.dev/reference/flag-definitions/#operations)\
+        \ or\n    [conditions](https://flagd.dev/reference/flag-definitions/#conditions).\n\
+        \  - Keys and values can have up to 100 characters each.\n"
+      example: "{\"if\":[{\"==\":[{\"var\":[\"color\"]},\"yellow\"]},\"on\",null]}"
+    DefaultVariant:
+      type: "string"
+      description: "The default variant used when no targeting condition matches.\
+        \ If not set, the evaluation should fall back to the fallback value defined\
+        \ in code when evaluating this flag.\n"
+    Pagination:
+      type: "object"
+      readOnly: true
+      properties:
+        nextPageKey:
+          type: "integer"
+        totalCount:
+          type: "integer"
+    ResourceContext:
+      type: "object"
+      readOnly: true
+      properties:
+        operations:
+          type: "array"
+          items:
+            type: "string"
+            enum:
+            - "write"
+            - "delete"
+    Error:
+      type: "object"
+      required:
+      - "error"
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorInfo"
+    ErrorInfo:
+      type: "object"
+      required:
+      - "code"
+      - "message"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+    ErrorDetails:
+      type: "object"
+      properties:
+        missingScopes:
+          type: "array"
+          items:
+            type: "string"
+      example:
+        code: 403
+        message: "The authorization token does not provide the necessary permissions."
+        details:
+          missingScopes:
+          - "feature-flag:projects:read"
+  responses:
+    BadRequestError:
+      description: "Bad Request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ClientError:
+      description: "Client Error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFoundError:
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ConflictError:
+      description: "Conflict"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalServerError:
+      description: "Internal Server Error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2.0."
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            feature-flag:projects:write: "create and update projects"
+            feature-flag:projects:read: "read projects"
+            feature-flag:projects:delete: "delete projects"
+            feature-flag:stages:write: "create and update stages"
+            feature-flag:stages:delete: "delete stages"
+            feature-flag:feature-flags:write: "create and update feature-flags"
+            feature-flag:feature-flags:read: "read feature-flags"
+            feature-flag:feature-flags:delete: "delete feature-flags"
+            feature-flag:context-attributes:write: "create and update contexts"
+            feature-flag:context-attributes:delete: "delete contexts"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

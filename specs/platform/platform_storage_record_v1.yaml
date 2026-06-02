@@ -1,0 +1,473 @@
+openapi: "3.0.1"
+info:
+  description: "Documentation of the Dynatrace Record Deletion API for Grail.\nTo\
+    \ read about use cases and examples, see\n[Dynatrace Documentation](https://dt-url.net/y603qnv)"
+  title: "Grail - Storage Record Deletion"
+  version: "1.0.1"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/record/v1"
+  x-api-gateway-url: "/platform/storage/record/v1"
+tags:
+- description: "Documentation of the Dynatrace Record Deletion API for Grail.\nTo\
+    \ read about use cases and examples, see\n[Dynatrace Documentation](https://dt-url.net/y603qnv)"
+  name: "Record Deletion"
+paths:
+  /delete:cancel:
+    post:
+      description: "Cancel the record deletion process that is in progress. It cancels\
+        \ the deletion subtasks that have not started yet. If a request is waiting\
+        \ in the queue, it is cancelled completely. Data, that has already been deleted,\
+        \ will not be restored.\n\nRequired scopes: `storage:records:delete`, `storage:events:read`,\
+        \ `storage:logs:read`, `storage:bizevents:read`, `storage:spans:read`, `storage:buckets:read`"
+      operationId: "cancelDeleteRecords"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Cancel request example:
+                description: "Cancel request example"
+                value:
+                  taskId: "49eb7d8e-806a-4829-9d29-c2a92e642366"
+            schema:
+              $ref: "#/components/schemas/DeletedRecordsProcess"
+        description: "Cancel request"
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelDeleteRecordsResponse"
+          description: "Accepted cancellation of the submitted record deletion process."
+        "204":
+          description: "There is no deletion task to cancel."
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request for cancelling the submitted record deletion process."
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Access forbidden."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Cancel submitted process."
+      tags:
+      - "Record Deletion"
+  /delete:execute:
+    post:
+      description: "Execute record deletion. Removing data depends on the load and\
+        \ can be very time-consuming.\n\nTimeframe length is limited to 24 hours.\
+        \ ISO-8601 and RFC-3339 are recommended to use.\nAdditionally, end time must\
+        \ end at least 4 hours from now.\n\nSubsequent record deletion requests are\
+        \ queued and executed in the order of their arrival. \n\nRequired scopes:\
+        \ `storage:records:delete`, `storage:events:read`, `storage:logs:read`, \n\
+        `storage:bizevents:read`, `storage:spans:read`, `storage:buckets:read`\n\n\
+        Allowed query commands: `fetch`, `fields`, `fieldsAdd`, `fieldsRemove`, `filter`,\
+        \ `parse`\n\nAllowed query functions: `concat`, `contains`, `timestamp`, `timeframe`,\
+        \ `asNumber`, `asDouble`, \n`asLong`, `asString`, `asBoolean`, `toDouble`,\
+        \ `toLong`, `toString`, `toBoolean`, `now`, \n`matchesPhrase`, `matchesValue`,\
+        \ `matchesPattern`\n\nThe `fetch` command parameters `scanLimitGBytes` and\
+        \ `samplingRatio` aren't available in the Record Deletion API."
+      operationId: "deleteRecords"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Example with all possible parameters:
+                description: "Example with all possible parameters"
+                value:
+                  query: "fetch logs | filter contains(content, \"delete_records_test\"\
+                    )"
+                  timeFrame:
+                    start: "2023-04-04T00:00:00"
+                    end: "2023-04-04T01:00:00"
+                  timezone: "UTC"
+                  locale: "en-US"
+              Example with query and timeframe; option 1:
+                description: "Timeframe is defined in extra parameter. It takes no\
+                  \ effect if query has timeframe defined."
+                value:
+                  query: "fetch logs | filter contains(content, \"delete_records_test\"\
+                    )"
+                  timeFrame:
+                    start: "2023-04-04T00:00:00Z"
+                    end: "2023-04-04T01:00:00Z"
+              Example with query and timeframe; option 2:
+                description: "Timeframe is defined in extra parameter"
+                value:
+                  query: "fetch logs"
+                  timeFrame:
+                    start: "2023-04-04T00:00:00Z"
+                    end: "2023-04-04T01:00:00Z"
+              Example with query only:
+                description: "Timeframe is specified in the query"
+                value:
+                  query: "fetch logs, from:-10h, to:-6h | filter contains(content,\
+                    \ \"delete_records_test\")"
+            schema:
+              $ref: "#/components/schemas/DeleteRecordsRequest"
+        description: "The request consists of the following parameters:\n\n- `query`\
+          \ (string, required): Specifies the query to delete records.\n\n- `timeFrame`\
+          \ (object, optional): Specifies the time frame for deleting records.\n \
+          \   - `start` (string, optional): The start time of the time frame in ISO\
+          \ 8601 or RFC-3339 format. If the timeframe `end` is missing then whole\
+          \ timeframe is ignored. If the timeframe is provided within query then it\
+          \ has precedence over this query request parameter.\n      Example: `\"\
+          2024-04-04T00:00:00Z\"`.\n    - `end` (string, optional): The end time of\
+          \ the time frame in ISO 8601 or RFC-3339 format. If the timeframe `start`\
+          \ is missing then whole timeframe is ignored. If the timeframe is provided\
+          \ within query then it has precedence over this query request parameter.\n\
+          \      Example: `\"2024-04-04T01:00:00Z\"`.\n\n- `timezone` (string, optional):\
+          \ The timezone to be used. Default is `\"UTC\"`.\n\n- `locale` (string,\
+          \ optional): The locale to be used. Default is `\"en-US\"`."
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecuteDeleteRecordsResponse"
+          description: "Accepted the record deletion request."
+        "204":
+          description: "There are no records to delete."
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request for executing the record deletion request."
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Access forbidden."
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Service unavailable."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Start new record deletion process."
+      tags:
+      - "Record Deletion"
+  /delete:status:
+    post:
+      description: "Get status of previously started record deletion. There are five:\n\
+        1) Finished - Deletion has finished either completely successfully or partially\
+        \ with errors.\n2) Submitted - Deletion is waiting to be triggered.\n3) Processing\
+        \ - Deletion is in progress.\n4) Unknown - Status is not available anymore\
+        \ or deletion is not submitted/executed.\n5) Failed - Deletion has failed\
+        \ completely.\n\nRequired scopes: `storage:records:delete`, `storage:events:read`,\
+        \ `storage:logs:read`, `storage:bizevents:read`, `storage:spans:read`, `storage:buckets:read`"
+      operationId: "queryStatusOfDeleteRecords"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Status request example:
+                description: "Status request example"
+                value:
+                  taskId: "49eb7d8e-806a-4829-9d29-c2a92e642366"
+            schema:
+              $ref: "#/components/schemas/DeletedRecordsProcess"
+        description: "Status request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Failed:
+                  description: "Failed"
+                  value:
+                    status: "failed"
+                Finished:
+                  description: "Finished"
+                  value:
+                    status: "finished"
+                    message: "Records deletion has been successfully completed. 1\
+                      \ segment(s) have been rewritten."
+                Processing:
+                  description: "Processing"
+                  value:
+                    status: "processing"
+                    progress: "21%"
+                Submitted:
+                  description: "Submitted"
+                  value:
+                    status: "submitted"
+                Unknown:
+                  description: "Unknown"
+                  value:
+                    status: "unknown"
+              schema:
+                $ref: "#/components/schemas/StatusDeleteRecordsResponse"
+          description: "Successfully returned status of the record deletion process."
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request for requesting status of the record deletion process."
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized."
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Access forbidden."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Get status of the ongoing record deletion request."
+      tags:
+      - "Record Deletion"
+components:
+  schemas:
+    CancelDeleteRecordsResponse:
+      type: "object"
+      properties:
+        taskId:
+          type: "string"
+    CustomValidationErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      required:
+      - "message"
+    DeleteRecordsRequest:
+      type: "object"
+      properties:
+        locale:
+          type: "string"
+        query:
+          type: "string"
+          minLength: 1
+        timeFrame:
+          $ref: "#/components/schemas/TimeFrame"
+        timezone:
+          type: "string"
+      required:
+      - "query"
+    DeletedRecordsProcess:
+      type: "object"
+      properties:
+        taskId:
+          type: "string"
+          minLength: 1
+      required:
+      - "taskId"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ExceptionalReturn"
+    ErrorInfo:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+      required:
+      - "message"
+    ExceptionalReturn:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        errorDetails:
+          type: "array"
+          items:
+            oneOf:
+            - $ref: "#/components/schemas/CustomValidationErrorInfo"
+            - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+            - $ref: "#/components/schemas/MediaTypeErrorInfo"
+            - $ref: "#/components/schemas/ParameterErrorInfo"
+            - $ref: "#/components/schemas/ProxyErrorInfo"
+            - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+            - $ref: "#/components/schemas/RequestBodyErrorInfo"
+          properties:
+            empty:
+              type: "boolean"
+            first:
+              oneOf:
+              - $ref: "#/components/schemas/CustomValidationErrorInfo"
+              - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+              - $ref: "#/components/schemas/MediaTypeErrorInfo"
+              - $ref: "#/components/schemas/ParameterErrorInfo"
+              - $ref: "#/components/schemas/ProxyErrorInfo"
+              - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+              - $ref: "#/components/schemas/RequestBodyErrorInfo"
+            last:
+              oneOf:
+              - $ref: "#/components/schemas/CustomValidationErrorInfo"
+              - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+              - $ref: "#/components/schemas/MediaTypeErrorInfo"
+              - $ref: "#/components/schemas/ParameterErrorInfo"
+              - $ref: "#/components/schemas/ProxyErrorInfo"
+              - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+              - $ref: "#/components/schemas/RequestBodyErrorInfo"
+        message:
+          type: "string"
+      required:
+      - "errorDetails"
+      - "message"
+    ExecuteDeleteRecordsResponse:
+      type: "object"
+      properties:
+        taskId:
+          type: "string"
+    InvalidAuditEventsErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          invalidAuditEventIndices:
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
+            properties:
+              empty:
+                type: "boolean"
+              first:
+                type: "integer"
+                format: "int32"
+              last:
+                type: "integer"
+                format: "int32"
+          invalidEventIndices:
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
+            writeOnly: true
+      required:
+      - "invalidAuditEventIndices"
+      - "message"
+    MediaTypeErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          supportedMediaTypes:
+            type: "array"
+            items:
+              type: "string"
+            properties:
+              empty:
+                type: "boolean"
+              first:
+                type: "string"
+              last:
+                type: "string"
+      required:
+      - "message"
+      - "supportedMediaTypes"
+    ParameterErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          parameterDescriptor:
+            type: "string"
+      required:
+      - "message"
+      - "parameterDescriptor"
+    ProxyErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      required:
+      - "message"
+    QueryFrontendRawErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          rawQueryFrontendResponse:
+            type: "string"
+      required:
+      - "rawQueryFrontendResponse"
+    RequestBodyErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          bodyDescriptor:
+            type: "string"
+      required:
+      - "bodyDescriptor"
+      - "message"
+    StatusDeleteRecordsResponse:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        progress:
+          type: "string"
+        status:
+          type: "string"
+          enum:
+          - "finished"
+          - "submitted"
+          - "processing"
+          - "unknown"
+    TimeFrame:
+      type: "object"
+      properties:
+        end:
+          type: "string"
+          minLength: 1
+        start:
+          type: "string"
+          minLength: 1
+      required:
+      - "end"
+      - "start"
+  securitySchemes:
+    OAuth2:
+      flows:
+        clientCredentials:
+          scopes:
+            storage:records:delete: "Delete records"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

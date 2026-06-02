@@ -1,0 +1,476 @@
+openapi: "3.0.3"
+info:
+  title: "Platform Management"
+  description: "<h1>Overview</h1> Basic read-only information about the currently\
+    \ logged-in environment"
+  version: "1.7.2"
+  x-summary: "Provides read-only access to environment information, license details,\
+    \ settings, and effective permission resolution for the current platform environment."
+  x-service-category: "Platform Management"
+tags:
+- name: "License Information"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/management/v1"
+  x-api-gateway-url: "/platform/management/v1"
+paths:
+  /environment:
+    get:
+      summary: "Get basic environment information"
+      description: "**One of the following scopes is required:**\n+ app-engine:apps:run\n\
+        + app-engine:functions:run\n+ platform-management:environments:read\n\n<br/><br/>Get\
+        \ basic information about the current environment."
+      operationId: "getEnvironmentInformation"
+      tags:
+      - "Environment Information"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoAuth:
+        - "app-engine:functions:run"
+      - ssoAuth:
+        - "platform-management:environments:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "Info about the requested environment."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+        default:
+          $ref: "#/components/responses/defaultErrorResponse"
+  /environment/license:
+    get:
+      summary: "Get basic license information"
+      description: "**One of the following scopes is required:**\n+ app-engine:apps:run\n\
+        + app-engine:functions:run\n+ platform-management:environments:read\n\n<br/><br/>Get\
+        \ basic license information about the current environment."
+      operationId: "getLicense"
+      tags:
+      - "License Information"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoAuth:
+        - "app-engine:functions:run"
+      - ssoAuth:
+        - "platform-management:environments:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The license info of the requested environment."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/License"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+        default:
+          $ref: "#/components/responses/defaultErrorResponse"
+  /environment/settings:
+    get:
+      summary: "Get settings for the environment"
+      description: "**One of the following scopes is required:**\n+ app-engine:apps:run\n\
+        + app-engine:functions:run\n+ platform-management:environments:read\n\n<br/><br/>Gets\
+        \ settings for environment."
+      operationId: "getEnvironmentSettings"
+      tags:
+      - "Environment Settings"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoAuth:
+        - "app-engine:functions:run"
+      - ssoAuth:
+        - "platform-management:environments:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The settings for the requested environment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SettingsResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+        default:
+          $ref: "#/components/responses/defaultErrorResponse"
+  /environment/license/settings:
+    parameters:
+    - $ref: "#/components/parameters/keyParam"
+    get:
+      summary: "Get basic license settings information"
+      description: "**One of the following scopes is required:**\n+ app-engine:apps:run\n\
+        + app-engine:functions:run\n+ platform-management:environments:read\n\n<br/><br/>Get\
+        \ basic license settings information about the current environment"
+      operationId: "getLicenseSettings"
+      tags:
+      - "License Information"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoAuth:
+        - "app-engine:functions:run"
+      - ssoAuth:
+        - "platform-management:environments:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The license settings info of the requested environment."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LicenseSettingsResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+        default:
+          $ref: "#/components/responses/defaultErrorResponse"
+  /effective-permissions:resolve:
+    post:
+      summary: "Get the effective permissions of the calling user in the environment"
+      description: "**One of the following scopes is required:**\n+ app-engine:apps:run\n\
+        + app-engine:functions:run\n+ platform-management:effective-permissions:resolve\n\
+        \n<br/><br/>This endpoint resolves whether the caller (based on the provided\
+        \ OAuth token when calling this endpoint) has the requested permissions (see\
+        \ [IAM policy reference](https://dt-url.net/ut02qdv) for a list of permissions\
+        \ and their conditions). It resolves the permission via IAM and uses the optional\
+        \ context to evaluate conditional results. The provided context consists of\
+        \ key-value pairs where the `key` must correspond to the name of a supported\
+        \ condition of the requested permission and the `value` is the value that\
+        \ it this condition is evaluated against given a user's policies.\n\nFor each\
+        \ requested permission the response indicates whether the user has the requested\
+        \ permission (`\"granted\": \"true\"`), does not have it (`\"granted\": \"\
+        false\"`) or only has it conditionally (`\"granted\": \"condition\"`), meaning\
+        \ that the provided values for conditions in the context are not sufficient\
+        \ to decide whether the caller has the permission.\n\nFor environment API\
+        \ v2 scopes (i.e. scopes starting with environment-api:) roles on the environment\
+        \ and management zone level will also be considered.\n\n> ℹ️ **Settings permission**\
+        \ requests for scopes `settings:schemas:read`, `settings:objects:read`, and\
+        \ `settings:objects:write` will always result in a result with `\"granted\"\
+        : \"condition\"`. You can use the dedicated [effective permissions endpoint\
+        \ for settings](/platform/swagger-ui/index.html?urls.primaryName=Classic+Environment+API+v2+%28for+SDK+generation%29)\
+        \ instead.\n\n> ℹ️ Apps must list all permissions they check in the list of\
+        \ `scopes` in their app configuration.\n\nYou can learn more about querying\
+        \ user permissions on [Dynatrace Developer](https://dt-url.net/query-user-permissions).\n"
+      tags:
+      - "Effective Permissions"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoAuth:
+        - "app-engine:functions:run"
+      - ssoAuth:
+        - "platform-management:effective-permissions:resolve"
+      - ssoBearerAuth: []
+      operationId: "resolveEffectivePermissions"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResolutionRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/EffectivePermissionsResponse"
+        default:
+          $ref: "#/components/responses/defaultErrorResponse"
+components:
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2 with the authorizationCode flow. [More info](https://swagger.io/docs/specification/authentication/oauth2/)"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            app-engine:apps:run: "Read basic environment information"
+            app-engine:functions:run: "Read basic environment information"
+            platform-management:environments:read: "Read basic environment information"
+            platform-management:effective-permissions:resolve: "Resolve effective\
+              \ permissions in the environment"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  parameters:
+    keyParam:
+      in: "query"
+      name: "keys"
+      description: "optional array of key(s) for filtering"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+      required: false
+      example: []
+  schemas:
+    EnvironmentInfo:
+      type: "object"
+      required:
+      - "environmentId"
+      - "createTime"
+      - "type"
+      - "state"
+      properties:
+        environmentId:
+          type: "string"
+        createTime:
+          type: "string"
+          format: "date-time"
+        blockTime:
+          type: "string"
+          format: "date-time"
+        type:
+          type: "string"
+          enum:
+          - "INTERNAL"
+          - "CUSTOMER"
+          - "SELF_MONITORING"
+        state:
+          $ref: "#/components/schemas/EnvironmentState"
+    License:
+      type: "object"
+      required:
+      - "trial"
+      - "platformSubscription"
+      properties:
+        trial:
+          type: "boolean"
+        platformSubscription:
+          type: "boolean"
+    SettingsResponse:
+      type: "object"
+      required:
+      - "chatEnabled"
+      properties:
+        chatEnabled:
+          type: "boolean"
+        countryCode:
+          type: "string"
+          example: "ES"
+          description: "ISO3166-1 alpha-2 two letter country code. See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+        activeTrialSubscriptionEndDate:
+          type: "string"
+          format: "date-time"
+          example: "2025-04-25T10:08:09.193592Z"
+          description: "Date when the trial period ends."
+    LicenseSettingsResponse:
+      type: "object"
+      required:
+      - "settings"
+      properties:
+        settings:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/LicenseSetting"
+    LicenseSetting:
+      type: "object"
+      required:
+      - "key"
+      - "value"
+      properties:
+        key:
+          type: "string"
+        value:
+          type: "string"
+    EnvironmentState:
+      type: "string"
+      enum:
+      - "BEING_CREATED"
+      - "CREATED_NOT_INITIALIZED"
+      - "ACTIVE"
+      - "DEACTIVATED"
+      - "BEING_DELETED"
+      - "BLOCKED"
+      - "DELETION_FAILED"
+      - "PRE_ALLOCATED"
+    ResolutionRequest:
+      type: "object"
+      properties:
+        permissions:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SinglePermissionRequest"
+          maxItems: 100
+      required:
+      - "permissions"
+    SinglePermissionRequest:
+      type: "object"
+      description: "Optional generic set of context data"
+      properties:
+        permission:
+          type: "string"
+          example: "state:app-states:write"
+        context:
+          type: "array"
+          nullable: true
+          items:
+            $ref: "#/components/schemas/PermissionContext"
+      required:
+      - "permission"
+    PermissionContext:
+      type: "object"
+      properties:
+        key:
+          type: "string"
+          example: "shared:app-id"
+        value:
+          type: "string"
+          example: "dynatrace.notebooks"
+      required:
+      - "key"
+      - "value"
+    EffectivePermissions:
+      type: "array"
+      items:
+        $ref: "#/components/schemas/EffectivePermission"
+    EffectivePermission:
+      type: "object"
+      properties:
+        permission:
+          type: "string"
+          example: "state:app-states:write"
+        granted:
+          type: "string"
+          enum:
+          - "true"
+          - "false"
+          - "condition"
+          example: "true"
+          description: "true: The caller has the permission false: The caller does\
+            \ not have the permission condition: The caller conditionally has the\
+            \ permission or in case of scopes starting with 'environment-api:' the\
+            \ caller only has the permission for specific management zones.\n"
+        context:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/PermissionContext"
+      required:
+      - "permission"
+      - "granted"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      required:
+      - "error"
+    Error:
+      type: "object"
+      description: "Standard error response"
+      properties:
+        code:
+          type: "integer"
+          example: 500
+        message:
+          type: "string"
+          example: "Internal server error"
+      required:
+      - "code"
+      - "message"
+  responses:
+    EffectivePermissionsResponse:
+      description: "Success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EffectivePermissions"
+    defaultErrorResponse:
+      description: "Unexpected error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: 500
+              message: "Internal Server Error"
+    "400":
+      description: "Bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: 400
+              message: "Invalid tenant state"
+    "401":
+      description: "Authentication failed"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: 401
+              message: "Authentication token expired"
+    "403":
+      description: "Permission denied"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: 403
+              message: "Insufficient permissions"
+    "404":
+      description: "Resource not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            unknown-tenant:
+              value:
+                error:
+                  code: 404
+                  message: "Unknown tenant: abc12345"
+            unknown-request-token:
+              value:
+                error:
+                  code: 404
+                  message: "Unknown request token: bmQgUXVhcms="
+            unknown-property-key:
+              value:
+                error:
+                  code: 404
+                  message: "Unknown property key: My-Key"
+    "503":
+      description: "There is a temporary problem in the backend."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: 503
+              message: "Service unavailable"

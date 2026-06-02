@@ -1,0 +1,254 @@
+openapi: "3.0.1"
+info:
+  description: "Connection Validation for Data Forwarding."
+  title: "Data Forwarding Validation"
+  version: "1.0.0"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/data-forwarding-validation-api/v1"
+  x-api-gateway-url: "/platform/data-forwarding-validation-api/v1"
+paths:
+  /forwarding:validate:
+    post:
+      operationId: "validateForwardingConnection"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Example request body for AWS.:
+                description: "Example request body for AWS."
+                value:
+                  cloudVendorType: "aws"
+                  awsConnection:
+                    connectionId: "12345678901234567890"
+                    bucketName: "my-example-bucket"
+              Example request body for Azure.:
+                description: "Example request body for Azure."
+                value:
+                  cloudVendorType: "azure"
+                  azureConnection:
+                    connectionId: "12345678901234567890"
+                    containerUrl: "https://storage-account.blob.core.windows.net/container"
+              Example request body for GCP.:
+                description: "Example request body for GCP."
+                value:
+                  cloudVendorType: "gcp"
+                  gcpConnection:
+                    connectionId: "12345678901234567890"
+                    bucketName: "my-example-bucket"
+            schema:
+              $ref: "#/components/schemas/ForwardingValidationRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Example response:
+                  description: "Example response"
+                  value:
+                    code: "200"
+                    message: "File created and deleted."
+              schema:
+                $ref: "#/components/schemas/ForwardingValidationResponse"
+          description: "Connection properly established, file deleted."
+        "204":
+          description: "Connection properly established, file could not be deleted."
+        "400":
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: "Bad Request"
+                  value:
+                    error:
+                      message: "Invalid connection id or bucket/container name."
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad Request: The request could not be processed due to invalid\
+            \ connection id or bucket/container name."
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  description: "Forbidden"
+                  value:
+                    error:
+                      message: "Access to the specified bucket/container was denied."
+                      code: 403
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Forbidden: Access to the resource was denied."
+        "500":
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  description: "Internal Server Error"
+                  value:
+                    error:
+                      message: "An unexpected error occurred. Please contact Dynatrace."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+        "503":
+          content:
+            application/json:
+              examples:
+                Service Unavailable:
+                  description: "Service Unavailable"
+                  value:
+                    error:
+                      message: "Unable to reach the cloud service provider. Please\
+                        \ try again later."
+                      code: 503
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Service Unavailable: Cloud service connection issue."
+      security:
+      - OAuth2:
+        - "openpipeline:data-forwarding:validate"
+      - ssoBearerAuth: []
+      summary: "Validate connection configuration for Data Forwarding."
+      tags:
+      - "Data Forwarding Validation"
+      description: "**Required scope:** openpipeline:data-forwarding:validate"
+components:
+  schemas:
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorResponse"
+      required:
+      - "error"
+    ErrorResponse:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        details:
+          $ref: "#/components/schemas/ErrorResponseDetails"
+        message:
+          type: "string"
+        retryAfterSeconds:
+          type: "integer"
+          format: "int32"
+      required:
+      - "code"
+      - "message"
+    ErrorResponseDetails:
+      type: "object"
+      properties:
+        arguments:
+          type: "array"
+          items:
+            type: "string"
+        constraintViolations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ErrorResponseDetailsConstraintViolationsInner"
+        errorMessage:
+          type: "string"
+        errorMessageFormat:
+          type: "string"
+        errorMessageFormatSpecifierTypes:
+          type: "array"
+          items:
+            type: "string"
+        errorType:
+          type: "string"
+        exceptionType:
+          type: "string"
+        missingPermissions:
+          type: "array"
+          items:
+            type: "string"
+        missingScopes:
+          type: "array"
+          items:
+            type: "string"
+        queryId:
+          type: "string"
+          format: "uuid"
+        queryString:
+          type: "string"
+        syntaxErrorPosition:
+          $ref: "#/components/schemas/TokenPosition"
+    ErrorResponseDetailsConstraintViolationsInner:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        parameterDescriptor:
+          type: "string"
+        parameterLocation:
+          type: "string"
+      required:
+      - "message"
+    ForwardingValidationRequest:
+      type: "object"
+      discriminator:
+        propertyName: "cloudVendorType"
+      properties:
+        cloudVendorType:
+          type: "string"
+      required:
+      - "cloudVendorType"
+    ForwardingValidationResponse:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "Http status code of the response."
+          example: 200
+        message:
+          type: "string"
+          description: "Information about the operation."
+          example: "File created and deleted."
+      required:
+      - "code"
+    PositionInfo:
+      type: "object"
+      properties:
+        column:
+          type: "integer"
+          format: "int32"
+        index:
+          type: "integer"
+          format: "int32"
+        line:
+          type: "integer"
+          format: "int32"
+      required:
+      - "column"
+      - "index"
+      - "line"
+    TokenPosition:
+      type: "object"
+      properties:
+        end:
+          $ref: "#/components/schemas/PositionInfo"
+        start:
+          $ref: "#/components/schemas/PositionInfo"
+      required:
+      - "end"
+      - "start"
+  securitySchemes:
+    OAuth2:
+      flows:
+        clientCredentials:
+          scopes:
+            openpipeline:data-forwarding:validate: "validate data forwarding connection"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

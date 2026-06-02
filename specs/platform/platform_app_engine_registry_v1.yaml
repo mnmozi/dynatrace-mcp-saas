@@ -1,0 +1,865 @@
+openapi: "3.0.1"
+info:
+  title: "AppEngine - Registry"
+  description: "## Overview\n The Registry is mainly responsible for:\n * installing\
+    \ / updating apps\n * uninstalling apps\n * getting detailed app information\n\
+    \ ### Asynchronous behavior\n Both the install and the uninstall process are performed\
+    \ asynchronously. The Registry persists\n the app bundle and defines the desired\
+    \ state of the app (e.g. installed, uninstalled). The\n installation / uninstallation\
+    \ process is then handled asynchronously by a separate service.\n\n The current\
+    \ status of the app is provided by the status in the response body of the\n respective\
+    \ GET request, e.g. `/apps/{id}`.\n"
+  version: "1.15.0"
+  x-summary: "The Registry is responsible for installing, updating, uninstalling apps\
+    \ and getting detailed app information."
+  x-service-category: "AppEngine"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/app-engine/registry/v1"
+  x-api-gateway-url: "/platform/app-engine/registry/v1"
+paths:
+  /apps:
+    get:
+      tags:
+      - "AppEngine - Registry - Apps"
+      summary: "List all installed apps."
+      operationId: "getApps"
+      parameters:
+      - name: "add-fields"
+        in: "query"
+        description: "Comma-separated list of field names that are added to the default\
+          \ set of fields.\n\n\nYou can include the following additional fields:\n\
+          - `resourceContext`\n- `resourceStatus.subResourceTypes`\n- `resourceStatus.subResourceStatuses`\n\
+          - `manifest`\n- any top-level manifest field to include a part of the manifest,\
+          \ for example,\n `manifest.scopes` or `manifest.intents`\n- `isBuiltin`\n\
+          - `isolatedUri`\n- `deactivationReasons`\n"
+        required: false
+        schema:
+          type: "string"
+      - name: "include-deactivated"
+        in: "query"
+        description: "If `true`, apps that are `DEACTIVATED` are included in the response."
+        required: false
+        schema:
+          type: "boolean"
+          default: false
+      - name: "include-non-runnable"
+        in: "query"
+        description: "If `true`, apps that the user is not allowed to run because\
+          \ of missing permissions are included in the response."
+        required: false
+        schema:
+          type: "boolean"
+          default: false
+      - name: "include-all-app-versions"
+        in: "query"
+        description: "If `true`, all versions of every app are included in the response.\n\
+          \nIf `false`, only the current version of every app is included.\n\n\nDuring\
+          \ an update, an app typically has two versions: the current version and\
+          \ the latest version\n with `status=PENDING`. After the update, the old\
+          \ version may remain for some time\n with `status=PENDING_DELETION`.\n"
+        required: false
+        schema:
+          type: "boolean"
+          default: false
+      - name: "filter"
+        in: "query"
+        description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\n\
+          \nFiltering is supported on the following fields:\n- `id`\n- `resourceStatus.subResourceTypes`\n\
+          - top-level manifest fields, for example `manifest.description` or `manifest.version`\n\
+          Examples:\n- `id = 'my.custom-app'`\n- `id contains 'custom'`\n- `id starts-with\
+          \ 'my.'`\n- `not(id starts-with 'my.')`\n- `id in ('my.custom-app', 'my.other-custom-app')`\n\
+          - `resourceStatus.subResourceTypes contains 'DOCUMENTS'`\n- `resourceStatus.subResourceTypes\
+          \ contains 'DOCUMENTS'\n    or resourceStatus.subResourceTypes contains\
+          \ 'FUNCTIONS'`\n- `not (id starts-with 'dynatrace.classic.')` (to exclude\
+          \ classic apps)\n- `not (manifest.document-types is-empty)`\n- `manifest.document-types\
+          \ contains 'Notebook'` (to filter the json content\n of the top-level manifest\
+          \ field `document-types` for apps that provide the `Notebook` document type)\n\
+          \nIf this parameter is omitted, all apps will be returned.\n\nThe maximum\
+          \ nesting depth (via parentheses) is 3. The maximum expression length is\
+          \ 256 characters.\n\nFields that are used for filtering are always included\
+          \ in the response,\neven if they are not in the default set of fields.\n"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppInfoList"
+        "4XX":
+          description: "Client side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "5XX":
+          description: "Server side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoBearerAuth: []
+      description: "**Required scope:** app-engine:apps:run"
+    post:
+      tags:
+      - "AppEngine - Registry - Apps"
+      summary: "Install or update an app."
+      description: "**Required scope:** app-engine:apps:install<br/><br/>An app ID\
+        \ always starts with a namespace and a dot, e.g. `dynatrace.` for Dynatrace\
+        \ apps. Custom apps can be installed in the `my` namespace, e.g. `my.first-app`.\n\
+        \n*The zipped app bundle has to be provided via the request body*"
+      operationId: "installApp"
+      requestBody:
+        description: "The zipped app bundle"
+        content:
+          application/zip:
+            schema:
+              type: "string"
+              format: "binary"
+      responses:
+        "202":
+          description: "Accepted; new app will be installed/updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppStub"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+              examples:
+                Incompatible dependency in manifest:
+                  description: "Incompatible dependency in manifest"
+                  value:
+                    error:
+                      code: 400
+                      message: "Manifest of app 'my.custom.app' violates schema"
+                      details:
+                        constraintViolations:
+                        - path: "/dependencies/0/version"
+                          message: "Incompatible dependency version: '/platform/storage/query/v1'\
+                            \ in version '99.3.0' is incompatible with the available\
+                            \ dependency version '1.14.0'"
+                          errorCode: "DependencyVersionIncompatible"
+                          errorCodeProperties:
+                            dependency: "/platform/storage/query/v1"
+                            incompatibleVersion: "99.3.0"
+                            availableVersion: "1.14.0"
+                Unknown dependency in manifest:
+                  description: "Unknown dependency in manifest"
+                  value:
+                    error:
+                      code: 400
+                      message: "Manifest of app 'my.custom.app' violates schema"
+                      details:
+                        constraintViolations:
+                        - path: "/dependencies/2/name"
+                          message: "Unknown dependency: '/platform/storage/query/v1'"
+                          errorCode: "DependencyUnknown"
+                          errorCodeProperties:
+                            dependency: "/platform/storage/query/v1"
+                Limit of apps reached:
+                  description: "Limit of apps reached"
+                  value:
+                    error:
+                      code: 400
+                      message: "The app bundle my.custom.app could not be uploaded.\
+                        \ Upgrade your license to add your app.\n\nYou've used all\
+                        \ 3 apps in your current used license model. Get unlimited,\
+                        \ integrated, enterprise-ready apps for all your business\
+                        \ needs. Unlock the full power of Dynatrace.\n\nLearn more:\
+                        \ https://dt-url.net/upgrade-license"
+                      details:
+                        errorCode: "MaxNumberOfInstalledAppsExceeded"
+                        errorCodeProperties:
+                          appLimit: "3"
+        "4XX":
+          description: "Client side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "5XX":
+          description: "Server side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:install"
+      - ssoBearerAuth: []
+  /apps:search-actions:
+    get:
+      tags:
+      - "AppEngine - Registry - Apps"
+      summary: "Search actions of installed apps."
+      operationId: "searchActions"
+      parameters:
+      - name: "query"
+        in: "query"
+        description: "A whitespace separated list of search terms.\nFor an action\
+          \ to match, each search term must be contained in either: app name, app\
+          \ description,\naction name, action title or action description.\n\nSearch\
+          \ terms are case insensitive and each additional search term restricts actions\
+          \ further.\nMaximum length is 256 characters.\n"
+        required: false
+        schema:
+          maxLength: 256
+          minLength: 0
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchAppActionList"
+        "4XX":
+          description: "Client side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "5XX":
+          description: "Server side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoBearerAuth: []
+      description: "**Required scope:** app-engine:apps:run"
+  /apps/{id}:
+    get:
+      tags:
+      - "AppEngine - Registry - Apps"
+      summary: "Get an installed app"
+      description: "**Required scope:** app-engine:apps:run<br/><br/>During an app\
+        \ update, when a current version and a new version exists, the current one\
+        \ is returned.\n"
+      operationId: "getApp"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique identifier for the app"
+        required: true
+        schema:
+          type: "string"
+      - name: "add-fields"
+        in: "query"
+        description: "Comma-separated list of field names that are added to the default\
+          \ set of fields.\n\n\nYou can include the following additional fields:\n\
+          - `resourceContext`\n- `resourceStatus.subResourceTypes`\n- `resourceStatus.subResourceStatuses`\n\
+          - `manifest`\n- any top-level manifest field to include a part of the manifest,\
+          \ for example,\n `manifest.scopes` or `manifest.intents`\n- `isBuiltin`\n\
+          - `isolatedUri`\n- `deactivationReasons`\n"
+        required: false
+        schema:
+          type: "string"
+      - name: "latest-app-version"
+        in: "query"
+        description: "If `true`, the latest version of the app is returned.\n\nIf\
+          \ `false`, the current version of the app is returned.\n\n\nDuring an update,\
+          \ an app typically has two versions: the current version and the latest\
+          \ version\n with `status=PENDING`.\n"
+        required: false
+        schema:
+          type: "boolean"
+          default: false
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppInfo"
+        "4XX":
+          description: "Client side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "5XX":
+          description: "Server side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoBearerAuth: []
+    delete:
+      tags:
+      - "AppEngine - Registry - Apps"
+      summary: "Uninstall an app."
+      operationId: "uninstallApp"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique identifier for the app"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "202":
+          description: "Accepted; app will be uninstalled"
+        "4XX":
+          description: "Client side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "5XX":
+          description: "Server side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:delete"
+      - ssoBearerAuth: []
+      description: "**Required scope:** app-engine:apps:delete"
+  /app.manifest.schema.json:
+    get:
+      tags:
+      - "AppEngine - Registry - Schema Manifest"
+      summary: "Get JSON schema for app manifests"
+      operationId: "getAppManifestSchema"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+        "4XX":
+          description: "Client side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "5XX":
+          description: "Server side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      security:
+      - ssoBearerAuth: []
+  /app.default.csp.json:
+    get:
+      tags:
+      - "AppEngine - Registry - Schema Manifest"
+      summary: "Get default CSP rules for apps"
+      operationId: "getDefaultCspProperties"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppDefaultCsp"
+        "4XX":
+          description: "Client side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "5XX":
+          description: "Server side error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+      security:
+      - ssoBearerAuth: []
+components:
+  schemas:
+    ConstraintViolation:
+      required:
+      - "message"
+      - "path"
+      type: "object"
+      properties:
+        path:
+          type: "string"
+          description: "The path of the property that caused the constraint violation"
+        message:
+          type: "string"
+          description: "The error message"
+        errorCode:
+          type: "string"
+          description: "An optional error code that contains more detailed error information.\n\
+            \nPossible error codes:\n* `DependencyVersionIncompatible`: The app's\
+            \ manifest contains a dependency with an incompatible version.\n* `DependencyUnknown`:\
+            \ The app's manifest contains a dependency that is unknown.\n"
+          enum:
+          - "DependencyVersionIncompatible"
+          - "DependencyUnknown"
+        errorCodeProperties:
+          type: "object"
+          properties:
+            dependency:
+              type: "string"
+              description: "The name of the dependency. This value is present if the\
+                \ error code is `DependencyUnknown` or `DependencyVersionIncompatible`."
+              example: "/platform/storage/query/v1"
+            availableVersion:
+              type: "string"
+              description: "The version that is available. This value is present if\
+                \ the error code is `DependencyVersionIncompatible`."
+              example: "1.2.0"
+            incompatibleVersion:
+              type: "string"
+              description: "The version that is incompatible. This value is present\
+                \ if the error code is `DependencyVersionIncompatible`."
+              example: "1.1.0"
+          description: "Additional properties related to the provided error code."
+      description: "Contains information about a constraint violation caused by invalid\
+        \ input."
+    Error:
+      required:
+      - "code"
+      - "message"
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          description: "The HTTP status code"
+          format: "int32"
+        message:
+          type: "string"
+          description: "The error message"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+        help:
+          type: "string"
+          description: "Additional information related to the error"
+        retryAfterSeconds:
+          type: "integer"
+          description: "Seconds to wait until the next retry"
+          format: "int32"
+      description: "Contains information for 4xx and 5xx errors."
+    ErrorDetails:
+      type: "object"
+      properties:
+        errorRef:
+          type: "string"
+          description: "Generated unique value for 5xx errors."
+        traceId:
+          type: "string"
+          description: "OpenTelemetry trace id of the trace where error occurs."
+        errorCode:
+          type: "string"
+          description: "An optional error code that contains more detailed error information\
+            \ than the HTTP response code alone.\n\nPossible error codes:\n* `MaxNumberOfInstalledAppsExceeded`:\
+            \ The app bundle couldn't be uploaded because the max number of apps was\
+            \ exceeded. Learn more: https://dt-url.net/upgrade-license\n"
+          enum:
+          - "MaxNumberOfInstalledAppsExceeded"
+        errorCodeProperties:
+          type: "object"
+          properties:
+            appLimit:
+              type: "string"
+              description: "Limit for number of installed apps in an environment.\
+                \ This value is present if the error code is `MaxNumberOfInstalledAppsExceeded'."
+              example: "3"
+          description: "Additional properties related to the provided error code"
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+      description: "Contains details for 4xx and 5xx errors."
+    ErrorEnvelope:
+      required:
+      - "error"
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      description: "Error response for all 4xx and 5xx errors."
+    AppStub:
+      required:
+      - "id"
+      type: "object"
+      properties:
+        warnings:
+          type: "array"
+          description: "Contains warning information although the request was successful"
+          items:
+            $ref: "#/components/schemas/Warning"
+        id:
+          type: "string"
+          description: "Id of the installed/updated app"
+      description: "A minimal representation of an installed/updated app."
+    Warning:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+          description: "The warning message."
+      description: "A warning."
+    AppIcon:
+      required:
+      - "href"
+      type: "object"
+      properties:
+        href:
+          type: "string"
+          description: "The reference to an app icon"
+      description: "Representation of an app icon."
+    AppInfo:
+      required:
+      - "description"
+      - "id"
+      - "modificationInfo"
+      - "name"
+      - "resourceStatus"
+      - "signatureInfo"
+      - "version"
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          description: "The id of the app"
+        name:
+          type: "string"
+          description: "The name of the app"
+        version:
+          type: "string"
+          description: "The version of the app"
+        description:
+          type: "string"
+          description: "The description of the app"
+        manifest:
+          type: "object"
+          description: "The manifest of the app"
+        isBuiltin:
+          type: "boolean"
+          description: "Whether this is a built-in app or not. Built-in apps are provided\
+            \ by Dynatrace\nand installed on every environment.\n"
+        resourceStatus:
+          $ref: "#/components/schemas/ResourceStatus"
+        appIcon:
+          $ref: "#/components/schemas/AppIcon"
+        isolatedUri:
+          $ref: "#/components/schemas/AppIsolatedUri"
+        signatureInfo:
+          $ref: "#/components/schemas/AppSignatureInfo"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        deactivationReasons:
+          type: "array"
+          description: "Contains the reasons if the app has the status `DEACTIVATED`"
+          items:
+            $ref: "#/components/schemas/DeactivationReason"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+      description: "A minimal representation of an app."
+    AppInfoList:
+      required:
+      - "apps"
+      type: "object"
+      properties:
+        apps:
+          type: "array"
+          description: "The list of minimal app representations."
+          items:
+            $ref: "#/components/schemas/AppInfo"
+      description: "A list of minimal app representations."
+    AppIsolatedUri:
+      required:
+      - "baseUrl"
+      - "url"
+      - "widgetUrl"
+      type: "object"
+      properties:
+        url:
+          type: "string"
+          description: "The URL of an app"
+        baseUrl:
+          type: "string"
+          description: "The base URL of an app"
+        widgetUrl:
+          type: "string"
+          description: "The base URL for widgets of an app"
+      description: "Representation of an app's isolated uri."
+    AppSignatureInfo:
+      required:
+      - "signed"
+      type: "object"
+      properties:
+        signed:
+          type: "boolean"
+          description: "App is signed and its signature has been verified."
+        publisher:
+          type: "string"
+          description: "The organization name of the app publisher."
+      description: "Representation of an app's signature verification."
+    DeactivationReason:
+      type: "string"
+      description: "Possible reasons why app has deactivated status"
+      enum:
+      - "CapabilityAppEngineFunctionsSmallDisabled"
+      - "AppCertificateRevoked"
+    DeploymentStatus:
+      type: "string"
+      description: "The deployment status of the app's sub resource:<br>\n- `SCHEDULED`:\
+        \ Only the uploaded app bundle is persisted.<br>\n- `DEPLOYING`: The app's\
+        \ sub resources are currently being deployed.<br>\n- `DEPLOYED`: The app's\
+        \ sub resources were successfully deployed.<br>\n- `FAILED`: The deployment\
+        \ of the app's sub resources failed.<br>\n- `NO_RESOURCES`: The app bundle\
+        \ does not contain any sub resources of this type<br>\n"
+      enum:
+      - "SCHEDULED"
+      - "DEPLOYING"
+      - "DEPLOYED"
+      - "FAILED"
+      - "NO_RESOURCES"
+    ModificationInfo:
+      required:
+      - "createdAt"
+      - "createdBy"
+      - "lastModifiedAt"
+      - "lastModifiedBy"
+      type: "object"
+      properties:
+        createdBy:
+          type: "string"
+          description: "UserId of the user that created the resource"
+        createdAt:
+          type: "string"
+          description: "Timestamp when the resource was created in ISO 8601 format\
+            \ (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')"
+        lastModifiedBy:
+          type: "string"
+          description: "UserId of the user that last modified the resource"
+        lastModifiedAt:
+          type: "string"
+          description: "Timestamp when the resource was last modified in ISO 8601\
+            \ format (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')"
+      description: "Modification information about the app"
+    OperationStateBeforeError:
+      type: "string"
+      description: "Details about the state when an error occurred. Only present if\
+        \ the app's `status` is `ERROR`.<br>\n- `PENDING_INSTALL`: The error occurred\
+        \ while installing the app.<br>\n- `PENDING_UPDATE`: The error occurred while\
+        \ updating the app.<br>\n- `PENDING_DELETE`: The error occurred while deleting\
+        \ the app.<br>\n- `OK`: At least one sub resource failed while the app was\
+        \ already running.<br>\n"
+      enum:
+      - "PENDING_INSTALL"
+      - "PENDING_UPDATE"
+      - "PENDING_DELETE"
+      - "OK"
+    PendingOperation:
+      type: "string"
+      description: "The pending operation of the app. Only present if the app's `status`\
+        \ is `PENDING`.<br>\n- `INSTALL`: The app is currently being installed.<br>\n\
+        - `UPDATE`: The app is currently being updated.<br>\n- `DELETE`: The app is\
+        \ currently being deleted.<br>\n"
+      enum:
+      - "INSTALL"
+      - "UPDATE"
+      - "DELETE"
+    ResourceContext:
+      required:
+      - "operations"
+      type: "object"
+      properties:
+        operations:
+          type: "array"
+          description: "Operations that are allowed on the app depending on the user's\
+            \ permissions.<br/>\n- `run`: user is allowed to run the app.<br/>\n-\
+            \ `update`: user is allowed to update the app.<br/>\n- `uninstall`: user\
+            \ is allowed to uninstall the app.<br/>\n"
+          items:
+            type: "string"
+            enum:
+            - "run"
+            - "update"
+            - "uninstall"
+      description: "Additional resource context information"
+    ResourceStatus:
+      required:
+      - "status"
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/Status"
+        subResourceTypes:
+          type: "array"
+          description: "The sub resource types that the app contains."
+          items:
+            $ref: "#/components/schemas/SubResourceType"
+        subResourceStatuses:
+          type: "array"
+          description: "The statuses of the app's sub resources."
+          items:
+            $ref: "#/components/schemas/SubResourceStatus"
+        pendingOperation:
+          $ref: "#/components/schemas/PendingOperation"
+        operationStateBeforeError:
+          $ref: "#/components/schemas/OperationStateBeforeError"
+      description: "The status of the app plus additional details."
+    Status:
+      type: "string"
+      description: "The status of the app.<br>\n- `OK`: The app is fully installed\
+        \ and running.<br>\n- `PENDING`: The app is currently being installed, updated\
+        \ or deleted.<br>\n- `PENDING_DELETION`: A new version of the app was successfully\
+        \ installed and this version is scheduled for\n deletion.<br>\n- `DEACTIVATED`:\
+        \ The app is deactivated and cannot be executed.<br>\n- `ERROR`: The app failed\
+        \ with an error.<br>\n"
+      enum:
+      - "OK"
+      - "PENDING"
+      - "PENDING_DELETION"
+      - "DEACTIVATED"
+      - "ERROR"
+    SubResourceConstraintViolation:
+      required:
+      - "message"
+      type: "object"
+      properties:
+        path:
+          type: "string"
+          description: "The path of the property that caused the constraint violation"
+        message:
+          type: "string"
+          description: "The error message"
+      description: "Contains information about a constraint violation caused by invalid\
+        \ input."
+    SubResourceError:
+      required:
+      - "message"
+      type: "object"
+      properties:
+        message:
+          type: "string"
+          description: "The error message."
+        errorCode:
+          type: "string"
+          description: "An error code that can be used determine the nature of an\
+            \ error and why it occurred."
+        errorRef:
+          type: "string"
+          description: "Optional generated unique value to reference this error."
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations"
+          items:
+            $ref: "#/components/schemas/SubResourceConstraintViolation"
+      description: "Additional error information that can be present if the sub resource\
+        \ `status` is `FAILED`"
+    SubResourceStatus:
+      required:
+      - "status"
+      - "subResourceType"
+      type: "object"
+      properties:
+        subResourceType:
+          $ref: "#/components/schemas/SubResourceType"
+        status:
+          $ref: "#/components/schemas/DeploymentStatus"
+        error:
+          $ref: "#/components/schemas/SubResourceError"
+      description: "The status of the sub resource."
+    SubResourceType:
+      type: "string"
+      description: "The sub resource type.<br>\n- `FUNCTIONS`: app functions.<br>\n\
+        - `FILES`: static files of an app.<br>\n- `SETTINGS_SCHEMAS`: settings schemas\
+        \ of an app.<br>\n- `DOCUMENTS`: documents, e.g. templates, that are part\
+        \ of an app bundle.<br>\n"
+      enum:
+      - "FUNCTIONS"
+      - "FILES"
+      - "SETTINGS_SCHEMAS"
+      - "DOCUMENTS"
+    SearchAppAction:
+      required:
+      - "actions"
+      - "id"
+      - "name"
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          description: "App id"
+          example: "my.example.appid"
+        name:
+          type: "string"
+          description: "App name"
+          example: "Example app"
+        actions:
+          type: "array"
+          description: "List of app actions. Actions are sorted by name in ascending\
+            \ order. Actions without name are last."
+          items:
+            type: "object"
+            description: "Action of an app."
+            example:
+              name: "example-action"
+              description: "Description of an example action."
+    SearchAppActionList:
+      required:
+      - "apps"
+      - "totalCount"
+      type: "object"
+      properties:
+        apps:
+          type: "array"
+          description: "List of apps with actions. Apps are sorted by name in ascending\
+            \ order."
+          items:
+            $ref: "#/components/schemas/SearchAppAction"
+        totalCount:
+          type: "integer"
+          description: "Total actions count."
+          format: "int32"
+          example: 1
+    AppDefaultCsp:
+      required:
+      - "policyDirectives"
+      type: "object"
+      properties:
+        policyDirectives:
+          type: "object"
+          additionalProperties:
+            type: "array"
+            description: "The policy directives"
+            items:
+              type: "string"
+              description: "The policy directives"
+          description: "The policy directives"
+      description: "Default Content Security Policies for apps."
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth2 with the 'Client Credentials' flow"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            app-engine:apps:run: "run apps"
+            app-engine:apps:install: "install apps"
+            app-engine:apps:delete: "delete apps"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

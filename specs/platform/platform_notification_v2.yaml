@@ -1,0 +1,1116 @@
+openapi: "3.0.3"
+info:
+  title: "Notification v2"
+  version: "1.4181.0"
+  description: "Manage resource/event notifications with the Notification Service\
+    \ API."
+  x-service-category: "Notification"
+  x-summary: "Manage resource/event notifications with the Notification Service API."
+paths:
+  /event-notifications:
+    get:
+      operationId: "getEventNotifications"
+      parameters:
+      - in: "query"
+        name: "appId"
+        schema:
+          type: "string"
+        description: "Application id associated with the notification. Optional, by\
+          \ default automatically inferred from the request header. Only relevant\
+          \ for manual testing purposes via swagger."
+      - name: "limit"
+        required: false
+        in: "query"
+        description: "Number of results to return per page."
+        schema:
+          type: "integer"
+      - in: "query"
+        name: "notificationType"
+        schema:
+          type: "string"
+        description: "String that defines the type of a notification in context of\
+          \ an app. Allows to differentiate between multiple types of notifications\
+          \ in context of one app."
+      - name: "offset"
+        required: false
+        in: "query"
+        description: "The initial index from which to return the results."
+        schema:
+          type: "integer"
+      - name: "ordering"
+        required: false
+        in: "query"
+        description: "Which field to use when ordering the results."
+        schema:
+          type: "string"
+      - in: "query"
+        name: "owner"
+        schema:
+          type: "string"
+      - in: "query"
+        name: "resourceId"
+        schema:
+          type: "string"
+        description: "Unique identifier of resource to notify on. Used to determine\
+          \ if there is a notification registered for a resource in context of the\
+          \ app and notification type for a user."
+      - name: "search"
+        required: false
+        in: "query"
+        description: "A search term."
+        schema:
+          type: "string"
+      tags:
+      - "event-notifications"
+      security:
+      - client_credentials:
+        - "notification:notifications:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedEventNotificationList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:read"
+    post:
+      operationId: "createEventNotification"
+      tags:
+      - "event-notifications"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventNotificationRequest"
+        required: true
+      security:
+      - client_credentials:
+        - "notification:notifications:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventNotification"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:write"
+  /event-notifications/{id}:
+    get:
+      operationId: "getEventNotification"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this self notification."
+        required: true
+      tags:
+      - "event-notifications"
+      security:
+      - client_credentials:
+        - "notification:notifications:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventNotification"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:read"
+    put:
+      operationId: "updateEventNotification"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this self notification."
+        required: true
+      tags:
+      - "event-notifications"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventNotificationUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "notification:notifications:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventNotification"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:write"
+    patch:
+      operationId: "patchEventNotification"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this self notification."
+        required: true
+      tags:
+      - "event-notifications"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventNotificationUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "notification:notifications:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventNotification"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:write"
+    delete:
+      operationId: "deleteEventNotification"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this self notification."
+        required: true
+      tags:
+      - "event-notifications"
+      security:
+      - client_credentials:
+        - "notification:notifications:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:write"
+  /resource-notifications:
+    get:
+      operationId: "getResourceNotifications"
+      parameters:
+      - in: "query"
+        name: "appId"
+        schema:
+          type: "string"
+        description: "Application id associated with the notification. Optional, by\
+          \ default automatically inferred from the request header. Only relevant\
+          \ for manual testing purposes via swagger."
+      - name: "limit"
+        required: false
+        in: "query"
+        description: "Number of results to return per page."
+        schema:
+          type: "integer"
+      - in: "query"
+        name: "notificationType"
+        schema:
+          type: "string"
+        description: "String that defines the type of a notification in context of\
+          \ an app. Allows to differentiate between multiple types of notifications\
+          \ in context of one app."
+      - name: "offset"
+        required: false
+        in: "query"
+        description: "The initial index from which to return the results."
+        schema:
+          type: "integer"
+      - name: "ordering"
+        required: false
+        in: "query"
+        description: "Which field to use when ordering the results."
+        schema:
+          type: "string"
+      - in: "query"
+        name: "resourceId"
+        schema:
+          type: "string"
+        description: "Unique identifier of resource to notify on. Used to determine\
+          \ if there is a notification registered for a resource in context of the\
+          \ app and notification type for a user."
+      - name: "search"
+        required: false
+        in: "query"
+        description: "A search term."
+        schema:
+          type: "string"
+      tags:
+      - "resource-notifications"
+      security:
+      - client_credentials:
+        - "notification:notifications:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResourceNotificationList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:read"
+    post:
+      operationId: "createResourceNotification"
+      tags:
+      - "resource-notifications"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceNotificationRequest"
+        required: true
+      security:
+      - client_credentials:
+        - "notification:notifications:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotification"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:write"
+  /resource-notifications/{notificationType}/{resourceId}:
+    delete:
+      operationId: "deleteResourceNotificationByTypeAndResource"
+      parameters:
+      - in: "query"
+        name: "appId"
+        schema:
+          type: "string"
+        description: "Application id associated with the notification. Optional, by\
+          \ default automatically inferred from the request header. Only relevant\
+          \ for manual testing purposes via swagger."
+      - in: "path"
+        name: "notificationType"
+        schema:
+          type: "string"
+        description: "String that defines the type of a notification in context of\
+          \ an app. Allows to differentiate between multiple types of notifications\
+          \ in context of one app."
+        required: true
+      - in: "path"
+        name: "resourceId"
+        schema:
+          type: "string"
+        description: "Unique identifier of resource to notify on. Used to determine\
+          \ if there is a notification registered for a resource in context of the\
+          \ app and notification type for a user."
+        required: true
+      tags:
+      - "resource-notifications"
+      security:
+      - client_credentials:
+        - "notification:notifications:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:write"
+  /resource-notifications/{id}:
+    get:
+      operationId: "getResourceNotification"
+      parameters:
+      - in: "query"
+        name: "appId"
+        schema:
+          type: "string"
+        description: "Application id associated with the notification. Optional, by\
+          \ default automatically inferred from the request header. Only relevant\
+          \ for manual testing purposes via swagger."
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this resource notification."
+        required: true
+      tags:
+      - "resource-notifications"
+      security:
+      - client_credentials:
+        - "notification:notifications:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotification"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:read"
+    delete:
+      operationId: "deleteResourceNotification"
+      parameters:
+      - in: "query"
+        name: "appId"
+        schema:
+          type: "string"
+        description: "Application id associated with the notification. Optional, by\
+          \ default automatically inferred from the request header. Only relevant\
+          \ for manual testing purposes via swagger."
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this resource notification."
+        required: true
+      tags:
+      - "resource-notifications"
+      security:
+      - client_credentials:
+        - "notification:notifications:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** notification:notifications:write"
+components:
+  schemas:
+    DavisEventConfig:
+      additionalProperties: false
+      properties:
+        entityTagsMatch:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTagsMatch"
+          nullable: true
+        entityTags:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTags"
+          nullable: true
+        onProblemClose:
+          default: false
+          description: "Trigger on Davis event open only or also on close."
+          type: "boolean"
+        names:
+          items:
+            $ref: "#/components/schemas/DavisEventName"
+          nullable: true
+          type: "array"
+          uniqueItems: true
+        types:
+          deprecated: true
+          items:
+            type: "string"
+          nullable: true
+          type: "array"
+          uniqueItems: true
+        customFilter:
+          default: ""
+          description: "Additional DQL matcher expression to further filter events\
+            \ to match."
+          nullable: true
+          type: "string"
+        maintenanceWindowTriggerBehavior:
+          default: "always"
+          anyOf:
+          - $ref: "#/components/schemas/MaintenanceWindowTriggerBehaviorType"
+      title: "DavisEventConfig"
+      type: "object"
+    DavisEventName:
+      additionalProperties: false
+      properties:
+        match:
+          $ref: "#/components/schemas/DavisEventNameMatch"
+        name:
+          type: "string"
+      required:
+      - "match"
+      - "name"
+      title: "DavisEventName"
+      type: "object"
+    DavisEventNameMatch:
+      title: "DavisEventNameMatch"
+      type: "string"
+      enum:
+      - "equals"
+      - "contains"
+      description: "Davis event name must equal or contain the string provided."
+    DavisEventTriggerConfig:
+      additionalProperties: false
+      example:
+        type: "davis-event"
+        value:
+          entityTags:
+            environment:
+            - "production"
+            service:
+            - "database"
+          entityTagsMatch: "all"
+          maintenanceWindowTriggerBehavior: "always"
+          names:
+          - match: "equals"
+            name: "CUSTOM_ALERT"
+          onProblemClose: false
+      properties:
+        type:
+          $ref: "#/components/schemas/DavisEventTriggerConfigType"
+        value:
+          $ref: "#/components/schemas/DavisEventConfig"
+      required:
+      - "type"
+      - "value"
+      title: "DavisEventTriggerConfig"
+      type: "object"
+    DavisEventTriggerConfigType:
+      enum:
+      - "davis-event"
+      type: "string"
+    DavisProblemCategories:
+      additionalProperties: false
+      properties:
+        monitoringUnavailable:
+          default: false
+          type: "boolean"
+        availability:
+          default: false
+          type: "boolean"
+        error:
+          default: false
+          type: "boolean"
+        slowdown:
+          default: false
+          type: "boolean"
+        resource:
+          default: false
+          type: "boolean"
+        custom:
+          default: false
+          type: "boolean"
+        info:
+          default: false
+          type: "boolean"
+      title: "DavisProblemCategories"
+      type: "object"
+    DavisProblemConfig:
+      additionalProperties: false
+      properties:
+        entityTagsMatch:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTagsMatch"
+          nullable: true
+        entityTags:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTags"
+          nullable: true
+        onProblemClose:
+          default: false
+          description: "Trigger on Davis problem open only or also on close."
+          type: "boolean"
+        categories:
+          $ref: "#/components/schemas/DavisProblemCategories"
+        customFilter:
+          default: ""
+          description: "Additional DQL matcher expression to further filter events\
+            \ to match."
+          nullable: true
+          type: "string"
+        analysisReady:
+          default: false
+          description: "Run only after first root cause analysis run completed."
+          type: "boolean"
+        severityThreshold:
+          description: "Triggers only for problems whose severity is this value or\
+            \ more severe. Lower numbers are more severe (1 = critical, 5 = informational),\
+            \ so 3 matches severities 1, 2, and 3."
+          maximum: 5
+          minimum: 1
+          nullable: true
+          type: "integer"
+        triggerOnUpdateFields:
+          description: "Problem event fields tracked for value changes. Changes to\
+            \ any selected field cause re-triggering."
+          items:
+            $ref: "#/components/schemas/TriggerOnUpdateFields"
+          type: "array"
+          uniqueItems: true
+        problemOpenDuration:
+          description: "Minimum problem duration in minutes before the trigger fires."
+          enum:
+          - 5
+          - 10
+          - 15
+          - 30
+          - 60
+          - 120
+          - 240
+          - 1440
+          - 10080
+          nullable: true
+          type: "integer"
+      required:
+      - "categories"
+      title: "DavisProblemConfig"
+      type: "object"
+    DavisProblemTriggerConfig:
+      additionalProperties: false
+      example:
+        type: "davis-problem"
+        value:
+          analysisReady: false
+          categories:
+            availability: false
+            custom: false
+            error: true
+            info: false
+            monitoringUnavailable: false
+            resource: false
+            slowdown: false
+          entityTags:
+            environment:
+            - "production"
+          entityTagsMatch: "all"
+          onProblemClose: false
+          severityThreshold: 3
+          triggerOnUpdateFields:
+          - "event.severity"
+          - "smartscape.affected_entities"
+      properties:
+        type:
+          $ref: "#/components/schemas/DavisProblemTriggerConfigType"
+        value:
+          $ref: "#/components/schemas/DavisProblemConfig"
+      required:
+      - "type"
+      - "value"
+      title: "DavisProblemTriggerConfig"
+      type: "object"
+    DavisProblemTriggerConfigType:
+      enum:
+      - "davis-problem"
+      type: "string"
+    EntityTags:
+      additionalProperties:
+        anyOf:
+        - type: "string"
+        - items:
+            type: "string"
+          type: "array"
+      description: "Entity tags to match by key and (optional) values. For example\
+        \ {\"foo\": [], \"bar\": [\"a\", \"b\", \"c\"]}"
+      title: "EntityTags"
+      type: "object"
+    EntityTagsMatch:
+      title: "EntityTagsMatch"
+      type: "string"
+      enum:
+      - "all"
+      - "any"
+      description: "Event must match all or any of the entity tags."
+    Error:
+      properties:
+        message:
+          type: "string"
+        code:
+          type: "integer"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+      required:
+      - "message"
+      - "code"
+      title: "Error"
+      type: "object"
+    ErrorDetails:
+      additionalProperties: true
+      properties:
+        errorCode:
+          type: "string"
+        errorRef:
+          type: "string"
+      title: "ErrorDetails"
+      type: "object"
+    ErrorEnvelope:
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      required:
+      - "error"
+      title: "ErrorEnvelope"
+      type: "object"
+    EventNotification:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+        resourceId:
+          type: "string"
+          description: "Unique identifier of resource to notify on. Used to determine\
+            \ if there is a notification registered for a resource in context of the\
+            \ app and notification type for a user."
+          maxLength: 120
+        notificationType:
+          type: "string"
+          description: "String that defines the type of a notification in context\
+            \ of an app. Allows to differentiate between multiple types of notifications\
+            \ in context of one app."
+          maxLength: 50
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+        modificationInfo:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/ModificationInfo"
+        input:
+          description: "Input object consisting of subject and content. Supports automation\
+            \ expressions https://dt-url.net/workflows-expression-reference and markdown\
+            \ syntax. A template provided with an app ({notification_type}.notification-template.json)\
+            \ will take precedence over the input provided here."
+          anyOf:
+          - $ref: "#/components/schemas/EventNotificationInput"
+        appId:
+          type: "string"
+          description: "App id for registered notification. Optional, by default automatically\
+            \ inferred from the request. Only relevant for manual testing purposes\
+            \ via swagger."
+          maxLength: 100
+        owner:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+      required:
+      - "modificationInfo"
+      - "notificationType"
+      - "owner"
+      - "resourceId"
+      - "triggerConfiguration"
+      - "id"
+    EventNotificationInput:
+      properties:
+        subject:
+          nullable: true
+          type: "string"
+        content:
+          nullable: true
+          type: "string"
+      title: "EventNotificationInput"
+      type: "object"
+    EventNotificationRequest:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+          minLength: 1
+        resourceId:
+          type: "string"
+          minLength: 1
+          description: "Unique identifier of resource to notify on. Used to determine\
+            \ if there is a notification registered for a resource in context of the\
+            \ app and notification type for a user."
+          maxLength: 120
+        notificationType:
+          type: "string"
+          minLength: 1
+          description: "String that defines the type of a notification in context\
+            \ of an app. Allows to differentiate between multiple types of notifications\
+            \ in context of one app."
+          maxLength: 50
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+        input:
+          description: "Input object consisting of subject and content. Supports automation\
+            \ expressions https://dt-url.net/workflows-expression-reference and markdown\
+            \ syntax. A template provided with an app ({notification_type}.notification-template.json)\
+            \ will take precedence over the input provided here."
+          anyOf:
+          - $ref: "#/components/schemas/EventNotificationInput"
+        appId:
+          type: "string"
+          minLength: 1
+          description: "App id for registered notification. Optional, by default automatically\
+            \ inferred from the request. Only relevant for manual testing purposes\
+            \ via swagger."
+          maxLength: 100
+      required:
+      - "notificationType"
+      - "resourceId"
+      - "triggerConfiguration"
+    EventNotificationUpdate:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          minLength: 1
+        resourceId:
+          type: "string"
+          minLength: 1
+          description: "Unique identifier of resource to notify on. Used to determine\
+            \ if there is a notification registered for a resource in context of the\
+            \ app and notification type for a user."
+          maxLength: 120
+        notificationType:
+          type: "string"
+          minLength: 1
+          description: "String that defines the type of a notification in context\
+            \ of an app. Allows to differentiate between multiple types of notifications\
+            \ in context of one app."
+          maxLength: 50
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+        input:
+          description: "Input object consisting of subject and content. Supports automation\
+            \ expressions https://dt-url.net/workflows-expression-reference and markdown\
+            \ syntax. A template provided with an app ({notification_type}.notification-template.json)\
+            \ will take precedence over the input provided here."
+          anyOf:
+          - $ref: "#/components/schemas/EventNotificationInput"
+        appId:
+          type: "string"
+          minLength: 1
+          description: "App id for registered notification. Optional, by default automatically\
+            \ inferred from the request. Only relevant for manual testing purposes\
+            \ via swagger."
+          maxLength: 100
+    EventQuery:
+      additionalProperties: false
+      properties:
+        query:
+          description: "DQL matcher expression defining which events to match."
+          maxLength: 1000
+          minLength: 1
+          type: "string"
+        eventType:
+          $ref: "#/components/schemas/EventType"
+      required:
+      - "query"
+      title: "EventQuery"
+      type: "object"
+    EventQueryTriggerConfig:
+      additionalProperties: false
+      example:
+        type: "event"
+        value:
+          eventType: "bizevents"
+          query: "event.kind == \"CUSTOM_KIND\""
+      properties:
+        type:
+          $ref: "#/components/schemas/EventQueryTriggerConfigType"
+        value:
+          $ref: "#/components/schemas/EventQuery"
+      required:
+      - "type"
+      - "value"
+      title: "EventQueryTriggerConfig"
+      type: "object"
+    EventQueryTriggerConfigType:
+      enum:
+      - "event"
+      type: "string"
+    EventTriggerConfig:
+      discriminator:
+        mapping:
+          davis-event: "#/components/schemas/DavisEventTriggerConfig"
+          davis-problem: "#/components/schemas/DavisProblemTriggerConfig"
+          event: "#/components/schemas/EventQueryTriggerConfig"
+        propertyName: "type"
+      oneOf:
+      - $ref: "#/components/schemas/EventQueryTriggerConfig"
+      - $ref: "#/components/schemas/DavisProblemTriggerConfig"
+      - $ref: "#/components/schemas/DavisEventTriggerConfig"
+      title: "EventTriggerConfig"
+    EventType:
+      title: "EventType"
+      type: "string"
+      enum:
+      - "events"
+      - "bizevents"
+      - "dt.system.events"
+      - "security.events"
+      description: "Grail event type."
+    MaintenanceWindowTriggerBehaviorType:
+      title: "MaintenanceWindowTriggerBehaviorType"
+      type: "string"
+      enum:
+      - "always"
+      - "inside"
+      - "outside"
+      description: "Specifies when to trigger based on maintenance window status."
+    ModificationInfo:
+      properties:
+        createdBy:
+          format: "uuid"
+          nullable: true
+          type: "string"
+        createdTime:
+          format: "date-time"
+          type: "string"
+        lastModifiedBy:
+          format: "uuid"
+          nullable: true
+          type: "string"
+        lastModifiedTime:
+          format: "date-time"
+          type: "string"
+      required:
+      - "createdBy"
+      - "createdTime"
+      - "lastModifiedBy"
+      - "lastModifiedTime"
+      title: "ModificationInfo"
+      type: "object"
+    PaginatedEventNotificationList:
+      type: "object"
+      required:
+      - "count"
+      - "results"
+      properties:
+        count:
+          type: "integer"
+          example: 123
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/EventNotification"
+    PaginatedResourceNotificationList:
+      type: "object"
+      required:
+      - "count"
+      - "results"
+      properties:
+        count:
+          type: "integer"
+          example: 123
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ResourceNotification"
+    ResourceNotification:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        appId:
+          type: "string"
+          nullable: true
+          description: "App id for registered notification. Optional, by default automatically\
+            \ inferred from the request. Only relevant for manual testing purposes\
+            \ via swagger."
+        notificationType:
+          type: "string"
+          description: "String that defines the type of a notification in context\
+            \ of an app. Allows to differentiate between multiple types of notifications\
+            \ in context of one app."
+        resourceId:
+          type: "string"
+          description: "Unique identifier of resource to notify on. Used to determine\
+            \ if there is a notification registered for a resource in context of the\
+            \ app and notification type for a user."
+        owningUser:
+          type: "string"
+          readOnly: true
+        modificationInfo:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/ModificationInfo"
+      required:
+      - "modificationInfo"
+      - "notificationType"
+      - "owningUser"
+      - "resourceId"
+      - "id"
+    ResourceNotificationRequest:
+      type: "object"
+      properties:
+        appId:
+          type: "string"
+          nullable: true
+          minLength: 1
+          description: "App id for registered notification. Optional, by default automatically\
+            \ inferred from the request. Only relevant for manual testing purposes\
+            \ via swagger."
+        notificationType:
+          type: "string"
+          minLength: 1
+          description: "String that defines the type of a notification in context\
+            \ of an app. Allows to differentiate between multiple types of notifications\
+            \ in context of one app."
+        resourceId:
+          type: "string"
+          minLength: 1
+          description: "Unique identifier of resource to notify on. Used to determine\
+            \ if there is a notification registered for a resource in context of the\
+            \ app and notification type for a user."
+      required:
+      - "notificationType"
+      - "resourceId"
+    TriggerOnUpdateFields:
+      enum:
+      - "dt.davis.affected_users_count"
+      - "dt.davis.impact_level"
+      - "event.category"
+      - "event.severity"
+      - "root_cause_entity_id"
+      - "smartscape.affected_entities"
+      type: "string"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses oauth2 with the 'client credentials' flow"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes: {}
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/notification/v2"
+  x-api-gateway-url: "/platform/notification/v2"

@@ -1,0 +1,6183 @@
+openapi: "3.0.3"
+info:
+  title: "Automation"
+  version: "1.4181.1"
+  description: "Manage and run workflows with the AutomationEngine API."
+  x-service-category: "AutomationEngine"
+  x-summary: "Manage and run workflows with the AutomationEngine API."
+paths:
+  /action-executions/{id}:
+    get:
+      operationId: "getActionExecution"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this action execution."
+        required: true
+      tags:
+      - "action-executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionExecution"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /action-executions/{id}/log:
+    get:
+      operationId: "getActionExecutionLog"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Returns\
+        \ the log output of a specific ActionExecution."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this action execution."
+        required: true
+      tags:
+      - "action-executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "string"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /actions-sample-result/{actionIdentifier}:
+    get:
+      operationId: "getActionSampleResult"
+      parameters:
+      - in: "path"
+        name: "actionIdentifier"
+        schema:
+          type: "string"
+        required: true
+      tags:
+      - "actions-sample-result"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /business-calendars:
+    get:
+      operationId: "getBusinessCalendars"
+      parameters:
+      - name: "limit"
+        required: false
+        in: "query"
+        description: "Number of results to return per page."
+        schema:
+          type: "integer"
+      - name: "offset"
+        required: false
+        in: "query"
+        description: "The initial index from which to return the results."
+        schema:
+          type: "integer"
+      - name: "ordering"
+        required: false
+        in: "query"
+        description: "Which field to use when ordering the results."
+        schema:
+          type: "string"
+      - name: "search"
+        required: false
+        in: "query"
+        description: "A search term."
+        schema:
+          type: "string"
+      tags:
+      - "business-calendars"
+      security:
+      - client_credentials:
+        - "automation:calendars:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedBusinessCalendarResponseList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:read"
+    post:
+      operationId: "createBusinessCalendar"
+      tags:
+      - "business-calendars"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessCalendarCreate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:calendars:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCalendarResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:write"
+  /business-calendars/{id}:
+    get:
+      operationId: "getBusinessCalendar"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      tags:
+      - "business-calendars"
+      security:
+      - client_credentials:
+        - "automation:calendars:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCalendarResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:read"
+    put:
+      operationId: "updateBusinessCalendar"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      tags:
+      - "business-calendars"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessCalendarUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:calendars:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCalendarResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:write"
+    patch:
+      operationId: "patchBusinessCalendar"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      tags:
+      - "business-calendars"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessCalendarUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:calendars:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCalendarResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:write"
+    delete:
+      operationId: "deleteBusinessCalendar"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      tags:
+      - "business-calendars"
+      security:
+      - client_credentials:
+        - "automation:calendars:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:write"
+  /business-calendars/{id}/duplicate:
+    post:
+      operationId: "duplicateBusinessCalendar"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      tags:
+      - "business-calendars"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DuplicationRequest"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:calendars:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCalendarResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:write"
+  /business-calendars/{id}/history:
+    get:
+      operationId: "getBusinessCalendarHistoryRecords"
+      parameters:
+      - in: "query"
+        name: "all"
+        schema:
+          type: "boolean"
+          default: false
+        description: "When false, the latest historical record is not returned."
+        deprecated: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      tags:
+      - "business-calendars"
+      security:
+      - client_credentials:
+        - "automation:calendars:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedChangeHistory"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:read"
+  /business-calendars/{id}/history/{version}:
+    get:
+      operationId: "getBusinessCalendarHistoryRecord"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "business-calendars"
+      security:
+      - client_credentials:
+        - "automation:calendars:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCalendarResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:read"
+  /business-calendars/{id}/history/{version}/restore:
+    post:
+      operationId: "restoreBusinessCalendarHistoryRecord"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this business calendar."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "business-calendars"
+      security:
+      - client_credentials:
+        - "automation:calendars:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:calendars:write"
+  /event-triggers/filter-preview:
+    post:
+      operationId: "previewFilter"
+      tags:
+      - "event-triggers"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventTriggerPreviewRequest"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventTriggerPreviewResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /executions:
+    get:
+      operationId: "getExecutions"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Get list\
+        \ of executions (executions of draft and simple workflows aren't included\
+        \ in the response)."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - name: "limit"
+        required: false
+        in: "query"
+        description: "Number of results to return per page."
+        schema:
+          type: "integer"
+      - name: "offset"
+        required: false
+        in: "query"
+        description: "The initial index from which to return the results."
+        schema:
+          type: "integer"
+      - name: "ordering"
+        required: false
+        in: "query"
+        description: "Which field to use when ordering the results."
+        schema:
+          type: "string"
+      - in: "query"
+        name: "parentExecution"
+        schema:
+          type: "string"
+          format: "uuid"
+      - in: "query"
+        name: "parentWorkflow"
+        schema:
+          type: "string"
+          format: "uuid"
+      - in: "query"
+        name: "schedule"
+        schema:
+          type: "array"
+          items:
+            type: "string"
+            format: "uuid"
+        description: "Multiple values may be separated by commas."
+        explode: false
+        style: "form"
+      - name: "search"
+        required: false
+        in: "query"
+        description: "A search term."
+        schema:
+          type: "string"
+      - in: "query"
+        name: "startedAt__gte"
+        schema:
+          type: "string"
+          format: "date-time"
+      - in: "query"
+        name: "startedAt__lte"
+        schema:
+          type: "string"
+          format: "date-time"
+      - in: "query"
+        name: "state"
+        schema:
+          type: "array"
+          items:
+            type: "string"
+        description: "Multiple values may be separated by commas."
+        explode: false
+        style: "form"
+      - in: "query"
+        name: "subworkflowOfTask"
+        schema:
+          type: "string"
+        description: "Filter executions by `parentExecution/task`."
+      - in: "query"
+        name: "trigger"
+        schema:
+          type: "string"
+      - in: "query"
+        name: "triggerType"
+        schema:
+          type: "string"
+      - in: "query"
+        name: "user"
+        schema:
+          type: "array"
+          items:
+            type: "string"
+            format: "uuid"
+        description: "Multiple values may be separated by commas."
+        explode: false
+        style: "form"
+      - in: "query"
+        name: "workflow"
+        schema:
+          type: "array"
+          items:
+            type: "string"
+            format: "uuid"
+        description: "Multiple values may be separated by commas."
+        explode: false
+        style: "form"
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedExecutionList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{executionId}/tasks:
+    get:
+      operationId: "getTaskExecutions"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "executionId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskExecutions"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /executions/{executionId}/tasks/{id}:
+    get:
+      operationId: "getTaskExecution"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "executionId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+        description: "Task name"
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskExecution"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /executions/{executionId}/tasks/{id}/cancel:
+    post:
+      operationId: "cancelTaskExecution"
+      description: "**Required scope:** automation:workflows:run<br/><br/>Cancels\
+        \ task execution.\nCanceling action executions cause the task to be cancelled,\
+        \ which\ncauses the workflow to be canceled."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "executionId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+        description: "Task name"
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:run"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{executionId}/tasks/{id}/input:
+    get:
+      operationId: "getTaskExecutionInput"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Returns\
+        \ merged inputs from all ActionExecutions belonging to the TaskExecution."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "executionId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+        description: "Task name"
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{executionId}/tasks/{id}/log:
+    get:
+      operationId: "getTaskExecutionLog"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Returns\
+        \ the log output of a specific task.\nThis can be large as its the STDOUT\
+        \ of the Action\nas defined by the user."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "executionId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+        description: "Task name"
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "string"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{executionId}/tasks/{id}/result:
+    get:
+      operationId: "getTaskExecutionResult"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Returns\
+        \ merged results from all ActionExecutions belonging to the TaskExecution."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "executionId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+        description: "Task name"
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{executionId}/transitions:
+    get:
+      operationId: "getTransitions"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "executionId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskTransitions"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /executions/{id}:
+    get:
+      operationId: "getExecution"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Get execution"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this execution."
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Execution"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{id}/actions:
+    get:
+      operationId: "getExecutionActions"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Return\
+        \ list of actions assigned to tasks in a given Execution."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this execution."
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{id}/all-event-logs:
+    get:
+      operationId: "getAllEventLogs"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Get all\
+        \ event logs"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this execution."
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventLogs"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{id}/cancel:
+    post:
+      operationId: "cancelExecution"
+      description: "**Required scope:** automation:workflows:run<br/><br/>Tries to\
+        \ cancel an Execution.\nCan only be done, if the Execution is in an active\
+        \ state."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this execution."
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:run"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{id}/log:
+    get:
+      operationId: "getExecutionLog"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Gets the\
+        \ execution log"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this execution."
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "string"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{id}/pause:
+    post:
+      operationId: "pauseExecution"
+      description: "**Required scope:** automation:workflows:run<br/><br/>Pauses an\
+        \ Execution.\nCan only be done, if the Execution is in an active state."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this execution."
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:run"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /executions/{id}/resume:
+    post:
+      operationId: "resumeExecution"
+      description: "**Required scope:** automation:workflows:run<br/><br/>Resumes\
+        \ an Execution.\nCan only be done, if the Execution is in an inactive state."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this execution."
+        required: true
+      tags:
+      - "executions"
+      security:
+      - client_credentials:
+        - "automation:workflows:run"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /schedules/holiday-calendars:
+    get:
+      operationId: "getCountries"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Returns\
+        \ the list of countries that can be used to look up the holiday calendar"
+      tags:
+      - "schedules"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CountryList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /schedules/holiday-calendars/{key}:
+    get:
+      operationId: "getHolidayCalendar"
+      parameters:
+      - in: "query"
+        name: "from"
+        schema:
+          type: "string"
+          format: "date"
+        description: "From date in ISO format"
+      - in: "path"
+        name: "key"
+        schema:
+          type: "string"
+        description: "The country name"
+        required: true
+      - in: "query"
+        name: "to"
+        schema:
+          type: "string"
+          format: "date"
+        description: "To date in ISO format"
+      tags:
+      - "schedules"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HolidayCalendarList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /schedules/preview:
+    post:
+      operationId: "previewSchedule"
+      tags:
+      - "schedules"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SchedulePreviewRequest"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulePreviewResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /schedules/timezones:
+    get:
+      operationId: "getTimezones"
+      tags:
+      - "schedules"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /scheduling-rules:
+    get:
+      operationId: "getRules"
+      parameters:
+      - name: "limit"
+        required: false
+        in: "query"
+        description: "Number of results to return per page."
+        schema:
+          type: "integer"
+      - name: "offset"
+        required: false
+        in: "query"
+        description: "The initial index from which to return the results."
+        schema:
+          type: "integer"
+      - name: "ordering"
+        required: false
+        in: "query"
+        description: "Which field to use when ordering the results."
+        schema:
+          type: "string"
+      - name: "search"
+        required: false
+        in: "query"
+        description: "A search term."
+        schema:
+          type: "string"
+      tags:
+      - "scheduling-rules"
+      security:
+      - client_credentials:
+        - "automation:rules:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedRuleList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:read"
+    post:
+      operationId: "createRule"
+      tags:
+      - "scheduling-rules"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleCreate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:rules:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:write"
+  /scheduling-rules/{id}:
+    get:
+      operationId: "getRule"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      tags:
+      - "scheduling-rules"
+      security:
+      - client_credentials:
+        - "automation:rules:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:read"
+    put:
+      operationId: "updateRule"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      tags:
+      - "scheduling-rules"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:rules:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:write"
+    patch:
+      operationId: "patchRule"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      tags:
+      - "scheduling-rules"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:rules:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:write"
+    delete:
+      operationId: "deleteRule"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      tags:
+      - "scheduling-rules"
+      security:
+      - client_credentials:
+        - "automation:rules:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:write"
+  /scheduling-rules/{id}/duplicate:
+    post:
+      operationId: "duplicateRule"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      tags:
+      - "scheduling-rules"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DuplicationRequest"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:rules:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:write"
+  /scheduling-rules/{id}/history:
+    get:
+      operationId: "getRuleHistoryRecords"
+      parameters:
+      - in: "query"
+        name: "all"
+        schema:
+          type: "boolean"
+          default: false
+        description: "When false, the latest historical record is not returned."
+        deprecated: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      tags:
+      - "scheduling-rules"
+      security:
+      - client_credentials:
+        - "automation:rules:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedChangeHistory"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:read"
+  /scheduling-rules/{id}/history/{version}:
+    get:
+      operationId: "getRuleHistoryRecord"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "scheduling-rules"
+      security:
+      - client_credentials:
+        - "automation:rules:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:read"
+  /scheduling-rules/{id}/history/{version}/restore:
+    post:
+      operationId: "restoreRuleHistoryRecord"
+      parameters:
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this rule."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "scheduling-rules"
+      security:
+      - client_credentials:
+        - "automation:rules:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:rules:write"
+  /scheduling-rules/preview:
+    post:
+      operationId: "previewRule"
+      tags:
+      - "scheduling-rules"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RulePreviewCreate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RulePreviewResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /settings:
+    get:
+      operationId: "getSettings"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Get system\
+        \ settings"
+      tags:
+      - "settings"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSettingsResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /settings/authorizations-update:
+    post:
+      operationId: "updateAuthorizations"
+      tags:
+      - "settings"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "202":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /settings/service-users:
+    get:
+      operationId: "getServiceUsers"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Get service\
+        \ users who could be used as workflow actor (deprecated)."
+      tags:
+      - "settings"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "object"
+                additionalProperties: {}
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /settings/user:
+    get:
+      operationId: "getUserSettings"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Get user-specific\
+        \ settings"
+      tags:
+      - "settings"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /settings/user-permissions:
+    get:
+      operationId: "getUserPermissions"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Get current\
+        \ user effective permissions."
+      tags:
+      - "settings"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      deprecated: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /version:
+    get:
+      operationId: "getVersion"
+      tags:
+      - "version"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionResponse"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows:
+    get:
+      operationId: "getWorkflows"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "query"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+      - in: "query"
+        name: "isDeployed"
+        schema:
+          type: "boolean"
+      - in: "query"
+        name: "lastExecution__state__in"
+        schema:
+          type: "array"
+          items:
+            type: "string"
+        description: "Multiple values may be separated by commas."
+        explode: false
+        style: "form"
+      - name: "limit"
+        required: false
+        in: "query"
+        description: "Number of results to return per page."
+        schema:
+          type: "integer"
+      - in: "query"
+        name: "modificationInfo__lastModifiedBy"
+        schema:
+          type: "array"
+          items:
+            type: "string"
+        description: "Multiple values may be separated by commas."
+        explode: false
+        style: "form"
+      - name: "offset"
+        required: false
+        in: "query"
+        description: "The initial index from which to return the results."
+        schema:
+          type: "integer"
+      - name: "ordering"
+        required: false
+        in: "query"
+        description: "Which field to use when ordering the results."
+        schema:
+          type: "string"
+      - in: "query"
+        name: "owner"
+        schema:
+          type: "string"
+      - in: "query"
+        name: "ownerType"
+        schema:
+          type: "string"
+          enum:
+          - "GROUP"
+          - "USER"
+      - name: "search"
+        required: false
+        in: "query"
+        description: "A search term."
+        schema:
+          type: "string"
+      - in: "query"
+        name: "throttle__isLimitHit"
+        schema:
+          type: "boolean"
+      - in: "query"
+        name: "triggerType"
+        schema:
+          type: "string"
+      - in: "query"
+        name: "trigger__schedule__isFaulty"
+        schema:
+          type: "boolean"
+      - in: "query"
+        name: "type"
+        schema:
+          type: "string"
+      - in: "query"
+        name: "unacknowledgedSkippedScheduleAt__gte"
+        schema:
+          type: "string"
+          format: "date-time"
+      - in: "query"
+        name: "unacknowledgedSkippedScheduleAt__lte"
+        schema:
+          type: "string"
+          format: "date-time"
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedWorkflowList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+    post:
+      operationId: "createWorkflow"
+      description: "**Required scope:** automation:workflows:write<br/><br/>Creates\
+        \ a workflow and sets usages"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      tags:
+      - "workflows"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowCreate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /workflows/{id}:
+    get:
+      operationId: "getWorkflow"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+    put:
+      operationId: "updateWorkflow"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:write"
+    patch:
+      operationId: "patchWorkflow"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowUpdate"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:write"
+    delete:
+      operationId: "deleteWorkflow"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:write"
+  /workflows/{id}/actions:
+    get:
+      operationId: "getWorkflowActions"
+      description: "**Required scope:** automation:workflows:read<br/><br/>Return\
+        \ list of actions assigned to tasks in a given Workflow."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /workflows/{id}/duplicate:
+    post:
+      operationId: "duplicateWorkflow"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DuplicationRequest"
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:write"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:write"
+  /workflows/{id}/export:
+    get:
+      operationId: "exportWorkflow"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowExport"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows/{id}/template:
+    get:
+      operationId: "exportWorkflowTemplate"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowTemplate"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows/{id}/history:
+    get:
+      operationId: "getWorkflowHistoryRecords"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "query"
+        name: "all"
+        schema:
+          type: "boolean"
+          default: false
+        description: "When false, the latest historical record is not returned."
+        deprecated: true
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedChangeHistory"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows/{id}/history/{version}:
+    get:
+      operationId: "getWorkflowHistoryRecord"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows/{id}/history/{version}/export:
+    get:
+      operationId: "exportWorkflowHistoryRecord"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows/{id}/history/{version}/template:
+    get:
+      operationId: "exportWorkflowHistoryRecordTemplate"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowTemplate"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows/{id}/history/{version}/restore:
+    post:
+      operationId: "restoreWorkflowHistoryRecord"
+      description: "**Required scope:** automation:workflows:write<br/><br/>Restores\
+        \ the workflow to the specified history version which is deployed afterward."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      - in: "path"
+        name: "version"
+        schema:
+          type: "string"
+          pattern: "^[\\d]+$"
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /workflows/{id}/reset-throttles:
+    post:
+      operationId: "resetWorkflowThrottles"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:write"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowThrottlesResetStatus"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:write"
+  /workflows/{id}/run:
+    post:
+      operationId: "runWorkflow"
+      description: "**Required scope:** automation:workflows:run<br/><br/>Creates\
+        \ an Execution for the Workflow."
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      - in: "query"
+        name: "monitor"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Specifies whether the execution data of the SIMPLE workflow\
+          \ type is available for monitoring until the execution is complete."
+      tags:
+      - "workflows"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExecutionInputsRequest"
+            examples:
+              ExecutionInputsRequest:
+                value:
+                  input: {}
+                  params: {}
+        required: true
+      security:
+      - client_credentials:
+        - "automation:workflows:run"
+      - ssoBearerAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Execution"
+          description: "Execution successfully created"
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Execution"
+          description: "No execution created - execution with uniqueQualifier provided\
+            \ already exists"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+  /workflows/{id}/tasks:
+    get:
+      operationId: "getWorkflowTasks"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "A UUID string identifying this workflow."
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tasks"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /workflows/{workflowId}/tasks/{id}:
+    get:
+      operationId: "getWorkflowTask"
+      parameters:
+      - in: "query"
+        name: "adminAccess"
+        schema:
+          type: "boolean"
+          default: false
+        description: "Allow access to all workflows/executions - additionally requires\
+          \ **automation:workflows:admin**"
+      - in: "path"
+        name: "id"
+        schema:
+          type: "string"
+        required: true
+      - in: "path"
+        name: "workflowId"
+        schema:
+          type: "string"
+          format: "uuid"
+        required: true
+      tags:
+      - "workflows"
+      security:
+      - client_credentials:
+        - "automation:workflows:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:workflows:read"
+  /webhook-handlers:
+    get:
+      operationId: "getWebhookHandlers"
+      tags:
+      - "webhook-handlers"
+      security:
+      - client_credentials:
+        - "automation:webhookhandlers:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/WebhookHandlerList"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:webhookhandlers:read"
+  /webhook-handlers/{connectionId}:
+    get:
+      operationId: "getWebhookHandler"
+      parameters:
+      - in: "path"
+        name: "connectionId"
+        schema:
+          type: "string"
+        description: "The ID of the connection this webhook handler belongs to"
+        required: true
+      tags:
+      - "webhook-handlers"
+      security:
+      - client_credentials:
+        - "automation:webhookhandlers:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookHandler"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:webhookhandlers:read"
+    put:
+      operationId: "writeWebhookHandler"
+      parameters:
+      - in: "path"
+        name: "connectionId"
+        schema:
+          type: "string"
+        description: "The ID of the connection this webhook handler belongs to"
+        required: true
+      tags:
+      - "webhook-handlers"
+      security:
+      - client_credentials:
+        - "automation:webhookhandlers:write"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookHandlerWrite"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookHandler"
+          description: ""
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:webhookhandlers:write"
+    delete:
+      operationId: "deleteWebhookHandler"
+      parameters:
+      - in: "path"
+        name: "connectionId"
+        schema:
+          type: "string"
+        description: "The ID of the connection this webhook handler belongs to"
+        required: true
+      tags:
+      - "webhook-handlers"
+      security:
+      - client_credentials:
+        - "automation:webhookhandlers:write"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          description: "No response body"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: ""
+      description: "**Required scope:** automation:webhookhandlers:write"
+components:
+  schemas:
+    ActionExecution:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        taskExe:
+          type: "string"
+          format: "uuid"
+          description: "Parent task execution"
+        state:
+          $ref: "#/components/schemas/ActionExecutionState"
+        stateInfo:
+          type: "string"
+          nullable: true
+        input:
+          type: "object"
+          additionalProperties: {}
+        result: {}
+        startedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        endedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        runtime:
+          type: "integer"
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        actionExecutionId:
+          type: "string"
+          nullable: true
+          maxLength: 50
+        attempt:
+          type: "integer"
+          maximum: 2147483647
+          minimum: -2147483648
+        loopItem:
+          type: "object"
+          additionalProperties: {}
+        action:
+          type: "string"
+          maxLength: 200
+      required:
+      - "action"
+      - "taskExe"
+      - "id"
+    ActionExecutionState:
+      title: "ActionExecutionState"
+      type: "string"
+      enum:
+      - "ERROR"
+      - "IDLE"
+      - "RUNNING"
+      - "SUSPENDED"
+      - "SUCCESS"
+      - "UNKNOWN"
+    BasedOnTemplate:
+      properties:
+        trackingId:
+          maxLength: 36
+          minLength: 1
+          type: "string"
+        originAppId:
+          nullable: true
+          type: "string"
+        version:
+          maxLength: 10
+          nullable: true
+          type: "string"
+        title:
+          maxLength: 200
+          nullable: true
+          type: "string"
+      required:
+      - "trackingId"
+      title: "BasedOnTemplate"
+      type: "object"
+    BusinessCalendarCreate:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+          minLength: 1
+          maxLength: 200
+        weekstart:
+          type: "integer"
+          maximum: 7
+          minimum: 1
+        holidays:
+          $ref: "#/components/schemas/Holidays"
+        validFrom:
+          type: "string"
+        validTo:
+          type: "string"
+        description:
+          type: "string"
+        weekdays:
+          $ref: "#/components/schemas/Weekdays"
+      required:
+      - "title"
+    BusinessCalendarResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+          maxLength: 200
+        version:
+          type: "integer"
+          readOnly: true
+        weekstart:
+          type: "integer"
+          maximum: 7
+          minimum: 1
+        holidays:
+          $ref: "#/components/schemas/Holidays"
+        validFrom:
+          type: "string"
+        validTo:
+          type: "string"
+        description:
+          type: "string"
+        modificationInfo:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/ModificationInfo"
+        weekdays:
+          readOnly: true
+          description: "The weekdays values"
+          anyOf:
+          - $ref: "#/components/schemas/WeekdaysValues"
+        weekdaysNames:
+          readOnly: true
+          description: "The weekdays names"
+          anyOf:
+          - $ref: "#/components/schemas/WeekdaysNames"
+      required:
+      - "modificationInfo"
+      - "title"
+      - "validFrom"
+      - "validTo"
+      - "version"
+      - "weekdays"
+      - "weekdaysNames"
+      - "weekstart"
+      - "id"
+    BusinessCalendarUpdate:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          minLength: 1
+          maxLength: 200
+        weekstart:
+          type: "integer"
+          maximum: 7
+          minimum: 1
+        holidays:
+          $ref: "#/components/schemas/Holidays"
+        validFrom:
+          type: "string"
+        validTo:
+          type: "string"
+        description:
+          type: "string"
+        weekdays:
+          $ref: "#/components/schemas/Weekdays"
+    Byday:
+      enum:
+      - "MO"
+      - "TU"
+      - "WE"
+      - "TH"
+      - "FR"
+      - "SA"
+      - "SU"
+      type: "string"
+    Byworkday:
+      description: "The type of days on which the recurrence will be applied."
+      enum:
+      - "WORKING"
+      - "HOLIDAYS"
+      - "OFF"
+      type: "string"
+    ChangeHistory:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+        dateCreated:
+          type: "string"
+          format: "date-time"
+        user:
+          type: "string"
+          readOnly: true
+        version:
+          type: "integer"
+          minimum: 1
+      required:
+      - "dateCreated"
+      - "id"
+      - "user"
+      - "version"
+    Country:
+      properties:
+        id:
+          type: "string"
+        title:
+          type: "string"
+      required:
+      - "id"
+      - "title"
+      title: "Country"
+      type: "object"
+    CountryList:
+      properties:
+        count:
+          type: "integer"
+        results:
+          items:
+            $ref: "#/components/schemas/Country"
+          type: "array"
+      required:
+      - "count"
+      - "results"
+      title: "CountryList"
+      type: "object"
+    CronTrigger:
+      additionalProperties: false
+      properties:
+        type:
+          $ref: "#/components/schemas/CronTriggerType"
+        cron:
+          example: "0 0 * * *"
+          type: "string"
+      required:
+      - "type"
+      - "cron"
+      title: "CronTrigger"
+      type: "object"
+    CronTriggerType:
+      enum:
+      - "cron"
+      type: "string"
+    DavisEventConfig:
+      additionalProperties: false
+      properties:
+        entityTagsMatch:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTagsMatch"
+          nullable: true
+        entityTags:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTags"
+          nullable: true
+        onProblemClose:
+          default: false
+          description: "Trigger on Davis event open only or also on close."
+          type: "boolean"
+        names:
+          items:
+            $ref: "#/components/schemas/DavisEventName"
+          nullable: true
+          type: "array"
+          uniqueItems: true
+        types:
+          deprecated: true
+          items:
+            type: "string"
+          nullable: true
+          type: "array"
+          uniqueItems: true
+        customFilter:
+          default: ""
+          description: "Additional DQL matcher expression to further filter events\
+            \ to match."
+          nullable: true
+          type: "string"
+        maintenanceWindowTriggerBehavior:
+          default: "always"
+          anyOf:
+          - $ref: "#/components/schemas/MaintenanceWindowTriggerBehaviorType"
+      title: "DavisEventConfig"
+      type: "object"
+    DavisEventName:
+      additionalProperties: false
+      properties:
+        match:
+          $ref: "#/components/schemas/DavisEventNameMatch"
+        name:
+          type: "string"
+      required:
+      - "match"
+      - "name"
+      title: "DavisEventName"
+      type: "object"
+    DavisEventNameMatch:
+      title: "DavisEventNameMatch"
+      type: "string"
+      enum:
+      - "equals"
+      - "contains"
+      description: "Davis event name must equal or contain the string provided."
+    DavisEventTriggerConfig:
+      additionalProperties: false
+      example:
+        type: "davis-event"
+        value:
+          entityTags:
+            environment:
+            - "production"
+            service:
+            - "database"
+          entityTagsMatch: "all"
+          maintenanceWindowTriggerBehavior: "always"
+          names:
+          - match: "equals"
+            name: "CUSTOM_ALERT"
+          onProblemClose: false
+      properties:
+        type:
+          $ref: "#/components/schemas/DavisEventTriggerConfigType"
+        value:
+          $ref: "#/components/schemas/DavisEventConfig"
+      required:
+      - "type"
+      - "value"
+      title: "DavisEventTriggerConfig"
+      type: "object"
+    DavisEventTriggerConfigType:
+      enum:
+      - "davis-event"
+      type: "string"
+    DavisProblemCategories:
+      additionalProperties: false
+      properties:
+        monitoringUnavailable:
+          default: false
+          type: "boolean"
+        availability:
+          default: false
+          type: "boolean"
+        error:
+          default: false
+          type: "boolean"
+        slowdown:
+          default: false
+          type: "boolean"
+        resource:
+          default: false
+          type: "boolean"
+        custom:
+          default: false
+          type: "boolean"
+        info:
+          default: false
+          type: "boolean"
+      title: "DavisProblemCategories"
+      type: "object"
+    DavisProblemConfig:
+      additionalProperties: false
+      properties:
+        entityTagsMatch:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTagsMatch"
+          nullable: true
+        entityTags:
+          anyOf:
+          - $ref: "#/components/schemas/EntityTags"
+          nullable: true
+        onProblemClose:
+          default: false
+          description: "Trigger on Davis problem open only or also on close."
+          type: "boolean"
+        categories:
+          $ref: "#/components/schemas/DavisProblemCategories"
+        customFilter:
+          default: ""
+          description: "Additional DQL matcher expression to further filter events\
+            \ to match."
+          nullable: true
+          type: "string"
+        analysisReady:
+          default: false
+          description: "Run only after first root cause analysis run completed."
+          type: "boolean"
+        severityThreshold:
+          description: "Triggers only for problems whose severity is this value or\
+            \ more severe. Lower numbers are more severe (1 = critical, 5 = informational),\
+            \ so 3 matches severities 1, 2, and 3."
+          maximum: 5
+          minimum: 1
+          nullable: true
+          type: "integer"
+        triggerOnUpdateFields:
+          description: "Problem event fields tracked for value changes. Changes to\
+            \ any selected field cause re-triggering."
+          items:
+            $ref: "#/components/schemas/TriggerOnUpdateFields"
+          type: "array"
+          uniqueItems: true
+        problemOpenDuration:
+          description: "Minimum problem duration in minutes before the trigger fires."
+          enum:
+          - 5
+          - 10
+          - 15
+          - 30
+          - 60
+          - 120
+          - 240
+          - 1440
+          - 10080
+          nullable: true
+          type: "integer"
+      required:
+      - "categories"
+      title: "DavisProblemConfig"
+      type: "object"
+    DavisProblemTriggerConfig:
+      additionalProperties: false
+      example:
+        type: "davis-problem"
+        value:
+          analysisReady: false
+          categories:
+            availability: false
+            custom: false
+            error: true
+            info: false
+            monitoringUnavailable: false
+            resource: false
+            slowdown: false
+          entityTags:
+            environment:
+            - "production"
+          entityTagsMatch: "all"
+          onProblemClose: false
+          severityThreshold: 3
+          triggerOnUpdateFields:
+          - "event.severity"
+          - "smartscape.affected_entities"
+      properties:
+        type:
+          $ref: "#/components/schemas/DavisProblemTriggerConfigType"
+        value:
+          $ref: "#/components/schemas/DavisProblemConfig"
+      required:
+      - "type"
+      - "value"
+      title: "DavisProblemTriggerConfig"
+      type: "object"
+    DavisProblemTriggerConfigType:
+      enum:
+      - "davis-problem"
+      type: "string"
+    Direction:
+      enum:
+      - "next"
+      - "previous"
+      type: "string"
+    DuplicationRequest:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          minLength: 1
+    Else:
+      enum:
+      - "SKIP"
+      - "STOP"
+      type: "string"
+    EntityTags:
+      additionalProperties:
+        anyOf:
+        - type: "string"
+        - items:
+            type: "string"
+          type: "array"
+      description: "Entity tags to match by key and (optional) values. For example\
+        \ {\"foo\": [], \"bar\": [\"a\", \"b\", \"c\"]}"
+      title: "EntityTags"
+      type: "object"
+    EntityTagsMatch:
+      title: "EntityTagsMatch"
+      type: "string"
+      enum:
+      - "all"
+      - "any"
+      description: "Event must match all or any of the entity tags."
+    EnvironmentObject:
+      properties:
+        id:
+          type: "string"
+        workflowsCount:
+          type: "integer"
+        workflowsLimit:
+          type: "integer"
+        limits:
+          $ref: "#/components/schemas/ExecutionLimits"
+      required:
+      - "id"
+      - "workflowsCount"
+      - "limits"
+      title: "EnvironmentObject"
+      type: "object"
+    Error:
+      properties:
+        message:
+          type: "string"
+        code:
+          type: "integer"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+      required:
+      - "message"
+      - "code"
+      title: "Error"
+      type: "object"
+    ErrorDetails:
+      additionalProperties: true
+      properties:
+        errorCode:
+          type: "string"
+        errorRef:
+          type: "string"
+      title: "ErrorDetails"
+      type: "object"
+    ErrorEnvelope:
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      required:
+      - "error"
+      title: "ErrorEnvelope"
+      type: "object"
+    EventLog:
+      properties:
+        source:
+          $ref: "#/components/schemas/Source"
+        cause:
+          nullable: true
+          type: "string"
+        event:
+          type: "string"
+        state:
+          $ref: "#/components/schemas/EventLogState"
+        timestamp:
+          format: "date-time"
+          type: "string"
+        context:
+          additionalProperties: true
+          nullable: true
+          type: "object"
+      required:
+      - "source"
+      - "event"
+      - "state"
+      - "timestamp"
+      title: "EventLog"
+      type: "object"
+    EventLogState:
+      enum:
+      - "DEACTIVATED"
+      - "RUNNING"
+      - "ERROR"
+      - "SUCCESS"
+      - "WAITING"
+      - "IDLE"
+      - "PAUSED"
+      - "CANCELLED"
+      - "SKIPPED"
+      - "DISCARDED"
+      type: "string"
+    EventLogs:
+      items:
+        $ref: "#/components/schemas/EventLog"
+      title: "EventLogs"
+      type: "array"
+    EventQuery:
+      additionalProperties: false
+      properties:
+        query:
+          description: "DQL matcher expression defining which events to match."
+          maxLength: 1000
+          minLength: 1
+          type: "string"
+        eventType:
+          $ref: "#/components/schemas/EventType"
+      required:
+      - "query"
+      title: "EventQuery"
+      type: "object"
+    EventQueryTriggerConfig:
+      additionalProperties: false
+      example:
+        type: "event"
+        value:
+          eventType: "bizevents"
+          query: "event.kind == \"CUSTOM_KIND\""
+      properties:
+        type:
+          $ref: "#/components/schemas/EventQueryTriggerConfigType"
+        value:
+          $ref: "#/components/schemas/EventQuery"
+      required:
+      - "type"
+      - "value"
+      title: "EventQueryTriggerConfig"
+      type: "object"
+    EventQueryTriggerConfigType:
+      enum:
+      - "event"
+      type: "string"
+    EventTrigger:
+      type: "object"
+      properties:
+        isActive:
+          type: "boolean"
+        filterQuery:
+          type: "string"
+          readOnly: true
+        uniqueExpression:
+          type: "string"
+          readOnly: true
+          nullable: true
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+      required:
+      - "filterQuery"
+      - "uniqueExpression"
+    EventTriggerConfig:
+      discriminator:
+        mapping:
+          davis-event: "#/components/schemas/DavisEventTriggerConfig"
+          davis-problem: "#/components/schemas/DavisProblemTriggerConfig"
+          event: "#/components/schemas/EventQueryTriggerConfig"
+        propertyName: "type"
+      oneOf:
+      - $ref: "#/components/schemas/EventQueryTriggerConfig"
+      - $ref: "#/components/schemas/DavisProblemTriggerConfig"
+      - $ref: "#/components/schemas/DavisEventTriggerConfig"
+      title: "EventTriggerConfig"
+    EventTriggerExport:
+      type: "object"
+      properties:
+        isActive:
+          type: "boolean"
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+    EventTriggerPreviewRequest:
+      type: "object"
+      properties:
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+      required:
+      - "triggerConfiguration"
+    EventTriggerPreviewResponse:
+      type: "object"
+      properties:
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+        filterQuery:
+          type: "string"
+          readOnly: true
+      required:
+      - "filterQuery"
+      - "triggerConfiguration"
+    EventTriggerRequest:
+      type: "object"
+      properties:
+        isActive:
+          type: "boolean"
+        triggerConfiguration:
+          $ref: "#/components/schemas/EventTriggerConfig"
+    EventType:
+      title: "EventType"
+      type: "string"
+      enum:
+      - "events"
+      - "bizevents"
+      - "dt.system.events"
+      - "security.events"
+      description: "Grail event type."
+    Execution:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        workflow:
+          type: "string"
+          format: "uuid"
+          description: "Executed Workflow"
+        state:
+          $ref: "#/components/schemas/ExecutionState"
+        stateInfo:
+          type: "string"
+          nullable: true
+        input:
+          type: "object"
+          additionalProperties: {}
+        providedInput:
+          type: "object"
+          additionalProperties: {}
+          nullable: true
+        params:
+          type: "object"
+          additionalProperties: {}
+        startedAt:
+          type: "string"
+          format: "date-time"
+        endedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        runtime:
+          type: "integer"
+          description: "Calculate the runtime of an execution in seconds.\nIf the\
+            \ execution is not ended, runtime is calculated until now."
+          readOnly: true
+        trigger:
+          type: "string"
+          nullable: true
+          maxLength: 255
+        schedule:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        eventTrigger:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        user:
+          type: "string"
+          nullable: true
+          maxLength: 50
+        actor:
+          type: "string"
+          readOnly: true
+          maxLength: 36
+        title:
+          type: "string"
+          readOnly: true
+        result: {}
+        triggerType:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/TriggerType"
+        workflowVersion:
+          type: "integer"
+          minimum: 0
+          readOnly: true
+          nullable: true
+        workflowType:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowType"
+        triggerTypeDetail:
+          $ref: "#/components/schemas/TriggerTypeDetail"
+        parentExecution:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+          nullable: true
+        parentTaskName:
+          type: "string"
+          readOnly: true
+          nullable: true
+          description: "Parent task execution's name (subworkflows only)"
+        rootExecution:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        rootWorkflow:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        isDraft:
+          type: "boolean"
+      required:
+      - "actor"
+      - "parentExecution"
+      - "parentTaskName"
+      - "runtime"
+      - "state"
+      - "title"
+      - "triggerType"
+      - "workflow"
+      - "workflowType"
+      - "workflowVersion"
+      - "id"
+    ExecutionInputsRequest:
+      description: "Inputs for workflow executions"
+      properties:
+        input:
+          additionalProperties: true
+          default: {}
+          description: "Inputs (key/value pairs)"
+          type: "object"
+        params:
+          additionalProperties: true
+          default: {}
+          description: "Metadata (can be nested object)"
+          type: "object"
+        uniqueQualifier:
+          description: "A qualifier that must not have been used before to trigger\
+            \ the execution"
+          nullable: true
+          type: "string"
+      title: "ExecutionInputsRequest"
+      type: "object"
+    ExecutionLimits:
+      properties:
+        hourlyExecutionUpperBoundStandard:
+          type: "integer"
+        hourlyExecutionUpperBoundSimple:
+          type: "integer"
+        hourlyExecutionDefaultStandard:
+          type: "integer"
+        hourlyExecutionDefaultSimple:
+          type: "integer"
+        hourlyEventTriggerStandard:
+          type: "integer"
+        hourlyEventTriggerSimple:
+          type: "integer"
+      required:
+      - "hourlyExecutionUpperBoundStandard"
+      - "hourlyExecutionUpperBoundSimple"
+      - "hourlyExecutionDefaultStandard"
+      - "hourlyExecutionDefaultSimple"
+      - "hourlyEventTriggerStandard"
+      - "hourlyEventTriggerSimple"
+      title: "ExecutionLimits"
+      type: "object"
+    ExecutionState:
+      title: "ExecutionState"
+      type: "string"
+      enum:
+      - "CANCELLED"
+      - "ERROR"
+      - "PAUSED"
+      - "RUNNING"
+      - "SUCCESS"
+      - "UNKNOWN"
+    FixedOffsetRule:
+      properties:
+        rule:
+          format: "uuid4"
+          type: "string"
+        offset:
+          description: "Offset days"
+          type: "number"
+      required:
+      - "rule"
+      - "offset"
+      title: "FixedOffsetRule"
+      type: "object"
+    FixedOffsetRulePreviewRequest:
+      properties:
+        id:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        count:
+          default: 10
+          maximum: 10
+          minimum: 0
+          type: "integer"
+        businessCalendar:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        dateFrom:
+          description: "Start date for the preview range (yyyy-mm-dd). Defaults to\
+            \ UTC today."
+          nullable: true
+          type: "string"
+        dateTo:
+          description: "End date for the preview range (yyyy-mm-dd). If provided,\
+            \ returns all executions in the range and count is ignored. Must not exceed\
+            \ 182 days from date_from."
+          nullable: true
+          type: "string"
+        ruleType:
+          $ref: "#/components/schemas/FixedOffsetRulePreviewRuleType"
+        fixedOffsetRule:
+          $ref: "#/components/schemas/FixedOffsetRule"
+      required:
+      - "ruleType"
+      - "fixedOffsetRule"
+      title: "FixedOffsetRulePreviewRequest"
+      type: "object"
+    FixedOffsetRulePreviewRuleType:
+      enum:
+      - "fixed_offset"
+      type: "string"
+    Freq:
+      enum:
+      - "YEARLY"
+      - "MONTHLY"
+      - "WEEKLY"
+      - "DAILY"
+      - "HOURLY"
+      - "MINUTELY"
+      - "SECONDLY"
+      type: "string"
+    GetSettingsResponse:
+      properties:
+        scopes:
+          additionalProperties:
+            type: "string"
+          type: "object"
+        groupId:
+          format: "uuid"
+          type: "string"
+        policyId:
+          format: "uuid"
+          type: "string"
+        features:
+          items:
+            type: "string"
+          type: "array"
+        environment:
+          $ref: "#/components/schemas/EnvironmentObject"
+      required:
+      - "scopes"
+      - "groupId"
+      - "policyId"
+      - "features"
+      - "environment"
+      title: "GetSettingsResponse"
+      type: "object"
+    GroupingRule:
+      properties:
+        combine:
+          items:
+            format: "uuid4"
+            type: "string"
+          nullable: true
+          type: "array"
+        intersect:
+          items:
+            format: "uuid4"
+            type: "string"
+          nullable: true
+          type: "array"
+        subtract:
+          items:
+            format: "uuid4"
+            type: "string"
+          nullable: true
+          type: "array"
+      title: "GroupingRule"
+      type: "object"
+    GroupingRulePreviewRequest:
+      properties:
+        id:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        count:
+          default: 10
+          maximum: 10
+          minimum: 0
+          type: "integer"
+        businessCalendar:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        dateFrom:
+          description: "Start date for the preview range (yyyy-mm-dd). Defaults to\
+            \ UTC today."
+          nullable: true
+          type: "string"
+        dateTo:
+          description: "End date for the preview range (yyyy-mm-dd). If provided,\
+            \ returns all executions in the range and count is ignored. Must not exceed\
+            \ 182 days from date_from."
+          nullable: true
+          type: "string"
+        ruleType:
+          $ref: "#/components/schemas/GroupingRulePreviewRuleType"
+        groupingRule:
+          $ref: "#/components/schemas/GroupingRule"
+      required:
+      - "ruleType"
+      - "groupingRule"
+      title: "GroupingRulePreviewRequest"
+      type: "object"
+    GroupingRulePreviewRuleType:
+      enum:
+      - "grouping"
+      type: "string"
+    HmacSignatureEncoding:
+      title: "SignatureEncoding"
+      type: "string"
+      enum:
+      - "hex"
+      - "base64"
+    Holiday:
+      properties:
+        title:
+          type: "string"
+        date:
+          type: "string"
+      required:
+      - "title"
+      - "date"
+      title: "Holiday"
+      type: "object"
+    HolidayCalendarList:
+      properties:
+        count:
+          type: "integer"
+        results:
+          items:
+            $ref: "#/components/schemas/Holiday"
+          type: "array"
+      required:
+      - "count"
+      - "results"
+      title: "HolidayCalendarList"
+      type: "object"
+    Holidays:
+      items:
+        $ref: "#/components/schemas/Holiday"
+      title: "Holidays"
+      type: "array"
+    IntervalTrigger:
+      additionalProperties: false
+      properties:
+        type:
+          $ref: "#/components/schemas/IntervalTriggerType"
+        intervalMinutes:
+          maximum: 720
+          minimum: 1
+          type: "integer"
+        betweenStart:
+          nullable: true
+          pattern: "^([0-1]\\d|2[0-3]):[0-5]\\d$"
+          type: "string"
+        betweenEnd:
+          nullable: true
+          pattern: "^([0-1]\\d|2[0-3]):[0-5]\\d$"
+          type: "string"
+      required:
+      - "type"
+      - "intervalMinutes"
+      title: "IntervalTrigger"
+      type: "object"
+    IntervalTriggerType:
+      enum:
+      - "interval"
+      type: "string"
+    MaintenanceWindowTriggerBehaviorType:
+      title: "MaintenanceWindowTriggerBehaviorType"
+      type: "string"
+      enum:
+      - "always"
+      - "inside"
+      - "outside"
+      description: "Specifies when to trigger based on maintenance window status."
+    Model:
+      enum:
+      - "Execution"
+      - "TaskExecution"
+      - "ActionExecution"
+      type: "string"
+    ModificationInfo:
+      properties:
+        createdBy:
+          format: "uuid"
+          nullable: true
+          type: "string"
+        createdTime:
+          format: "date-time"
+          type: "string"
+        lastModifiedBy:
+          format: "uuid"
+          nullable: true
+          type: "string"
+        lastModifiedTime:
+          format: "date-time"
+          type: "string"
+      required:
+      - "createdBy"
+      - "createdTime"
+      - "lastModifiedBy"
+      - "lastModifiedTime"
+      title: "ModificationInfo"
+      type: "object"
+    OnceTrigger:
+      additionalProperties: false
+      properties:
+        type:
+          $ref: "#/components/schemas/OnceTriggerType"
+        at:
+          description: "Datetime in ISO 8601 format without timezone information."
+          example: "2025-12-25T14:30:00"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$"
+          type: "string"
+      required:
+      - "type"
+      - "at"
+      title: "OnceTrigger"
+      type: "object"
+    OnceTriggerType:
+      enum:
+      - "once"
+      type: "string"
+    OwnerType:
+      enum:
+      - "USER"
+      - "GROUP"
+      type: "string"
+    PaginatedBusinessCalendarResponseList:
+      type: "object"
+      required:
+      - "count"
+      - "results"
+      properties:
+        count:
+          type: "integer"
+          example: 123
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/BusinessCalendarResponse"
+    PaginatedChangeHistory:
+      type: "object"
+      required:
+      - "count"
+      - "results"
+      properties:
+        count:
+          type: "integer"
+          example: 123
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ChangeHistory"
+    PaginatedExecutionList:
+      type: "object"
+      required:
+      - "count"
+      - "results"
+      properties:
+        count:
+          type: "integer"
+          example: 123
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Execution"
+    PaginatedRuleList:
+      type: "object"
+      required:
+      - "count"
+      - "results"
+      properties:
+        count:
+          type: "integer"
+          example: 123
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Rule"
+    PaginatedWorkflowList:
+      type: "object"
+      required:
+      - "count"
+      - "results"
+      properties:
+        count:
+          type: "integer"
+          example: 123
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/WorkflowList"
+    RRule:
+      properties:
+        freq:
+          $ref: "#/components/schemas/Freq"
+        datestart:
+          description: "The recurrence start."
+          type: "string"
+        interval:
+          default: 1
+          description: "The interval between each freq iteration."
+          minimum: 0
+          type: "integer"
+        wkst:
+          description: "The week start day."
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/Wkst"
+        until:
+          description: "Specifying the upper-bound limit of the recurrence."
+          format: "date-time"
+          nullable: true
+          type: "string"
+        bysetpos:
+          description: "Each given integer will specify an occurrence number, corresponding\
+            \ to the nth occurrence of the rule inside the frequency period"
+          items:
+            type: "integer"
+          nullable: true
+          type: "array"
+        bymonth:
+          description: "The months to apply the recurrence to."
+          items:
+            type: "integer"
+          nullable: true
+          type: "array"
+        bymonthday:
+          description: "The month days to apply the recurrence to."
+          items:
+            type: "integer"
+          nullable: true
+          type: "array"
+        byyearday:
+          description: "The year days to apply the recurrence to."
+          items:
+            type: "integer"
+          nullable: true
+          type: "array"
+        byweekno:
+          description: "The week numbers to apply the recurrence to."
+          items:
+            type: "integer"
+          nullable: true
+          type: "array"
+        byday:
+          description: "Define the weekdays where the recurrence will be applied."
+          items:
+            $ref: "#/components/schemas/Byday"
+          nullable: true
+          type: "array"
+        byworkday:
+          description: "The type of days on which the recurrence will be applied."
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/Byworkday"
+      required:
+      - "freq"
+      - "datestart"
+      title: "RRule"
+      type: "object"
+    RRulePreviewRequest:
+      properties:
+        id:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        count:
+          default: 10
+          maximum: 10
+          minimum: 0
+          type: "integer"
+        businessCalendar:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        dateFrom:
+          description: "Start date for the preview range (yyyy-mm-dd). Defaults to\
+            \ UTC today."
+          nullable: true
+          type: "string"
+        dateTo:
+          description: "End date for the preview range (yyyy-mm-dd). If provided,\
+            \ returns all executions in the range and count is ignored. Must not exceed\
+            \ 182 days from date_from."
+          nullable: true
+          type: "string"
+        ruleType:
+          $ref: "#/components/schemas/RRulePreviewRuleType"
+        rrule:
+          $ref: "#/components/schemas/RRule"
+      required:
+      - "ruleType"
+      - "rrule"
+      title: "RRulePreviewRequest"
+      type: "object"
+    RRulePreviewRuleType:
+      enum:
+      - "rrule"
+      type: "string"
+    RelativeOffsetRule:
+      properties:
+        direction:
+          $ref: "#/components/schemas/Direction"
+        sourceRule:
+          format: "uuid4"
+          type: "string"
+        targetRule:
+          format: "uuid4"
+          type: "string"
+      required:
+      - "direction"
+      - "sourceRule"
+      - "targetRule"
+      title: "RelativeOffsetRule"
+      type: "object"
+    RelativeOffsetRulePreviewRequest:
+      properties:
+        id:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        count:
+          default: 10
+          maximum: 10
+          minimum: 0
+          type: "integer"
+        businessCalendar:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+        dateFrom:
+          description: "Start date for the preview range (yyyy-mm-dd). Defaults to\
+            \ UTC today."
+          nullable: true
+          type: "string"
+        dateTo:
+          description: "End date for the preview range (yyyy-mm-dd). If provided,\
+            \ returns all executions in the range and count is ignored. Must not exceed\
+            \ 182 days from date_from."
+          nullable: true
+          type: "string"
+        ruleType:
+          $ref: "#/components/schemas/RelativeOffsetRulePreviewRuleType"
+        relativeOffsetRule:
+          $ref: "#/components/schemas/RelativeOffsetRule"
+      required:
+      - "ruleType"
+      - "relativeOffsetRule"
+      title: "RelativeOffsetRulePreviewRequest"
+      type: "object"
+    RelativeOffsetRulePreviewRuleType:
+      enum:
+      - "relative_offset"
+      type: "string"
+    Rule:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          readOnly: true
+        title:
+          type: "string"
+          maxLength: 200
+        ruleType:
+          $ref: "#/components/schemas/RuleType"
+        rrule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/RRule"
+        groupingRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/GroupingRule"
+        fixedOffsetRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/FixedOffsetRule"
+        relativeOffsetRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/RelativeOffsetRule"
+        businessCalendar:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        description:
+          type: "string"
+        modificationInfo:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/ModificationInfo"
+      required:
+      - "modificationInfo"
+      - "ruleType"
+      - "title"
+      - "version"
+      - "id"
+    RuleCreate:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+          minLength: 1
+          maxLength: 200
+        ruleType:
+          $ref: "#/components/schemas/RuleType"
+        rrule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/RRule"
+        groupingRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/GroupingRule"
+        fixedOffsetRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/FixedOffsetRule"
+        relativeOffsetRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/RelativeOffsetRule"
+        businessCalendar:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        description:
+          type: "string"
+      required:
+      - "ruleType"
+      - "title"
+    RulePreviewCreate:
+      discriminator:
+        mapping:
+          fixed_offset: "#/components/schemas/FixedOffsetRulePreviewRequest"
+          grouping: "#/components/schemas/GroupingRulePreviewRequest"
+          relative_offset: "#/components/schemas/RelativeOffsetRulePreviewRequest"
+          rrule: "#/components/schemas/RRulePreviewRequest"
+        propertyName: "ruleType"
+      oneOf:
+      - $ref: "#/components/schemas/RRulePreviewRequest"
+      - $ref: "#/components/schemas/GroupingRulePreviewRequest"
+      - $ref: "#/components/schemas/FixedOffsetRulePreviewRequest"
+      - $ref: "#/components/schemas/RelativeOffsetRulePreviewRequest"
+      title: "RulePreviewCreate"
+    RulePreviewResponse:
+      properties:
+        nextExecutions:
+          items:
+            format: "date-time"
+            type: "string"
+          nullable: true
+          type: "array"
+        valid:
+          type: "boolean"
+        error:
+          nullable: true
+          type: "string"
+      required:
+      - "valid"
+      title: "RulePreviewResponse"
+      type: "object"
+    RuleType:
+      title: "RuleType"
+      type: "string"
+      enum:
+      - "rrule"
+      - "grouping"
+      - "fixed_offset"
+      - "relative_offset"
+    RuleUpdate:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          minLength: 1
+          maxLength: 200
+        ruleType:
+          $ref: "#/components/schemas/RuleType"
+        rrule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/RRule"
+        groupingRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/GroupingRule"
+        fixedOffsetRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/FixedOffsetRule"
+        relativeOffsetRule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/RelativeOffsetRule"
+        businessCalendar:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        description:
+          type: "string"
+    Schedule:
+      type: "object"
+      properties:
+        isActive:
+          type: "boolean"
+        isFaulty:
+          type: "boolean"
+          readOnly: true
+        trigger:
+          $ref: "#/components/schemas/ScheduleTrigger"
+        rule:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        filterParameters:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/ScheduleFilterParameters"
+        timezone:
+          $ref: "#/components/schemas/Timezone"
+        inputs:
+          $ref: "#/components/schemas/ScheduleInputs"
+        nextExecution:
+          type: "string"
+          format: "date-time"
+          nullable: true
+          readOnly: true
+      required:
+      - "isFaulty"
+      - "trigger"
+    ScheduleExport:
+      type: "object"
+      properties:
+        isActive:
+          type: "boolean"
+        trigger:
+          $ref: "#/components/schemas/ScheduleTrigger"
+        rule:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        filterParameters:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/ScheduleFilterParameters"
+        timezone:
+          $ref: "#/components/schemas/Timezone"
+        inputs:
+          $ref: "#/components/schemas/ScheduleInputs"
+      required:
+      - "trigger"
+    ScheduleFilterParameters:
+      properties:
+        count:
+          default: 10
+          minimum: 1
+          type: "integer"
+        earliestStart:
+          nullable: true
+          type: "string"
+        earliestStartTime:
+          default: "00:00"
+          pattern: "^([0-1]\\d|2[0-3]):[0-5]\\d$"
+          type: "string"
+        until:
+          nullable: true
+          type: "string"
+        includeDates:
+          items:
+            type: "string"
+          nullable: true
+          type: "array"
+        excludeDates:
+          items:
+            type: "string"
+          nullable: true
+          type: "array"
+      title: "ScheduleFilterParameters"
+      type: "object"
+    ScheduleInput:
+      properties:
+        type:
+          $ref: "#/components/schemas/ScheduleInputType"
+        value:
+          anyOf:
+          - type: "string"
+          - type: "integer"
+          - type: "number"
+      required:
+      - "type"
+      - "value"
+      title: "ScheduleInput"
+      type: "object"
+    ScheduleInputType:
+      enum:
+      - "static"
+      type: "string"
+    ScheduleInputs:
+      additionalProperties:
+        $ref: "#/components/schemas/ScheduleInput"
+      title: "ScheduleInputs"
+      type: "object"
+    SchedulePreviewRequest:
+      type: "object"
+      properties:
+        schedule:
+          $ref: "#/components/schemas/ScheduleRequest"
+      required:
+      - "schedule"
+    SchedulePreviewResponse:
+      properties:
+        nextExecutions:
+          items:
+            format: "date-time"
+            type: "string"
+          nullable: true
+          type: "array"
+        valid:
+          type: "boolean"
+        error:
+          nullable: true
+          type: "string"
+      required:
+      - "valid"
+      title: "SchedulePreviewResponse"
+      type: "object"
+    ScheduleRequest:
+      type: "object"
+      properties:
+        trigger:
+          $ref: "#/components/schemas/ScheduleTrigger"
+        rule:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        filterParameters:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/ScheduleFilterParameters"
+        timezone:
+          $ref: "#/components/schemas/Timezone"
+        isActive:
+          type: "boolean"
+      required:
+      - "trigger"
+    ScheduleTrigger:
+      discriminator:
+        mapping:
+          cron: "#/components/schemas/CronTrigger"
+          interval: "#/components/schemas/IntervalTrigger"
+          once: "#/components/schemas/OnceTrigger"
+          time: "#/components/schemas/TimeTrigger"
+        propertyName: "type"
+      oneOf:
+      - $ref: "#/components/schemas/CronTrigger"
+      - $ref: "#/components/schemas/TimeTrigger"
+      - $ref: "#/components/schemas/IntervalTrigger"
+      - $ref: "#/components/schemas/OnceTrigger"
+      title: "ScheduleTrigger"
+    Source:
+      properties:
+        model:
+          $ref: "#/components/schemas/Model"
+        id:
+          format: "uuid4"
+          type: "string"
+        str:
+          type: "string"
+        userStr:
+          type: "string"
+      required:
+      - "model"
+      - "id"
+      - "str"
+      - "userStr"
+      title: "Source"
+      type: "object"
+    Task:
+      properties:
+        name:
+          nullable: true
+          type: "string"
+        action:
+          example: "my.app:action_1"
+          pattern: "^.+:.+$"
+          type: "string"
+        description:
+          nullable: true
+          type: "string"
+        input:
+          additionalProperties: true
+          nullable: true
+          type: "object"
+        active:
+          anyOf:
+          - type: "boolean"
+          - type: "string"
+          default: true
+          description: "Specifies whether a task should be skipped as a no operation\
+            \ or not."
+        position:
+          anyOf:
+          - $ref: "#/components/schemas/TaskPosition"
+          nullable: true
+        customSampleResult: {}
+        predecessors:
+          items:
+            type: "string"
+          nullable: true
+          type: "array"
+          uniqueItems: true
+        conditions:
+          anyOf:
+          - $ref: "#/components/schemas/TaskConditionOption"
+          nullable: true
+        withItems:
+          nullable: true
+          type: "string"
+        concurrency:
+          anyOf:
+          - pattern: "^{{.+}}$"
+            type: "string"
+          - maximum: 99
+            minimum: 1
+            type: "integer"
+        retry:
+          anyOf:
+          - $ref: "#/components/schemas/TaskRetryOption"
+          nullable: true
+        timeout:
+          anyOf:
+          - pattern: "^{{.+}}$"
+            type: "string"
+          - maximum: 604800
+            minimum: 1
+            type: "integer"
+          default: 3600
+          description: "Specifies a default task timeout. 60 * 60 (60min) is used\
+            \ when not set."
+        waitBefore:
+          anyOf:
+          - pattern: "^{{.+}}$"
+            type: "string"
+          - maximum: 86400
+            minimum: 0
+            type: "integer"
+          default: 0
+          description: "Specifies a default task wait before in seconds. 0 is used\
+            \ when not set."
+      required:
+      - "action"
+      title: "Task"
+      type: "object"
+    TaskConditionOption:
+      properties:
+        states:
+          additionalProperties:
+            enum:
+            - "SUCCESS"
+            - "ERROR"
+            - "ANY"
+            - "OK"
+            - "NOK"
+            type: "string"
+          nullable: true
+          type: "object"
+        custom:
+          nullable: true
+          type: "string"
+        else:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/Else"
+      title: "TaskConditionOption"
+      type: "object"
+    TaskExecution:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        execution:
+          type: "string"
+          format: "uuid"
+          description: "Parent execution"
+        name:
+          type: "string"
+        state:
+          $ref: "#/components/schemas/TaskExecutionState"
+        errorReason:
+          type: "string"
+          nullable: true
+        stateInfo:
+          type: "string"
+          nullable: true
+        input:
+          type: "object"
+          additionalProperties: {}
+        startedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+          readOnly: true
+        endedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+          readOnly: true
+        runtime:
+          type: "integer"
+          description: "Calculate the runtime of a task execution in seconds.\nIf\
+            \ the task execution is not ended, runtime is calculated until now."
+          readOnly: true
+        position:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/TaskPosition"
+        conditions:
+          type: "object"
+          additionalProperties: {}
+          readOnly: true
+        predecessors:
+          type: "array"
+          items:
+            type: "string"
+          readOnly: true
+        active:
+          type: "boolean"
+          description: "Whether task is active"
+          readOnly: true
+        result:
+          readOnly: true
+          anyOf:
+          - {}
+        conditionResults:
+          type: "object"
+          additionalProperties: {}
+        description:
+          type: "string"
+          nullable: true
+        action:
+          type: "string"
+          nullable: true
+        isApproval:
+          type: "boolean"
+          description: "Whether this task is an approval request"
+          readOnly: true
+      required:
+      - "active"
+      - "conditions"
+      - "endedAt"
+      - "execution"
+      - "id"
+      - "name"
+      - "position"
+      - "predecessors"
+      - "result"
+      - "runtime"
+      - "startedAt"
+      - "state"
+    TaskExecutionState:
+      title: "TaskExecutionState"
+      type: "string"
+      enum:
+      - "CANCELLED"
+      - "DISCARDED"
+      - "ERROR"
+      - "IDLE"
+      - "RUNNING"
+      - "AWAITING_APPROVAL"
+      - "SKIPPED"
+      - "SUCCESS"
+      - "WAITING"
+      - "UNKNOWN"
+      - "POST_PROCESSING"
+    TaskExecutions:
+      type: "object"
+      additionalProperties:
+        $ref: "#/components/schemas/TaskExecution"
+    TaskPosition:
+      properties:
+        x:
+          maximum: 1000
+          minimum: -1000
+          type: "integer"
+        "y":
+          maximum: 1000
+          minimum: 1
+          type: "integer"
+      required:
+      - "x"
+      - "y"
+      title: "TaskPosition"
+      type: "object"
+    TaskRetryOption:
+      properties:
+        count:
+          anyOf:
+          - pattern: "^{{.+}}$"
+            type: "string"
+          - maximum: 99
+            minimum: 0
+            type: "integer"
+          description: "Specifies a maximum number of times that a task can be repeated\
+            \ in case it fails on execution."
+        delay:
+          anyOf:
+          - pattern: "^{{.+}}$"
+            type: "string"
+          - maximum: 3600
+            minimum: 0
+            type: "integer"
+          description: "Specifies a delay in seconds between subsequent task retries"
+        failedLoopIterationsOnly:
+          default: true
+          description: "Specifies whether retrying the failed iterations or the whole\
+            \ loop. Default: True."
+          type: "boolean"
+      required:
+      - "count"
+      title: "TaskRetryOption"
+      type: "object"
+    TaskTransition:
+      type: "object"
+      description: "The TaskTransitionSerializer inlines the related workflow object\
+        \ and list of variables.\nRuntime is added as a property and calculated using\
+        \ the started_at and ended_at timestamps."
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        taskNameFrom:
+          type: "string"
+          readOnly: true
+        taskNameTo:
+          type: "string"
+          readOnly: true
+      required:
+      - "id"
+      - "taskNameFrom"
+      - "taskNameTo"
+    TaskTransitions:
+      type: "object"
+      additionalProperties:
+        $ref: "#/components/schemas/TaskTransition"
+    Tasks:
+      additionalProperties:
+        $ref: "#/components/schemas/Task"
+      title: "Tasks"
+      type: "object"
+    Throttle:
+      type: "object"
+      properties:
+        limitEvents:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/ThrottleLimitEvents"
+        isLimitHit:
+          type: "boolean"
+      required:
+      - "isLimitHit"
+      - "limitEvents"
+    ThrottleLimitEvent:
+      properties:
+        timestamp:
+          format: "date-time"
+          type: "string"
+        limit:
+          type: "integer"
+        timeLeftInSeconds:
+          type: "integer"
+        type:
+          $ref: "#/components/schemas/ThrottleLimitEventType"
+      required:
+      - "timestamp"
+      - "limit"
+      - "timeLeftInSeconds"
+      - "type"
+      title: "ThrottleLimitEvent"
+      type: "object"
+    ThrottleLimitEventType:
+      enum:
+      - "workflow"
+      - "event_trigger"
+      type: "string"
+    ThrottleLimitEvents:
+      items:
+        $ref: "#/components/schemas/ThrottleLimitEvent"
+      title: "ThrottleLimitEvents"
+      type: "array"
+    ThrottleRequest:
+      type: "object"
+      properties:
+        isLimitHit:
+          type: "boolean"
+      required:
+      - "isLimitHit"
+    TimeTrigger:
+      additionalProperties: false
+      properties:
+        type:
+          $ref: "#/components/schemas/TimeTriggerType"
+        time:
+          pattern: "^([0-1]\\d|2[0-3]):[0-5]\\d$"
+          type: "string"
+      required:
+      - "type"
+      - "time"
+      title: "TimeTrigger"
+      type: "object"
+    TimeTriggerType:
+      enum:
+      - "time"
+      type: "string"
+    Timezone:
+      title: "Timezone"
+      type: "string"
+      enum:
+      - "Africa/Abidjan"
+      - "Africa/Accra"
+      - "Africa/Addis_Ababa"
+      - "Africa/Algiers"
+      - "Africa/Asmara"
+      - "Africa/Asmera"
+      - "Africa/Bamako"
+      - "Africa/Bangui"
+      - "Africa/Banjul"
+      - "Africa/Bissau"
+      - "Africa/Blantyre"
+      - "Africa/Brazzaville"
+      - "Africa/Bujumbura"
+      - "Africa/Cairo"
+      - "Africa/Casablanca"
+      - "Africa/Ceuta"
+      - "Africa/Conakry"
+      - "Africa/Dakar"
+      - "Africa/Dar_es_Salaam"
+      - "Africa/Djibouti"
+      - "Africa/Douala"
+      - "Africa/El_Aaiun"
+      - "Africa/Freetown"
+      - "Africa/Gaborone"
+      - "Africa/Harare"
+      - "Africa/Johannesburg"
+      - "Africa/Juba"
+      - "Africa/Kampala"
+      - "Africa/Khartoum"
+      - "Africa/Kigali"
+      - "Africa/Kinshasa"
+      - "Africa/Lagos"
+      - "Africa/Libreville"
+      - "Africa/Lome"
+      - "Africa/Luanda"
+      - "Africa/Lubumbashi"
+      - "Africa/Lusaka"
+      - "Africa/Malabo"
+      - "Africa/Maputo"
+      - "Africa/Maseru"
+      - "Africa/Mbabane"
+      - "Africa/Mogadishu"
+      - "Africa/Monrovia"
+      - "Africa/Nairobi"
+      - "Africa/Ndjamena"
+      - "Africa/Niamey"
+      - "Africa/Nouakchott"
+      - "Africa/Ouagadougou"
+      - "Africa/Porto-Novo"
+      - "Africa/Sao_Tome"
+      - "Africa/Timbuktu"
+      - "Africa/Tripoli"
+      - "Africa/Tunis"
+      - "Africa/Windhoek"
+      - "America/Adak"
+      - "America/Anchorage"
+      - "America/Anguilla"
+      - "America/Antigua"
+      - "America/Araguaina"
+      - "America/Argentina/Buenos_Aires"
+      - "America/Argentina/Catamarca"
+      - "America/Argentina/ComodRivadavia"
+      - "America/Argentina/Cordoba"
+      - "America/Argentina/Jujuy"
+      - "America/Argentina/La_Rioja"
+      - "America/Argentina/Mendoza"
+      - "America/Argentina/Rio_Gallegos"
+      - "America/Argentina/Salta"
+      - "America/Argentina/San_Juan"
+      - "America/Argentina/San_Luis"
+      - "America/Argentina/Tucuman"
+      - "America/Argentina/Ushuaia"
+      - "America/Aruba"
+      - "America/Asuncion"
+      - "America/Atikokan"
+      - "America/Atka"
+      - "America/Bahia"
+      - "America/Bahia_Banderas"
+      - "America/Barbados"
+      - "America/Belem"
+      - "America/Belize"
+      - "America/Blanc-Sablon"
+      - "America/Boa_Vista"
+      - "America/Bogota"
+      - "America/Boise"
+      - "America/Buenos_Aires"
+      - "America/Cambridge_Bay"
+      - "America/Campo_Grande"
+      - "America/Cancun"
+      - "America/Caracas"
+      - "America/Catamarca"
+      - "America/Cayenne"
+      - "America/Cayman"
+      - "America/Chicago"
+      - "America/Chihuahua"
+      - "America/Ciudad_Juarez"
+      - "America/Coral_Harbour"
+      - "America/Cordoba"
+      - "America/Costa_Rica"
+      - "America/Coyhaique"
+      - "America/Creston"
+      - "America/Cuiaba"
+      - "America/Curacao"
+      - "America/Danmarkshavn"
+      - "America/Dawson"
+      - "America/Dawson_Creek"
+      - "America/Denver"
+      - "America/Detroit"
+      - "America/Dominica"
+      - "America/Edmonton"
+      - "America/Eirunepe"
+      - "America/El_Salvador"
+      - "America/Ensenada"
+      - "America/Fort_Nelson"
+      - "America/Fort_Wayne"
+      - "America/Fortaleza"
+      - "America/Glace_Bay"
+      - "America/Godthab"
+      - "America/Goose_Bay"
+      - "America/Grand_Turk"
+      - "America/Grenada"
+      - "America/Guadeloupe"
+      - "America/Guatemala"
+      - "America/Guayaquil"
+      - "America/Guyana"
+      - "America/Halifax"
+      - "America/Havana"
+      - "America/Hermosillo"
+      - "America/Indiana/Indianapolis"
+      - "America/Indiana/Knox"
+      - "America/Indiana/Marengo"
+      - "America/Indiana/Petersburg"
+      - "America/Indiana/Tell_City"
+      - "America/Indiana/Vevay"
+      - "America/Indiana/Vincennes"
+      - "America/Indiana/Winamac"
+      - "America/Indianapolis"
+      - "America/Inuvik"
+      - "America/Iqaluit"
+      - "America/Jamaica"
+      - "America/Jujuy"
+      - "America/Juneau"
+      - "America/Kentucky/Louisville"
+      - "America/Kentucky/Monticello"
+      - "America/Knox_IN"
+      - "America/Kralendijk"
+      - "America/La_Paz"
+      - "America/Lima"
+      - "America/Los_Angeles"
+      - "America/Louisville"
+      - "America/Lower_Princes"
+      - "America/Maceio"
+      - "America/Managua"
+      - "America/Manaus"
+      - "America/Marigot"
+      - "America/Martinique"
+      - "America/Matamoros"
+      - "America/Mazatlan"
+      - "America/Mendoza"
+      - "America/Menominee"
+      - "America/Merida"
+      - "America/Metlakatla"
+      - "America/Mexico_City"
+      - "America/Miquelon"
+      - "America/Moncton"
+      - "America/Monterrey"
+      - "America/Montevideo"
+      - "America/Montreal"
+      - "America/Montserrat"
+      - "America/Nassau"
+      - "America/New_York"
+      - "America/Nipigon"
+      - "America/Nome"
+      - "America/Noronha"
+      - "America/North_Dakota/Beulah"
+      - "America/North_Dakota/Center"
+      - "America/North_Dakota/New_Salem"
+      - "America/Nuuk"
+      - "America/Ojinaga"
+      - "America/Panama"
+      - "America/Pangnirtung"
+      - "America/Paramaribo"
+      - "America/Phoenix"
+      - "America/Port-au-Prince"
+      - "America/Port_of_Spain"
+      - "America/Porto_Acre"
+      - "America/Porto_Velho"
+      - "America/Puerto_Rico"
+      - "America/Punta_Arenas"
+      - "America/Rainy_River"
+      - "America/Rankin_Inlet"
+      - "America/Recife"
+      - "America/Regina"
+      - "America/Resolute"
+      - "America/Rio_Branco"
+      - "America/Rosario"
+      - "America/Santa_Isabel"
+      - "America/Santarem"
+      - "America/Santiago"
+      - "America/Santo_Domingo"
+      - "America/Sao_Paulo"
+      - "America/Scoresbysund"
+      - "America/Shiprock"
+      - "America/Sitka"
+      - "America/St_Barthelemy"
+      - "America/St_Johns"
+      - "America/St_Kitts"
+      - "America/St_Lucia"
+      - "America/St_Thomas"
+      - "America/St_Vincent"
+      - "America/Swift_Current"
+      - "America/Tegucigalpa"
+      - "America/Thule"
+      - "America/Thunder_Bay"
+      - "America/Tijuana"
+      - "America/Toronto"
+      - "America/Tortola"
+      - "America/Vancouver"
+      - "America/Virgin"
+      - "America/Whitehorse"
+      - "America/Winnipeg"
+      - "America/Yakutat"
+      - "America/Yellowknife"
+      - "Antarctica/Casey"
+      - "Antarctica/Davis"
+      - "Antarctica/DumontDUrville"
+      - "Antarctica/Macquarie"
+      - "Antarctica/Mawson"
+      - "Antarctica/McMurdo"
+      - "Antarctica/Palmer"
+      - "Antarctica/Rothera"
+      - "Antarctica/South_Pole"
+      - "Antarctica/Syowa"
+      - "Antarctica/Troll"
+      - "Antarctica/Vostok"
+      - "Arctic/Longyearbyen"
+      - "Asia/Aden"
+      - "Asia/Almaty"
+      - "Asia/Amman"
+      - "Asia/Anadyr"
+      - "Asia/Aqtau"
+      - "Asia/Aqtobe"
+      - "Asia/Ashgabat"
+      - "Asia/Ashkhabad"
+      - "Asia/Atyrau"
+      - "Asia/Baghdad"
+      - "Asia/Bahrain"
+      - "Asia/Baku"
+      - "Asia/Bangkok"
+      - "Asia/Barnaul"
+      - "Asia/Beirut"
+      - "Asia/Bishkek"
+      - "Asia/Brunei"
+      - "Asia/Calcutta"
+      - "Asia/Chita"
+      - "Asia/Choibalsan"
+      - "Asia/Chongqing"
+      - "Asia/Chungking"
+      - "Asia/Colombo"
+      - "Asia/Dacca"
+      - "Asia/Damascus"
+      - "Asia/Dhaka"
+      - "Asia/Dili"
+      - "Asia/Dubai"
+      - "Asia/Dushanbe"
+      - "Asia/Famagusta"
+      - "Asia/Gaza"
+      - "Asia/Harbin"
+      - "Asia/Hebron"
+      - "Asia/Ho_Chi_Minh"
+      - "Asia/Hong_Kong"
+      - "Asia/Hovd"
+      - "Asia/Irkutsk"
+      - "Asia/Istanbul"
+      - "Asia/Jakarta"
+      - "Asia/Jayapura"
+      - "Asia/Jerusalem"
+      - "Asia/Kabul"
+      - "Asia/Kamchatka"
+      - "Asia/Karachi"
+      - "Asia/Kashgar"
+      - "Asia/Kathmandu"
+      - "Asia/Katmandu"
+      - "Asia/Khandyga"
+      - "Asia/Kolkata"
+      - "Asia/Krasnoyarsk"
+      - "Asia/Kuala_Lumpur"
+      - "Asia/Kuching"
+      - "Asia/Kuwait"
+      - "Asia/Macao"
+      - "Asia/Macau"
+      - "Asia/Magadan"
+      - "Asia/Makassar"
+      - "Asia/Manila"
+      - "Asia/Muscat"
+      - "Asia/Nicosia"
+      - "Asia/Novokuznetsk"
+      - "Asia/Novosibirsk"
+      - "Asia/Omsk"
+      - "Asia/Oral"
+      - "Asia/Phnom_Penh"
+      - "Asia/Pontianak"
+      - "Asia/Pyongyang"
+      - "Asia/Qatar"
+      - "Asia/Qostanay"
+      - "Asia/Qyzylorda"
+      - "Asia/Rangoon"
+      - "Asia/Riyadh"
+      - "Asia/Saigon"
+      - "Asia/Sakhalin"
+      - "Asia/Samarkand"
+      - "Asia/Seoul"
+      - "Asia/Shanghai"
+      - "Asia/Singapore"
+      - "Asia/Srednekolymsk"
+      - "Asia/Taipei"
+      - "Asia/Tashkent"
+      - "Asia/Tbilisi"
+      - "Asia/Tehran"
+      - "Asia/Tel_Aviv"
+      - "Asia/Thimbu"
+      - "Asia/Thimphu"
+      - "Asia/Tokyo"
+      - "Asia/Tomsk"
+      - "Asia/Ujung_Pandang"
+      - "Asia/Ulaanbaatar"
+      - "Asia/Ulan_Bator"
+      - "Asia/Urumqi"
+      - "Asia/Ust-Nera"
+      - "Asia/Vientiane"
+      - "Asia/Vladivostok"
+      - "Asia/Yakutsk"
+      - "Asia/Yangon"
+      - "Asia/Yekaterinburg"
+      - "Asia/Yerevan"
+      - "Atlantic/Azores"
+      - "Atlantic/Bermuda"
+      - "Atlantic/Canary"
+      - "Atlantic/Cape_Verde"
+      - "Atlantic/Faeroe"
+      - "Atlantic/Faroe"
+      - "Atlantic/Jan_Mayen"
+      - "Atlantic/Madeira"
+      - "Atlantic/Reykjavik"
+      - "Atlantic/South_Georgia"
+      - "Atlantic/St_Helena"
+      - "Atlantic/Stanley"
+      - "Australia/ACT"
+      - "Australia/Adelaide"
+      - "Australia/Brisbane"
+      - "Australia/Broken_Hill"
+      - "Australia/Canberra"
+      - "Australia/Currie"
+      - "Australia/Darwin"
+      - "Australia/Eucla"
+      - "Australia/Hobart"
+      - "Australia/LHI"
+      - "Australia/Lindeman"
+      - "Australia/Lord_Howe"
+      - "Australia/Melbourne"
+      - "Australia/NSW"
+      - "Australia/North"
+      - "Australia/Perth"
+      - "Australia/Queensland"
+      - "Australia/South"
+      - "Australia/Sydney"
+      - "Australia/Tasmania"
+      - "Australia/Victoria"
+      - "Australia/West"
+      - "Australia/Yancowinna"
+      - "Brazil/Acre"
+      - "Brazil/DeNoronha"
+      - "Brazil/East"
+      - "Brazil/West"
+      - "CET"
+      - "CST6CDT"
+      - "Canada/Atlantic"
+      - "Canada/Central"
+      - "Canada/Eastern"
+      - "Canada/Mountain"
+      - "Canada/Newfoundland"
+      - "Canada/Pacific"
+      - "Canada/Saskatchewan"
+      - "Canada/Yukon"
+      - "Chile/Continental"
+      - "Chile/EasterIsland"
+      - "Cuba"
+      - "EET"
+      - "EST"
+      - "EST5EDT"
+      - "Egypt"
+      - "Eire"
+      - "Etc/GMT"
+      - "Etc/GMT+0"
+      - "Etc/GMT+1"
+      - "Etc/GMT+10"
+      - "Etc/GMT+11"
+      - "Etc/GMT+12"
+      - "Etc/GMT+2"
+      - "Etc/GMT+3"
+      - "Etc/GMT+4"
+      - "Etc/GMT+5"
+      - "Etc/GMT+6"
+      - "Etc/GMT+7"
+      - "Etc/GMT+8"
+      - "Etc/GMT+9"
+      - "Etc/GMT-0"
+      - "Etc/GMT-1"
+      - "Etc/GMT-10"
+      - "Etc/GMT-11"
+      - "Etc/GMT-12"
+      - "Etc/GMT-13"
+      - "Etc/GMT-14"
+      - "Etc/GMT-2"
+      - "Etc/GMT-3"
+      - "Etc/GMT-4"
+      - "Etc/GMT-5"
+      - "Etc/GMT-6"
+      - "Etc/GMT-7"
+      - "Etc/GMT-8"
+      - "Etc/GMT-9"
+      - "Etc/GMT0"
+      - "Etc/Greenwich"
+      - "Etc/UCT"
+      - "Etc/UTC"
+      - "Etc/Universal"
+      - "Etc/Zulu"
+      - "Europe/Amsterdam"
+      - "Europe/Andorra"
+      - "Europe/Astrakhan"
+      - "Europe/Athens"
+      - "Europe/Belfast"
+      - "Europe/Belgrade"
+      - "Europe/Berlin"
+      - "Europe/Bratislava"
+      - "Europe/Brussels"
+      - "Europe/Bucharest"
+      - "Europe/Budapest"
+      - "Europe/Busingen"
+      - "Europe/Chisinau"
+      - "Europe/Copenhagen"
+      - "Europe/Dublin"
+      - "Europe/Gibraltar"
+      - "Europe/Guernsey"
+      - "Europe/Helsinki"
+      - "Europe/Isle_of_Man"
+      - "Europe/Istanbul"
+      - "Europe/Jersey"
+      - "Europe/Kaliningrad"
+      - "Europe/Kiev"
+      - "Europe/Kirov"
+      - "Europe/Kyiv"
+      - "Europe/Lisbon"
+      - "Europe/Ljubljana"
+      - "Europe/London"
+      - "Europe/Luxembourg"
+      - "Europe/Madrid"
+      - "Europe/Malta"
+      - "Europe/Mariehamn"
+      - "Europe/Minsk"
+      - "Europe/Monaco"
+      - "Europe/Moscow"
+      - "Europe/Nicosia"
+      - "Europe/Oslo"
+      - "Europe/Paris"
+      - "Europe/Podgorica"
+      - "Europe/Prague"
+      - "Europe/Riga"
+      - "Europe/Rome"
+      - "Europe/Samara"
+      - "Europe/San_Marino"
+      - "Europe/Sarajevo"
+      - "Europe/Saratov"
+      - "Europe/Simferopol"
+      - "Europe/Skopje"
+      - "Europe/Sofia"
+      - "Europe/Stockholm"
+      - "Europe/Tallinn"
+      - "Europe/Tirane"
+      - "Europe/Tiraspol"
+      - "Europe/Ulyanovsk"
+      - "Europe/Uzhgorod"
+      - "Europe/Vaduz"
+      - "Europe/Vatican"
+      - "Europe/Vienna"
+      - "Europe/Vilnius"
+      - "Europe/Volgograd"
+      - "Europe/Warsaw"
+      - "Europe/Zagreb"
+      - "Europe/Zaporozhye"
+      - "Europe/Zurich"
+      - "GB"
+      - "GB-Eire"
+      - "GMT"
+      - "GMT+0"
+      - "GMT-0"
+      - "GMT0"
+      - "Greenwich"
+      - "HST"
+      - "Hongkong"
+      - "Iceland"
+      - "Indian/Antananarivo"
+      - "Indian/Chagos"
+      - "Indian/Christmas"
+      - "Indian/Cocos"
+      - "Indian/Comoro"
+      - "Indian/Kerguelen"
+      - "Indian/Mahe"
+      - "Indian/Maldives"
+      - "Indian/Mauritius"
+      - "Indian/Mayotte"
+      - "Indian/Reunion"
+      - "Iran"
+      - "Israel"
+      - "Jamaica"
+      - "Japan"
+      - "Kwajalein"
+      - "Libya"
+      - "MET"
+      - "MST"
+      - "MST7MDT"
+      - "Mexico/BajaNorte"
+      - "Mexico/BajaSur"
+      - "Mexico/General"
+      - "NZ"
+      - "NZ-CHAT"
+      - "Navajo"
+      - "PRC"
+      - "PST8PDT"
+      - "Pacific/Apia"
+      - "Pacific/Auckland"
+      - "Pacific/Bougainville"
+      - "Pacific/Chatham"
+      - "Pacific/Chuuk"
+      - "Pacific/Easter"
+      - "Pacific/Efate"
+      - "Pacific/Enderbury"
+      - "Pacific/Fakaofo"
+      - "Pacific/Fiji"
+      - "Pacific/Funafuti"
+      - "Pacific/Galapagos"
+      - "Pacific/Gambier"
+      - "Pacific/Guadalcanal"
+      - "Pacific/Guam"
+      - "Pacific/Honolulu"
+      - "Pacific/Johnston"
+      - "Pacific/Kanton"
+      - "Pacific/Kiritimati"
+      - "Pacific/Kosrae"
+      - "Pacific/Kwajalein"
+      - "Pacific/Majuro"
+      - "Pacific/Marquesas"
+      - "Pacific/Midway"
+      - "Pacific/Nauru"
+      - "Pacific/Niue"
+      - "Pacific/Norfolk"
+      - "Pacific/Noumea"
+      - "Pacific/Pago_Pago"
+      - "Pacific/Palau"
+      - "Pacific/Pitcairn"
+      - "Pacific/Pohnpei"
+      - "Pacific/Ponape"
+      - "Pacific/Port_Moresby"
+      - "Pacific/Rarotonga"
+      - "Pacific/Saipan"
+      - "Pacific/Samoa"
+      - "Pacific/Tahiti"
+      - "Pacific/Tarawa"
+      - "Pacific/Tongatapu"
+      - "Pacific/Truk"
+      - "Pacific/Wake"
+      - "Pacific/Wallis"
+      - "Pacific/Yap"
+      - "Poland"
+      - "Portugal"
+      - "ROC"
+      - "ROK"
+      - "Singapore"
+      - "Turkey"
+      - "UCT"
+      - "US/Alaska"
+      - "US/Aleutian"
+      - "US/Arizona"
+      - "US/Central"
+      - "US/East-Indiana"
+      - "US/Eastern"
+      - "US/Hawaii"
+      - "US/Indiana-Starke"
+      - "US/Michigan"
+      - "US/Mountain"
+      - "US/Pacific"
+      - "US/Samoa"
+      - "UTC"
+      - "Universal"
+      - "W-SU"
+      - "WET"
+      - "Zulu"
+    Trigger:
+      type: "object"
+      properties:
+        schedule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/Schedule"
+        eventTrigger:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/EventTrigger"
+    TriggerExport:
+      type: "object"
+      properties:
+        schedule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/ScheduleExport"
+        eventTrigger:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/EventTriggerExport"
+    TriggerManualDetail:
+      properties:
+        userId:
+          format: "uuid4"
+          nullable: true
+          type: "string"
+      title: "TriggerManualDetail"
+      type: "object"
+    TriggerOnUpdateFields:
+      enum:
+      - "dt.davis.affected_users_count"
+      - "dt.davis.impact_level"
+      - "event.category"
+      - "event.severity"
+      - "root_cause_entity_id"
+      - "smartscape.affected_entities"
+      type: "string"
+    TriggerRequest:
+      type: "object"
+      properties:
+        schedule:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/ScheduleRequest"
+        eventTrigger:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/EventTriggerRequest"
+    TriggerSubType:
+      title: "TriggerSubType"
+      type: "string"
+      enum:
+      - "CUSTOM"
+      - "DAVIS_PROBLEM"
+      - "DAVIS_EVENT"
+      - "FIXED_INTERVAL"
+      - "TIME_OF_DAY"
+      - "CRON"
+      - "ONCE"
+    TriggerSubTypeDetail:
+      properties:
+        subType:
+          anyOf:
+          - $ref: "#/components/schemas/TriggerSubType"
+          nullable: true
+      title: "TriggerSubTypeDetail"
+      type: "object"
+    TriggerType:
+      title: "TriggerType"
+      type: "string"
+      enum:
+      - "Manual"
+      - "Schedule"
+      - "Event"
+      - "Workflow"
+    TriggerTypeDetail:
+      anyOf:
+      - $ref: "#/components/schemas/TriggerSubTypeDetail"
+      - $ref: "#/components/schemas/TriggerWorkflowDetail"
+      - $ref: "#/components/schemas/TriggerManualDetail"
+      title: "TriggerTypeDetail"
+    TriggerWorkflowDetail:
+      properties:
+        workflowTitle:
+          nullable: true
+          type: "string"
+      title: "TriggerWorkflowDetail"
+      type: "object"
+    UserSettings:
+      properties:
+        groups:
+          items:
+            type: "string"
+          type: "array"
+      required:
+      - "groups"
+      title: "UserSettings"
+      type: "object"
+    ValidationMethod:
+      title: "ValidationMethod"
+      type: "string"
+      enum:
+      - "slack"
+      - "static"
+      - "hmac-sha256"
+    VersionResponse:
+      properties:
+        version:
+          type: "string"
+      required:
+      - "version"
+      title: "VersionResponse"
+      type: "object"
+    WebhookHandler:
+      type: "object"
+      properties:
+        connectionId:
+          type: "string"
+          readOnly: true
+          description: "The connection ID that this webhook corresponds to."
+        webhookUrl:
+          type: "string"
+          readOnly: true
+        active:
+          type: "boolean"
+        validationMethod:
+          $ref: "#/components/schemas/ValidationMethod"
+        eventSignatureHeader:
+          type: "string"
+        slackSigningSecret:
+          type: "string"
+          nullable: true
+        staticSecret:
+          type: "string"
+          nullable: true
+        hmacSignaturePrefix:
+          type: "string"
+          nullable: true
+        hmacSignatureEncoding:
+          $ref: "#/components/schemas/HmacSignatureEncoding"
+        hmacSecret:
+          type: "string"
+          nullable: true
+      required:
+      - "active"
+      - "connectionId"
+      - "eventSignatureHeader"
+      - "validationMethod"
+      - "webhookUrl"
+    WebhookHandlerList:
+      type: "object"
+      properties:
+        connectionId:
+          type: "string"
+          readOnly: true
+          description: "The connection ID that this webhook corresponds to."
+        webhookUrl:
+          type: "string"
+          readOnly: true
+        active:
+          type: "boolean"
+      required:
+      - "active"
+      - "connectionId"
+      - "webhookUrl"
+    WebhookHandlerWrite:
+      type: "object"
+      properties:
+        active:
+          type: "boolean"
+        validationMethod:
+          $ref: "#/components/schemas/ValidationMethod"
+        eventSignatureHeader:
+          type: "string"
+        slackSigningSecret:
+          type: "string"
+          nullable: true
+        staticSecret:
+          type: "string"
+          nullable: true
+        hmacSignaturePrefix:
+          type: "string"
+          nullable: true
+        hmacSignatureEncoding:
+          $ref: "#/components/schemas/HmacSignatureEncoding"
+        hmacSecret:
+          type: "string"
+          nullable: true
+      required:
+      - "active"
+      - "eventSignatureHeader"
+      - "validationMethod"
+    Weekdays:
+      anyOf:
+      - $ref: "#/components/schemas/WeekdaysNames"
+      - $ref: "#/components/schemas/WeekdaysValues"
+      title: "Weekdays"
+    WeekdaysNames:
+      default:
+      - "MO"
+      - "TU"
+      - "WE"
+      - "TH"
+      - "FR"
+      items:
+        enum:
+        - "MO"
+        - "TU"
+        - "WE"
+        - "TH"
+        - "FR"
+        - "SA"
+        - "SU"
+        type: "string"
+      title: "WeekdaysNames"
+      type: "array"
+    WeekdaysValues:
+      default:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      items:
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        type: "integer"
+      title: "WeekdaysValues"
+      type: "array"
+    Wkst:
+      description: "The week start day."
+      enum:
+      - "MO"
+      - "TU"
+      - "WE"
+      - "TH"
+      - "FR"
+      - "SA"
+      - "SU"
+      type: "string"
+    Workflow:
+      type: "object"
+      description: "Workflow can define multiple tasks and have at most one automatic\
+        \ trigger.\nIn undeployed state, a workflow is not billed and its automatic\
+        \ trigger won't be running."
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+          maxLength: 200
+        isDeployed:
+          type: "boolean"
+          default: true
+        tasks:
+          $ref: "#/components/schemas/Tasks"
+        lastExecution:
+          readOnly: true
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/Execution"
+        description:
+          type: "string"
+        actor:
+          type: "string"
+          nullable: true
+          maxLength: 36
+        owner:
+          type: "string"
+          format: "uuid"
+        ownerType:
+          $ref: "#/components/schemas/OwnerType"
+        isPrivate:
+          type: "boolean"
+          default: true
+        triggerType:
+          type: "string"
+          readOnly: true
+        schemaVersion:
+          type: "integer"
+          maximum: 2147483647
+          minimum: -2147483648
+        trigger:
+          $ref: "#/components/schemas/Trigger"
+        modificationInfo:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/ModificationInfo"
+        result:
+          type: "string"
+          nullable: true
+        type:
+          description: "Workflow type."
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowType"
+        input:
+          type: "object"
+          additionalProperties: {}
+        hourlyExecutionLimit:
+          type: "integer"
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          default: 1000
+        guide:
+          type: "string"
+          nullable: true
+          maxLength: 10000
+        throttle:
+          $ref: "#/components/schemas/Throttle"
+        workflowLimit:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowLimit"
+        version:
+          type: "integer"
+          readOnly: true
+        unacknowledgedSkippedScheduleAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+      required:
+      - "lastExecution"
+      - "modificationInfo"
+      - "title"
+      - "triggerType"
+      - "version"
+      - "workflowLimit"
+      - "id"
+    WorkflowCreate:
+      type: "object"
+      description: "Workflow can define multiple tasks and have at most one automatic\
+        \ trigger.\nIn undeployed state, a workflow is not billed and its automatic\
+        \ trigger won't be running."
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+          minLength: 1
+          maxLength: 200
+        isDeployed:
+          type: "boolean"
+          default: true
+        tasks:
+          $ref: "#/components/schemas/Tasks"
+        description:
+          type: "string"
+        actor:
+          type: "string"
+          nullable: true
+          maxLength: 36
+        owner:
+          type: "string"
+          format: "uuid"
+        ownerType:
+          $ref: "#/components/schemas/OwnerType"
+        isPrivate:
+          type: "boolean"
+          default: true
+        schemaVersion:
+          type: "integer"
+          maximum: 2147483647
+          minimum: -2147483648
+        trigger:
+          $ref: "#/components/schemas/TriggerRequest"
+        result:
+          type: "string"
+          nullable: true
+        type:
+          description: "Workflow type."
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowType"
+        input:
+          type: "object"
+          additionalProperties: {}
+        hourlyExecutionLimit:
+          type: "integer"
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          default: 1000
+        guide:
+          type: "string"
+          nullable: true
+          maxLength: 10000
+        basedOnTemplate:
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/BasedOnTemplate"
+        throttle:
+          $ref: "#/components/schemas/ThrottleRequest"
+        unacknowledgedSkippedScheduleAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+      required:
+      - "title"
+    WorkflowDefinitionTemplate:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          maxLength: 200
+        tasks:
+          $ref: "#/components/schemas/Tasks"
+        description:
+          type: "string"
+        schemaVersion:
+          type: "integer"
+          maximum: 2147483647
+          minimum: -2147483648
+        trigger:
+          $ref: "#/components/schemas/TriggerExport"
+        result:
+          type: "string"
+          nullable: true
+        type:
+          description: "Workflow type."
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowType"
+        input:
+          type: "object"
+          additionalProperties: {}
+        hourlyExecutionLimit:
+          type: "integer"
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          default: 1000
+        guide:
+          type: "string"
+          nullable: true
+          maxLength: 10000
+      required:
+      - "title"
+    WorkflowExport:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+          maxLength: 200
+        tasks:
+          $ref: "#/components/schemas/Tasks"
+        description:
+          type: "string"
+        actor:
+          type: "string"
+          nullable: true
+          maxLength: 36
+        owner:
+          type: "string"
+          format: "uuid"
+        ownerType:
+          $ref: "#/components/schemas/OwnerType"
+        isPrivate:
+          type: "boolean"
+          default: true
+        schemaVersion:
+          type: "integer"
+          maximum: 2147483647
+          minimum: -2147483648
+        trigger:
+          $ref: "#/components/schemas/TriggerExport"
+        result:
+          type: "string"
+          nullable: true
+        type:
+          description: "Workflow type."
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowType"
+        input:
+          type: "object"
+          additionalProperties: {}
+        hourlyExecutionLimit:
+          type: "integer"
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          default: 1000
+        guide:
+          type: "string"
+          nullable: true
+          maxLength: 10000
+      required:
+      - "title"
+      - "id"
+    WorkflowLimit:
+      type: "object"
+      properties:
+        isActive:
+          type: "boolean"
+        throttle:
+          $ref: "#/components/schemas/ThrottleLimitEvent"
+      required:
+      - "isActive"
+    WorkflowList:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        title:
+          type: "string"
+        isDeployed:
+          type: "boolean"
+        tasks:
+          $ref: "#/components/schemas/Tasks"
+        lastExecution:
+          readOnly: true
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/Execution"
+        description:
+          type: "string"
+        actor:
+          type: "string"
+          nullable: true
+        owner:
+          type: "string"
+          format: "uuid"
+        ownerType:
+          $ref: "#/components/schemas/OwnerType"
+        isPrivate:
+          type: "boolean"
+        triggerType:
+          type: "string"
+          readOnly: true
+        schemaVersion:
+          type: "integer"
+        trigger:
+          $ref: "#/components/schemas/Trigger"
+        modificationInfo:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/ModificationInfo"
+        result:
+          type: "string"
+          nullable: true
+        type:
+          description: "Workflow type."
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowType"
+        input:
+          type: "object"
+          additionalProperties: {}
+        hourlyExecutionLimit:
+          type: "integer"
+          nullable: true
+        throttle:
+          $ref: "#/components/schemas/Throttle"
+        workflowLimit:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowLimit"
+        version:
+          type: "integer"
+          readOnly: true
+        unacknowledgedSkippedScheduleAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+      required:
+      - "lastExecution"
+      - "modificationInfo"
+      - "title"
+      - "triggerType"
+      - "version"
+      - "workflowLimit"
+      - "id"
+    WorkflowTemplate:
+      type: "object"
+      properties:
+        metadata:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowTemplateMetadata"
+        workflow:
+          readOnly: true
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowDefinitionTemplate"
+      required:
+      - "metadata"
+      - "workflow"
+    WorkflowTemplateApp:
+      properties:
+        id:
+          type: "string"
+        version:
+          type: "string"
+      required:
+      - "id"
+      - "version"
+      title: "WorkflowTemplateApp"
+      type: "object"
+    WorkflowTemplateDependencies:
+      properties:
+        apps:
+          items:
+            $ref: "#/components/schemas/WorkflowTemplateApp"
+          type: "array"
+      required:
+      - "apps"
+      title: "WorkflowTemplateDependencies"
+      type: "object"
+    WorkflowTemplateInput:
+      properties:
+        type:
+          type: "string"
+        schema:
+          type: "string"
+        connectionFilter:
+          description: "Optional filter expression to limit the connections shown\
+            \ in this template input of type 'connection'"
+          nullable: true
+          type: "string"
+        targets:
+          items:
+            type: "string"
+          type: "array"
+      required:
+      - "type"
+      - "schema"
+      - "targets"
+      title: "WorkflowTemplateInput"
+      type: "object"
+    WorkflowTemplateMetadata:
+      properties:
+        version:
+          type: "string"
+        dependencies:
+          $ref: "#/components/schemas/WorkflowTemplateDependencies"
+        inputs:
+          items:
+            $ref: "#/components/schemas/WorkflowTemplateInput"
+          type: "array"
+      required:
+      - "version"
+      - "dependencies"
+      - "inputs"
+      title: "WorkflowTemplateMetadata"
+      type: "object"
+    WorkflowThrottlesResetStatus:
+      properties:
+        success:
+          type: "boolean"
+      required:
+      - "success"
+      title: "WorkflowThrottlesResetStatus"
+      type: "object"
+    WorkflowType:
+      title: "WorkflowType"
+      type: "string"
+      enum:
+      - "STANDARD"
+      - "SIMPLE"
+      description: "Represents a Workflow type."
+    WorkflowUpdate:
+      type: "object"
+      description: "Workflow can define multiple tasks and have at most one automatic\
+        \ trigger.\nIn undeployed state, a workflow is not billed and its automatic\
+        \ trigger won't be running."
+      properties:
+        title:
+          type: "string"
+          minLength: 1
+          maxLength: 200
+        isDeployed:
+          type: "boolean"
+          default: true
+        tasks:
+          $ref: "#/components/schemas/Tasks"
+        description:
+          type: "string"
+        actor:
+          type: "string"
+          nullable: true
+          maxLength: 36
+        owner:
+          type: "string"
+          format: "uuid"
+        ownerType:
+          $ref: "#/components/schemas/OwnerType"
+        isPrivate:
+          type: "boolean"
+          default: true
+        schemaVersion:
+          type: "integer"
+          maximum: 2147483647
+          minimum: -2147483648
+        trigger:
+          $ref: "#/components/schemas/TriggerRequest"
+        result:
+          type: "string"
+          nullable: true
+        type:
+          description: "Workflow type."
+          anyOf:
+          - $ref: "#/components/schemas/WorkflowType"
+          nullable: true
+        input:
+          type: "object"
+          additionalProperties: {}
+        hourlyExecutionLimit:
+          type: "integer"
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          default: 1000
+        guide:
+          type: "string"
+          nullable: true
+          maxLength: 10000
+        throttle:
+          $ref: "#/components/schemas/ThrottleRequest"
+        unacknowledgedSkippedScheduleAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses oauth2 with the 'client credentials' flow"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes: {}
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/automation/v1"
+  x-api-gateway-url: "/platform/automation/v1"

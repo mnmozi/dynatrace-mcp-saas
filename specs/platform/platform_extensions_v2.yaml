@@ -1,0 +1,3392 @@
+openapi: "3.0.1"
+info:
+  description: "Documentation of Extensions 2.0 API."
+  title: "Extensions 2.0"
+  version: "2.0.0"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/extensions/v2"
+  x-api-gateway-url: "/platform/extensions/v2"
+paths:
+  /discovery/jmx/processes:
+    get:
+      operationId: "listJmxProcesses"
+      parameters:
+      - description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\n\
+          \nFiltering is supported on the following field:\n* `hostId` - the ID of\
+          \ the host the process is running on, in the form `HOST-XXXXXXXXXXXXXXXX`.\n\
+          \nIf the parameter is omitted, all processes are returned.\n\nExample: `hostId\
+          \ = 'HOST-1234ABCD5678EFAB'`\n"
+        in: "query"
+        name: "filter"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JavaProcessContainerList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:discovery.jmx:read"
+      - ssoBearerAuth: []
+      summary: "Lists all Java processes discovered in the environment that are available\
+        \ for JMX metric collection. | maturity=EARLY_ADOPTER"
+      tags:
+      - "Discovery"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** extensions:discovery.jmx:read"
+  /discovery/jmx/processes/{process-id}:
+    get:
+      operationId: "getJmxProcess"
+      parameters:
+      - description: "Id of the Java process discovered in the environment for JMX\
+          \ metric collection."
+        in: "path"
+        name: "process-id"
+        required: true
+        schema:
+          type: "string"
+      - description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\n\
+          \nFiltering is supported on the following field:\n* `hostId` - the ID of\
+          \ the host the process is running on, in the form `HOST-XXXXXXXXXXXXXXXX`.\n\
+          \nIf the parameter is omitted, all processes are returned.\n\nExample: `hostId\
+          \ = 'HOST-1234ABCD5678EFAB'`\n"
+        in: "query"
+        name: "filter"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                jdk.management:
+                  com.sun.management.internal.VirtualThreadSchedulerImpls$VirtualThreadSchedulerImpl:
+                  - properties:
+                      type: "VirtualThreadScheduler"
+                    metrics:
+                    - name: "Parallelism"
+                      numeric: true
+                    - name: "PoolSize"
+                      numeric: true
+                    - name: "MountedVirtualThreadCount"
+                      numeric: true
+                    - name: "QueuedVirtualThreadCount"
+                      numeric: true
+                    - name: "ObjectName"
+                      numeric: false
+                    fullPath: "jdk.management:type=VirtualThreadScheduler"
+                java.util.logging:
+                  sun.management.ManagementFactoryHelper$PlatformLoggingImpl:
+                  - properties:
+                      type: "Logging"
+                    metrics:
+                    - name: "ObjectName"
+                      numeric: false
+                    fullPath: "java.util.logging:type=Logging"
+              schema:
+                $ref: "#/components/schemas/JavaProcessDetails"
+          description: "Success."
+        "404":
+          content:
+            application/json:
+              example:
+                error:
+                  code: 404
+                  message: "Agent returned error code: JMX_NOT_YET_READY"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Failed. Agent data isn't yet available. Try again in a few\
+            \ seconds."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "504":
+          content:
+            application/json:
+              example:
+                error:
+                  code: 504
+                  message: "JMX Metric Browsing request timed out after N ms"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Failed. Agent communication timeout."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:discovery.jmx:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves details of a specified Java process discovered in the environment\
+        \ for JMX metric collection. | maturity=EARLY_ADOPTER"
+      tags:
+      - "Discovery"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** extensions:discovery.jmx:read"
+  /discovery/pmi/processes:
+    get:
+      operationId: "listPmiProcesses"
+      parameters:
+      - description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\n\
+          \nFiltering is supported on the following field:\n* `hostId` - the ID of\
+          \ the host the process is running on, in the form `HOST-XXXXXXXXXXXXXXXX`.\n\
+          \nIf the parameter is omitted, all processes are returned.\n\nExample: `hostId\
+          \ = 'HOST-1234ABCD5678EFAB'`\n"
+        in: "query"
+        name: "filter"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JavaProcessContainerList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:discovery.pmi:read"
+      - ssoBearerAuth: []
+      summary: "Lists all Java processes discovered in the environment that are available\
+        \ for PMI metric collection. | maturity=EARLY_ADOPTER"
+      tags:
+      - "Discovery"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** extensions:discovery.pmi:read"
+  /discovery/pmi/processes/{process-id}:
+    get:
+      operationId: "getPmiProcess"
+      parameters:
+      - description: "Id of the Java process discovered in the environment for PMI\
+          \ metric collection."
+        in: "path"
+        name: "process-id"
+        required: true
+        schema:
+          type: "string"
+      - description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\n\
+          \nFiltering is supported on the following field:\n* `hostId` - the ID of\
+          \ the host the process is running on, in the form `HOST-XXXXXXXXXXXXXXXX`.\n\
+          \nIf the parameter is omitted, all processes are returned.\n\nExample: `hostId\
+          \ = 'HOST-1234ABCD5678EFAB'`\n"
+        in: "query"
+        name: "filter"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                WebSphere:
+                  statistics:
+                  - name: "requestCount"
+                    type: "CountStatistic"
+                  - name: "responseTime"
+                    type: "TimeStatistic"
+                  modules:
+                  - "server1/applications/MyApp"
+                  - "server1/applications/OtherApp"
+              schema:
+                $ref: "#/components/schemas/PmiProcessDetails"
+          description: "Success."
+        "404":
+          content:
+            application/json:
+              example:
+                error:
+                  code: 404
+                  message: "Pmi process information is not yet available from agent:\
+                    \ 12345678901234567"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Failed. Agent data isn't yet available. Try again in a few\
+            \ seconds."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "504":
+          content:
+            application/json:
+              example:
+                error:
+                  code: 504
+                  message: "PMI Metric Browsing request timed out after N ms"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Failed. Agent communication timeout."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:discovery.pmi:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves details of a specified Java process discovered in the environment\
+        \ for PMI metric collection. | maturity=EARLY_ADOPTER"
+      tags:
+      - "Discovery"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** extensions:discovery.pmi:read"
+  /extensions:
+    get:
+      operationId: "listExtensions"
+      parameters:
+      - description: "The amount of extensions in a single response payload. \n\n\
+          The maximal allowed page size is 100. \n\nIf not set, 20 is used."
+        in: "query"
+        name: "page-size"
+        schema:
+          type: "integer"
+          format: "int64"
+      - description: "The cursor for the next page of results. You can find it in\
+          \ the **next-page-key** field of the previous response. \n\nThe first page\
+          \ is always returned if you don't specify the **page-key** query parameter.\
+          \ \n\nWhen the **page-key** is set to obtain subsequent pages, you must\
+          \ omit all other query parameters. "
+        in: "query"
+        name: "page-key"
+        schema:
+          type: "string"
+      - description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\n\
+          \nFiltering is supported on the following fields:\n* `name`\n* `markedForDeletion`\n\
+          \nThis filter supports all type operators as well as logical operators 'AND'\
+          \ and 'OR'.\n'NOT' operator and parentheses aren't supported.\n"
+        in: "query"
+        name: "filter"
+        schema:
+          type: "string"
+      - description: "Comma separated list of additional fields to include in the\
+          \ response.\nAvailable fields:\n* `activeVersion` - includes the active\
+          \ version of the Extension 2.0 in the environment.\n* `keywords` - includes\
+          \ the keywords of the Extension 2.0.\n* `markedForDeletion` - includes the\
+          \ markedForDeletion flag of the Extension 2.0 in the environment, which\
+          \ indicates that the extension is being deleted and cannot be updated or\
+          \ installed until the deletion process is completed.\n"
+        in: "query"
+        name: "add-fields"
+        schema:
+          type: "string"
+          example: "keywords,activeVersion,markedForDeletion"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionInfoList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Lists all Extensions 2.0 available in the environment."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:read"
+    post:
+      operationId: "uploadExtension"
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: "string"
+              format: "binary"
+        description: "Extension 2.0 zip file to upload."
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionUploadResponse"
+          description: "Success. Extension 2.0 has been uploaded."
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Failed. The input file is invalid."
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Upload isn't possible yet. Try again in a few seconds."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:write"
+      - ssoBearerAuth: []
+      summary: "Uploads a new Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:write"
+  /extensions/{extension-name}:
+    get:
+      operationId: "listExtensionVersions"
+      parameters:
+      - description: "The amount of extensions in a single response payload. \n\n\
+          The maximal allowed page size is 100. \n\nIf not set, 20 is used."
+        in: "query"
+        name: "page-size"
+        schema:
+          type: "integer"
+          format: "int64"
+      - description: "The cursor for the next page of results. You can find it in\
+          \ the **next-page-key** field of the previous response. \n\nThe first page\
+          \ is always returned if you don't specify the **page-key** query parameter.\
+          \ \n\nWhen the **page-key** is set to obtain subsequent pages, you must\
+          \ omit all other query parameters. "
+        in: "query"
+        name: "page-key"
+        schema:
+          type: "string"
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Lists all versions of an Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:read"
+    post:
+      operationId: "installExtension"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The version of Extension 2.0 to install. If not specified, the\
+          \ recommended version from the Dynatrace Hub shall be installed."
+        in: "query"
+        name: "version"
+        schema:
+          type: "string"
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredExtensionResult"
+          description: "Accepted. The extension version is installed and active. If\
+            \ the requested version was already the active environment configuration,\
+            \ this is an idempotent no-op (no backend state changes)."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:write"
+      - ssoBearerAuth: []
+      summary: "Installs an Extension 2.0 from the Hub."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:write"
+  /extensions/{extension-name}/environment-configuration:
+    delete:
+      operationId: "deleteExtensionEnvironmentConfiguration"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "Success. Environment configuration deactivated. Response doesn't\
+            \ have a body."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:write"
+      - ssoBearerAuth: []
+      summary: "Deactivates the environment configuration for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:write"
+    get:
+      operationId: "getActiveExtensionEnvironmentConfiguration"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "Comma separated list of additional fields to include in the\
+          \ response.\nAvailable fields:\n* `assets` - includes assets of the Extension\
+          \ 2.0 in the environment.\n* `status` - includes installation status of\
+          \ assets of the Extension 2.0 in the environment.\n* `errors` - includes\
+          \ installation errors of assets of the Extension 2.0 in the environment.\n"
+        in: "query"
+        name: "add-fields"
+        schema:
+          type: "string"
+          example: "assets,status,errors"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentConfiguration"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves the active environment configuration version for Extension\
+        \ 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:read"
+    post:
+      operationId: "activateExtensionEnvironmentConfiguration"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExtensionEnvironmentConfigurationVersion"
+        description: "The version of the requested environment configuration."
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionEnvironmentConfigurationVersion"
+          description: "Success. Environment configuration created. If the requested\
+            \ version was already active, this is an idempotent no-op (no backend\
+            \ state changes)."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:write"
+      - ssoBearerAuth: []
+      summary: "Activates the environment configuration for a specified version of\
+        \ Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:write"
+    put:
+      operationId: "updateExtensionEnvironmentConfiguration"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExtensionEnvironmentConfigurationVersion"
+        description: "The version of the requested environment configuration."
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionEnvironmentConfigurationVersion"
+          description: "Success. Environment configuration updated."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:write"
+      - ssoBearerAuth: []
+      summary: "Updates the active environment configuration version for Extension\
+        \ 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:write"
+  /extensions/{extension-name}/environment-configuration/alert-templates/{alert-template-id}:
+    get:
+      operationId: "getAlertTemplate"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "ID of the requested asset."
+        in: "path"
+        name: "alert-template-id"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertTemplate"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves the alert template for a specified asset of the active environment\
+        \ configuration for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:read"
+  /extensions/{extension-name}/monitoring-configurations:
+    get:
+      operationId: "listExtensionMonitoringConfigurations"
+      parameters:
+      - description: "The amount of monitoring configurations in a single response\
+          \ payload. \n\nThe maximal allowed page size is 500. \n\nIf not set, 20\
+          \ is used."
+        in: "query"
+        name: "page-size"
+        schema:
+          type: "integer"
+          format: "int64"
+      - description: "The cursor for the next page of results. You can find it in\
+          \ the **next-page-key** field of the previous response. \n\nThe first page\
+          \ is always returned if you don't specify the **page-key** query parameter.\
+          \ \n\nWhen the **page-key** is set to obtain subsequent pages, you must\
+          \ omit all other query parameters. "
+        in: "query"
+        name: "page-key"
+        schema:
+          type: "string"
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filtering).\n\
+          \nFiltering is supported on the following fields:\n* `version`\n* `active`\
+          \ or `enabled` (both keywords are supported and interchangeable)\n* `description`\n\
+          * `activationContext`\n\n"
+        in: "query"
+        name: "filter"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionMonitoringConfigurationList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:read"
+      - ssoBearerAuth: []
+      summary: "Lists all monitoring configurations for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:read"
+    post:
+      operationId: "createExtensionMonitoringConfiguration"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MonitoringConfiguration"
+        description: "JSON body of the request, containing monitoring configuration\
+          \ parameters. Monitoring configuration scope cannot be updated."
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonitoringConfigurationResponse"
+          description: "Created."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:write"
+      - ssoBearerAuth: []
+      summary: "Creates a new monitoring configuration for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:write"
+  /extensions/{extension-name}/monitoring-configurations/statuses:
+    get:
+      operationId: "getExtensionMonitoringConfigurationStatuses"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionStatusWithIdList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves the most recent execution statuses of monitoring configurations\
+        \ for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:read"
+  /extensions/{extension-name}/monitoring-configurations/{configuration-id}:
+    delete:
+      operationId: "deleteExtensionMonitoringConfiguration"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The ID of the requested monitoring configuration."
+        in: "path"
+        name: "configuration-id"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "Success. Response doesn't have a body."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:write"
+      - ssoBearerAuth: []
+      summary: "Deletes a specified monitoring configuration for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:write"
+    get:
+      operationId: "getExtensionMonitoringConfigurationDetails"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The ID of the requested monitoring configuration."
+        in: "path"
+        name: "configuration-id"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionMonitoringConfiguration"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves details of a specified monitoring configuration for Extension\
+        \ 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:read"
+    put:
+      operationId: "updateExtensionMonitoringConfiguration"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The ID of the requested monitoring configuration."
+        in: "path"
+        name: "configuration-id"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MonitoringConfigurationUpdate"
+        description: "JSON body of the request, containing monitoring configuration\
+          \ parameters. Monitoring configuration scope cannot be updated."
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonitoringConfigurationResponse"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:write"
+      - ssoBearerAuth: []
+      summary: "Updates a specified monitoring configuration for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:write"
+  /extensions/{extension-name}/monitoring-configurations/{configuration-id}/actions:
+    put:
+      operationId: "executeExtensionMonitoringConfigurationActions"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The ID of the requested monitoring configuration."
+        in: "path"
+        name: "configuration-id"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExecuteActions"
+        description: "JSON body of the request, containing monitoring configuration\
+          \ actions parameters."
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecuteActionsResponse"
+          description: "Accepted."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configuration.actions:write"
+      - ssoBearerAuth: []
+      summary: "Executes data source actions on ActiveGate or Host for a specified\
+        \ monitoring configuration of Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configuration.actions:write"
+  /extensions/{extension-name}/monitoring-configurations/{configuration-id}/audit:
+    get:
+      operationId: "getExtensionMonitoringConfigurationAudit"
+      parameters:
+      - description: "The amount of extensions in a single response payload. \n\n\
+          The maximal allowed page size is 100. \n\nIf not set, 20 is used."
+        in: "query"
+        name: "page-size"
+        schema:
+          type: "integer"
+          format: "int64"
+      - description: "The cursor for the next page of results. You can find it in\
+          \ the **next-page-key** field of the previous response. \n\nThe first page\
+          \ is always returned if you don't specify the **page-key** query parameter.\
+          \ \n\nWhen the **page-key** is set to obtain subsequent pages, you must\
+          \ omit all other query parameters. "
+        in: "query"
+        name: "page-key"
+        schema:
+          type: "string"
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The ID of the requested monitoring configuration."
+        in: "path"
+        name: "configuration-id"
+        required: true
+        schema:
+          type: "string"
+      - description: "The start of the requested timeframe. \n\nYou can use one of\
+          \ the following formats: \n* Timestamp in UTC milliseconds. \n* Human-readable\
+          \ format of `2021-01-25T05:57:01.123+01:00`. If no time zone is specified,\
+          \ UTC is used. You can use a space character instead of the `T`. Seconds\
+          \ and fractions of a second are optional. \n* Relative timeframe, back from\
+          \ now. The format is `now-NU/A`, where `N` is the amount of time, `U` is\
+          \ the unit of time, and `A` is an alignment. The alignment rounds all the\
+          \ smaller values to the nearest zero in the past. For example, `now-1y/w`\
+          \ is one year back, aligned by a week. \nYou can also specify relative timeframe\
+          \ without an alignment: `now-NU`. \nSupported time units for the relative\
+          \ timeframe are: \n   * `m`: minutes \n   * `h`: hours \n   * `d`: days\
+          \ \n   * `w`: weeks \n   * `M`: months \n   * `y`: years \n\nIf not set,\
+          \ the relative timeframe of two weeks is used (`now-2w`)."
+        in: "query"
+        name: "from"
+        schema:
+          type: "string"
+      - description: "The end of the requested timeframe. \n\nYou can use one of the\
+          \ following formats: \n* Timestamp in UTC milliseconds. \n* Human-readable\
+          \ format of `2021-01-25T05:57:01.123+01:00`. If no time zone is specified,\
+          \ UTC is used. You can use a space character instead of the `T`. Seconds\
+          \ and fractions of a second are optional. \n* Relative timeframe, back from\
+          \ now. The format is `now-NU/A`, where `N` is the amount of time, `U` is\
+          \ the unit of time, and `A` is an alignment. The alignment rounds all the\
+          \ smaller values to the nearest zero in the past. For example, `now-1y/w`\
+          \ is one year back, aligned by a week. \nYou can also specify relative timeframe\
+          \ without an alignment: `now-NU`. \nSupported time units for the relative\
+          \ timeframe are: \n   * `m`: minutes \n   * `h`: hours \n   * `d`: days\
+          \ \n   * `w`: weeks \n   * `M`: months \n   * `y`: years \n\nIf not set,\
+          \ the current timestamp is used."
+        in: "query"
+        name: "to"
+        schema:
+          type: "string"
+      - description: "The sorting of audit log entries: \n* `timestamp`: Oldest first.\
+          \ \n* `-timestamp`: Newest first. \n\nIf not set, the newest first sorting\
+          \ is applied."
+        in: "query"
+        name: "sort"
+        required: true
+        schema:
+          type: "string"
+          default: "-timestamp"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditLog"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves the audit logs for a specified monitoring configuration\
+        \ of Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:read"
+  /extensions/{extension-name}/monitoring-configurations/{configuration-id}/status:
+    get:
+      operationId: "getExtensionMonitoringConfigurationStatus"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The ID of the requested monitoring configuration."
+        in: "path"
+        name: "configuration-id"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensionStatus"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves the most recent execution status of a specified monitoring\
+        \ configuration for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:read"
+  /extensions/{extension-name}/{extension-version}:
+    delete:
+      operationId: "deleteExtensionVersion"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The version of the requested Extension 2.0"
+        in: "path"
+        name: "extension-version"
+        required: true
+        schema:
+          type: "string"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Extension"
+          description: "Accepted."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:write"
+      - ssoBearerAuth: []
+      summary: "Deletes a specified version of Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:write"
+    get:
+      operationId: "getExtensionDetails"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The version of the requested Extension 2.0"
+        in: "path"
+        name: "extension-version"
+        required: true
+        schema:
+          type: "string"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      - description: "Accept header. Specifies part of the Extension 2.0 that will\
+          \ be returned: \n* application/json; charset=utf-8 - returns Extension 2.0\
+          \ metadata in JSON \n* application/octet-stream - returns Extension 2.0\
+          \ zip package stored on the server."
+        in: "header"
+        name: "Accept"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/Extension"
+            application/octet-stream:
+              schema:
+                type: "string"
+                format: "binary"
+            application/yaml: {}
+          description: "Success."
+        "4XX":
+          description: "Client error."
+        "5XX":
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves details of a specified version of Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:read"
+  /extensions/{extension-name}/{extension-version}/active-gate-groups:
+    get:
+      operationId: "getActiveGateGroups"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The version of the requested Extension 2.0"
+        in: "path"
+        name: "extension-version"
+        required: true
+        schema:
+          type: "string"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActiveGateGroupInfoList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:configurations:read"
+      - ssoBearerAuth: []
+      summary: "Lists all ActiveGate groups available for Extension 2.0."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:configurations:read"
+  /extensions/{extension-name}/{extension-version}/schema:
+    get:
+      operationId: "getExtensionConfigurationSchema"
+      parameters:
+      - description: "The name of the requested Extension 2.0."
+        in: "path"
+        name: "extension-name"
+        required: true
+        schema:
+          type: "string"
+      - description: "The version of the requested Extension 2.0"
+        in: "path"
+        name: "extension-version"
+        required: true
+        schema:
+          type: "string"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      responses:
+        "200":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/SchemaDefinitionRestDto"
+          description: "Success."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoAuth:
+        - "extensions:configurations:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves the configuration schema for a specified version of Extension\
+        \ 2.0."
+      tags:
+      - "Extensions"
+      description: "**One of the following scopes is required:**\n+ extensions:definitions:read\n\
+        + extensions:configurations:read\n\n"
+  /extensions:validate:
+    post:
+      operationId: "validateExtension"
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: "string"
+              format: "binary"
+        description: "Extension 2.0 zip file to upload."
+        required: true
+      responses:
+        "204":
+          description: "Success. Response doesn't have a body."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:write"
+      - ssoBearerAuth: []
+      summary: "Verifies a new Extension 2.0 for lack of any errors. Performs the\
+        \ same set of operations as upload but doesn't persist the changes."
+      tags:
+      - "Extensions"
+      description: "**Required scope:** extensions:definitions:write"
+  /schemas:
+    get:
+      operationId: "listSchemaVersions"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaVersionList"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Lists all schema versions of Extension 2.0 available in the environment."
+      tags:
+      - "Schemas"
+      description: "**Required scope:** extensions:definitions:read"
+  /schemas/{schema-version}:
+    get:
+      operationId: "listSchemaVersionFiles"
+      parameters:
+      - description: "The version of the schema."
+        in: "path"
+        name: "schema-version"
+        required: true
+        schema:
+          type: "string"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      - description: "Accept header. Specifies part of the Extension 2.0 that will\
+          \ be returned: \n* application/json; charset=utf-8 - returns Extension 2.0\
+          \ metadata in JSON \n* application/octet-stream - returns Extension 2.0\
+          \ zip package stored on the server."
+        in: "header"
+        name: "Accept"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/SchemaFileList"
+            application/octet-stream:
+              schema:
+                type: "string"
+                format: "binary"
+          description: "Success."
+        "4XX":
+          description: "Client error."
+        "5XX":
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Lists all schema files for a specified schema version of Extension\
+        \ 2.0."
+      tags:
+      - "Schemas"
+      description: "**Required scope:** extensions:definitions:read"
+  /schemas/{schema-version}/{file-name}:
+    get:
+      operationId: "getSchemaVersionFile"
+      parameters:
+      - description: "The version of the schema."
+        in: "path"
+        name: "schema-version"
+        required: true
+        schema:
+          type: "string"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      - description: "The name of the schema file."
+        in: "path"
+        name: "file-name"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonNode"
+          description: "Success."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "extensions:definitions:read"
+      - ssoBearerAuth: []
+      summary: "Retrieves the schema file for a specified schema version of Extension\
+        \ 2.0."
+      tags:
+      - "Schemas"
+      description: "**Required scope:** extensions:definitions:read"
+components:
+  schemas:
+    ActiveGateGroupInfo:
+      type: "object"
+      description: "Metadata for each ActiveGate group."
+      properties:
+        activeGates:
+          type: "array"
+          description: "ActiveGates in group."
+          items:
+            $ref: "#/components/schemas/ActiveGateInfo"
+        availableActiveGates:
+          type: "integer"
+          format: "int32"
+          description: "Number of ActiveGates in group available for extension."
+        groupName:
+          type: "string"
+          description: "ActiveGate group name."
+      required:
+      - "activeGates"
+      - "availableActiveGates"
+      - "groupName"
+    ActiveGateGroupInfoList:
+      type: "object"
+      description: "ActiveGate groups metadata for extensions."
+      properties:
+        items:
+          type: "array"
+          description: "Metadata for each ActiveGate group."
+          items:
+            $ref: "#/components/schemas/ActiveGateGroupInfo"
+          uniqueItems: true
+      required:
+      - "items"
+    ActiveGateInfo:
+      type: "object"
+      description: "ActiveGates in group."
+      properties:
+        errors:
+          type: "array"
+          description: "List of errors if Extension can't be run on the ActiveGate"
+          items:
+            type: "string"
+            description: "List of errors if Extension can't be run on the ActiveGate"
+        id:
+          type: "string"
+          description: "ActiveGate ID."
+      required:
+      - "errors"
+      - "id"
+    AlertTemplate:
+      type: "object"
+      properties:
+        templateJson:
+          type: "string"
+    AnyValue:
+      anyOf:
+      - type: "string"
+      - type: "number"
+      - type: "integer"
+      - type: "boolean"
+      - type: "array"
+      - type: "object"
+      description: "A schema representing an arbitrary value type."
+    AssetInfo:
+      type: "object"
+      description: "Metadata for an extension asset."
+      properties:
+        assetSchemaDetails:
+          $ref: "#/components/schemas/AssetSchemaDetails"
+        displayName:
+          type: "string"
+          description: "User-friendly name of the asset."
+        id:
+          type: "string"
+          description: "ID of the asset. Identifies the asset in REST API and/or UI\
+            \ (where applicable)."
+        type:
+          type: "string"
+          description: "The type of the asset."
+          enum:
+          - "ALERT"
+          - "ALERT_TEMPLATE"
+          - "AWS_SERVICE"
+          - "CUSTOM_CARDS"
+          - "DASHBOARD"
+          - "DECLARATIVE_PROCESSES"
+          - "DOCUMENT_DASHBOARD"
+          - "DOCUMENT_SCREEN"
+          - "DQL_LOG_METRIC"
+          - "DQL_LOG_PROCESSING_RULE"
+          - "GENERIC_RELATIONSHIP"
+          - "GENERIC_TYPE"
+          - "LIST_SCREEN_FILTERS"
+          - "LIST_SCREEN_INJECTIONS"
+          - "LIST_SCREEN_LAYOUT"
+          - "LOG_EVENT"
+          - "LOG_METRIC"
+          - "LOG_PROCESSING_RULE"
+          - "LQL_LOG_METRIC"
+          - "LQL_LOG_PROCESSING_RULE"
+          - "METRIC_METADATA"
+          - "METRIC_QUERY"
+          - "OPEN_PIPELINE"
+          - "PROCESS_GROUPING_RULES"
+          - "SCREEN_ACTIONS"
+          - "SCREEN_CHART_GROUPS"
+          - "SCREEN_DQL_TABLE"
+          - "SCREEN_ENTITIES_LISTS"
+          - "SCREEN_EVENTS_CARDS"
+          - "SCREEN_FILTERS"
+          - "SCREEN_HEALTH_CARDS"
+          - "SCREEN_INJECTIONS"
+          - "SCREEN_LAYOUT"
+          - "SCREEN_LOGS_CARDS"
+          - "SCREEN_MESSAGE_CARDS"
+          - "SCREEN_METRIC_TABLES"
+          - "SCREEN_PROBLEMS"
+          - "SCREEN_PROPERTIES"
+    AssetSchemaDetails:
+      type: "object"
+      description: "Settings schema details for asset"
+      properties:
+        key:
+          type: "string"
+          description: "Asset key"
+        schemaId:
+          type: "string"
+          description: "Asset schema id"
+        scope:
+          type: "string"
+          description: "Asset configuration scope"
+    AuditLog:
+      type: "object"
+      description: "The audit log of your environment."
+      example:
+        auditLogs:
+        - category: "CONFIG"
+          entityId: "MOBILE_RUM: MOBILE_APPLICATION-752C223D59734CD2"
+          environmentId: "prod-env-13"
+          eventType: "UPDATE"
+          logId: "197425568800060000"
+          patch:
+          - oldValue: 20000
+            op: "replace"
+            path: "/refreshTimeIntervalMillis"
+            value: 30000
+          success: true
+          timestamp: 1974255688445
+          user: "test.user@company.com"
+          userOrigin: "webui (192.168.0.2)"
+          userType: "USER_NAME"
+        nextPageKey: "___a7acX3q0AAAAAACJidWlsdGluOnNlcnZpY2lUVEJCUzBaNVIxVjJOSGt6Y3oyLTcwMUZWRkxlclH__9rtpxferQ"
+        pageSize: 5
+        totalCount: 10
+      properties:
+        auditLogs:
+          type: "array"
+          description: "A list of audit log entries ordered by the creation timestamp."
+          items:
+            $ref: "#/components/schemas/AuditLogEntry"
+        nextPageKey:
+          type: "string"
+          description: "The cursor for the next page of results. Has the value of\
+            \ `null` on the last page. \n\nUse it in the **nextPageKey** query parameter\
+            \ to obtain subsequent pages of the result."
+          example: "AQAAABQBAAAABQ=="
+        pageSize:
+          type: "integer"
+          format: "int32"
+          description: "The number of entries per page."
+        totalCount:
+          type: "integer"
+          format: "int64"
+          description: "The total number of entries in the result."
+      required:
+      - "totalCount"
+    AuditLogEntry:
+      type: "object"
+      description: "An entry of the audit log."
+      example:
+        category: "CONFIG"
+        entityId: "MOBILE_RUM: MOBILE_APPLICATION-752C223D59734CD2"
+        environmentId: "prod-env-13"
+        eventType: "UPDATE"
+        logId: "197425568800060000"
+        patch:
+        - oldValue: 20000
+          op: "replace"
+          path: "/refreshTimeIntervalMillis"
+          value: 30000
+        success: true
+        timestamp: 1974255688445
+        user: "test.user@company.com"
+        userOrigin: "webui (192.168.0.2)"
+        userType: "USER_NAME"
+      properties:
+        category:
+          type: "string"
+          description: "The category of the recorded operation."
+          enum:
+          - "ACTIVEGATE_TOKEN"
+          - "BUILD_UNIT_V2"
+          - "CONFIG"
+          - "MANUAL_TAGGING_SERVICE"
+          - "TENANT_LIFECYCLE"
+          - "TOKEN"
+          - "WEB_UI"
+          readOnly: true
+        dt.settings.key:
+          type: "string"
+          description: "The key of the affected object of a setting for entries of\
+            \ category `CONFIG`."
+          readOnly: true
+        dt.settings.object_id:
+          type: "string"
+          description: "The ID of the affected object of a setting for entries of\
+            \ category `CONFIG`."
+          readOnly: true
+        dt.settings.object_summary:
+          type: "string"
+          description: "The value summary for entries of category `CONFIG`."
+          readOnly: true
+        dt.settings.schema_id:
+          type: "string"
+          description: "The schema ID or config ID for entries of category `CONFIG`."
+          readOnly: true
+        dt.settings.scope_id:
+          type: "string"
+          description: "The persistence scope for entries of category `CONFIG`, e.g.\
+            \ an ME identifier."
+          example: "environment"
+          readOnly: true
+        dt.settings.scope_name:
+          type: "string"
+          description: "The display name of the scope for entries of category `CONFIG`."
+          readOnly: true
+        entityId:
+          type: "string"
+          description: "The ID of an entity from the **category**. \n\nFor example,\
+            \ it can be config ID for the `CONFIG` category or token ID for the `TOKEN`\
+            \ category."
+          readOnly: true
+        environmentId:
+          type: "string"
+          description: "The ID of the Dynatrace environment where the recorded operation\
+            \ occurred."
+          readOnly: true
+        eventType:
+          type: "string"
+          description: "The type of the recorded operation.\n\n* `LOGIN` -> A user\
+            \ logged in\n* `LOGOUT` -> A user logged out\n* `CREATE` -> An object\
+            \ was created\n* `UPDATE` -> An object was updated\n* `DELETE` -> An object\
+            \ was deleted\n* `REVOKE` -> An Active Gate token was revoked\n* `TAG_ADD`\
+            \ -> A manual tag was added\n* `TAG_REMOVE` -> A manual tag was removed\n\
+            * `TAG_UPDATE` -> A manual tag was updated\n* `REMOTE_CONFIGURATION_MANAGEMENT`\
+            \ -> A Remote Configuration Management related operation occurred\n"
+          enum:
+          - "CREATE"
+          - "DELETE"
+          - "LOGIN"
+          - "LOGOUT"
+          - "REORDER"
+          - "REVOKE"
+          - "TAG_ADD"
+          - "TAG_REMOVE"
+          - "TAG_UPDATE"
+          - "UPDATE"
+          readOnly: true
+        logId:
+          type: "string"
+          description: "The ID of the log entry."
+          maxLength: 19
+          minLength: 0
+          readOnly: true
+        message:
+          type: "string"
+          description: "The logged message."
+          readOnly: true
+        patch:
+          anyOf:
+          - $ref: "#/components/schemas/AnyValue"
+          description: "The patch of the recorded operation as the JSON representation.\
+            \ \n\nThe format is an enhanced RFC 6902. The patch also carries the previous\
+            \ value in the **oldValue** field."
+          readOnly: true
+        success:
+          type: "boolean"
+          description: "The recorded operation is successful (`true`) or failed (`false`)."
+          readOnly: true
+        timestamp:
+          type: "integer"
+          format: "int64"
+          description: "The timestamp of the record creation, in UTC milliseconds."
+          readOnly: true
+        user:
+          type: "string"
+          description: "The ID of the user who performed the recorded operation."
+          readOnly: true
+        userOrigin:
+          type: "string"
+          description: "The origin and the IP address of the **user**."
+          readOnly: true
+        userType:
+          type: "string"
+          description: "The type of the authentication of the **user**.\n\n* `USER_NAME`\
+            \ -> User was logged in the UI\n* `TOKEN_HASH` ->  URL Token or DevOps\
+            \ Token, the hash of the token is logged\n* `SERVICE_NAME` -> No authenticated\
+            \ user at all, this action was performed by a system service automatically\n\
+            * `PUBLIC_TOKEN_IDENTIFIER` -> API Token, the public token id is logged\n"
+          enum:
+          - "PUBLIC_TOKEN_IDENTIFIER"
+          - "SERVICE_NAME"
+          - "TOKEN_HASH"
+          - "USER_NAME"
+          readOnly: true
+      required:
+      - "category"
+      - "environmentId"
+      - "eventType"
+      - "logId"
+      - "success"
+      - "timestamp"
+      - "user"
+      - "userType"
+    Author:
+      type: "object"
+      description: "Extension author"
+      properties:
+        name:
+          type: "string"
+          description: "Author name"
+    ComplexConstraint:
+      type: "object"
+      description: "A constraint on the values accepted for a complex settings property."
+      properties:
+        checkAllProperties:
+          type: "boolean"
+          description: "Defines if modification of any property triggers secret resubmission\
+            \ check."
+          example: false
+        customMessage:
+          type: "string"
+          description: "A custom message for invalid values."
+        customValidatorId:
+          type: "string"
+          description: "The ID of a custom validator."
+          example: "my-min-max"
+        maximumPropertyCount:
+          type: "integer"
+          format: "int32"
+          description: "The maximum number of properties that can be set."
+          example: 2
+        minimumPropertyCount:
+          type: "integer"
+          format: "int32"
+          description: "The minimum number of properties that must be set."
+          example: 1
+        properties:
+          type: "array"
+          description: "A list of properties (defined by IDs) that are used to check\
+            \ the constraint."
+          items:
+            type: "string"
+            description: "A list of properties (defined by IDs) that are used to check\
+              \ the constraint."
+        skipAsyncValidation:
+          type: "boolean"
+          description: "Whether to skip validation on a change made from the UI."
+          example: false
+        timeout:
+          type: "integer"
+          format: "int32"
+          description: "The maximum time in seconds the custom validator is allowed\
+            \ to run."
+          example: 5
+        type:
+          type: "string"
+          description: "The type of the constraint."
+          enum:
+          - "CUSTOM_VALIDATOR_REF"
+          - "GREATER_THAN"
+          - "GREATER_THAN_OR_EQUAL"
+          - "LESS_THAN"
+          - "LESS_THAN_OR_EQUAL"
+          - "PROPERTY_COUNT_RANGE"
+          - "SECRET_RESUBMISSION"
+          - "UNKNOWN"
+      required:
+      - "type"
+    Constraint:
+      type: "object"
+      description: "A constraint on the values accepted for a settings property."
+      properties:
+        customMessage:
+          type: "string"
+          description: "A custom message for invalid values."
+          example: "customConstraintMessage"
+        customValidatorId:
+          type: "string"
+          description: "The ID of a custom validator."
+          example: "my-min-max"
+        disallowDangerousRegex:
+          type: "boolean"
+          description: "Whether to disallow usage of dangerous regexes"
+          example: true
+        maxLength:
+          type: "integer"
+          format: "int32"
+          description: "The maximum allowed length of string values."
+          example: 20
+        maximum:
+          type: "number"
+          description: "The maximum allowed value."
+          example: 200
+        minLength:
+          type: "integer"
+          format: "int32"
+          description: "The minimum required length of string values."
+          example: 7
+        minimum:
+          type: "number"
+          description: "The minimum allowed value."
+          example: 3
+        pattern:
+          type: "string"
+          description: "The regular expression pattern for valid string values."
+          example: "^([a-z]|[0-9]|\\-|\\_|\\+|\\.)+\\@([a-z]|[0-9]|-){2,}\\.([a-z]|[0-9]|-){2,}(\\\
+            .[a-z]{2,})?$"
+        skipAsyncValidation:
+          type: "boolean"
+          description: "Whether to skip validation on a change made from the UI."
+          example: false
+        timeout:
+          type: "integer"
+          format: "int32"
+          description: "The maximum time in seconds the custom validator is allowed\
+            \ to run."
+          example: 5
+        type:
+          type: "string"
+          description: "The type of the constraint."
+          enum:
+          - "CUSTOM_VALIDATOR_REF"
+          - "LENGTH"
+          - "NOT_BLANK"
+          - "NOT_EMPTY"
+          - "NO_WHITESPACE"
+          - "PATTERN"
+          - "RANGE"
+          - "REGEX"
+          - "TRIMMED"
+          - "UNIQUE"
+          - "UNKNOWN"
+          example: "UNKNOWN"
+        uniqueProperties:
+          type: "array"
+          description: "A list of properties for which the combination of values must\
+            \ be unique."
+          example:
+          - "my-prop-1"
+          - "my-prop-2"
+          items:
+            type: "string"
+            description: "A list of properties for which the combination of values\
+              \ must be unique."
+            example: "[\"my-prop-1\",\"my-prop-2\"]"
+      required:
+      - "type"
+    ConstraintViolation:
+      type: "object"
+      description: "A list of constraint violations."
+      properties:
+        location:
+          type: "string"
+        message:
+          type: "string"
+        parameterLocation:
+          type: "string"
+          enum:
+          - "HEADER"
+          - "PATH"
+          - "PAYLOAD_BODY"
+          - "QUERY"
+        path:
+          type: "string"
+    DatasourceDefinition:
+      type: "object"
+      description: "Configuration of a datasource for a property."
+      properties:
+        filterProperties:
+          type: "array"
+          description: "The properties to filter the datasource options on."
+          items:
+            type: "string"
+            description: "The properties to filter the datasource options on."
+          uniqueItems: true
+        fullContext:
+          type: "boolean"
+          description: "Whether this datasource expects full setting payload as the\
+            \ context."
+        identifier:
+          type: "string"
+          description: "The identifier of a custom data source of the property's value."
+        resetValue:
+          type: "string"
+          description: "When to reset datasource value in the UI on filter change."
+          enum:
+          - "ALWAYS"
+          - "INVALID_ONLY"
+          - "NEVER"
+        useApiSearch:
+          type: "boolean"
+          description: "If true, the datasource should use the api to filter the results\
+            \ instead of client-side filtering."
+        validate:
+          type: "boolean"
+          description: "Whether to validate input to only allow values returned by\
+            \ the datasource."
+      required:
+      - "filterProperties"
+      - "fullContext"
+      - "identifier"
+      - "useApiSearch"
+      - "validate"
+    DeletionConstraint:
+      type: "object"
+      description: "A constraint on the values that are going to be deleted."
+      properties:
+        customMessage:
+          type: "string"
+          description: "A custom message for invalid values."
+        customValidatorId:
+          type: "string"
+          description: "The ID of a custom validator."
+          example: "my-min-max"
+        schemaIds:
+          type: "array"
+          items:
+            type: "string"
+            description: "The IDs of schemas that should be checked for references\
+              \ to this schema."
+            example: "my-schema-id"
+        timeout:
+          type: "integer"
+          format: "int32"
+          description: "The maximum time in seconds the custom validator is allowed\
+            \ to run."
+          example: 5
+        type:
+          type: "string"
+          description: "The type of the deletion constraint."
+          enum:
+          - "CUSTOM_VALIDATOR_REF"
+          - "REFERENTIAL_INTEGRITY"
+          - "UNKNOWN"
+      required:
+      - "type"
+    EnumType:
+      type: "object"
+      description: "Definition of an enum property."
+      properties:
+        description:
+          type: "string"
+          description: "A short description of the property."
+          example: "typeDescription"
+        displayName:
+          type: "string"
+          description: "The display name of the property."
+          example: "typeDisplayName"
+        documentation:
+          type: "string"
+          description: "An extended description and/or links to documentation."
+          example: "typeDocumentation"
+        enumClass:
+          type: "string"
+          description: "An existing Java enum class that holds the allowed values\
+            \ of the enum."
+          example: "enumClass"
+        items:
+          type: "array"
+          description: "A list of allowed values of the enum."
+          items:
+            $ref: "#/components/schemas/EnumValue"
+        type:
+          type: "string"
+          description: "The type of the property."
+          enum:
+          - "enum"
+          example: "enum"
+      required:
+      - "description"
+      - "documentation"
+      - "items"
+      - "type"
+    EnumValue:
+      type: "object"
+      description: "An allowed value for an enum property."
+      properties:
+        description:
+          type: "string"
+          description: "A short description of the value."
+          example: "exampleDescription"
+        displayName:
+          type: "string"
+          description: "The display name of the value."
+          example: "exampleDisplayName"
+        enumInstance:
+          type: "string"
+          description: "The name of the value in an existing Java enum class."
+          example: "exampleJavaEnumValue"
+        icon:
+          type: "string"
+          description: "The icon of the value."
+          example: "checkmark"
+        value:
+          anyOf:
+          - $ref: "#/components/schemas/AnyValue"
+          description: "The allowed value of the enum."
+          example: "exampleValue"
+      required:
+      - "displayName"
+      - "value"
+    EnvironmentConfiguration:
+      type: "object"
+      description: "List of assets imported with the active extension environment\
+        \ configuration."
+      properties:
+        assets:
+          type: "array"
+          description: "The list of the imported assets."
+          items:
+            $ref: "#/components/schemas/AssetInfo"
+          writeOnly: true
+        errors:
+          type: "array"
+          description: "List of errors during asset import"
+          items:
+            type: "string"
+            description: "List of errors during asset import"
+          writeOnly: true
+        status:
+          type: "string"
+          description: "The status of the assets list."
+          enum:
+          - "PENDING"
+          - "UP_TO_DATE"
+          writeOnly: true
+        version:
+          type: "string"
+          description: "Version of the active extension environment configuration."
+          example: "1.2.3"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      required:
+      - "assets"
+      - "errors"
+      - "status"
+      - "version"
+    Error:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "The HTTP status code."
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+        message:
+          type: "string"
+          description: "The error message."
+    ErrorDetails:
+      type: "object"
+      description: "The error details."
+      properties:
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations."
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+    ExecuteActions:
+      type: "object"
+      properties:
+        actions:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/JsonNode"
+          description: "Data Source defined action objects"
+    ExecuteActionsResponse:
+      type: "object"
+      properties:
+        activeGateId:
+          type: "string"
+          deprecated: true
+          description: "Active Gate id for actions execution"
+        activeGateIds:
+          type: "array"
+          description: "Active Gate ids for actions execution"
+          items:
+            type: "string"
+            description: "Active Gate ids for actions execution"
+        activeGateName:
+          type: "string"
+          deprecated: true
+          description: "Active Gate name for actions execution"
+    Extension:
+      type: "object"
+      properties:
+        author:
+          $ref: "#/components/schemas/Author"
+        dataSources:
+          type: "array"
+          description: "Data sources that extension uses to gather data"
+          items:
+            type: "string"
+            description: "Data sources that extension uses to gather data"
+        extensionName:
+          type: "string"
+          description: "Extension name"
+        featureSets:
+          type: "array"
+          description: "Available feature sets"
+          items:
+            type: "string"
+            description: "Available feature sets"
+          uniqueItems: true
+        featureSetsDetails:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/FeatureSetDetails"
+          description: "Details of feature sets"
+        fileHash:
+          type: "string"
+          description: "SHA-256 hash of uploaded Extension file"
+        minDynatraceVersion:
+          type: "string"
+          description: "Minimal Dynatrace version that works with the extension"
+        minEECVersion:
+          type: "string"
+          description: "Minimal Extension Execution Controller version that works\
+            \ with the extension"
+        variables:
+          type: "array"
+          description: "Custom variables used in extension configuration"
+          items:
+            type: "string"
+            description: "Custom variables used in extension configuration"
+        version:
+          type: "string"
+          description: "Extension version"
+          example: "1.2.3"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      required:
+      - "author"
+      - "dataSources"
+      - "extensionName"
+      - "featureSets"
+      - "featureSetsDetails"
+      - "fileHash"
+      - "minDynatraceVersion"
+      - "minEECVersion"
+      - "variables"
+      - "version"
+    ExtensionEnvironmentConfigurationVersion:
+      type: "object"
+      properties:
+        version:
+          type: "string"
+          description: "Extension version"
+          example: "1.2.3"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      required:
+      - "version"
+    ExtensionInfo:
+      type: "object"
+      description: "A list of extensions with additional metadata."
+      properties:
+        activeVersion:
+          type: "string"
+          description: "Active version in the environment (null if none is active)"
+          example: "1.2.3"
+          nullable: true
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+          writeOnly: true
+        extensionName:
+          type: "string"
+          description: "Extension name"
+        keywords:
+          type: "array"
+          description: "Extension keywords for the highest version"
+          items:
+            type: "string"
+            description: "Extension keywords for the highest version"
+          uniqueItems: true
+          writeOnly: true
+        markedForDeletion:
+          type: "boolean"
+          description: "Indicates if the extension is marked for deletion"
+          nullable: true
+          writeOnly: true
+        version:
+          type: "string"
+          description: "Highest installed version"
+          example: "1.2.3"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      required:
+      - "extensionName"
+      - "keywords"
+      - "version"
+    ExtensionInfoList:
+      type: "object"
+      description: "A list of extensions with additional metadata."
+      properties:
+        items:
+          type: "array"
+          description: "A list of extensions with additional metadata."
+          items:
+            $ref: "#/components/schemas/ExtensionInfo"
+        nextPageKey:
+          type: "string"
+          description: "The cursor for the next page of results. Has the value of\
+            \ `null` on the last page. \n\nUse it in the **page-key** query parameter\
+            \ to obtain subsequent pages of the result."
+        pageSize:
+          type: "integer"
+          format: "int32"
+          description: "The number of entries per page."
+        totalCount:
+          type: "integer"
+          format: "int32"
+          description: "The total number of entries in the result."
+      required:
+      - "items"
+      - "totalCount"
+    ExtensionList:
+      type: "object"
+      description: "A list of extensions."
+      properties:
+        items:
+          type: "array"
+          description: "A list of extensions."
+          items:
+            $ref: "#/components/schemas/MinimalExtension"
+        nextPageKey:
+          type: "string"
+          description: "The cursor for the next page of results. Has the value of\
+            \ `null` on the last page. \n\nUse it in the **page-key** query parameter\
+            \ to obtain subsequent pages of the result."
+        pageSize:
+          type: "integer"
+          format: "int32"
+          description: "The number of entries per page."
+        totalCount:
+          type: "integer"
+          format: "int32"
+          description: "The total number of entries in the result."
+      required:
+      - "items"
+      - "totalCount"
+    ExtensionMonitoringConfiguration:
+      type: "object"
+      description: "A list of extension monitoring configurations."
+      properties:
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        objectId:
+          type: "string"
+          description: "Configuration id"
+        scope:
+          type: "string"
+          description: "Configuration scope"
+        value:
+          type: "object"
+          description: "Configuration"
+      required:
+      - "modificationInfo"
+      - "objectId"
+      - "scope"
+      - "value"
+    ExtensionMonitoringConfigurationList:
+      type: "object"
+      properties:
+        items:
+          type: "array"
+          description: "A list of extension monitoring configurations."
+          items:
+            $ref: "#/components/schemas/ExtensionMonitoringConfiguration"
+        nextPageKey:
+          type: "string"
+          description: "The cursor for the next page of results. Has the value of\
+            \ `null` on the last page. \n\nUse it in the **page-key** query parameter\
+            \ to obtain subsequent pages of the result."
+          example: "AQAAABQBAAAABQ=="
+        pageSize:
+          type: "integer"
+          format: "int32"
+          description: "The number of entries per page."
+        totalCount:
+          type: "integer"
+          format: "int32"
+      required:
+      - "items"
+      - "totalCount"
+    ExtensionStatus:
+      type: "object"
+      properties:
+        status:
+          type: "string"
+          description: "Latest status of given configuration."
+          enum:
+          - "ERROR"
+          - "OK"
+          - "PENDING"
+          - "UNKNOWN"
+          - "WARNING"
+        timestamp:
+          type: "string"
+          description: "Timestamp of the latest status of given configuration."
+      required:
+      - "status"
+    ExtensionStatusWithId:
+      type: "object"
+      properties:
+        configurationId:
+          type: "string"
+          description: "Unique ID of the configuration."
+        status:
+          type: "string"
+          description: "Latest status of given configuration."
+          enum:
+          - "ERROR"
+          - "OK"
+          - "PENDING"
+          - "UNKNOWN"
+          - "WARNING"
+        timestamp:
+          type: "string"
+          description: "Timestamp of the latest status of given configuration."
+      required:
+      - "configurationId"
+      - "status"
+    ExtensionStatusWithIdList:
+      type: "object"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ExtensionStatusWithId"
+      required:
+      - "items"
+    ExtensionUploadResponse:
+      type: "object"
+      properties:
+        assetsInfo:
+          type: "array"
+          description: "Information about extension assets included"
+          items:
+            $ref: "#/components/schemas/UploadResponseAssetInfo"
+          uniqueItems: true
+        author:
+          $ref: "#/components/schemas/Author"
+        dataSources:
+          type: "array"
+          description: "Data sources that extension uses to gather data"
+          items:
+            type: "string"
+            description: "Data sources that extension uses to gather data"
+        extensionName:
+          type: "string"
+          description: "Extension name"
+        featureSets:
+          type: "array"
+          description: "Available feature sets"
+          items:
+            type: "string"
+            description: "Available feature sets"
+          uniqueItems: true
+        featureSetsDetails:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/FeatureSetDetails"
+          description: "Details of feature sets"
+        fileHash:
+          type: "string"
+          description: "SHA-256 hash of uploaded Extension file"
+        minDynatraceVersion:
+          type: "string"
+          description: "Minimal Dynatrace version that works with the extension"
+        minEECVersion:
+          type: "string"
+          description: "Minimal Extension Execution Controller version that works\
+            \ with the extension"
+        variables:
+          type: "array"
+          description: "Custom variables used in extension configuration"
+          items:
+            type: "string"
+            description: "Custom variables used in extension configuration"
+        version:
+          type: "string"
+          description: "Extension version"
+          example: "1.2.3"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      required:
+      - "assetsInfo"
+      - "author"
+      - "dataSources"
+      - "extensionName"
+      - "featureSets"
+      - "featureSetsDetails"
+      - "fileHash"
+      - "minDynatraceVersion"
+      - "minEECVersion"
+      - "variables"
+      - "version"
+    FeatureSetDetails:
+      type: "object"
+      description: "Additional information about a Feature Set"
+      properties:
+        description:
+          type: "string"
+          description: "Optional description for the feature set"
+        displayName:
+          type: "string"
+          description: "Optional display name of the feature set"
+        isRecommended:
+          type: "boolean"
+          description: "Marks the feature set as recommended (selected by default\
+            \ during activation)"
+        metrics:
+          type: "array"
+          description: "Feature set metrics"
+          items:
+            $ref: "#/components/schemas/Metric"
+      required:
+      - "isRecommended"
+    InsertPosition:
+      type: "object"
+      description: "The position where the button should be shown relative to a property\
+        \ in the UI"
+      properties:
+        after:
+          type: "string"
+          description: "The path of a property after which the button should be shown\
+            \ in the UI"
+      required:
+      - "after"
+    Item:
+      type: "object"
+      description: "An item of a collection property."
+      properties:
+        constraints:
+          type: "array"
+          description: "A list of constraints limiting the values to be accepted."
+          items:
+            $ref: "#/components/schemas/Constraint"
+        datasource:
+          $ref: "#/components/schemas/DatasourceDefinition"
+        description:
+          type: "string"
+          description: "A short description of the item."
+          example: "itemDescription"
+        displayName:
+          type: "string"
+          description: "The display name of the item."
+          example: "itemDisplayName"
+        documentation:
+          type: "string"
+          description: "An extended description and/or links to documentation."
+          example: "propertyDocumentation"
+        metadata:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            description: "Metadata of the items."
+          description: "Metadata of the items."
+        referencedType:
+          type: "string"
+          description: "The type referenced by the item's value."
+          example: "itemReferencedType"
+        subType:
+          type: "string"
+          description: "The subtype of the item's value."
+          example: "itemSubType"
+        type:
+          anyOf:
+          - $ref: "#/components/schemas/AnyValue"
+          description: "The type of the item's value."
+          oneOf:
+          - type: "string"
+          - $ref: "#/components/schemas/RefPointer"
+        uiCustomization:
+          $ref: "#/components/schemas/UiCustomization"
+      required:
+      - "type"
+    JavaProcessContainer:
+      type: "object"
+      properties:
+        agentVersion:
+          type: "string"
+        id:
+          type: "string"
+        name:
+          type: "string"
+        properties:
+          type: "object"
+          additionalProperties:
+            type: "array"
+            items:
+              type: "string"
+            uniqueItems: true
+    JavaProcessContainerList:
+      type: "object"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/JavaProcessContainer"
+      required:
+      - "items"
+    JavaProcessDetails:
+      type: "object"
+    JsonNode:
+      type: "object"
+      description: "The monitoring configuration"
+    Metric:
+      type: "object"
+      description: "Metric gathered by an extension"
+      properties:
+        key:
+          type: "string"
+          description: "Metric key"
+        metadata:
+          $ref: "#/components/schemas/MetricMetadata"
+    MetricMetadata:
+      type: "object"
+      description: "Metric metadata"
+      properties:
+        description:
+          type: "string"
+          description: "A short description of the metric"
+        displayName:
+          type: "string"
+          description: "The name of the metric in the user interface"
+        unit:
+          type: "string"
+          description: "The unit of the metric"
+    MinimalExtension:
+      type: "object"
+      description: "A list of extensions."
+      properties:
+        extensionName:
+          type: "string"
+          description: "Extension name"
+        version:
+          type: "string"
+          description: "Extension version"
+          example: "1.2.3"
+          pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      required:
+      - "extensionName"
+      - "version"
+    ModificationInfo:
+      type: "object"
+      description: "Audit information about the creation and modification of this\
+        \ resource"
+      properties:
+        createdBy:
+          type: "string"
+          description: "User who created the configuration"
+        createdTime:
+          type: "string"
+          description: "Timestamp when the resource was last modified in ISO 8601\
+            \ format (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')"
+        lastModifiedBy:
+          type: "string"
+          description: "User who last modified the configuration"
+        lastModifiedTime:
+          type: "string"
+          description: "Timestamp when the resource was last modified in ISO 8601\
+            \ format (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')"
+    MonitoringConfiguration:
+      type: "object"
+      properties:
+        scope:
+          type: "string"
+          description: "The scope this monitoring configuration will be defined for"
+          example: "HOST-D3A3C5A146830A79"
+        value:
+          $ref: "#/components/schemas/JsonNode"
+      required:
+      - "scope"
+    MonitoringConfigurationResponse:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "The HTTP Status code"
+        objectId:
+          type: "string"
+          description: "The identifier of the new configuration"
+          example: "331e416f-9ab7-4694-8408-816026820645"
+      required:
+      - "code"
+      - "objectId"
+    MonitoringConfigurationUpdate:
+      type: "object"
+      properties:
+        value:
+          $ref: "#/components/schemas/JsonNode"
+    PmiProcessDetails:
+      type: "object"
+    Precondition:
+      type: "object"
+      description: "A precondition for visibility of a property."
+      properties:
+        expectedValue:
+          anyOf:
+          - $ref: "#/components/schemas/AnyValue"
+          description: "The expected value of the property. \n\nOnly applicable to\
+            \ properties of the `EQUALS` type."
+          example: "expectedValue"
+        expectedValues:
+          type: "array"
+          description: "A list of valid values of the property. \n\nOnly applicable\
+            \ to properties of the `IN` type."
+          example: "expectedValues"
+          items:
+            anyOf:
+            - $ref: "#/components/schemas/AnyValue"
+        pattern:
+          type: "string"
+          description: "The Regular expression which is matched against the property.\
+            \ \n\nOnly applicable to properties of the `REGEX_MATCH` type."
+          example: "example Regex"
+        precondition:
+          $ref: "#/components/schemas/Precondition"
+        preconditions:
+          type: "array"
+          description: "A list of child preconditions to be evaluated. \n\nOnly applicable\
+            \ to properties of the `AND` and `OR` types."
+          items:
+            $ref: "#/components/schemas/Precondition"
+        property:
+          type: "string"
+          description: "The property to be evaluated."
+          example: "propertyToEvaluate"
+        type:
+          type: "string"
+          description: "The type of the precondition."
+          enum:
+          - "AND"
+          - "EQUALS"
+          - "IN"
+          - "NOT"
+          - "NULL"
+          - "OR"
+          - "REGEX_MATCH"
+          example: "NULL"
+      required:
+      - "type"
+    PropertyDefinition:
+      type: "object"
+      description: "Configuration of a property in a settings schema."
+      properties:
+        constraints:
+          type: "array"
+          description: "A list of constraints limiting the values to be accepted."
+          items:
+            $ref: "#/components/schemas/Constraint"
+        datasource:
+          $ref: "#/components/schemas/DatasourceDefinition"
+        default:
+          anyOf:
+          - $ref: "#/components/schemas/AnyValue"
+          description: "The default value to be used when no value is provided. \n\
+            \nIf a non-singleton has the value of `null`, it means an empty collection."
+          example: "propertyDefaultValue"
+        description:
+          type: "string"
+          description: "A short description of the property."
+          example: "propertyDescription"
+        displayName:
+          type: "string"
+          description: "The display name of the property."
+          example: "propertyDisplayName"
+        documentation:
+          type: "string"
+          description: "An extended description and/or links to documentation."
+          example: "propertyDocumentation"
+        forceSecretResubmission:
+          type: "boolean"
+          description: "Defines if value is allowed to be modified when secret properties\
+            \ are not"
+          example: true
+        items:
+          $ref: "#/components/schemas/Item"
+        maxObjects:
+          type: "integer"
+          format: "int32"
+          description: "The maximum number of **objects** in a collection property.\
+            \ \n\n Has the value of `1` for singletons."
+        metadata:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            description: "Metadata of the property."
+          description: "Metadata of the property."
+        migrationPattern:
+          type: "string"
+          description: "Pattern with references to properties to create a new value."
+        minObjects:
+          type: "integer"
+          format: "int32"
+          description: "The minimum number of **objects** in a collection property."
+          example: 1
+        modificationPolicy:
+          type: "string"
+          description: "Modification policy of the property."
+          enum:
+          - "ALWAYS"
+          - "DEFAULT"
+          - "NEVER"
+          example: "ALWAYS"
+        nullable:
+          type: "boolean"
+          description: "The value can (`true`) or can't (`false`) be `null`."
+          example: true
+        precondition:
+          $ref: "#/components/schemas/Precondition"
+        referencedType:
+          type: "string"
+          description: "The type referenced by the property value"
+          example: "propertyReferencedType"
+        subType:
+          type: "string"
+          description: "The subtype of the property's value."
+          example: "propertySubType"
+        type:
+          anyOf:
+          - $ref: "#/components/schemas/AnyValue"
+          description: "The type of the property's value."
+          oneOf:
+          - type: "string"
+          - $ref: "#/components/schemas/RefPointer"
+        uiCustomization:
+          $ref: "#/components/schemas/UiCustomization"
+      required:
+      - "maxObjects"
+      - "nullable"
+      - "type"
+    RefPointer:
+      type: "object"
+      description: "Object with a pointer to a JSON object"
+      properties:
+        $ref:
+          type: "string"
+          description: "Pointer to a JSON object this object should be logically replaced\
+            \ with."
+          example: "refPointerToAnotherJsonObject"
+      required:
+      - "$ref"
+    RegisteredExtensionResult:
+      type: "object"
+      properties:
+        extensionName:
+          type: "string"
+          description: "FQN of the extension registered in the tenant."
+        extensionVersion:
+          type: "string"
+          description: "Version number of the extension."
+    SchemaConstraintRestDto:
+      type: "object"
+      properties:
+        byteLimit:
+          type: "integer"
+          format: "int32"
+          description: "The maximum allowed size in bytes for the sum over all persisted\
+            \ values for the schema"
+          example: 500000
+        customMessage:
+          type: "string"
+          description: "A custom message for invalid values."
+        customValidatorId:
+          type: "string"
+          description: "The ID of a custom validator."
+          example: "my-min-max"
+        flattenCollections:
+          type: "boolean"
+          description: "Whether to flatten collection properties when checking for\
+            \ uniqueness, so only disjoint collections are considered unique"
+        skipAsyncValidation:
+          type: "boolean"
+          description: "Whether to skip validation on a change made from the UI."
+          example: false
+        type:
+          type: "string"
+          description: "The type of the schema constraint."
+          enum:
+          - "BYTE_SIZE_LIMIT"
+          - "CUSTOM_VALIDATOR_REF"
+          - "MULTI_SCOPE_CUSTOM_VALIDATOR_REF"
+          - "MULTI_SCOPE_UNIQUE"
+          - "UNIQUE"
+          - "UNKNOWN"
+        uniqueProperties:
+          type: "array"
+          description: "The list of properties for which the combination of values\
+            \ needs to be unique"
+          example:
+          - "my-prop-1"
+          - "my-prop-2"
+          items:
+            type: "string"
+            description: "The list of properties for which the combination of values\
+              \ needs to be unique"
+            example: "[\"my-prop-1\",\"my-prop-2\"]"
+      required:
+      - "type"
+    SchemaDefinitionRestDto:
+      type: "object"
+      properties:
+        allowedScopes:
+          type: "array"
+          description: "A list of scopes where the schema can be used."
+          example:
+          - "host"
+          - "application"
+          items:
+            type: "string"
+        constraints:
+          type: "array"
+          description: "A list of constrains limiting the values to be accepted by\
+            \ the schema."
+          items:
+            $ref: "#/components/schemas/ComplexConstraint"
+        deletionConstraints:
+          type: "array"
+          description: "Constraints limiting the values to be deleted."
+          items:
+            $ref: "#/components/schemas/DeletionConstraint"
+        description:
+          type: "string"
+          description: "A short description of the schema."
+          example: "Dynatrace disables monitoring of containers that do not run any\
+            \ applications"
+        displayName:
+          type: "string"
+          description: "The display name of the schema."
+          example: "Built-in container monitoring rules"
+        documentation:
+          type: "string"
+          description: "An extended description of the schema and/or links to documentation."
+        dynatrace:
+          type: "string"
+          description: "The version of the data format."
+          example: "1"
+        enums:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/EnumType"
+          description: "A list of definitions of enum properties."
+        keyProperty:
+          type: "string"
+          description: "Name of the key property in this schema."
+          example: "keyProperty"
+        maturity:
+          type: "string"
+          description: "The maturity of the schema.\nPossible values:\n- PREVIEW:\
+            \ Preview features are not generally available, but might be available\
+            \ in specific environments as part of early-access programs. These are\
+            \ the most likely to change in incompatible ways.\n- EARLY_ADOPTER: Features\
+            \ marked \"early adopter\" are available in all environments, but are\
+            \ not mature enough to warrant the \"general availability\" designation.\
+            \ We don't expect incompatible changes for these, but please be aware,\
+            \ that these are not fully stable yet and incompatible changes may be\
+            \ necessary in rare cases.\n- GENERAL_AVAILABILITY: Features marked \"\
+            general availability\" are the most stable. While the schemas will still\
+            \ evolve over time, care will be taken to only do so in a backward-compatible\
+            \ manner.\n\nIn any case, automations should make use of the `schemaVersion`\
+            \ field when writing settings objects.\n"
+          enum:
+          - "EARLY_ADOPTER"
+          - "GENERAL_AVAILABILITY"
+          - "PREVIEW"
+          example: "GENERAL_AVAILABILITY"
+        maxObjects:
+          type: "integer"
+          format: "int32"
+          description: "The maximum amount of objects per scope. \n\nOnly applicable\
+            \ when **multiObject** is set to `true`."
+          example: 10
+        metadata:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            description: "Metadata of the setting."
+          description: "Metadata of the setting."
+        multiObject:
+          type: "boolean"
+          description: "Multiple (`true`) objects per scope are permitted or a single\
+            \ (`false`) object per scope is permitted."
+        ordered:
+          type: "boolean"
+          description: "If `true` the order of objects has semantic significance.\
+            \ \n\nOnly applicable when **multiObject** is set to `true`."
+        properties:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/PropertyDefinition"
+          description: "A list of schema's properties."
+        schemaConstraints:
+          type: "array"
+          description: "Constraints limiting the values as a whole to be accepted\
+            \ in this configuration element."
+          items:
+            $ref: "#/components/schemas/SchemaConstraintRestDto"
+        schemaGroups:
+          type: "array"
+          description: "Names of the groups, which the schema belongs to."
+          example:
+          - "group:some.1"
+          - "group:some.2"
+          items:
+            type: "string"
+          uniqueItems: true
+        schemaId:
+          type: "string"
+          description: "The ID of the schema."
+          example: "builtin:container.built-in-monitoring-rule"
+        tableColumns:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/TableColumn"
+          description: "Table column definitions for use in the ui."
+        types:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/SchemaType"
+          description: "A list of definitions of types. \n\n A type is a complex property\
+            \ that contains its own set of subproperties."
+        uiCustomization:
+          $ref: "#/components/schemas/UiCustomization"
+        version:
+          type: "string"
+          description: "The version of the schema."
+          example: "1.4.2"
+      required:
+      - "allowedScopes"
+      - "description"
+      - "displayName"
+      - "dynatrace"
+      - "enums"
+      - "maxObjects"
+      - "multiObject"
+      - "properties"
+      - "schemaId"
+      - "types"
+      - "version"
+    SchemaFileList:
+      type: "object"
+      description: "A list of schema files."
+      properties:
+        items:
+          type: "array"
+          description: "A list of schema files."
+          items:
+            type: "string"
+            description: "A list of schema files."
+      required:
+      - "items"
+    SchemaType:
+      type: "object"
+      description: "A list of definitions of types. \n\n A type is a complex property\
+        \ that contains its own set of subproperties."
+      properties:
+        constraints:
+          type: "array"
+          description: "A list of constraints limiting the values to be accepted."
+          items:
+            $ref: "#/components/schemas/ComplexConstraint"
+        description:
+          type: "string"
+          description: "A short description of the property."
+          example: "typeDescription"
+        displayName:
+          type: "string"
+          description: "The display name of the property."
+          example: "typeDisplayName"
+        documentation:
+          type: "string"
+          description: "An extended description and/or links to documentation."
+          example: "typeDocumentation"
+        properties:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/PropertyDefinition"
+          description: "Definition of properties that can be persisted."
+        searchPattern:
+          type: "string"
+          description: "The pattern for the summary search(for example, \"Alert after\
+            \ *X* minutes.\") of the configuration in the UI."
+          example: "searchPatternOfType"
+        summaryPattern:
+          type: "string"
+          description: "The pattern for the summary (for example, \"Alert after *X*\
+            \ minutes.\") of the configuration in the UI."
+          example: "summaryPatternOfType"
+        type:
+          type: "string"
+          description: "Type of the reference type."
+          enum:
+          - "object"
+          example: "object"
+        version:
+          type: "string"
+          description: "The version of the type."
+          example: "0"
+        versionInfo:
+          type: "string"
+          description: "A short description of the version."
+          example: "Added new property"
+      required:
+      - "description"
+      - "documentation"
+      - "properties"
+      - "summaryPattern"
+      - "type"
+      - "version"
+    SchemaVersionList:
+      type: "object"
+      description: "A list of available schema versions."
+      properties:
+        items:
+          type: "array"
+          description: "A list of schema versions."
+          items:
+            type: "string"
+            description: "A list of schema versions."
+            example: "1.2.3"
+            pattern: "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?(\\.(0|[1-9]\\d*))?"
+      required:
+      - "items"
+    TableColumn:
+      type: "object"
+      description: "The definition of a table column to be used in the ui."
+      properties:
+        pattern:
+          type: "string"
+          description: "Pattern with references to properties to create a single value\
+            \ for the column."
+      required:
+      - "pattern"
+    UiButtonCustomization:
+      type: "object"
+      description: "UI customization for defining a button that calls a function when\
+        \ pressed"
+      properties:
+        description:
+          type: "string"
+          description: "The description to be shown in a tooltip when hovering over\
+            \ the button"
+        displayName:
+          type: "string"
+          description: "The label of the button"
+        identifier:
+          type: "string"
+          description: "The identifier of the function to be called when the button\
+            \ is pressed"
+        insert:
+          anyOf:
+          - $ref: "#/components/schemas/AnyValue"
+          description: "The position where the button should be shown in the UI"
+          oneOf:
+          - type: "string"
+            description: "The absolute position of the button inside a settings object"
+            enum:
+            - "FIRST"
+            - "LAST"
+          - $ref: "#/components/schemas/InsertPosition"
+      required:
+      - "displayName"
+      - "identifier"
+      - "insert"
+    UiCallbackCustomization:
+      type: "object"
+      description: "UI customization options for defining custom callbacks"
+      properties:
+        buttons:
+          type: "array"
+          description: "UI customization for defining buttons that call functions\
+            \ when pressed"
+          items:
+            $ref: "#/components/schemas/UiButtonCustomization"
+    UiCustomization:
+      type: "object"
+      description: "Customization for UI elements"
+      properties:
+        callback:
+          $ref: "#/components/schemas/UiCallbackCustomization"
+        expandable:
+          $ref: "#/components/schemas/UiExpandableCustomization"
+        table:
+          $ref: "#/components/schemas/UiTableCustomization"
+        tabs:
+          $ref: "#/components/schemas/UiTabsCustomization"
+    UiEmptyStateCustomization:
+      type: "object"
+      description: "UI customization for empty state in a table"
+      properties:
+        text:
+          type: "string"
+          description: "The text to be shown in the empty state"
+    UiExpandableCustomization:
+      type: "object"
+      description: "UI customization for expandable section"
+      properties:
+        displayName:
+          type: "string"
+          description: "The display name"
+        expanded:
+          type: "boolean"
+          description: "Defines if the item should be expanded by default"
+        sections:
+          type: "array"
+          description: "A list of sections"
+          items:
+            $ref: "#/components/schemas/UiExpandableSectionCustomization"
+    UiExpandableSectionCustomization:
+      type: "object"
+      description: "Expandable section customization for UI"
+      properties:
+        description:
+          type: "string"
+          description: "The description"
+        displayName:
+          type: "string"
+          description: "The display name"
+        expanded:
+          type: "boolean"
+          description: "Defines if the section should be expanded by default"
+        properties:
+          type: "array"
+          description: "A list of properties"
+          items:
+            type: "string"
+            description: "A list of properties"
+      required:
+      - "displayName"
+      - "properties"
+    UiTabGroupCustomization:
+      type: "object"
+      description: "Tab group customization for UI"
+      properties:
+        description:
+          type: "string"
+          description: "The description"
+        displayName:
+          type: "string"
+          description: "The display name"
+        properties:
+          type: "array"
+          description: "A list of properties"
+          items:
+            type: "string"
+            description: "A list of properties"
+      required:
+      - "displayName"
+      - "properties"
+    UiTableColumnCustomization:
+      type: "object"
+      description: "Customization for UI table columns"
+      properties:
+        builtinColumnRef:
+          type: "string"
+          description: "The ui specific builtin column-implementation for this column."
+          example: "summary"
+        columnRef:
+          type: "string"
+          description: "The referenced column from the 'tableColumns' property of\
+            \ the schema for this column."
+          example: "myCustomColumn"
+        displayName:
+          type: "string"
+          description: "The display name for this column."
+          example: "Color"
+        id:
+          type: "string"
+          description: "The id for this column used for filtering. Required for conflicting\
+            \ or pathed columns - otherwise the ref is used."
+          example: "color"
+        items:
+          type: "array"
+          description: "The possible items of this column."
+          items:
+            $ref: "#/components/schemas/UiTableColumnItemCustomization"
+        propertyRef:
+          type: "string"
+          description: "The referenced property for this column."
+          example: "apiColor"
+        type:
+          type: "string"
+          description: "The ui specific type for this column."
+          example: "cell-color-picker"
+        width:
+          type: "string"
+          description: "The width this column should take up on the table."
+          example: "10%"
+    UiTableColumnItemCustomization:
+      type: "object"
+      description: "Customization for UI table column items"
+      properties:
+        displayName:
+          type: "string"
+          description: "The display name of this item."
+          example: "Active"
+        icon:
+          type: "string"
+          description: "The icon of this item."
+          example: "CRITICAL"
+        value:
+          type: "string"
+          description: "The value of this item."
+          example: "ACTIVE"
+      required:
+      - "value"
+    UiTableCustomization:
+      type: "object"
+      description: "Customization for UI tables"
+      properties:
+        columns:
+          type: "array"
+          description: "A list of columns for the UI table"
+          items:
+            $ref: "#/components/schemas/UiTableColumnCustomization"
+        emptyState:
+          $ref: "#/components/schemas/UiEmptyStateCustomization"
+    UiTabsCustomization:
+      type: "object"
+      description: "UI customization for tabs"
+      properties:
+        groups:
+          type: "array"
+          description: "A list of groups"
+          items:
+            $ref: "#/components/schemas/UiTabGroupCustomization"
+    UploadResponseAssetInfo:
+      type: "object"
+      description: "Information about extension assets included"
+      properties:
+        assetType:
+          type: "string"
+        count:
+          type: "integer"
+          format: "int32"
+  securitySchemes:
+    ssoAuth:
+      description: "Dynatrace OAuth\n\n A Bearer token is passed in the **Authorization**\
+        \ header in the following format: `Authorization: Bearer abcdefjhij1234567890`."
+      flows:
+        clientCredentials:
+          scopes:
+            extensions:configuration.actions:write: "Actions for extension monitoring\
+              \ configuration"
+            extensions:configurations:read: "Read extension monitoring configurations"
+            extensions:configurations:write: "Write extension monitoring configurations"
+            extensions:definitions:read: "Read extensions definition"
+            extensions:definitions:write: "Write extensions definition"
+            extensions:discovery.jmx:read: "Read discovered JMX metrics via extensions"
+            extensions:discovery.pmi:read: "Read discovered PMI metrics via extensions"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

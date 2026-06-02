@@ -1,0 +1,1544 @@
+openapi: "3.0.0"
+info:
+  version: "1.7.1"
+  title: "Vulnerabilities"
+  description: "APIs that manage vulnerability related information."
+  x-service-category: "Vulnerabilities"
+  x-summary: "APIs that manage vulnerability related information."
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/vulnerabilities/v1"
+  x-api-gateway-url: "/platform/vulnerabilities/v1"
+paths:
+  /vulnerabilities:
+    get:
+      summary: "List vulnerabilities"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query vulnerabilities.\nNote that users also need\
+        \ permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "listVulnerabilities"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/vulnerabilitiesFilter"
+      - $ref: "#/components/parameters/vulnerabilitiesSort"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "An array of vulnerabilities"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vulnerabilities"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities:segment:
+    post:
+      summary: "List vulnerabilities with a segment filter"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query vulnerabilities.\nNote that users also need\
+        \ permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "listVulnerabilitiesWithSegments"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/vulnerabilitiesFilter"
+      - $ref: "#/components/parameters/vulnerabilitiesSort"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SegmentRequestBody"
+        description: "The JSON body of the request containing the filter segments."
+      responses:
+        "200":
+          description: "An array of vulnerabilities"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vulnerabilities"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}:
+    get:
+      summary: "Get details of a vulnerability"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query details about a single vulnerability.\nNote\
+        \ that users also need permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "getVulnerability"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/requestedVulnerabilityId"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The vulnerability"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vulnerability"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}:segment:
+    post:
+      summary: "Get details of a vulnerability with a segment filter"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query details about a single vulnerability.\nNote\
+        \ that users also need permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "getVulnerabilityWithSegments"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/requestedVulnerabilityId"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SegmentRequestBody"
+        description: "The JSON body of the request containing the filter segments."
+      responses:
+        "200":
+          description: "The vulnerability"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vulnerability"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}/affected-entities:
+    get:
+      summary: "Get affected entities of a vulnerability"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query details about the affected entities of a\
+        \ vulnerability.\nNote that users also need permissions to read security events\
+        \ (see `storage:security.events:read`, `storage:events:read`,\nand `storage:buckets:read`).\n"
+      operationId: "getAffectedEntities"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/relatedVulnerabilityId"
+      - $ref: "#/components/parameters/affectedEntitiesFilter"
+      - $ref: "#/components/parameters/affectedEntitiesSort"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The affected entities of the vulnerability"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AffectedEntities"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}/affected-entities:segment:
+    post:
+      summary: "Get affected entities of a vulnerability with a segment filter"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query details about the affected entities of a\
+        \ vulnerability.\nNote that users also need permissions to read security events\
+        \ (see `storage:security.events:read`, `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "getAffectedEntitiesWithSegments"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/relatedVulnerabilityId"
+      - $ref: "#/components/parameters/affectedEntitiesFilter"
+      - $ref: "#/components/parameters/affectedEntitiesSort"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SegmentRequestBody"
+        description: "The JSON body of the request containing the filter segments."
+      responses:
+        "200":
+          description: "The affected entities of the vulnerability"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AffectedEntities"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}/affected-entities:muting:
+    post:
+      summary: "Change the mute status of certain affected entities"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:write<br/><br/>This\
+        \ endpoint allows users to mute or unmute affected entities that are part\
+        \ of a vulnerability.\nNote that users are also required to have the role-based\
+        \ permission `SECURITY_PROBLEM_MANAGE`.\n"
+      operationId: "muteAffectedEntities"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/relatedVulnerabilityId"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:write"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MutingRequestBody"
+        required: true
+        description: "The JSON body of the request containing input parameters."
+      responses:
+        "200":
+          $ref: "#/components/responses/MutingResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}/affected-entities:set-tracking-links:
+    post:
+      summary: "Set tracking links of certain affected entities"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:write<br/><br/>This\
+        \ endpoint allows users to set the tracking links of affected entities that\
+        \ are part of a vulnerability.\nNote that users are also required to have\
+        \ the role-based permission `SECURITY_PROBLEM_MANAGE`.\n"
+      operationId: "setTrackingLinksOfAffectedEntities"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/relatedVulnerabilityId"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:write"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetTrackingLinksRequestBody"
+        required: true
+        description: "The JSON body of the request containing input parameters."
+      responses:
+        "200":
+          $ref: "#/components/responses/EditTrackingLinkResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}/affected-entities:delete-tracking-links:
+    post:
+      summary: "Delete tracking links of certain affected entities"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:write<br/><br/>This\
+        \ endpoint allows users to delete the tracking links of affected entities\
+        \ that are part of a vulnerability.\nNote that users are also required to\
+        \ have the role-based permission `SECURITY_PROBLEM_MANAGE`.\n"
+      operationId: "deleteTrackingLinksOfAffectedEntities"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/relatedVulnerabilityId"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:write"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteTrackingLinksRequestBody"
+        required: true
+        description: "The JSON body of the request containing input parameters."
+      responses:
+        "200":
+          $ref: "#/components/responses/EditTrackingLinkResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}/davis-assessment:
+    get:
+      summary: "Get the davis assessment of a vulnerability"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query details about the davis assessment of a vulnerability.\n\
+        Note that users also need permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "getDavisAssessment"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/relatedVulnerabilityId"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The davis assessment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DavisAssessmentDetails"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /vulnerabilities/{id}/davis-assessment:segment:
+    post:
+      summary: "Get the davis assessment of a vulnerability with a segment filter"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query details about the davis assessment of a vulnerability.\n\
+        Note that users also need permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "getDavisAssessmentWithSegments"
+      tags:
+      - "Vulnerabilities"
+      parameters:
+      - $ref: "#/components/parameters/relatedVulnerabilityId"
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SegmentRequestBody"
+        description: "The JSON body of the request containing the filter segments."
+      responses:
+        "200":
+          description: "The davis assessment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DavisAssessmentDetails"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /davis-security-recommendations:
+    get:
+      summary: "List davis security recommendations"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query davis security recommendations.\nNote that\
+        \ users also need permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "listDavisSecurityRecommendations"
+      tags:
+      - "Davis"
+      parameters:
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "An array of davis security recommendations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DavisSecurityRecommendations"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /davis-security-recommendations:segment:
+    post:
+      summary: "List davis security recommendations with a segment filter"
+      description: "**Required scope:** vulnerability-service:vulnerabilities:read<br/><br/>This\
+        \ endpoint allows users to query davis security recommendations.\nNote that\
+        \ users also need permissions to read security events (see `storage:security.events:read`,\
+        \ `storage:events:read`\nand `storage:buckets:read`).\n"
+      operationId: "listDavisSecurityRecommendationsWithSegments"
+      tags:
+      - "Davis"
+      parameters:
+      - $ref: "#/components/parameters/startTimeQueryParameter"
+      - $ref: "#/components/parameters/endTimeQueryParameter"
+      security:
+      - ssoAuth:
+        - "vulnerability-service:vulnerabilities:read"
+      - ssoBearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SegmentRequestBody"
+        description: "The JSON body of the request containing the filter segments."
+      responses:
+        "200":
+          description: "An array of davis security recommendations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DavisSecurityRecommendations"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+components:
+  parameters:
+    requestedVulnerabilityId:
+      name: "id"
+      in: "path"
+      description: "The ID of the requested vulnerability."
+      required: true
+      schema:
+        type: "string"
+    relatedVulnerabilityId:
+      name: "id"
+      in: "path"
+      description: "The ID of the related vulnerability."
+      required: true
+      schema:
+        type: "string"
+    vulnerabilitiesFilter:
+      name: "filter"
+      in: "query"
+      description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filter):\n\
+        This expression filters the returned vulnerabilities.\nGenerally, all fields\
+        \ can be used for filtering.\n`affectedEntities` can only be filtered by `affectedEntities.count`.\n\
+        `vulnerableComponents` only supports the `contains` operator, requiring exact\
+        \ matches within any of the vulnerable component values.\n"
+      example: "davisAssessment.exploitStatus = 'AVAILABLE' and (risk.score > 8.1\
+        \ or davisAssessment.exposureStatus in ('PUBLIC_NETWORK', 'NOT_AVAILABLE'))"
+      required: false
+      schema:
+        type: "string"
+    vulnerabilitiesSort:
+      name: "sort"
+      in: "query"
+      description: "The sort parameter, as explained [here](https://dt-url.net/platform-services-sorting):\n\
+        Fields can be prefixed with `-` for descending order. If no prefix is specified,\
+        \ ascending order is used.\nMultiple fields can be concatenated using a comma\
+        \ as a separator (e.g. `resolution.status,-technology`).\n\nGenerally, all\
+        \ fields with a single value can be used for sorting; however, sorting by\
+        \ fields with array values\nsuch as `references.cve` isn't possible. `affectedEntities`\
+        \ can only be sorted by\n`affectedEntities.count`.\n\nIf this parameter is\
+        \ omitted, the vulnerabilities are sorted by their ids.\n"
+      required: false
+      schema:
+        type: "string"
+    affectedEntitiesFilter:
+      name: "filter"
+      in: "query"
+      description: "The filter parameter, as explained [here](https://dt-url.net/platform-services-filter):\n\
+        This expression filters the returned affected entities.\nGenerally, all fields\
+        \ can be used for filtering, except for the `entryPoints` field.\nArray fields\
+        \ can additionally be filtered by their number of elements by suffixing with\
+        \ `.count`:\n`affectedProcesses.count`, `vulnerableFunctions.count`.\n"
+      example: "vulnerableFunctions contains 'JndiLookup'\nand (risk.score > 8.1 or\
+        \ davisAssessment.exposureStatus != 'NOT_DETECTED')\nand affectedProcesses.count\
+        \ > 10\"\n"
+      required: false
+      schema:
+        type: "string"
+    affectedEntitiesSort:
+      name: "sort"
+      in: "query"
+      description: "The sort parameter, as explained [here](https://dt-url.net/platform-services-sorting):\n\
+        Fields can be prefixed with `-` for descending order. If no prefix is specified,\
+        \ ascending order is used.\nMultiple fields can be concatenated using a comma\
+        \ as a separator (e.g. `resolution.status,-name`).\n\nGenerally, all fields\
+        \ with a single value can be used for sorting; array fields can only be sorted\
+        \ by their\ncounts: `affectedProcesses.count`, `vulnerableFunctions.count`.\
+        \ The `entryPoints` field does not support sorting.\n\nIf this parameter is\
+        \ omitted, the affected entities are sorted by their id.\n"
+      required: false
+      schema:
+        type: "string"
+    startTimeQueryParameter:
+      name: "start-time"
+      in: "query"
+      description: "The start of the requested timeframe.\\\nIt can't be in the future\
+        \ and the minimum time window has to be 30 minutes i.e. `end-time - 30 minutes`\n\
+        \nYou can use one of the following formats:\n- Absolute timestamps, conforming\
+        \ to ISO 8601 i.e. `YYYY-MM-DD”T”HH:MM:SS.ssssss”Z”`. If no time zone is specified,\
+        \ UTC is used.\n- Relative timeframe, back from now. The format is `now-NU`,\
+        \ where `N` is the amount of time and `U` is the unit of time.\\\n  Supported\
+        \ time units for the relative timeframe are:\n  - `s`: seconds\n  - `m`: minutes\n\
+        \  - `h`: hours\n  - `d`: days\n"
+      required: false
+      examples:
+        absolute:
+          summary: "Absolute timestamps"
+          value: "2024-01-31T05:57:01.123+01:00"
+        relative:
+          summary: "Relative timeframe"
+          description: "Represents one day back."
+          value: "now-1d"
+      schema:
+        type: "string"
+        default: "now-30m"
+    endTimeQueryParameter:
+      name: "end-time"
+      in: "query"
+      description: "The end of the requested timeframe.\\\nOnly `now` is supported.\n"
+      required: false
+      example: "now"
+      schema:
+        type: "string"
+        default: "now"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2.0 with the client credentials flow."
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            vulnerability-service:vulnerabilities:read: "read vulnerabilities"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  schemas:
+    Vulnerabilities:
+      type: "object"
+      description: "A list of vulnerabilities."
+      properties:
+        vulnerabilities:
+          type: "array"
+          description: "A list of vulnerabilities."
+          items:
+            $ref: "#/components/schemas/Vulnerability"
+      required:
+      - "vulnerabilities"
+    Vulnerability:
+      type: "object"
+      description: "Contains detailed information about the particular vulnerability.\
+        \ For information on the properties see our [documentation](https://docs.dynatrace.com/docs/platform/semantic-dictionary/fields#vulnerability)."
+      properties:
+        id:
+          type: "string"
+        externalId:
+          type: "string"
+          description: "External provider's unique identifier for the vulnerability.\
+            \ Example: SNYK-JAVA-ORGAPACHEHTTPCOMPONENTS-30646"
+        externalUrl:
+          type: "string"
+          description: "External provider's URL to the details page of the vulnerability."
+        displayId:
+          type: "string"
+        type:
+          type: "string"
+        stack:
+          $ref: "#/components/schemas/Stack"
+        technology:
+          $ref: "#/components/schemas/Technology"
+        title:
+          type: "string"
+        description:
+          type: "string"
+        references:
+          $ref: "#/components/schemas/References"
+        resolution:
+          $ref: "#/components/schemas/Resolution"
+        cvss:
+          $ref: "#/components/schemas/Cvss"
+        risk:
+          $ref: "#/components/schemas/Risk"
+        davisAssessment:
+          $ref: "#/components/schemas/DavisAssessment"
+        kev:
+          $ref: "#/components/schemas/KnownExploitedVulnerabilityDetails"
+        codeLocation:
+          $ref: "#/components/schemas/CodeLocation"
+        affectedEntities:
+          $ref: "#/components/schemas/AffectedEntityStatistics"
+        vulnerableComponents:
+          type: "array"
+          description: "A list of all vulnerable components."
+          items:
+            $ref: "#/components/schemas/VulnerableComponent"
+        isFixAvailable:
+          type: "boolean"
+        remediation:
+          $ref: "#/components/schemas/Remediation"
+        mute:
+          $ref: "#/components/schemas/Mute"
+        trackingLinkCoveragePercentage:
+          description: "Percent of affected entities that have a tracking link assigned.\n\
+            100% coverage means that every affected entity has a tracking link assigned.\n\
+            Examples: [ 80.5, 30.5 ]\n"
+          type: "number"
+          format: "double"
+      required:
+      - "id"
+      - "displayId"
+      - "type"
+      - "stack"
+      - "technology"
+      - "title"
+      - "description"
+      - "references"
+      - "resolution"
+      - "risk"
+      - "davisAssessment"
+      - "affectedEntities"
+      - "vulnerableComponents"
+      - "isFixAvailable"
+      - "mute"
+      - "trackingLinkCoveragePercentage"
+    AffectedEntities:
+      type: "object"
+      description: "A list of affected entities."
+      properties:
+        affectedEntities:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AffectedEntity"
+      required:
+      - "affectedEntities"
+    AffectedEntity:
+      type: "object"
+      description: "Contains detailed information about an affected entity and the\
+        \ related vulnerability."
+      properties:
+        id:
+          type: "string"
+        name:
+          type: "string"
+        type:
+          $ref: "#/components/schemas/AffectedEntityType"
+        affectedProcesses:
+          type: "array"
+          items:
+            type: "string"
+        mute:
+          $ref: "#/components/schemas/MuteDetails"
+        cvss:
+          $ref: "#/components/schemas/Cvss"
+        risk:
+          $ref: "#/components/schemas/Risk"
+        davisAssessment:
+          $ref: "#/components/schemas/DavisAssessment"
+        resolution:
+          $ref: "#/components/schemas/Resolution"
+        vulnerableComponent:
+          $ref: "#/components/schemas/VulnerableComponent"
+        vulnerableFunctions:
+          $ref: "#/components/schemas/VulnerableFunctions"
+        trackingLink:
+          $ref: "#/components/schemas/TrackingLink"
+        entryPoints:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/EntryPoint"
+      required:
+      - "id"
+      - "name"
+      - "type"
+      - "affectedProcesses"
+      - "risk"
+      - "davisAssessment"
+      - "resolution"
+      - "vulnerableFunctions"
+    MutingRequestBody:
+      type: "object"
+      description: "Input parameters for muting affected entities."
+      properties:
+        affectedEntityIds:
+          $ref: "#/components/schemas/AffectedEntityIds"
+        reason:
+          $ref: "#/components/schemas/MuteReason"
+        comment:
+          type: "string"
+          maxLength: 250
+      required:
+      - "affectedEntityIds"
+      - "reason"
+    SetTrackingLinksRequestBody:
+      type: "object"
+      description: "Input parameters for setting tracking links of affected entities."
+      properties:
+        affectedEntityIds:
+          $ref: "#/components/schemas/AffectedEntityIds"
+        trackingLink:
+          $ref: "#/components/schemas/TrackingLink"
+      required:
+      - "affectedEntityIds"
+      - "trackingLink"
+    TrackingLink:
+      type: "object"
+      properties:
+        url:
+          type: "string"
+          description: "The tracking link URL set for the affected entities, e.g.\
+            \ https://example.com/ISSUE-123. Note that only valid URLs with 'http'\
+            \ or 'https' protocols are supported."
+          maxLength: 2048
+          pattern: "^(https?:).*$"
+        text:
+          type: "string"
+          description: "The tracking link text set for the affected entities, e.g.\
+            \ 'ISSUE-123'."
+          maxLength: 250
+          minLength: 1
+      required:
+      - "url"
+      - "text"
+    DeleteTrackingLinksRequestBody:
+      type: "object"
+      description: "Input parameters for deleting tracking links of affected entities."
+      properties:
+        affectedEntityIds:
+          $ref: "#/components/schemas/AffectedEntityIds"
+      required:
+      - "affectedEntityIds"
+    AffectedEntityIds:
+      type: "array"
+      items:
+        type: "string"
+      minItems: 1
+    Stack:
+      type: "string"
+      enum:
+      - "CODE"
+      - "CODE_LIBRARY"
+      - "SOFTWARE"
+      - "CONTAINER_ORCHESTRATION"
+    Technology:
+      type: "string"
+      enum:
+      - "DOTNET"
+      - "GO"
+      - "JAVA"
+      - "KUBERNETES"
+      - "NODE_JS"
+      - "PHP"
+      - "PYTHON"
+    References:
+      type: "object"
+      properties:
+        cve:
+          type: "array"
+          items:
+            type: "string"
+        cwe:
+          type: "array"
+          items:
+            type: "string"
+        owasp:
+          type: "array"
+          items:
+            type: "string"
+      required:
+      - "cve"
+      - "cwe"
+      - "owasp"
+    Resolution:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/Status"
+        changeDate:
+          type: "string"
+      required:
+      - "status"
+    Status:
+      type: "string"
+      enum:
+      - "OPEN"
+      - "RESOLVED"
+    Cvss:
+      type: "object"
+      properties:
+        baseScore:
+          type: "number"
+          format: "double"
+        version:
+          type: "string"
+        vector:
+          type: "string"
+      required:
+      - "baseScore"
+      - "version"
+      - "vector"
+    Risk:
+      type: "object"
+      properties:
+        score:
+          type: "number"
+          format: "double"
+        level:
+          $ref: "#/components/schemas/RiskLevel"
+      required:
+      - "score"
+      - "level"
+    DavisAssessment:
+      type: "object"
+      properties:
+        score:
+          type: "number"
+          format: "double"
+        level:
+          $ref: "#/components/schemas/RiskLevel"
+        exposureStatus:
+          $ref: "#/components/schemas/ExposureStatus"
+        dataAssetsStatus:
+          $ref: "#/components/schemas/DataAssetsStatus"
+        assessmentMode:
+          $ref: "#/components/schemas/AssessmentMode"
+        exploitStatus:
+          $ref: "#/components/schemas/ExploitStatus"
+        vulnerableFunctionStatus:
+          $ref: "#/components/schemas/VulnerableFunctionStatus"
+        vector:
+          type: "string"
+      required:
+      - "score"
+      - "level"
+      - "exposureStatus"
+      - "dataAssetsStatus"
+      - "assessmentMode"
+      - "exploitStatus"
+      - "vulnerableFunctionStatus"
+    CodeLocation:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+      required:
+      - "name"
+    AffectedEntityStatistics:
+      type: "object"
+      properties:
+        count:
+          type: "integer"
+          format: "int32"
+        types:
+          type: "array"
+          items:
+            type: "string"
+        processGroups:
+          $ref: "#/components/schemas/AffectedCounts"
+        kubernetesNodes:
+          $ref: "#/components/schemas/AffectedCounts"
+        hosts:
+          $ref: "#/components/schemas/AffectedCounts"
+        affectedProcesses:
+          $ref: "#/components/schemas/AffectedCounts"
+      required:
+      - "count"
+      - "types"
+      - "processGroups"
+      - "kubernetesNodes"
+      - "hosts"
+      - "affectedProcesses"
+    AffectedCounts:
+      type: "object"
+      properties:
+        count:
+          type: "integer"
+          format: "int32"
+      required:
+      - "count"
+    VulnerableComponent:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        name:
+          type: "string"
+        shortName:
+          type: "string"
+        version:
+          type: "string"
+        packageName:
+          type: "string"
+      required:
+      - "id"
+      - "name"
+      - "shortName"
+    Remediation:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+      required:
+      - "description"
+    Mute:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/MuteStatus"
+      required:
+      - "status"
+    MuteDetails:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/MuteStatus"
+        reason:
+          $ref: "#/components/schemas/MuteReason"
+        user:
+          type: "string"
+        comment:
+          type: "string"
+        changeDate:
+          type: "string"
+      required:
+      - "status"
+    MuteStatus:
+      type: "string"
+      enum:
+      - "MUTED"
+      - "NOT_MUTED"
+    RiskLevel:
+      type: "string"
+      enum:
+      - "NONE"
+      - "LOW"
+      - "MEDIUM"
+      - "HIGH"
+      - "CRITICAL"
+    ExposureStatus:
+      type: "string"
+      enum:
+      - "NOT_AVAILABLE"
+      - "NOT_DETECTED"
+      - "PUBLIC_NETWORK"
+    DataAssetsStatus:
+      type: "string"
+      enum:
+      - "NOT_AVAILABLE"
+      - "NOT_DETECTED"
+      - "REACHABLE"
+    AssessmentMode:
+      type: "string"
+      enum:
+      - "NOT_AVAILABLE"
+      - "REDUCED"
+      - "FULL"
+    AssessmentModeReason:
+      type: "string"
+      enum:
+      - "LIMITED_BY_CONFIGURATION"
+      - "LIMITED_AGENT_SUPPORT"
+    ExploitStatus:
+      type: "string"
+      enum:
+      - "NOT_AVAILABLE"
+      - "AVAILABLE"
+    VulnerableFunctionStatus:
+      type: "string"
+      enum:
+      - "NOT_AVAILABLE"
+      - "NOT_IN_USE"
+      - "IN_USE"
+    AffectedEntityType:
+      type: "string"
+      enum:
+      - "PROCESS_GROUP"
+      - "HOST"
+      - "KUBERNETES_NODE"
+    VulnerableFunctions:
+      type: "array"
+      description: "A list of vulnerable functions in use."
+      items:
+        type: "string"
+    EntryPoint:
+      type: "object"
+      properties:
+        url:
+          $ref: "#/components/schemas/EntryPointUrl"
+        payload:
+          type: "string"
+        function:
+          $ref: "#/components/schemas/EntryPointFunction"
+        userControlledInputs:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/UserControlledInput"
+      required:
+      - "url"
+      - "payload"
+      - "userControlledInputs"
+    EntryPointUrl:
+      type: "object"
+      properties:
+        path:
+          type: "string"
+      required:
+      - "path"
+    EntryPointFunction:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+      required:
+      - "name"
+    UserControlledInput:
+      type: "object"
+      properties:
+        type:
+          type: "string"
+        key:
+          type: "string"
+        value:
+          type: "string"
+        payload:
+          $ref: "#/components/schemas/UserControlledInputPayload"
+        isMalicious:
+          type: "boolean"
+      required:
+      - "payload"
+      - "isMalicious"
+    UserControlledInputPayload:
+      type: "object"
+      properties:
+        start:
+          type: "integer"
+          format: "int32"
+        end:
+          type: "integer"
+          format: "int32"
+      required:
+      - "start"
+      - "end"
+    KnownExploitedVulnerabilityDetails:
+      type: "object"
+      properties:
+        isInCatalog:
+          type: "boolean"
+        dueDate:
+          type: "string"
+          format: "date"
+      required:
+      - "isInCatalog"
+    DavisAssessmentDetails:
+      type: "object"
+      properties:
+        vulnerabilityId:
+          type: "string"
+        assessmentMode:
+          $ref: "#/components/schemas/AssessmentModeDetails"
+        exposureAssessment:
+          $ref: "#/components/schemas/ExposureAssessment"
+        dataAssetsAssessment:
+          $ref: "#/components/schemas/DataAssetsAssessment"
+        exploitAssessment:
+          $ref: "#/components/schemas/ExploitAssessment"
+        vulnerableFunctionAssessment:
+          $ref: "#/components/schemas/VulnerableFunctionAssessment"
+      required:
+      - "vulnerabilityId"
+      - "assessmentMode"
+      - "exposureAssessment"
+      - "dataAssetsAssessment"
+      - "exploitAssessment"
+      - "vulnerableFunctionAssessment"
+    AssessmentModeDetails:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/AssessmentMode"
+        reasons:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AssessmentModeReason"
+      required:
+      - "status"
+      - "reasons"
+    ExposureAssessment:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/ExposureStatus"
+      required:
+      - "status"
+    DataAssetsAssessment:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/DataAssetsStatus"
+        reachableDataAssets:
+          type: "array"
+          items:
+            type: "string"
+      required:
+      - "status"
+      - "reachableDataAssets"
+    ExploitAssessment:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/ExploitStatus"
+      required:
+      - "status"
+    VulnerableFunctionAssessment:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/VulnerableFunctionStatus"
+        vulnerableFunctions:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/VulnerableFunction"
+      required:
+      - "status"
+      - "vulnerableFunctions"
+    VulnerableFunction:
+      type: "object"
+      properties:
+        function:
+          type: "string"
+        status:
+          $ref: "#/components/schemas/VulnerableFunctionStatus"
+        inUseProcessGroups:
+          type: "array"
+          items:
+            type: "string"
+        notInUseProcessGroups:
+          type: "array"
+          items:
+            type: "string"
+        notAvailableProcessGroups:
+          type: "array"
+          items:
+            type: "string"
+      required:
+      - "function"
+      - "status"
+      - "inUseProcessGroups"
+      - "notInUseProcessGroups"
+      - "notAvailableProcessGroups"
+    MuteReason:
+      type: "string"
+      enum:
+      - "FALSE_POSITIVE"
+      - "IGNORE"
+      - "AFFECTED"
+      - "CONFIGURATION_NOT_AFFECTED"
+      - "OTHER"
+    MutingResult:
+      type: "object"
+      properties:
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AffectedEntitiesActionResult"
+      required:
+      - "results"
+    EditTrackingLinkResult:
+      type: "object"
+      properties:
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AffectedEntitiesActionResult"
+      required:
+      - "results"
+    AffectedEntitiesActionResult:
+      type: "object"
+      properties:
+        affectedEntityId:
+          type: "string"
+        httpStatusCode:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+      required:
+      - "affectedEntityId"
+      - "httpStatusCode"
+    SegmentRequestBody:
+      type: "object"
+      properties:
+        filterSegments:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FilterSegment"
+    FilterSegment:
+      type: "object"
+      description: "Use filter segments to define the considered affected entities.\n\
+        For more information see the [documentation](https://docs.dynatrace.com/docs/manage/segments).\n"
+      properties:
+        id:
+          type: "string"
+        variables:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FilterSegmentVariable"
+      required:
+      - "id"
+    FilterSegmentVariable:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        values:
+          type: "array"
+          items:
+            type: "string"
+      required:
+      - "name"
+      - "values"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/HttpError"
+      required:
+      - "error"
+    HttpError:
+      type: "object"
+      description: "Standard error response"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "The error code (HTTP response)"
+        message:
+          type: "string"
+          description: "The error code (HTTP response)"
+        retryAfterSeconds:
+          type: "integer"
+          format: "int32"
+          description: "The time after which the request can be retried, in case it\
+            \ was throttled"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+      required:
+      - "code"
+      - "message"
+    ErrorDetails:
+      type: "object"
+      description: "Optional details of the error"
+      properties:
+        errorRef:
+          type: "string"
+          format: "uuid"
+          description: "Reference to the error occurrence in the internal self-monitoring,\
+            \ logging, etc."
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations of input parameters (path,\
+            \ query, request body)"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+    ConstraintViolation:
+      type: "object"
+      description: "Contains information about a constraint violation caused by invalid\
+        \ input."
+      properties:
+        path:
+          type: "string"
+          description: "The path of the parameter that caused the constraint violation"
+        message:
+          type: "string"
+          description: "The constraint violation description message"
+      required:
+      - "message"
+    DavisSecurityRecommendations:
+      type: "object"
+      properties:
+        recommendations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/DavisSecurityRecommendation"
+      required:
+      - "recommendations"
+    DavisSecurityRecommendation:
+      type: "object"
+      properties:
+        technology:
+          $ref: "#/components/schemas/Technology"
+        action:
+          $ref: "#/components/schemas/DavisSecurityRecommendationAction"
+        componentName:
+          type: "string"
+        packageName:
+          type: "string"
+        highestRiskLevel:
+          $ref: "#/components/schemas/RiskLevel"
+        highestRiskLevelVulnerabilities:
+          type: "integer"
+          format: "int32"
+        totalVulnerabilities:
+          type: "integer"
+          format: "int32"
+        filter:
+          type: "string"
+      required:
+      - "technology"
+      - "action"
+      - "componentName"
+      - "highestRiskLevel"
+      - "highestRiskLevelVulnerabilities"
+      - "totalVulnerabilities"
+      - "filter"
+    DavisSecurityRecommendationAction:
+      type: "string"
+      enum:
+      - "UPGRADE"
+  responses:
+    BadRequest:
+      description: "Malformed request or invalid parameters."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Unauthorized:
+      description: "Insufficient permissions."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Forbidden:
+      description: "Access denied."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    NotFound:
+      description: "Resource not found."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    TooManyRequests:
+      description: "Too many requests."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    InternalServerError:
+      description: "There is a problem in the backend."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    NotImplemented:
+      description: "Not implemented."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ServiceUnavailable:
+      description: "Service Unavailable."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    MutingResponse:
+      description: "Response for muting affected entities."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MutingResult"
+    EditTrackingLinkResponse:
+      description: "Response for editing tracking links of affected entities."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EditTrackingLinkResult"
+security:
+- ssoAuth:
+  - "vulnerability-service:vulnerabilities:read"

@@ -1,0 +1,1425 @@
+openapi: "3.0.1"
+info:
+  title: "Identity and Access Management"
+  description: "Identity and Access Management configuration. \nAllows viewing users\
+    \ within the platform and their access capabilities."
+  version: "1.0.1"
+  x-summary: "Identity and Access Management configuration. Allows viewing users within\
+    \ the platform and their access capabilities."
+  x-service-category: "Identity and Access Management"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/iam/v1"
+  x-api-gateway-url: "/platform/iam/v1"
+security:
+- ssoAuth: []
+tags:
+- name: "Users and Groups"
+  description: "Allows to search through users and groups."
+- name: "WIF Service User Mappings"
+  description: "Workload Identity Federation service user mapping management"
+- name: "WIF Trust Policies"
+  description: "Workload Identity Federation trust policy management"
+paths:
+  /organizational-levels/{level-type}/{level-id}/users/{uuid}:
+    get:
+      tags:
+      - "Users and Groups"
+      summary: "Get active user from organizational level"
+      description: "**Required scope:** iam:users:read<br/><br/>Authorization is based\
+        \ on an assignment of the calling user to the account associated with the\
+        \ 'level-type' and 'level-id' For environment 'level-type' user has to be\
+        \ assigned to account to which the environment is assigned, user does not\
+        \ need any permissions in such environment"
+      operationId: "getActiveUserFromOrganizationalLevel"
+      parameters:
+      - name: "level-type"
+        in: "path"
+        description: "Allowed values: account, environment"
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 0
+          type: "string"
+      - name: "level-id"
+        in: "path"
+        description: "Identifier of 'level-type'. Max allowed length is 36. For account\
+          \ use its UUID. For environment 'level-type' user has to be assigned to\
+          \ account to which the environment is assigned, user does not need any permissions\
+          \ in such environment"
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 0
+          type: "string"
+      - name: "uuid"
+        in: "path"
+        description: "User UUID"
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 0
+          type: "string"
+      responses:
+        "401":
+          description: "Authorization header is missing or is incorrect."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "403":
+          description: "Execution user is not allowed to perform the action."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "429":
+          description: "Too many requests have been sent - requests are throttled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionThrottlingMessage"
+        "200":
+          description: "User fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestUserPublic"
+        "404":
+          description: "Calling user is not assigned to the requested account or requested\
+            \ environment is not assigned to account that user is assigned to or the\
+            \ 'level-id' does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+      security:
+      - ssoAuth:
+        - "iam:users:read"
+      - ssoBearerAuth: []
+  /organizational-levels/{level-type}/{level-id}/users:
+    get:
+      tags:
+      - "Users and Groups"
+      summary: "Get active users from organizational level"
+      description: "**Required scope:** iam:users:read<br/><br/>Providing value for\
+        \ at least one of the parameters: 'partialString' or 'uuid' is required.\n\
+        If both query params 'partialString' and 'uuid' are provided then the result\
+        \ returns users meeting any of the filtering criteria.\nReturned users are\
+        \ first ordered by name and then by surname.\nAuthorization is based on an\
+        \ assignment of the calling user to the account associated with the 'level-type'\
+        \ and 'level-id' For environment 'level-type' user has to be assigned to account\
+        \ to which the environment is assigned, user does not need any permissions\
+        \ in such environment"
+      operationId: "getActiveUsersForOrganizationalLevel"
+      parameters:
+      - name: "level-type"
+        in: "path"
+        description: "Allowed values: account, environment"
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 0
+          type: "string"
+      - name: "level-id"
+        in: "path"
+        description: "Identifier of 'level-type'. Max allowed length is 36. For account\
+          \ use its UUID. For environment 'level-type' user has to be assigned to\
+          \ account to which the environment is assigned, user does not need any permissions\
+          \ in such environment"
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 0
+          type: "string"
+      - name: "partialString"
+        in: "query"
+        description: "Filter value - searches for users whose email contains provided\
+          \ value AND users whose 'name surname' or 'surname name' starts with provided\
+          \ value. Minimum length: 3. Maximum length: 320"
+        schema:
+          maxLength: 320
+          minLength: 3
+          type: "string"
+      - name: "uuid"
+        in: "query"
+        description: "List of user UUIDs. Filter value - equals. Allows multiple values.\
+          \ Maximum allowed size: 25"
+        schema:
+          maxItems: 25
+          minItems: 0
+          type: "array"
+          items:
+            type: "string"
+      - name: "page-key"
+        in: "query"
+        description: "Cursor-based Pagination - page-key. Cursor to the next page,\
+          \ includes page number and filtering values. Implicit filtering values will\
+          \ be overwritten by page-key property. Cursor-based Pagination can't be\
+          \ used together with Offset-based Pagination! Max length: 2000"
+        schema:
+          maxLength: 2000
+          minLength: 0
+          type: "string"
+      - name: "page"
+        in: "query"
+        description: "Offset-based Pagination - page. Default value: 1. Page number\
+          \ to return. Offset-based Pagination can't be used with Cursor-based Pagination!"
+        schema:
+          type: "integer"
+          format: "int64"
+      - name: "pageSize"
+        in: "query"
+        description: "Pagination - page size. Default value: 1000. Minimum value:\
+          \ 1. Maximum value: 1000"
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: "integer"
+          format: "int64"
+          default: 1000
+      responses:
+        "401":
+          description: "Authorization header is missing or is incorrect."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "403":
+          description: "Execution user is not allowed to perform the action."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "429":
+          description: "Too many requests have been sent - requests are throttled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionThrottlingMessage"
+        "200":
+          description: "Users from the organizational level fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestUserPublicListResponse"
+        "404":
+          description: "Calling user is not assigned to the requested account or requested\
+            \ environment is not assigned to account that user is assigned to or the\
+            \ 'level-id' does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+      security:
+      - ssoAuth:
+        - "iam:users:read"
+      - ssoBearerAuth: []
+    post:
+      tags:
+      - "Users and Groups"
+      summary: "Get active users from organizational level"
+      description: "**Required scope:** iam:users:read<br/><br/>It is required to\
+        \ provide either request body containing list of user UUIDs or partialString.\n\
+        If both are provided then the result returns users meeting any of the provided\
+        \ criteria.\nReturned users are first ordered by name and then by surname.\n\
+        Authorization is based on an assignment of the calling user to the account\
+        \ associated with the 'level-type' and 'level-id' For environment 'level-type'\
+        \ user has to be assigned to account to which the environment is assigned,\
+        \ user does not need any permissions in such environment"
+      operationId: "getActiveUsersForOrganizationalLevelPOST"
+      parameters:
+      - name: "level-type"
+        in: "path"
+        description: "Allowed values: account, environment"
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 0
+          type: "string"
+      - name: "level-id"
+        in: "path"
+        description: "Identifier of 'level-type'. Max allowed length is 36. For account\
+          \ use its UUID. For environment 'level-type' user has to be assigned to\
+          \ account to which the environment is assigned, user does not need any permissions\
+          \ in such environment"
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 0
+          type: "string"
+      - name: "partialString"
+        in: "query"
+        description: "Filter value - searches for users whose email contains provided\
+          \ value AND users whose 'name surname' or 'surname name' starts with provided\
+          \ value. Minimum length: 3. Maximum length: 320"
+        schema:
+          maxLength: 320
+          minLength: 3
+          type: "string"
+      - name: "page-key"
+        in: "query"
+        description: "Cursor-based Pagination - page-key. Cursor to the next page,\
+          \ includes page number and filtering values. Implicit filtering values will\
+          \ be overwritten by page-key property. Cursor-based Pagination can't be\
+          \ used together with Offset-based Pagination! Max length: 2000"
+        schema:
+          maxLength: 2000
+          minLength: 0
+          type: "string"
+      - name: "page"
+        in: "query"
+        description: "Offset-based Pagination - page. Default value: 1. Page number\
+          \ to return. Offset-based Pagination can't be used with Cursor-based Pagination!"
+        schema:
+          type: "integer"
+          format: "int64"
+      - name: "pageSize"
+        in: "query"
+        description: "Pagination - page size. Default value: 1000. Minimum value:\
+          \ 1. Maximum value: 1000"
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: "integer"
+          format: "int64"
+          default: 1000
+      requestBody:
+        description: "List of user UUIDs. Filter value - equals. Allows multiple values.\
+          \ Maximum allowed size: 100"
+        content:
+          application/json:
+            schema:
+              maxItems: 100
+              minItems: 0
+              type: "array"
+              items:
+                type: "string"
+      responses:
+        "401":
+          description: "Authorization header is missing or is incorrect."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "403":
+          description: "Execution user is not allowed to perform the action."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "429":
+          description: "Too many requests have been sent - requests are throttled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionThrottlingMessage"
+        "200":
+          description: "Users from the organizational level fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestUserPublicListResponse"
+        "404":
+          description: "Calling user is not assigned to the requested account or requested\
+            \ environment is not assigned to account that user is assigned to or the\
+            \ 'level-id' does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+      security:
+      - ssoAuth:
+        - "iam:users:read"
+      - ssoBearerAuth: []
+  /organizational-levels/{level-type}/{level-id}/service-users:
+    get:
+      tags:
+      - "Users and Groups"
+      summary: "Get active service users from organizational level which are usable\
+        \ by the execution user"
+      description: "**Required scope:** iam:service-users:use<br/><br/>Environment-level\
+        \ queries are executed in account context because there is no direct link\
+        \ between environments and service users."
+      operationId: "getAvailableServiceUsers"
+      parameters:
+      - name: "level-type"
+        in: "path"
+        description: "Allowed values: account, environment"
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 0
+          type: "string"
+      - name: "level-id"
+        in: "path"
+        description: "Identifier of 'level-type'. Max allowed length is 36. For account\
+          \ use its UUID. For environment 'level-type' user has to be assigned to\
+          \ account to which the environment is assigned, user does not need any permissions\
+          \ in such environment"
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 0
+          type: "string"
+      - name: "page-key"
+        in: "query"
+        description: "Cursor-based Pagination - page-key. Cursor to the next page,\
+          \ includes page number and filtering values. Implicit filtering values will\
+          \ be overwritten by page-key property. Cursor-based Pagination can't be\
+          \ used together with Offset-based Pagination! Max length: 2000"
+        schema:
+          maxLength: 2000
+          minLength: 0
+          type: "string"
+          nullable: true
+      - name: "page"
+        in: "query"
+        description: "Offset-based Pagination - page. Default value: 1. Page number\
+          \ to return. Offset-based Pagination can't be used with Cursor-based Pagination!"
+        schema:
+          type: "integer"
+          format: "int64"
+          nullable: true
+      - name: "pageSize"
+        in: "query"
+        description: "Pagination - page size. Default value: 1000. Minimum value:\
+          \ 1. Maximum value: 1000"
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: "integer"
+          format: "int64"
+          nullable: true
+      responses:
+        "401":
+          description: "Authorization header is missing or is incorrect."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "403":
+          description: "Execution user is not allowed to perform the action."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "429":
+          description: "Too many requests have been sent - requests are throttled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionThrottlingMessage"
+        "200":
+          description: "Active service users from the organizational level filtered\
+            \ by user permissions fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+        "404":
+          description: "The 'level-id' param does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+      security:
+      - ssoAuth:
+        - "iam:service-users:use"
+      - ssoBearerAuth: []
+  /organizational-levels/{level-type}/{level-id}/groups:
+    get:
+      tags:
+      - "Users and Groups"
+      summary: "Get visible groups from organizational level"
+      description: "**Required scope:** iam:groups:read<br/><br/>Providing value for\
+        \ at least one of the parameters: 'partialGroupName' or 'uuid' is required.\n\
+        If both query params 'partialGroupName' and 'uuid' are provided then the result\
+        \ will be all of the groups meeting any of the filtering criteria.\nAuthorization\
+        \ is based on an assignment of the calling user to the account associated\
+        \ with the 'level-type' and 'level-id' For environment 'level-type' user has\
+        \ to be assigned to account to which the environment is assigned, user does\
+        \ not need any permissions in such environment"
+      operationId: "getVisibleGroupsForAccount"
+      parameters:
+      - name: "level-type"
+        in: "path"
+        description: "Allowed values: account, environment"
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 0
+          type: "string"
+      - name: "level-id"
+        in: "path"
+        description: "Identifier of 'level-type'. Max allowed length is 36. For account\
+          \ use its UUID. For environment 'level-type' user has to be assigned to\
+          \ account to which the environment is assigned, user does not need any permissions\
+          \ in such environment"
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 0
+          type: "string"
+      - name: "partialGroupName"
+        in: "query"
+        description: "Filter value - contains. Minimum length: 3. Maximum length:\
+          \ 320"
+        schema:
+          maxLength: 320
+          minLength: 3
+          type: "string"
+      - name: "uuid"
+        in: "query"
+        description: "List of group UUIDs. Filter value - equals.  Allows definition\
+          \ of multiple values. Maximum allowed size: 10"
+        schema:
+          maxItems: 10
+          minItems: 0
+          type: "array"
+          items:
+            type: "string"
+      - name: "page-key"
+        in: "query"
+        description: "Cursor-based Pagination - page-key. Cursor to the next page,\
+          \ includes page number and filtering values. Implicit filtering values will\
+          \ be overwritten by page-key property. Cursor-based Pagination can't be\
+          \ used together with Offset-based Pagination! Max length: 2000"
+        schema:
+          maxLength: 2000
+          minLength: 0
+          type: "string"
+      - name: "page"
+        in: "query"
+        description: "Offset-based Pagination - page. Default value: 1. Page number\
+          \ to return. Offset-based Pagination can't be used with Cursor-based Pagination!"
+        schema:
+          type: "integer"
+          format: "int64"
+      - name: "pageSize"
+        in: "query"
+        description: "Pagination - page size. Default value: 1000. Minimum value:\
+          \ 1. Maximum value: 1000"
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: "integer"
+          format: "int64"
+          default: 1000
+      responses:
+        "401":
+          description: "Authorization header is missing or is incorrect."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "403":
+          description: "Execution user is not allowed to perform the action."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "429":
+          description: "Too many requests have been sent - requests are throttled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionThrottlingMessage"
+        "200":
+          description: "Groups from the level fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestGroupPublicListResponse"
+        "400":
+          description: "Missing both 'partialGroupName' and 'uuid' filter values,\
+            \ or the values don't meet the requirements."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "404":
+          description: "Calling user is not assigned to the requested account or requested\
+            \ environment is not assigned to account that user is assigned to or the\
+            \ 'level-id' does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+      security:
+      - ssoAuth:
+        - "iam:groups:read"
+      - ssoBearerAuth: []
+    post:
+      tags:
+      - "Users and Groups"
+      summary: "Get visible groups from organizational level"
+      description: "**Required scope:** iam:groups:read<br/><br/>It is required to\
+        \ provide at either request body containing list of group uuids or partialGroupName.\n\
+        If both are provided then the result returns groups meeting any of the provided\
+        \ criteria.\nAuthorization is based on an assignment of the calling user to\
+        \ the account associated with the 'level-type' and 'level-id' For environment\
+        \ 'level-type' user has to be assigned to account to which the environment\
+        \ is assigned, user does not need any permissions in such environment"
+      operationId: "getVisibleGroupsForAccountPOST"
+      parameters:
+      - name: "level-type"
+        in: "path"
+        description: "Allowed values: account, environment"
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 0
+          type: "string"
+      - name: "level-id"
+        in: "path"
+        description: "Identifier of 'level-type'. Max allowed length is 36. For account\
+          \ use its UUID. For environment 'level-type' user has to be assigned to\
+          \ account to which the environment is assigned, user does not need any permissions\
+          \ in such environment"
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 0
+          type: "string"
+      - name: "partialGroupName"
+        in: "query"
+        description: "Filter value - contains. Minimum length: 3. Maximum length:\
+          \ 320"
+        schema:
+          maxLength: 320
+          minLength: 3
+          type: "string"
+      - name: "page-key"
+        in: "query"
+        description: "Cursor-based Pagination - page-key. Cursor to the next page,\
+          \ includes page number and filtering values. Implicit filtering values will\
+          \ be overwritten by page-key property. Cursor-based Pagination can't be\
+          \ used together with Offset-based Pagination! Max length: 2000"
+        schema:
+          maxLength: 2000
+          minLength: 0
+          type: "string"
+      - name: "page"
+        in: "query"
+        description: "Offset-based Pagination - page. Default value: 1. Page number\
+          \ to return. Offset-based Pagination can't be used with Cursor-based Pagination!"
+        schema:
+          type: "integer"
+          format: "int64"
+      - name: "pageSize"
+        in: "query"
+        description: "Pagination - page size. Default value: 1000. Minimum value:\
+          \ 1. Maximum value: 1000"
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: "integer"
+          format: "int64"
+          default: 1000
+      requestBody:
+        description: "List of group UUIDs. Filter value - equals. Allows multiple\
+          \ values. Maximum allowed size: 100"
+        content:
+          application/json:
+            schema:
+              maxItems: 100
+              minItems: 0
+              type: "array"
+              items:
+                type: "string"
+      responses:
+        "401":
+          description: "Authorization header is missing or is incorrect."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "403":
+          description: "Execution user is not allowed to perform the action."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "429":
+          description: "Too many requests have been sent - requests are throttled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionThrottlingMessage"
+        "200":
+          description: "Groups from the level fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestGroupPublicListResponse"
+        "400":
+          description: "Missing both 'partialGroupName' and 'uuid' filter values,\
+            \ or the values don't meet requirements."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+        "404":
+          description: "Calling user is not assigned to the requested account or requested\
+            \ environment is not assigned to account that user is assigned to or the\
+            \ 'level-id' does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicExceptionMessage"
+      security:
+      - ssoAuth:
+        - "iam:groups:read"
+      - ssoBearerAuth: []
+  /organizational-levels/accounts/{account-uuid}/wif/trust-policies/{trust-policy-uuid}/mappings:
+    get:
+      tags:
+      - "WIF Service User Mappings"
+      summary: "List WIF service user mappings"
+      operationId: "list"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "pageNumber"
+        in: "query"
+        schema:
+          type: "integer"
+          format: "int32"
+          default: 1
+      - name: "pageSize"
+        in: "query"
+        schema:
+          type: "integer"
+          format: "int32"
+          default: 100
+      responses:
+        "200":
+          description: "List of service user mappings"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifServiceUserMappingList"
+      security:
+      - ssoBearerAuth: []
+    post:
+      tags:
+      - "WIF Service User Mappings"
+      summary: "Create a WIF service user mapping"
+      operationId: "create"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestWifServiceUserMappingForm"
+        required: true
+      responses:
+        "201":
+          description: "Service user mapping created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifServiceUserMapping"
+      security:
+      - ssoBearerAuth: []
+  /organizational-levels/accounts/{account-uuid}/wif/trust-policies/{trust-policy-uuid}/mappings/{mapping-uuid}:
+    get:
+      tags:
+      - "WIF Service User Mappings"
+      summary: "Get a WIF service user mapping with its claim mappings"
+      operationId: "get"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "mapping-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "Service user mapping details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifServiceUserMapping"
+      security:
+      - ssoBearerAuth: []
+    put:
+      tags:
+      - "WIF Service User Mappings"
+      summary: "Update a WIF service user mapping"
+      operationId: "update"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "mapping-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestWifServiceUserMappingForm"
+        required: true
+      responses:
+        "200":
+          description: "Service user mapping updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifServiceUserMapping"
+      security:
+      - ssoBearerAuth: []
+    delete:
+      tags:
+      - "WIF Service User Mappings"
+      summary: "Delete a WIF service user mapping"
+      operationId: "delete"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "mapping-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "Service user mapping deleted"
+      security:
+      - ssoBearerAuth: []
+    patch:
+      tags:
+      - "WIF Service User Mappings"
+      summary: "Patch WIF service user mapping status"
+      operationId: "patchStatus"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "mapping-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestWifServiceUserMappingPatchForm"
+        required: true
+      responses:
+        "200":
+          description: "Service user mapping status updated"
+      security:
+      - ssoBearerAuth: []
+  /organizational-levels/accounts/{account-uuid}/wif/trust-policies:
+    get:
+      tags:
+      - "WIF Trust Policies"
+      summary: "List WIF trust policies"
+      operationId: "list_1"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "pageNumber"
+        in: "query"
+        schema:
+          type: "integer"
+          format: "int32"
+          default: 1
+      - name: "pageSize"
+        in: "query"
+        schema:
+          type: "integer"
+          format: "int32"
+          default: 100
+      responses:
+        "200":
+          description: "List of trust policies"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifTrustPolicyList"
+      security:
+      - ssoBearerAuth: []
+    post:
+      tags:
+      - "WIF Trust Policies"
+      summary: "Create a WIF trust policy"
+      operationId: "create_1"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestWifTrustPolicyForm"
+        required: true
+      responses:
+        "201":
+          description: "Trust policy created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifTrustPolicy"
+      security:
+      - ssoBearerAuth: []
+  /organizational-levels/accounts/{account-uuid}/wif/trust-policies/{trust-policy-uuid}:
+    get:
+      tags:
+      - "WIF Trust Policies"
+      summary: "Get a WIF trust policy with its service user mappings"
+      operationId: "get_1"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "Trust policy details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifTrustPolicy"
+      security:
+      - ssoBearerAuth: []
+    put:
+      tags:
+      - "WIF Trust Policies"
+      summary: "Update a WIF trust policy"
+      operationId: "update_1"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestWifTrustPolicyForm"
+        required: true
+      responses:
+        "200":
+          description: "Trust policy updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestWifTrustPolicy"
+      security:
+      - ssoBearerAuth: []
+    delete:
+      tags:
+      - "WIF Trust Policies"
+      summary: "Delete a WIF trust policy"
+      operationId: "delete_1"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "Trust policy deleted"
+      security:
+      - ssoBearerAuth: []
+    patch:
+      tags:
+      - "WIF Trust Policies"
+      summary: "Patch WIF trust policy status"
+      operationId: "patchStatus_1"
+      parameters:
+      - name: "account-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "trust-policy-uuid"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestWifTrustPolicyPatchForm"
+        required: true
+      responses:
+        "200":
+          description: "Trust policy status updated"
+      security:
+      - ssoBearerAuth: []
+components:
+  schemas:
+    ErrorResponse:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+        details:
+          $ref: "#/components/schemas/ErrorResponseDetails"
+    ErrorResponseConstraintViolation:
+      type: "object"
+      properties:
+        path:
+          type: "string"
+        message:
+          type: "string"
+        parameterLocation:
+          type: "string"
+    ErrorResponseDetails:
+      type: "object"
+      properties:
+        missingScopes:
+          type: "array"
+          items:
+            type: "string"
+        constraintViolations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ErrorResponseConstraintViolation"
+    PublicExceptionMessage:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorResponse"
+    ErrorThrottlingResponse:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+        retryAfterSeconds:
+          type: "integer"
+          format: "int32"
+    PublicExceptionThrottlingMessage:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorThrottlingResponse"
+    RestUserPublic:
+      required:
+      - "email"
+      - "uid"
+      type: "object"
+      properties:
+        uid:
+          type: "string"
+        email:
+          type: "string"
+        name:
+          type: "string"
+        surname:
+          type: "string"
+        description:
+          type: "string"
+      description: "Collection containing the paginated result"
+    RestUserPublicListResponse:
+      type: "object"
+      properties:
+        results:
+          type: "array"
+          description: "Collection containing the paginated result"
+          items:
+            $ref: "#/components/schemas/RestUserPublic"
+        nextPageKey:
+          type: "string"
+          description: "Key for requesting the next page of the result"
+        totalCount:
+          type: "integer"
+          description: "Total count of records"
+          format: "int64"
+    SearchResult:
+      type: "object"
+      properties:
+        results:
+          type: "array"
+          description: "Collection containing the paginated result"
+          items:
+            $ref: "#/components/schemas/ServiceUserDto"
+        nextPageKey:
+          type: "string"
+          description: "Key for requesting the next page of the result"
+        totalCount:
+          type: "integer"
+          description: "Total count of records"
+          format: "int64"
+    ServiceUserDto:
+      type: "object"
+      properties:
+        uid:
+          type: "string"
+        email:
+          type: "string"
+        name:
+          type: "string"
+        surname:
+          type: "string"
+        description:
+          type: "string"
+        createdAt:
+          type: "string"
+          format: "date-time"
+      description: "Collection containing the paginated result"
+    RestGroupPublic:
+      required:
+      - "groupName"
+      - "type"
+      - "uuid"
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+        groupName:
+          type: "string"
+        type:
+          type: "string"
+          enum:
+          - "LOCAL"
+          - "ALL_USERS"
+          - "SCIM"
+          - "SAML"
+      description: "Collection containing the paginated result"
+    RestGroupPublicListResponse:
+      type: "object"
+      properties:
+        results:
+          type: "array"
+          description: "Collection containing the paginated result"
+          items:
+            $ref: "#/components/schemas/RestGroupPublic"
+        nextPageKey:
+          type: "string"
+          description: "Key for requesting the next page of the result"
+        totalCount:
+          type: "integer"
+          description: "Total count of records"
+          format: "int64"
+    RestWifClaimMapping:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+        claimName:
+          type: "string"
+        claimValue:
+          type: "string"
+        matchType:
+          type: "string"
+    RestWifServiceUserMapping:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+        serviceUserUuid:
+          type: "string"
+        environmentId:
+          type: "string"
+        scopes:
+          type: "array"
+          items:
+            type: "string"
+        status:
+          type: "string"
+        claimMappings:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/RestWifClaimMapping"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+    RestWifClaimMappingForm:
+      required:
+      - "claimName"
+      - "claimValue"
+      - "matchType"
+      type: "object"
+      properties:
+        claimName:
+          maxLength: 256
+          minLength: 0
+          type: "string"
+        claimValue:
+          maxLength: 1024
+          minLength: 0
+          type: "string"
+        matchType:
+          minLength: 1
+          pattern: "EXACT|GLOB"
+          type: "string"
+    RestWifServiceUserMappingForm:
+      required:
+      - "claimMappings"
+      - "environmentId"
+      - "scopes"
+      - "serviceUserUuid"
+      type: "object"
+      properties:
+        serviceUserUuid:
+          minLength: 1
+          type: "string"
+        environmentId:
+          maxLength: 256
+          minLength: 0
+          type: "string"
+        scopes:
+          minItems: 1
+          type: "array"
+          items:
+            type: "string"
+        claimMappings:
+          minItems: 1
+          type: "array"
+          items:
+            $ref: "#/components/schemas/RestWifClaimMappingForm"
+    RestWifServiceUserMappingList:
+      type: "object"
+      properties:
+        pageSize:
+          type: "integer"
+          format: "int64"
+        pageNumber:
+          type: "integer"
+          format: "int64"
+        total:
+          type: "integer"
+          format: "int64"
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/RestWifServiceUserMappingListItem"
+    RestWifServiceUserMappingListItem:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+        serviceUserUuid:
+          type: "string"
+        environmentId:
+          type: "string"
+        scopes:
+          type: "array"
+          items:
+            type: "string"
+        status:
+          type: "string"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+    RestWifServiceUserMappingPatchForm:
+      required:
+      - "status"
+      type: "object"
+      properties:
+        status:
+          minLength: 1
+          pattern: "ACTIVE|INACTIVE"
+          type: "string"
+    RestWifTrustPolicy:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+        name:
+          type: "string"
+        issuerUrl:
+          type: "string"
+        issuerUrlHash:
+          type: "string"
+        jwksUri:
+          type: "string"
+        description:
+          type: "string"
+        audience:
+          type: "string"
+        status:
+          type: "string"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        serviceUserMappings:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/RestWifServiceUserMapping"
+    RestWifTrustPolicyForm:
+      required:
+      - "audience"
+      - "issuerUrl"
+      - "name"
+      type: "object"
+      properties:
+        name:
+          maxLength: 256
+          minLength: 0
+          type: "string"
+        issuerUrl:
+          maxLength: 2048
+          minLength: 0
+          type: "string"
+        jwksUri:
+          maxLength: 2048
+          minLength: 0
+          type: "string"
+        audience:
+          maxLength: 512
+          minLength: 0
+          type: "string"
+        description:
+          maxLength: 1024
+          minLength: 0
+          type: "string"
+    RestWifTrustPolicyList:
+      type: "object"
+      properties:
+        pageSize:
+          type: "integer"
+          format: "int64"
+        pageNumber:
+          type: "integer"
+          format: "int64"
+        total:
+          type: "integer"
+          format: "int64"
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/RestWifTrustPolicyListItem"
+    RestWifTrustPolicyListItem:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+        name:
+          type: "string"
+        issuerUrl:
+          type: "string"
+        audience:
+          type: "string"
+        status:
+          type: "string"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+    RestWifTrustPolicyPatchForm:
+      required:
+      - "status"
+      type: "object"
+      properties:
+        status:
+          minLength: 1
+          pattern: "ACTIVE|INACTIVE"
+          type: "string"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses oauth2 with the 'client credentials' flow."
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            iam:users:read: "Scope for reading users"
+            iam:groups:read: "Scope for reading groups"
+            iam:service-users:use: "Scope for reading service users"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

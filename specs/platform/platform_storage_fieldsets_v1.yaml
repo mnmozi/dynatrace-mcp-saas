@@ -1,0 +1,740 @@
+openapi: "3.0.1"
+info:
+  description: "Fieldset management for Grail."
+  title: "Grail Storage Fieldsets"
+  version: "1.0.1"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/fieldsets/v1"
+  x-api-gateway-url: "/platform/storage/fieldsets/v1"
+paths:
+  /fieldsets:
+    get:
+      operationId: "getFieldsets"
+      parameters:
+      - description: "enabled or disabled fieldsets"
+        example: "true"
+        in: "query"
+        name: "enabled"
+        required: false
+        schema:
+          type: "boolean"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Example response:
+                  description: "Example response"
+                  value:
+                    fieldsets:
+                    - uid: "1"
+                      name: "sensitive-fields-on-table"
+                      description: ""
+                      createdBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                      enabled: true
+                      readOnly: false
+                      scope: "TABLE"
+                      fields:
+                      - "email"
+                      - "userid"
+                      tables:
+                      - "spans"
+                      - "logs"
+                      version: 1
+                      lastModifiedBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                      created: "2024-01-01T15:04:20.698Z"
+                      lastModified: "2024-12-31T18:06:09.647Z"
+                    - uid: "2"
+                      name: "sensitive-fields-on-buckets"
+                      description: ""
+                      createdBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                      enabled: true
+                      readOnly: false
+                      scope: "BUCKET"
+                      fields:
+                      - "email"
+                      - "userid"
+                      buckets:
+                      - "default_spans"
+                      - "default_logs"
+                      version: 1
+                      lastModifiedBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                      created: "2024-01-01T15:04:20.698Z"
+                      lastModified: "2024-12-31T18:06:09.647Z"
+                    - uid: "3"
+                      name: "sensitive-fields"
+                      description: ""
+                      createdBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                      enabled: true
+                      readOnly: false
+                      scope: "TENANT"
+                      fields:
+                      - "email"
+                      - "userid"
+                      version: 1
+                      lastModifiedBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                      created: "2024-01-01T15:04:20.698Z"
+                      lastModified: "2024-12-31T18:06:09.647Z"
+              schema:
+                $ref: "#/components/schemas/Fieldsets"
+          description: "fieldsets successfully retrieved."
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server error.:
+                  description: "Server error."
+                  value:
+                    error:
+                      message: "Something went wrong. The issue was logged"
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - OAuth2:
+        - "storage:fieldset-definitions:read"
+      - ssoBearerAuth: []
+      summary: "Get all fieldsets."
+      tags:
+      - "Fieldsets"
+      description: "**Required scope:** storage:fieldset-definitions:read"
+    post:
+      operationId: "createFieldset"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              'Example request body with a bucket scope. ':
+                description: "Example request body with a bucket scope. "
+                value:
+                  name: "sensitive-fields-on-bucket"
+                  description: "Sensitive field set for all buckets starting with\
+                    \ 'default_'"
+                  enabled: true
+                  scope: "BUCKET"
+                  fields:
+                  - "email"
+                  - "userid"
+                  buckets:
+                  - "default_*"
+              Example request body with a table scope.:
+                description: "Example request body with a table scope."
+                value:
+                  name: "sensitive-fields-on-table"
+                  description: "Sensitive field set on table"
+                  enabled: true
+                  scope: "TABLE"
+                  fields:
+                  - "email"
+                  - "userid"
+                  tables:
+                  - "spans"
+                  - "logs"
+              Example request body with an environment-wide scope.:
+                description: "Example request body with an environment-wide scope."
+                value:
+                  name: "sensitive-fields-on-tenant"
+                  description: "Environment-wide sensitive field set"
+                  enabled: true
+                  scope: "TENANT"
+                  fields:
+                  - "email"
+                  - "userid"
+            schema:
+              $ref: "#/components/schemas/NewFieldsetRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              examples:
+                Example response:
+                  description: "Example response"
+                  value:
+                    uid: "12132"
+                    name: "sensitive-fields"
+                    description: ""
+                    createdBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                    enabled: true
+                    readOnly: false
+                    scope: "TABLE"
+                    fields:
+                    - "email"
+                    - "userid"
+                    tables:
+                    - "spans"
+                    - "logs"
+                    version: 1
+                    lastModifiedBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                    created: "2024-01-01T15:04:20.698Z"
+                    lastModified: "2024-12-31T18:06:09.647Z"
+              schema:
+                $ref: "#/components/schemas/Fieldset"
+          description: "fieldset successfully created."
+        "400":
+          content:
+            application/json:
+              examples:
+                Constraint violations:
+                  description: "Constraint violations"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      details:
+                        constraintViolations:
+                        - message: "size must be between 0 and 100"
+                          parameterDescriptor: "fieldsetName"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad Request: the server cannot process the request due to\
+            \ a supposed client error."
+        "409":
+          content:
+            application/json:
+              examples:
+                Fieldset already exists:
+                  description: "Fieldset already exists"
+                  value:
+                    error:
+                      message: "fieldset 'sensitive-fields' already exists for tenantId\
+                        \ 'tenant'"
+                      code: 409
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Conflict: A fieldset with this name already exists."
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server error.:
+                  description: "Server error."
+                  value:
+                    error:
+                      message: "Something went wrong. The issue was logged"
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - OAuth2:
+        - "storage:fieldset-definitions:write"
+      - ssoBearerAuth: []
+      summary: "Create a new fieldset."
+      tags:
+      - "Fieldsets"
+      description: "**Required scope:** storage:fieldset-definitions:write"
+  /fieldsets/{fieldsetUid}:
+    delete:
+      operationId: "deleteFieldset"
+      parameters:
+      - description: "UID of the fieldset"
+        example: "abcdef12345"
+        in: "path"
+        name: "fieldsetUid"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "fieldset successfully deleted."
+        "404":
+          content:
+            application/json:
+              examples:
+                Fieldset not found:
+                  description: "Fieldset not found"
+                  value:
+                    error:
+                      message: "Fieldset not found"
+                      code: 404
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Not found: the server cannot find the requested fieldset."
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server error.:
+                  description: "Server error."
+                  value:
+                    error:
+                      message: "Something went wrong. The issue was logged"
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - OAuth2:
+        - "storage:fieldset-definitions:write"
+      - ssoBearerAuth: []
+      summary: "Delete a fieldset."
+      tags:
+      - "Fieldsets"
+      description: "**Required scope:** storage:fieldset-definitions:write"
+    get:
+      operationId: "getFieldset"
+      parameters:
+      - description: "UID of the fieldset"
+        example: "abcdef12345"
+        in: "path"
+        name: "fieldsetUid"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Example response:
+                  description: "Example response"
+                  value:
+                    uid: "12132"
+                    name: "sensitive-fields"
+                    description: ""
+                    createdBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                    enabled: true
+                    readOnly: false
+                    scope: "TABLE"
+                    fields:
+                    - "email"
+                    - "userid"
+                    tables:
+                    - "spans"
+                    - "logs"
+                    version: 1
+                    lastModifiedBy: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+                    created: "2024-01-01T15:04:20.698Z"
+                    lastModified: "2024-12-31T18:06:09.647Z"
+              schema:
+                $ref: "#/components/schemas/Fieldset"
+          description: "fieldset successfully retrieved."
+        "404":
+          content:
+            application/json:
+              examples:
+                Fieldset not found:
+                  description: "Fieldset not found"
+                  value:
+                    error:
+                      message: "Fieldset not found"
+                      code: 404
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Not found: the server cannot find the requested fieldset."
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server error.:
+                  description: "Server error."
+                  value:
+                    error:
+                      message: "Something went wrong. The issue was logged"
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - OAuth2:
+        - "storage:fieldset-definitions:read"
+      - ssoBearerAuth: []
+      summary: "Get fieldset by UID."
+      tags:
+      - "Fieldsets"
+      description: "**Required scope:** storage:fieldset-definitions:read"
+    put:
+      operationId: "updateFieldset"
+      parameters:
+      - description: "UID of the fieldset"
+        example: "abcdef12345"
+        in: "path"
+        name: "fieldsetUid"
+        required: true
+        schema:
+          type: "string"
+      - description: "**optimistic-locking-version** defines the base version that\
+          \ this update applies to. You can get the current version of a fieldset\
+          \ by checking the **version** field in the JSON Response of [GET fieldsets](#operations-Fieldsets-getFieldsets)\
+          \ or [GET fieldset](#operations-Fieldsets-getFieldset) **ATTENTION: this\
+          \ version and the version value in the JSON body must match**."
+        example: "1"
+        in: "query"
+        name: "optimistic-locking-version"
+        required: true
+        schema:
+          type: "integer"
+          format: "int32"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Example update request:
+                description: "Example update request"
+                value:
+                  description: "Sensitive field set on table"
+                  enabled: true
+                  scope: "TABLE"
+                  fields:
+                  - "email"
+                  - "userid"
+                  tables:
+                  - "spans"
+                  - "logs"
+            schema:
+              $ref: "#/components/schemas/UpdateFieldsetRequest"
+        required: true
+      responses:
+        "200":
+          description: "fieldset successfully updated."
+        "400":
+          content:
+            application/json:
+              examples:
+                Constraint violations:
+                  description: "Constraint violations"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      details:
+                        constraintViolations:
+                        - message: "size must be between 0 and 512"
+                          parameterDescriptor: "description"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad Request: the server cannot process the request due to\
+            \ a supposed client error."
+        "404":
+          content:
+            application/json:
+              examples:
+                Fieldset not found:
+                  description: "Fieldset not found"
+                  value:
+                    error:
+                      message: "Fieldset not found"
+                      code: 404
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Not found: the server cannot find the requested fieldset."
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server error.:
+                  description: "Server error."
+                  value:
+                    error:
+                      message: "Something went wrong. The issue was logged"
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - OAuth2:
+        - "storage:fieldset-definitions:write"
+      - ssoBearerAuth: []
+      summary: "Update a fieldset. All fields will be overwritten."
+      tags:
+      - "Fieldsets"
+      description: "**Required scope:** storage:fieldset-definitions:write"
+components:
+  schemas:
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorResponse"
+    ErrorResponse:
+      type: "object"
+      description: "The response for error state"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "Error code, which normally matches the HTTP error code."
+        details:
+          $ref: "#/components/schemas/ErrorResponseDetails"
+        message:
+          type: "string"
+          description: "A short, clear error message without details"
+      required:
+      - "code"
+      - "message"
+    ErrorResponseDetails:
+      type: "object"
+      description: "Detailed information about the error."
+      properties:
+        constraintViolations:
+          type: "array"
+          description: "Information about an input parameter that violated some validation\
+            \ rule of the service API."
+          items:
+            $ref: "#/components/schemas/ErrorResponseDetailsConstraintViolations"
+        errorMessage:
+          type: "string"
+          description: "Complete error message."
+        missingPermissions:
+          type: "array"
+          description: "List of missing IAM permissions necessary to successfully\
+            \ execute the request."
+          items:
+            type: "string"
+            description: "List of missing IAM permissions necessary to successfully\
+              \ execute the request."
+        missingScopes:
+          type: "array"
+          description: "List of missing IAM scopes necessary to successfully execute\
+            \ the request."
+          items:
+            type: "string"
+            description: "List of missing IAM scopes necessary to successfully execute\
+              \ the request."
+    ErrorResponseDetailsConstraintViolations:
+      type: "object"
+      description: "Information about an input parameter that violated some validation\
+        \ rule of the service API."
+      properties:
+        message:
+          type: "string"
+          description: "Message describing the error."
+        parameterDescriptor:
+          type: "string"
+          description: "Describes the violating parameter."
+      required:
+      - "message"
+    Fieldset:
+      type: "object"
+      properties:
+        buckets:
+          type: "array"
+          description: "List of the buckets on which fieldset is applicable."
+          items:
+            type: "string"
+            description: "List of the buckets on which fieldset is applicable."
+        created:
+          type: "string"
+          description: "Timestamp in ISO-8601 indicating when the field record was\
+            \ created."
+          example: "2024-01-01T15:04:20.698Z"
+        createdBy:
+          type: "string"
+          description: "Creator of the fieldset."
+          example: "6e6abcde-3e36-42ab-bc5c-9abcdec123a45"
+        description:
+          type: "string"
+          description: "Description of the fieldset."
+          example: "Fieldset of sensitive fields"
+        enabled:
+          type: "boolean"
+          description: "Indicates if the fieldset is enabled."
+          example: true
+        fields:
+          type: "array"
+          description: "List of the fields."
+          items:
+            type: "string"
+            description: "List of the fields."
+        lastModified:
+          type: "string"
+          description: "Timestamp in ISO-8601 indicating when the field record was\
+            \ updated."
+          example: "2024-12-31T18:06:09.647Z"
+        lastModifiedBy:
+          type: "string"
+          description: "Last user who modified the fieldset."
+          example: "TABLE"
+        name:
+          type: "string"
+          description: "Name of the fieldset."
+          example: "sensitive-fieldset"
+        readOnly:
+          type: "boolean"
+          description: "Indicates if the fieldset is read only and can not be updated."
+          example: false
+        scope:
+          type: "string"
+          description: "Scope of the fieldset."
+          example: "TABLE"
+        tables:
+          type: "array"
+          description: "List of the tables on which fieldset is applicable."
+          items:
+            type: "string"
+            description: "List of the tables on which fieldset is applicable."
+        uid:
+          type: "string"
+          description: "Unique identifier of the fieldset."
+          example: "abcdef12345"
+        version:
+          type: "integer"
+          format: "int32"
+          description: "Used for optimistic locking. Update requests define with this\
+            \ on which version the data updated is based on. This must match with\
+            \ the version stored, otherwise the update will fail due to concurrent\
+            \ modification."
+          example: 1
+      required:
+      - "created"
+      - "createdBy"
+      - "enabled"
+      - "fields"
+      - "lastModified"
+      - "lastModifiedBy"
+      - "name"
+      - "readOnly"
+      - "scope"
+      - "uid"
+      - "version"
+    Fieldsets:
+      type: "object"
+      properties:
+        fieldsets:
+          type: "array"
+          description: "List of fieldsets."
+          items:
+            $ref: "#/components/schemas/Fieldset"
+      required:
+      - "fieldsets"
+    NewFieldsetRequest:
+      type: "object"
+      properties:
+        buckets:
+          type: "array"
+          description: "List of the buckets on which fieldset is applicable."
+          items:
+            type: "string"
+            description: "List of the buckets on which fieldset is applicable."
+            maxLength: 100
+            minLength: 0
+            pattern: "^(\\*|[a-z]([a-z0-9_-]*\\*?))$"
+          maxItems: 100
+          minItems: 0
+          uniqueItems: true
+        description:
+          type: "string"
+          description: "Description of the fieldset."
+          example: "Fieldset of sensitive fields"
+          maxLength: 512
+          minLength: 0
+        enabled:
+          type: "boolean"
+          default: true
+          description: "Description of the fieldset."
+          example: true
+        fields:
+          type: "array"
+          description: "List of the fields."
+          items:
+            type: "string"
+            description: "List of the fields."
+            maxLength: 1024
+            minLength: 0
+            pattern: "[\\u0000-\\uFFFF]+"
+          maxItems: 100
+          minItems: 0
+          uniqueItems: true
+        name:
+          type: "string"
+          description: "Name of the fieldset."
+          example: "sensitive-fieldset"
+          maxLength: 256
+          minLength: 0
+          pattern: "^(?!builtin)([a-z])([a-z0-9_-])*"
+        scope:
+          type: "string"
+          description: "Scope of the fieldset."
+          enum:
+          - "BUCKET"
+          - "TABLE"
+          - "TENANT"
+          example: "TABLE"
+        tables:
+          type: "array"
+          description: "List of the tables on which fieldset is applicable."
+          items:
+            type: "string"
+            description: "List of the tables on which fieldset is applicable."
+          maxItems: 30
+          minItems: 0
+          uniqueItems: true
+      required:
+      - "fields"
+      - "name"
+      - "scope"
+    UpdateFieldsetRequest:
+      type: "object"
+      properties:
+        buckets:
+          type: "array"
+          description: "List of the buckets on which fieldset is applicable."
+          items:
+            type: "string"
+            description: "List of the buckets on which fieldset is applicable."
+            maxLength: 100
+            minLength: 0
+            pattern: "^(\\*|[a-z]([a-z0-9_-]*\\*?))$"
+          maxItems: 100
+          minItems: 0
+          uniqueItems: true
+        description:
+          type: "string"
+          description: "Description of the fieldset."
+          example: "Fieldset of sensitive fields"
+          maxLength: 512
+          minLength: 0
+        enabled:
+          type: "boolean"
+          default: true
+          description: "Description of the fieldset."
+          example: true
+        fields:
+          type: "array"
+          description: "List of the fields."
+          items:
+            type: "string"
+            description: "List of the fields."
+            maxLength: 1024
+            minLength: 0
+            pattern: "[\\u0000-\\uFFFF]+"
+          maxItems: 100
+          minItems: 0
+          uniqueItems: true
+        scope:
+          type: "string"
+          description: "Scope of the fieldset."
+          enum:
+          - "BUCKET"
+          - "TABLE"
+          - "TENANT"
+          example: "TABLE"
+        tables:
+          type: "array"
+          description: "List of the tables on which fieldset is applicable."
+          items:
+            type: "string"
+            description: "List of the tables on which fieldset is applicable."
+          maxItems: 30
+          minItems: 0
+          uniqueItems: true
+      required:
+      - "fields"
+      - "scope"
+  securitySchemes:
+    OAuth2:
+      flows:
+        clientCredentials:
+          scopes:
+            storage:fieldset-definitions:read: "reading fieldsets"
+            storage:fieldset-definitions:write: "writing fieldsets"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

@@ -1,0 +1,175 @@
+openapi: "3.0.4"
+info:
+  version: "1.0.3"
+  title: "State Management"
+  x-service-category: "State service"
+  x-summary: "Provides endpoints to clear app states and user app states for specific\
+    \ apps."
+  description: "# Overview\nProvides endpoints to clear app states and user app states\
+    \ for specific apps.\n"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/state-management/v1"
+  x-api-gateway-url: "/platform/state-management/v1"
+paths:
+  /{appId}/app-states:
+    delete:
+      summary: "Delete all app states for the provided appId"
+      operationId: "deleteAllAppStates"
+      tags:
+      - "StateManagement"
+      parameters:
+      - $ref: "#/components/parameters/appIdParam"
+      security:
+      - ssoAuth:
+        - "state-management:app-states:delete"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          $ref: "#/components/responses/204"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
+        default:
+          $ref: "#/components/responses/GeneralError"
+      description: "**Required scope:** state-management:app-states:delete"
+  /{appId}/user-app-states:
+    delete:
+      summary: "Delete all user app states for all users for the provided appId."
+      operationId: "deleteAllUserAppStates"
+      tags:
+      - "StateManagement"
+      parameters:
+      - $ref: "#/components/parameters/appIdParam"
+      security:
+      - ssoAuth:
+        - "state-management:user-app-states:delete-all"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          $ref: "#/components/responses/204"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
+        default:
+          $ref: "#/components/responses/GeneralError"
+      description: "**Required scope:** state-management:user-app-states:delete-all"
+  /{appId}/user-app-states/self:
+    delete:
+      summary: "Delete user app states of the authorized user for the provided appId"
+      operationId: "deleteUserAppStatesSelf"
+      tags:
+      - "StateManagement"
+      parameters:
+      - $ref: "#/components/parameters/appIdParam"
+      security:
+      - ssoAuth:
+        - "state-management:user-app-states:delete"
+      - ssoBearerAuth: []
+      responses:
+        "204":
+          $ref: "#/components/responses/204"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
+        default:
+          $ref: "#/components/responses/GeneralError"
+      description: "**Required scope:** state-management:user-app-states:delete"
+components:
+  parameters:
+    appIdParam:
+      name: "appId"
+      in: "path"
+      description: "Specify the explicit appId of the state"
+      required: true
+      schema:
+        type: "string"
+      example: "dynatrace.notebooks"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2 with the authorizationCode flow. [More info](https://swagger.io/docs/specification/authentication/oauth2/)"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            state-management:app-states:delete: "Delete app states"
+            state-management:user-app-states:delete: "Delete user app states"
+            state-management:user-app-states:delete-all: "Delete all user app states"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  schemas:
+    ErrorResponse:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      required:
+      - "error"
+    Error:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+      required:
+      - "code"
+      - "message"
+  responses:
+    "204":
+      description: "No content"
+    "401":
+      description: "Unauthorized"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: 401
+              message: "The authorization token is missing, invalid or expired."
+    "403":
+      description: "Forbidden"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: 403
+              message: "The authorization token does not provide the necessary permissions."
+    "500":
+      description: "Internal server error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: 500
+              message: "Internal server error"
+    GeneralError:
+      description: "unexpected error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+security:
+- ssoAuth:
+  - "state-management:app-states:delete"
+  - "state-management:user-app-states:delete"
+  - "state-management:user-app-states:delete-all"

@@ -1,0 +1,276 @@
+openapi: "3.0.1"
+info:
+  title: "AppEngine - App Functions"
+  description: "Many apps come with their own server-side \"functions\".\nThese are\
+    \ not only available from the browser,\nbut can be triggered by any http client.\
+    \ This document will show you how.\n\nDepending on the app, different functions\
+    \ will be available."
+  version: "1.0.0"
+  x-summary: "The App Functions API is responsible for triggering server-side functions\
+    \ of installed Dynatrace apps."
+  x-service-category: "AppEngine"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/app-engine/app-functions/v1"
+  x-api-gateway-url: "/platform/app-engine/app-functions/v1"
+paths:
+  /apps/{appId}/api/{functionName}:
+    get:
+      tags:
+      - "App Functions - API"
+      summary: "Executes a function of the given app."
+      operationId: "invokeFunctionGet"
+      parameters:
+      - name: "appId"
+        in: "path"
+        description: "The unique identifier for the app"
+        required: true
+        schema:
+          type: "string"
+      - name: "functionName"
+        in: "path"
+        description: "The name of the called function"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: "The app was not found."
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "409":
+          description: "The app's backend is being deployed and not able to serve\
+            \ requests yet."
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "540":
+          description: "JavaScript Error occurred"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FunctionErrorResponse"
+        "541":
+          description: "Runtime Error occurred"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FunctionErrorResponse"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoBearerAuth: []
+      description: "**Required scope:** app-engine:apps:run"
+    post:
+      tags:
+      - "App Functions - API"
+      summary: "Executes a function of the given app."
+      operationId: "invokeFunctionPost"
+      parameters:
+      - name: "appId"
+        in: "path"
+        description: "The unique identifier for the app"
+        required: true
+        schema:
+          type: "string"
+      - name: "functionName"
+        in: "path"
+        description: "The name of the called function"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+              description: "Request body for HTTP methods supporting body."
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: "The app was not found."
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "409":
+          description: "The app's backend is being deployed and not able to serve\
+            \ requests yet."
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "540":
+          description: "JavaScript Error occurred"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FunctionErrorResponse"
+        "541":
+          description: "Runtime Error occurred"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FunctionErrorResponse"
+      security:
+      - ssoAuth:
+        - "app-engine:apps:run"
+      - ssoBearerAuth: []
+      description: "**Required scope:** app-engine:apps:run"
+components:
+  schemas:
+    ConstraintViolation:
+      required:
+      - "message"
+      - "path"
+      type: "object"
+      properties:
+        path:
+          type: "string"
+          description: "The path of the property that caused the constraint violation"
+        message:
+          type: "string"
+          description: "The error message"
+        errorCode:
+          type: "string"
+          description: "An optional error code that contains more detailed error information."
+        errorCodeProperties:
+          type: "object"
+          description: "Additional properties related to the provided error code."
+      description: "Contains information about a constraint violation caused by invalid\
+        \ input."
+    Error:
+      required:
+      - "code"
+      - "message"
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          description: "The HTTP status code"
+          format: "int32"
+        message:
+          type: "string"
+          description: "The error message"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+        help:
+          type: "string"
+          description: "Additional information related to the error"
+        retryAfterSeconds:
+          type: "integer"
+          description: "Seconds to wait until the next retry"
+          format: "int32"
+      description: "Contains information for 4xx and 5xx errors."
+    ErrorDetails:
+      type: "object"
+      properties:
+        errorRef:
+          type: "string"
+          description: "Generated unique value for 5xx errors."
+        traceId:
+          type: "string"
+          description: "OpenTelemetry trace id of the trace where error occurs."
+        errorCode:
+          type: "string"
+          description: "An optional error code that contains more detailed error information\
+            \ than the HTTP response code alone."
+        errorCodeProperties:
+          type: "object"
+          description: "Additional properties related to the provided error code"
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+      description: "Contains details for 4xx and 5xx errors."
+    ErrorEnvelope:
+      required:
+      - "error"
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      description: "Error response for all 4xx and 5xx errors."
+    FunctionError:
+      required:
+      - "code"
+      - "details"
+      - "message"
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+          example: "Error Message"
+        details:
+          $ref: "#/components/schemas/FunctionErrorDetails"
+    FunctionErrorDetails:
+      required:
+      - "logs"
+      - "message"
+      - "type"
+      type: "object"
+      properties:
+        logs:
+          type: "string"
+          example: "INFO: log output"
+        type:
+          type: "string"
+          example: "UNCAUGHT_EXCEPTION"
+        message:
+          type: "string"
+          example: "Detailed Error Message"
+        details:
+          $ref: "#/components/schemas/JsonNode"
+    FunctionErrorResponse:
+      required:
+      - "error"
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/FunctionError"
+    JsonNode:
+      type: "object"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth2 with the 'Client Credentials' flow"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            app-engine:apps:run: "run apps"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

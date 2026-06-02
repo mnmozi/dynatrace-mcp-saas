@@ -1,0 +1,966 @@
+openapi: "3.0.3"
+info:
+  title: "Hub"
+  description: "The Hub API provides catalog content, such as Dynatrace Apps, Extensions,\
+    \ and Technologies, in the context of the current environment.\n"
+  version: "1.18.0"
+  x-service-category: "Hub"
+  x-summary: "The Hub API provides catalog content, such as Dynatrace Apps, Extensions,\
+    \ and Technologies, in the context of the current environment."
+tags:
+- name: "Apps"
+- name: "Extensions"
+- name: "Technologies"
+- name: "Categories"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/hub/v1"
+  x-api-gateway-url: "/platform/hub/v1"
+security:
+- ssoAuth:
+  - "hub:catalog:read"
+paths:
+  /catalog/apps:
+    parameters:
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalAppOverviewField"
+      description: "A list of fields that are added to the default set of fields."
+    - name: "only-compatible"
+      in: "query"
+      required: false
+      schema:
+        type: "boolean"
+        default: true
+      description: "Filters apps and their releases to exclude incompatible instances.\
+        \ If true or missing the resulting releases will have compatibility of COMPATIBLE\
+        \ or UNKNOWN."
+    get:
+      operationId: "getAppOverviewList"
+      summary: "List overview information of all apps"
+      tags:
+      - "Apps"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A list of overview information"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OverviewsList"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/apps/{id}:
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalAppDetailField"
+      description: "A list of fields that are added to the default set of fields."
+    get:
+      operationId: "getAppDetails"
+      summary: "Provides detailed information about an app"
+      tags:
+      - "Apps"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "Detailed information about an app"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Detail"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/apps/{id}/releases:
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalAppReleaseField"
+    get:
+      operationId: "getAppReleases"
+      summary: "Provides a list of releases published for an app, including revoked\
+        \ releases"
+      tags:
+      - "Apps"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A list of releases"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleasesList"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/extensions:
+    parameters:
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalExtensionOverviewField"
+      description: "A list of fields that are added to the default set of fields."
+    - name: "only-compatible"
+      in: "query"
+      required: false
+      schema:
+        type: "boolean"
+        default: true
+      description: "A flag to reduce the list to only include compatible extensions\
+        \ with their latest compatible version."
+    get:
+      operationId: "getExtensionOverviewList"
+      summary: "List overview information of all extensions"
+      tags:
+      - "Extensions"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A list of overview information"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OverviewsList"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/extensions/{id}:
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalExtensionDetailField"
+      description: "A list of fields that are added to the default set of fields."
+    get:
+      operationId: "getExtensionDetails"
+      summary: "Provides detailed information about an extension"
+      tags:
+      - "Extensions"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "Detailed information about an extension"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Detail"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/extensions/{id}/releases:
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalExtensionReleaseField"
+      description: "A list of fields that are added to the default set of fields."
+    get:
+      operationId: "getExtensionReleases"
+      summary: "Provides a list of releases published for an extension, including\
+        \ revoked releases"
+      tags:
+      - "Extensions"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A list of releases"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleasesList"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/technologies:
+    parameters:
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalTechnologyOverviewField"
+      description: "A list of fields that are added to the default set of fields."
+    - name: "only-compatible"
+      in: "query"
+      required: false
+      schema:
+        type: "boolean"
+        default: true
+      description: "A flag to reduce the list to only include compatible technologies."
+    get:
+      operationId: "getTechnologyOverviewList"
+      summary: "List overview information of all technologies"
+      tags:
+      - "Technologies"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A list of overview information"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OverviewsList"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/technologies/{id}:
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    - name: "add-fields"
+      in: "query"
+      required: false
+      schema:
+        type: "array"
+        default: []
+        items:
+          $ref: "#/components/schemas/OptionalTechnologyDetailField"
+      description: "A list of fields that are added to the default set of fields."
+    get:
+      operationId: "getTechnologyDetails"
+      summary: "Provides detailed information about a technology"
+      tags:
+      - "Technologies"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "Detailed information about a technology"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Detail"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+  /catalog/categories:
+    get:
+      operationId: "getCategories"
+      summary: "List Hub categories, including the IDs of the associated items and\
+        \ their content blocks if any"
+      tags:
+      - "Categories"
+      security:
+      - ssoAuth:
+        - "hub:catalog:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The categories"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categories"
+        "4XX":
+          $ref: "#/components/responses/ErrorResponse"
+        "5XX":
+          $ref: "#/components/responses/ErrorResponse"
+      description: "**Required scope:** hub:catalog:read"
+components:
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses Oauth2 with the 'Client Credentials' flow"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            hub:catalog:read: "Read Hub catalog content"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  schemas:
+    ItemType:
+      type: "string"
+      enum:
+      - "APP"
+      - "CLASSIC_APP"
+      - "EXTENSION_2"
+      - "TECHNOLOGY"
+    OverviewsList:
+      description: "A list of item meta data. Per default contains only compatible\
+        \ items, but can be controlled using the onlyCompatible flag."
+      type: "object"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Overview"
+      required:
+      - "items"
+    OptionalAppOverviewField:
+      type: "string"
+      enum:
+      - "hubItemId"
+      - "resourceContext"
+      - "contentCount"
+    OptionalExtensionOverviewField:
+      type: "string"
+      enum:
+      - "hubItemId"
+      - "contentCount"
+    OptionalTechnologyOverviewField:
+      type: "string"
+      enum:
+      - "hubItemId"
+    Overview:
+      description: "Meta data of the latest version of this item."
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          example: "dynatrace.example"
+          description: "The id is only unique within a specific type."
+        hubItemId:
+          type: "string"
+          example: "example"
+          description: "The Hub item id, aka. slug."
+        type:
+          $ref: "#/components/schemas/ItemType"
+        version:
+          type: "string"
+          example: "2.3.4"
+          description: "The latest version of this item."
+        createdTime:
+          type: "string"
+          format: "date-time"
+          example: "2023-04-25T12:00:00Z"
+          description: "The time this Hub item was originally created."
+        releaseTime:
+          type: "string"
+          format: "date-time"
+          example: "2023-04-25T12:00:00Z"
+          description: "The time this latest version of the item was released."
+        name:
+          type: "string"
+          maxLength: 100
+          example: "Example App"
+        description:
+          type: "string"
+          maxLength: 200
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\
+            \ eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        keywords:
+          type: "array"
+          nullable: false
+          items:
+            type: "string"
+          example:
+          - "cloud"
+          - "k8s"
+        icon:
+          type: "string"
+          format: "uri"
+          example: "https://dt-cdn.net/images/techn-icon-oneagent-4ea8f5d12c.svg"
+        hasDetailSection:
+          type: "boolean"
+          description: "Whether the details of this item contain one or more detail\
+            \ content sections."
+        comingSoon:
+          type: "boolean"
+        links:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Link"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        author:
+          $ref: "#/components/schemas/Author"
+        contentCount:
+          $ref: "#/components/schemas/ContentCount"
+      required:
+      - "id"
+      - "type"
+      - "name"
+      - "description"
+      - "keywords"
+      - "hasDetailSection"
+      - "comingSoon"
+    Link:
+      type: "object"
+      properties:
+        target:
+          type: "string"
+          format: "uri"
+        type:
+          $ref: "#/components/schemas/LinkType"
+        appId:
+          type: "string"
+        pageToken:
+          type: "string"
+      required:
+      - "type"
+      example:
+        target: "https://example.apps.dynatrace.com/ui/apps/dynatrace.example/"
+        type: "ACTIVATION"
+        appId: "dynatrace.example"
+    LinkType:
+      type: "string"
+      enum:
+      - "DOCUMENTATION"
+      - "MARKETING"
+      - "ACTIVATION"
+      - "REPOSITORY"
+      description: "Links can be of the following types:\n  * `DOCUMENTATION` - Technical\
+        \ documentation\n  * `MARKETING` - Promotion material\n  * `ACTIVATION` -\
+        \ Location within the product to configure the item\n  * `REPOSITORY` - Source\
+        \ code repository\n"
+    OptionalAppDetailField:
+      type: "string"
+      enum:
+      - "hubItemId"
+      - "manifest"
+      - "resourceContext"
+      - "contentCount"
+    OptionalExtensionDetailField:
+      type: "string"
+      enum:
+      - "hubItemId"
+      - "extensionMetadata"
+      - "contentCount"
+      - "extensionDocuments"
+    OptionalExtensionReleaseField:
+      type: "string"
+      enum:
+      - "extensionMetadata"
+      - "contentCount"
+      - "extensionDocuments"
+    OptionalTechnologyDetailField:
+      type: "string"
+      enum:
+      - "hubItemId"
+    Detail:
+      allOf:
+      - $ref: "#/components/schemas/Overview"
+      - type: "object"
+        properties:
+          detailSections:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/DetailSection"
+          relatedItems:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/Overview"
+          currentRelease:
+            $ref: "#/components/schemas/Release"
+        required:
+        - "detailSections"
+    DetailSection:
+      description: "Can be either a Markdown or Gallery section. Only one of the respective\
+        \ properties is returned (`markdown`, or `gallery`)."
+      type: "object"
+      properties:
+        sourceId:
+          type: "string"
+        markdown:
+          $ref: "#/components/schemas/MarkdownSection"
+        gallery:
+          $ref: "#/components/schemas/GallerySection"
+      required:
+      - "sourceId"
+    MarkdownSection:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+        markdown:
+          type: "string"
+      required:
+      - "title"
+      - "markdown"
+    GallerySection:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+        images:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/GalleryImage"
+      required:
+      - "title"
+      - "images"
+    GalleryImage:
+      type: "object"
+      properties:
+        src:
+          type: "string"
+          format: "uri"
+        resolutions:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            format: "uri"
+        alt:
+          type: "string"
+          description: "Descriptive text of what the image expresses"
+        title:
+          type: "string"
+        caption:
+          type: "string"
+      required:
+      - "src"
+    OptionalAppReleaseField:
+      type: "string"
+      enum:
+      - "manifest"
+      - "contentCount"
+    Release:
+      type: "object"
+      properties:
+        version:
+          type: "string"
+          description: "A semantic versioning 2.0 conform version."
+          example: "2.0.0"
+        releaseNotes:
+          type: "string"
+          description: "Markdown content describing this release."
+          example: "Now *even more* descriptive!"
+        compatible:
+          $ref: "#/components/schemas/Compatibility"
+        publicationTime:
+          type: "string"
+          format: "date-time"
+          example: "2023-04-25T12:00:00Z"
+        revocation:
+          $ref: "#/components/schemas/Revocation"
+        manifest:
+          $ref: "#/components/schemas/Manifest"
+        extensionMetadata:
+          $ref: "#/components/schemas/ExtensionMetadata"
+        extensionDocuments: {}
+        contentCount:
+          $ref: "#/components/schemas/ContentCount"
+      required:
+      - "version"
+      - "compatible"
+      - "publicationTime"
+    Revocation:
+      type: "object"
+      description: "The existence of this object marks a release as being revoked.\
+        \ It contains information on why this is the case."
+      properties:
+        reason:
+          $ref: "#/components/schemas/RevocationReason"
+        severity:
+          $ref: "#/components/schemas/RevocationSeverity"
+        description:
+          type: "string"
+      required:
+      - "reason"
+      example:
+        reason: "SECURITY_ISSUE"
+        severity: "HIGH"
+        description: "This release contained CVE-XXXX"
+    RevocationReason:
+      type: "string"
+      enum:
+      - "SECURITY_ISSUE"
+      - "FAULTY_RELEASE"
+      - "DEPRECATED"
+    RevocationSeverity:
+      type: "string"
+      enum:
+      - "LOW"
+      - "MEDIUM"
+      - "HIGH"
+    ReleasesList:
+      type: "object"
+      properties:
+        releases:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Release"
+      required:
+      - "releases"
+    Manifest:
+      type: "object"
+      properties:
+        actions: {}
+        csp: {}
+        intents: {}
+        pageTokens: {}
+        scopes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ManifestScope"
+        documents: {}
+        dependencies:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Dependency"
+        contentCount:
+          allOf:
+          - $ref: "#/components/schemas/ContentCount"
+          - deprecated: true
+            description: "The contentCount here is deprecated. Please prefer the field\
+              \ on the root of the Release object."
+        settings: {}
+        hidden:
+          type: "boolean"
+          default: false
+      required:
+      - "dependencies"
+      - "hidden"
+    Dependency:
+      type: "object"
+      properties:
+        name:
+          description: "The name of the required dependency"
+          type: "string"
+          example: "/platform/hub/v1"
+        version:
+          description: "SemVer2 version of the required dependency"
+          type: "string"
+          example: "1.2.3"
+      required:
+      - "name"
+      - "version"
+    ContentCount:
+      type: "object"
+      properties:
+        documents:
+          $ref: "#/components/schemas/DocumentCount"
+        actions:
+          $ref: "#/components/schemas/AssetCount"
+        settings:
+          $ref: "#/components/schemas/AssetCount"
+    AssetCount:
+      type: "object"
+      properties:
+        total:
+          type: "integer"
+          format: "int32"
+      required:
+      - "total"
+    DocumentCount:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/AssetCount"
+      properties:
+        types:
+          type: "object"
+          additionalProperties:
+            type: "integer"
+            format: "int32"
+      required:
+      - "total"
+    ManifestScope:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        comment:
+          type: "string"
+      required:
+      - "name"
+      - "comment"
+    ExtensionMetadata:
+      type: "object"
+      properties:
+        extensionContents: {}
+        featureSets:
+          type: "array"
+          items:
+            type: "string"
+        featureSetsDetails:
+          type: "object"
+    Compatibility:
+      type: "string"
+      enum:
+      - "COMPATIBLE"
+      - "INCOMPATIBLE"
+      - "UNKNOWN"
+    ResourceContext:
+      type: "object"
+      properties:
+        operations:
+          type: "array"
+          items:
+            type: "string"
+            enum:
+            - "install"
+    Author:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        icon:
+          type: "string"
+          format: "uri"
+        supportLink:
+          type: "string"
+          format: "uri"
+        supportEmail:
+          type: "string"
+          format: "email"
+        salesLink:
+          type: "string"
+          format: "uri"
+        salesEmail:
+          type: "string"
+          format: "email"
+      required:
+      - "name"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      required:
+      - "error"
+    Error:
+      type: "object"
+      description: "Standard error response"
+      properties:
+        code:
+          type: "number"
+          format: "int32"
+          description: "The error code (HTTP response)"
+        message:
+          type: "string"
+          description: "The error code (HTTP response)"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+      required:
+      - "code"
+      - "message"
+    ErrorDetails:
+      type: "object"
+      description: "Optional details of the error"
+      properties:
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations of input parameters (path,\
+            \ query, request body)"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+    ConstraintViolation:
+      type: "object"
+      description: "Contains information about a constraint violation caused by invalid\
+        \ input."
+      properties:
+        path:
+          type: "string"
+          description: "The path of the parameter that caused the constraint violation"
+        message:
+          type: "string"
+          description: "The constraint violation description message"
+      required:
+      - "message"
+    Categories:
+      properties:
+        categories:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Category"
+      required:
+      - "categories"
+    Category:
+      type: "object"
+      description: "An item category in the Hub"
+      properties:
+        id:
+          type: "string"
+          description: "The category's ID"
+          example: "home"
+        subgroup:
+          type: "string"
+          description: "Groups categories to related subpages"
+          example: "platform-group-1"
+        itemIds:
+          type: "array"
+          items:
+            type: "string"
+          description: "The IDs of the items associated with this category"
+          example:
+          - "dynatrace.hub"
+          - "com.dynatrace.extension.active-directory"
+          - "oneagent"
+        page:
+          $ref: "#/components/schemas/CategoryPage"
+      required:
+      - "id"
+      - "subgroup"
+      - "itemIds"
+      - "page"
+    CategoryPage:
+      properties:
+        title:
+          type: "string"
+          description: "The customer facing title of the page"
+          example: "Extend Dynatrace, empower your team"
+        description:
+          type: "string"
+          description: "The customer facing description of this page"
+          example: "In Dynatrace Hub, you'll find hundreds of technologies to tame\
+            \ digital complexity and get more..."
+        shortTitle:
+          type: "string"
+          description: "A shorter version of the customer facing title of the page"
+          example: "Hub home"
+        content:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/CategoryPageContent"
+      required:
+      - "title"
+      - "content"
+      - "description"
+      - "shortTitle"
+    CategoryPageContent:
+      properties:
+        title:
+          type: "string"
+          description: "The customer facing title of the content"
+          example: "What's new"
+        description:
+          type: "string"
+          description: "The customer facing description of the content"
+          example: "Stay up-to-date with what's new in Dynatrace."
+        contentType:
+          type: "string"
+          description: "The type of content"
+          enum:
+          - "section"
+          - "curated_content_block"
+          - "content_block_group"
+          - "browse_all_block"
+        itemIds:
+          type: "array"
+          items:
+            type: "string"
+          description: "The IDs of the items associated with this category"
+          example:
+          - "dynatrace.hub"
+          - "com.dynatrace.extension.active-directory"
+          - "oneagent"
+        blocks:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/CategoryPageContentBlock"
+          description: "The blocks of the items associated with this category"
+      required:
+      - "title"
+      - "description"
+      - "contentType"
+    CategoryPageContentBlock:
+      properties:
+        title:
+          type: "string"
+        description:
+          default: ""
+          type: "string"
+        href:
+          type: "string"
+        image:
+          type: "string"
+        hrefText:
+          type: "string"
+      required:
+      - "title"
+      - "href"
+      - "image"
+  responses:
+    ErrorResponse:
+      description: "An error occurred"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"

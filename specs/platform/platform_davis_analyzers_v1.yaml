@@ -1,0 +1,1773 @@
+openapi: "3.0.4"
+info:
+  title: "Davis AI - Predictive and Causal"
+  description: "This API allows you to interact with Davis® predictive and causal\
+    \ AI for customized AI/ML analysis.\n\nRefer to the [service documentation](https://dt-url.net/platform-services-davis-analyzer-service)\
+    \ to get familiar with the key concepts.\n"
+  x-service-category: "Davis AI"
+  x-summary: "Explore our Davis AI – Predictive and Causal API."
+  version: "1.7.1"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/davis/analyzers/v1"
+  x-api-gateway-url: "/platform/davis/analyzers/v1"
+tags:
+- name: "Analyzers"
+paths:
+  /analyzers:
+    get:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:read"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Query all available analyzer definitions."
+      description: "**Required scope:** davis:analyzers:read<br/><br/>The analyzer\
+        \ definition contains meta-information about an analyzer, including its input\
+        \ and output structure:\n* The `input` definition specifies which fields the\
+        \ analyzer accepts, some of which may be required.\n* The `output` definition\
+        \ specifies how the returned analyzer result is structured.\n"
+      operationId: "queryAnalyzers"
+      parameters:
+      - $ref: "#/components/parameters/PageKey"
+      - $ref: "#/components/parameters/PageSize"
+      - $ref: "#/components/parameters/Filter"
+      - $ref: "#/components/parameters/AddFields"
+      responses:
+        "200":
+          description: "All available analyzer definitions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerQueryResult"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}:
+    get:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:read"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Get the analyzer definition for an analyzer."
+      description: "**Required scope:** davis:analyzers:read<br/><br/>All available\
+        \ meta-information for the analyzer is returned.\n"
+      operationId: "getAnalyzer"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      responses:
+        "200":
+          description: "The definition of the requested analyzer."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerDefinitionDetails"
+        "400":
+          description: "Invalid or malformed request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}/documentation:
+    get:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:read"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Get the documentation for an analyzer."
+      description: "**Required scope:** davis:analyzers:read<br/><br/>A documentation\
+        \ may provide further information and context for a given analyzer.\nNot all\
+        \ analyzers provide documentation.\n\nThe documentation is returned as Markdown.\n"
+      operationId: "getAnalyzerDocumentation"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      responses:
+        "200":
+          description: "The documentation of the requested analyzer."
+          content:
+            text/markdown; charset=utf-8:
+              schema:
+                type: "string"
+                format: "binary"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "400":
+          description: "Invalid or malformed request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}/json-schema/input:
+    get:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:read"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Get the JSON schema for an analyzer input."
+      description: "**Required scope:** davis:analyzers:read<br/><br/>The [JSON schema](https://json-schema.org/)\
+        \ defines a standardized declaration of the input structure,\nproviding well-defined\
+        \ input documentation that is both human- and machine-readable.\n"
+      operationId: "getJsonSchemaForInput"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      - $ref: "#/components/parameters/JsonSchemaConfig"
+      responses:
+        "200":
+          description: "The [JSON input schema](https://json-schema.org/) of the requested\
+            \ analyzer."
+          content:
+            application/schema+json:
+              schema:
+                type: "object"
+              examples:
+                GenericForecastAnalyzer:
+                  $ref: "#/components/examples/GenericForecastAnalyzerInputSchema"
+        "400":
+          description: "Invalid or malformed request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}/json-schema/result:
+    get:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:read"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Get the JSON schema for an analyzer result."
+      description: "**Required scope:** davis:analyzers:read<br/><br/>The [JSON schema](https://json-schema.org/)\
+        \ defines a standardized declaration of the output structure,\nproviding well-defined\
+        \ output documentation that is both human- and machine-readable.\n"
+      operationId: "getJsonSchemaForResult"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      - $ref: "#/components/parameters/JsonSchemaConfig"
+      responses:
+        "200":
+          description: "The [JSON result schema](https://json-schema.org/) of the\
+            \ requested analyzer."
+          content:
+            application/schema+json:
+              schema:
+                type: "object"
+              examples:
+                GenericForecastAnalyzer:
+                  $ref: "#/components/examples/GenericForecastAnalyzerResultSchema"
+        "400":
+          description: "Invalid or malformed request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}:execute:
+    post:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:execute"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Execute an analyzer with the given input."
+      description: "**Required scope:** davis:analyzers:execute<br/><br/>The analyzer\
+        \ execution is started asynchronously.\nIf the result is not available after\
+        \ the specified timeout, a request token is returned\nto poll for the result.\
+        \ Otherwise, the final result is directly available and no request token is\
+        \ returned.\n\nDepending on the chosen analyzer and the analyzer input, additional\
+        \ scopes might be required, e.g.\n`storage:buckets:read` and `storage:metrics:read`\
+        \ to enable the analyzer to read time series data from Grail™.\n"
+      operationId: "executeAnalyzer"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      - $ref: "#/components/parameters/TimeoutSeconds"
+      - $ref: "#/components/parameters/EnablePreview"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzerInput"
+            examples:
+              GenericForecastAnalyzer:
+                value:
+                  timeSeriesData:
+                    expression: "timeseries avg(dt.host.cpu.usage)"
+                  forecastHorizon: 10
+        required: true
+      responses:
+        "200":
+          description: "The final analyzer result and execution status."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerExecuteResult"
+              examples:
+                GenericForecastAnalyzer:
+                  $ref: "#/components/examples/GenericForecastAnalyzerFullResponse"
+        "202":
+          description: "The current analyzer execution status and a request token\
+            \ and time-to-live (TTL) to continue polling the result with."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerExecuteResult"
+              examples:
+                GenericForecastAnalyzer:
+                  $ref: "#/components/examples/GenericForecastAnalyzerStillRunningResponse"
+        "400":
+          description: "Invalid or malformed request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}:poll:
+    get:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:execute"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Poll for the result of a started analyzer execution."
+      description: "**Required scope:** davis:analyzers:execute<br/><br/>Use the request\
+        \ token returned when starting an analyzer execution to poll for a result.\n\
+        \nThe `executionStatus` of the result indicates if the analyzer execution\
+        \ is already completed.\nWhile the status is `RUNNING`, wait and poll for\
+        \ the result again in subsequent calls.\n"
+      operationId: "pollAnalyzerExecution"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      - $ref: "#/components/parameters/RequestToken"
+      - $ref: "#/components/parameters/TimeoutSeconds"
+      responses:
+        "200":
+          description: "The current analyzer execution status and an optional partial\
+            \ result."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerPollResult"
+              examples:
+                GenericForecastAnalyzer (completed):
+                  $ref: "#/components/examples/GenericForecastAnalyzerFullResponse"
+                GenericForecastAnalyzer (running):
+                  $ref: "#/components/examples/GenericForecastAnalyzerStillRunningResponse"
+        "400":
+          description: "Invalid or malformed request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "410":
+          description: "The analyzer result with the request token has already been\
+            \ consumed or its time-to-live (TTL) has been reached. The result is not\
+            \ available anymore."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}:cancel:
+    post:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:execute"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Stop a started analyzer execution."
+      description: "**Required scope:** davis:analyzers:execute<br/><br/>Use the request\
+        \ token that was returned when starting an analyzer execution to cancel it.\n"
+      operationId: "cancelAnalyzerExecution"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      - $ref: "#/components/parameters/RequestToken"
+      responses:
+        "200":
+          description: "The current analyzer execution status and an optional partial\
+            \ result."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerCancelResult"
+              examples:
+                GenericForecastAnalyzer (completed):
+                  $ref: "#/components/examples/GenericForecastAnalyzerFullResponse"
+                GenericForecastAnalyzer (running):
+                  $ref: "#/components/examples/GenericForecastAnalyzerStillRunningResponse"
+        "202":
+          description: "The cancel request was accepted and is being processed."
+        "400":
+          description: "Invalid or malformed request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "410":
+          description: "The analyzer result with the request token has already been\
+            \ consumed or its time-to-live (TTL) has been reached. The result is not\
+            \ available anymore."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+  /analyzers/{analyzer-name}:validate:
+    post:
+      security:
+      - ssoAuth:
+        - "davis:analyzers:execute"
+      - ssoBearerAuth: []
+      tags:
+      - "Analyzers"
+      summary: "Validate the provided input for an analyzer execution."
+      description: "**Required scope:** davis:analyzers:execute<br/><br/>Provide the\
+        \ same input that is planned to be used for an analyzer execution to have\
+        \ it validated without\nexecuting the analyzer.\n"
+      operationId: "validateAnalyzerExecution"
+      parameters:
+      - $ref: "#/components/parameters/AnalyzerName"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzerInput"
+        required: true
+      responses:
+        "200":
+          description: "The validation result for the requested analyzer execution."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerValidationResult"
+        "400":
+          description: "No analyzer available with the requested name."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "403":
+          description: "Insufficient permissions."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "4XX":
+          description: "Client error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+        "5XX":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzerErrorEnvelope"
+components:
+  parameters:
+    PageKey:
+      name: "page-key"
+      in: "query"
+      required: false
+      description: "The cursor for the page of results. Find it in the `nextPageKey`\
+        \ field of the previous response.\n\nIf the `page-key` parameter is used,\
+        \ no other query parameters must be provided.\n\nIf not provided, the first\
+        \ page is always returned.\n"
+      schema:
+        type: "string"
+    PageSize:
+      name: "page-size"
+      in: "query"
+      required: false
+      description: "The amount of returned analyzer definitions in a single response\
+        \ payload.\nBy default, 50 is used. The maximum is 200.\n"
+      schema:
+        type: "integer"
+        format: "int64"
+        minimum: 1
+        maximum: 200
+      example: 50
+    Filter:
+      name: "filter"
+      in: "query"
+      required: false
+      description: "Use the `filter` parameter to only fetch a subset of analyzer\
+        \ definitions.\n\nWhen using the operators `=`and `!=`, filtering is **case\
+        \ sensitive**.\n\nThe following operators are supported:\n* `=`\n* `!=`\n\
+        * `contains`\n* `starts-with`\n* `ends-with`\n* `and`\n* `or`\n\nParenthesis\
+        \ and the `not` operator are currently not supported.\n\nThe following fields\
+        \ are valid filtering parameters:\n* `baseAnalyzer`\n* `description`\n* `displayName`\n\
+        * `labels`\n* `name`\n* `type`\n\nAny other field will result in a HTTP 400\
+        \ response.\n"
+      schema:
+        type: "string"
+        minimum: 1
+      example: "name contains 'statistic'"
+    AddFields:
+      name: "add-fields"
+      in: "query"
+      required: false
+      description: "Specify which meta-information to fetch in addition to the default\
+        \ fields `name`, `displayName` and `description`.\n\nValid values are:\n*\
+        \ `analyzerCall`\n* `baseAnalyzer`\n* `category`\n* `input`\n* `labels`\n\
+        * `output`\n* `type`\n\nAny other field will result in a HTTP 400 response.\n"
+      schema:
+        type: "string"
+        minimum: 1
+      example: "baseAnalyzer, type, input"
+    AnalyzerName:
+      name: "analyzer-name"
+      in: "path"
+      description: "The name of the analyzer."
+      required: true
+      schema:
+        type: "string"
+      examples:
+        GenericForecastAnalyzer:
+          value: "dt.statistics.GenericForecastAnalyzer"
+    JsonSchemaConfig:
+      name: "config"
+      in: "query"
+      description: "The configuration for the JSON schema generation."
+      required: false
+      schema:
+        $ref: "#/components/schemas/JsonSchemaConfig"
+    TimeoutSeconds:
+      name: "timeout-seconds"
+      in: "query"
+      description: "The amount of seconds to wait for the response to be returned.\n\
+        \nThe timeout controls how long the client is willing to wait, while the analyzer\
+        \ execution continues\nrunning until it has finished or is cancelled.\n"
+      required: false
+      schema:
+        type: "integer"
+        default: 2
+        maximum: 300
+    EnablePreview:
+      name: "enable-preview"
+      in: "query"
+      description: "Indicates if analyzer results should preview already created outputs\n\
+        while the analyzer is still running.\n\nSet to false if only the final result\
+        \ is needed.\n"
+      required: false
+      schema:
+        type: "boolean"
+        default: true
+    RequestToken:
+      name: "request-token"
+      in: "query"
+      description: "The request token is returned when starting a long-running analyzer\
+        \ execution.\nIt can be used to do follow-up operations like polling and cancelling.\n"
+      required: true
+      schema:
+        type: "string"
+      example: "RHluYXRyYWNlMjAyMw=="
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2.0 with the client credentials flow."
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            davis:analyzers:read: "View analyzer definitions"
+            davis:analyzers:execute: "Execute analyzers"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  schemas:
+    AnalyzerGeneralParameters:
+      type: "object"
+      description: "Parameters that are present in all analyzer input parameter definitions."
+      properties:
+        timeframe:
+          $ref: "#/components/schemas/Timeframe"
+        resolveDimensionalQueryData:
+          type: "boolean"
+          default: false
+        logVerbosity:
+          allOf:
+          - $ref: "#/components/schemas/AnalyzerExecutionLogLevel"
+          default: "WARNING"
+    AnalyzerError:
+      type: "object"
+      description: "The error that is returned for unsuccessful responses."
+      properties:
+        code:
+          type: "integer"
+          description: "The HTTP status code of the error."
+          format: "int32"
+          example: 400
+        message:
+          type: "string"
+        details:
+          $ref: "#/components/schemas/AnalyzerErrorDetails"
+      required:
+      - "code"
+      - "message"
+    AnalyzerErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/AnalyzerError"
+    AnalyzerErrorDetails:
+      type: "object"
+      properties:
+        constraintViolations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+    ConstraintViolation:
+      type: "object"
+      description: "A constraint violation indicating why an error has occurred."
+      allOf:
+      - $ref: "#/components/schemas/AnalyzerExecutionLog"
+    AnalyzerValidationResult:
+      type: "object"
+      description: "The result of the dry-execution of the analyzer."
+      properties:
+        valid:
+          description: "Whether the analyzer can be successfully executed with the\
+            \ given input data."
+          type: "boolean"
+        details:
+          $ref: "#/components/schemas/AnalyzerErrorDetails"
+      required:
+      - "valid"
+    AnalyzerData:
+      type: "object"
+      description: "The map of actual data matching the input and output definition\
+        \ of the analyzer."
+      additionalProperties: true
+      example:
+        $ref: "#/components/examples/AnalyzerData"
+    Timeframe:
+      type: "object"
+      properties:
+        startTime:
+          type: "string"
+          description: "Specify the start time in either absolute or relative format.\n\
+            For absolute format, use the ISO 8601 format (yyyy-MM-ddTHH:mm:ssZ).\n\
+            For relative format, use 'now' for the current time or apply an offset\
+            \ with the available units: 's' for seconds, 'm' for minutes, 'h' for\
+            \ hours, and 'd' for days.\nFor example, use 'now-2h' or '-2h' for a relative\
+            \ offset of 2 hours.\n"
+          example: "2023-04-10T12:10:04.123Z"
+        endTime:
+          type: "string"
+          description: "Specify the end time in either absolute or relative format.\n\
+            For absolute format, use the ISO 8601 format (yyyy-MM-ddTHH:mm:ssZ).\n\
+            For relative format, use 'now' for the current time or apply an offset\
+            \ with the available units: 's' for seconds, 'm' for minutes, 'h' for\
+            \ hours, and 'd' for days.\nFor example, use 'now-2h' or '-2h' for a relative\
+            \ offset of 2 hours. If not specified, defaults to now.\n"
+          example: "2023-04-12T12:10:04.123Z"
+      required:
+      - "startTime"
+    DimensionQuery:
+      description: "A query for dimensional data such as timeseries, entities, or\
+        \ logs."
+      oneOf:
+      - type: "string"
+        example: "timeseries avg(dt.host.cpu.usage)"
+      - type: "object"
+        properties:
+          expression:
+            type: "string"
+            description: "Supports the Dynatrace Query Language (DQL)."
+            example: "timeseries avg(dt.host.cpu.usage)"
+          timeframe:
+            $ref: "#/components/schemas/Timeframe"
+          id:
+            type: "string"
+            description: "Unique identifier for the query. Output queries that originate\
+              \ from this query will have a matching reference id."
+            example: "someId"
+          refId:
+            type: "string"
+            description: "References another query through its unique identifier.\
+              \ Specify an id to link queries to each other."
+            example: "someRefId"
+        required:
+        - "expression"
+    AnalyzerInput:
+      type: "object"
+      description: "The input is specific to an analyzer. Get the definition of the\
+        \ analyzer to retrieve the required input structure."
+      allOf:
+      - $ref: "#/components/schemas/AnalyzerData"
+      - type: "object"
+        properties:
+          generalParameters:
+            $ref: "#/components/schemas/AnalyzerGeneralParameters"
+    AnalyzerOutput:
+      type: "object"
+      description: "The output is specific to an analyzer. Get the definition of the\
+        \ analyzer to retrieve the required output structure."
+      allOf:
+      - $ref: "#/components/schemas/AnalyzerData"
+      - type: "object"
+        properties:
+          system:
+            $ref: "#/components/schemas/AnalyzerOutputSystemParameters"
+    AnalyzerOutputSystemParameters:
+      type: "object"
+      description: "Parameters that are present in all analyzer output parameter definitions."
+      properties:
+        logs:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AnalyzerOutputLog"
+    AnalyzerDimensionalData:
+      type: "object"
+      description: "A list of resolved dimensional data."
+      properties:
+        query:
+          $ref: "#/components/schemas/DimensionQuery"
+        value:
+          type: "object"
+          description: "The resolved value of the dimensional query."
+          example:
+            $ref: "#/components/examples/TimeseriesArray"
+        type:
+          type: "string"
+          description: "The type of the dimensional query."
+          enum:
+          - "entityId"
+          - "timeseriesArray"
+      required:
+      - "query"
+      - "value"
+      - "type"
+    AnalyzerResult:
+      type: "object"
+      properties:
+        resultId:
+          type: "string"
+          description: "The uniquely identifying ID of the result. Used for logging."
+        resultStatus:
+          type: "string"
+          enum:
+          - "SUCCESSFUL"
+          - "SUCCESSFUL_WITH_WARNINGS"
+          - "FAILED"
+        executionStatus:
+          type: "string"
+          enum:
+          - "RUNNING"
+          - "ABORTED"
+          - "COMPLETED"
+        input:
+          $ref: "#/components/schemas/AnalyzerInput"
+        logs:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AnalyzerExecutionLog"
+        output:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AnalyzerOutput"
+        data:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AnalyzerDimensionalData"
+      required:
+      - "resultStatus"
+      - "executionStatus"
+      - "resultId"
+      - "input"
+      - "output"
+    AnalyzerExecutionLogLevel:
+      type: "string"
+      description: "Determines the severity of the log."
+      enum:
+      - "TRACING"
+      - "INFO"
+      - "WARNING"
+      - "SEVERE"
+    AnalyzerExecutionLog:
+      type: "object"
+      properties:
+        level:
+          $ref: "#/components/schemas/AnalyzerExecutionLogLevel"
+        message:
+          type: "string"
+        path:
+          type: "string"
+          description: "A path pointing to the source of the error in the input. The\
+            \ format of the path follows\nthe [JSON path specification](https://goessner.net/articles/JsonPath/).\n"
+      required:
+      - "level"
+      - "message"
+    AnalyzerOutputLogLevel:
+      type: "string"
+      enum:
+      - "TRACING"
+      - "INFO"
+      - "WARNING"
+    AnalyzerOutputLog:
+      type: "object"
+      properties:
+        level:
+          $ref: "#/components/schemas/AnalyzerOutputLogLevel"
+        message:
+          type: "string"
+      required:
+      - "level"
+      - "message"
+    AnalyzerExecuteResult:
+      type: "object"
+      description: "Result of the analyzer execution."
+      properties:
+        requestToken:
+          type: "string"
+          description: "The request token is returned when starting a long-running\
+            \ analyzer execution.\nIt can be used to do follow-up operations like\
+            \ polling and cancelling.\n"
+        ttlInSeconds:
+          type: "integer"
+          description: "Time-to-live until the result is not available anymore."
+          format: "int64"
+        result:
+          $ref: "#/components/schemas/AnalyzerResult"
+      required:
+      - "result"
+    AnalyzerPollResult:
+      type: "object"
+      description: "Result of polling the analyzer execution."
+      allOf:
+      - $ref: "#/components/schemas/AnalyzerExecuteResult"
+    AnalyzerCancelResult:
+      type: "object"
+      description: "Result of cancelling the analyzer execution. Only returned if\
+        \ the result completes while cancelling."
+      allOf:
+      - $ref: "#/components/schemas/AnalyzerExecuteResult"
+    AnalyzerQueryResult:
+      type: "object"
+      description: "The list of available analyzers."
+      properties:
+        nextPageKey:
+          type: "string"
+          description: "The key that should be used to do follow-up requests, fetching\
+            \ the remaining analyzers.\nIf the last page is reached or all analyzers\
+            \ are already listed, this field is omitted.\n"
+          example: "RHluYXRyYWNlMjAyMw=="
+        totalCount:
+          type: "integer"
+          description: "The total amount of analyzers available opposed to the current\
+            \ page size."
+          example: 100
+        analyzers:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AnalyzerDefinition"
+      required:
+      - "analyzers"
+      - "totalCount"
+    AnalyzerDefinition:
+      type: "object"
+      description: "The definition of the analyzer. It describes which input and output\
+        \ data the analyzer accepts\nand produces when being executed.\n"
+      properties:
+        name:
+          type: "string"
+          description: "The uniquely identifying name of the analyzer."
+        displayName:
+          type: "string"
+        description:
+          type: "string"
+          description: "Detailed description of the analyzers' functionality.\nGet\
+            \ the documentation of the analyzer for more information.\n"
+        category:
+          $ref: "#/components/schemas/AnalyzerCategory"
+        type:
+          type: "string"
+          description: "The type of the analyzer.\n* IMPLEMENTED: Analyzers which\
+            \ have an implementation and can be executed.\n* INTERFACE: Just an interface\
+            \ to be implemented or extended by other analyzer definitions.\n"
+          enum:
+          - "IMPLEMENTED"
+          - "INTERFACE"
+        labels:
+          type: "array"
+          description: "A list of string-based labels to group and mark different\
+            \ analyzers."
+          items:
+            type: "string"
+        baseAnalyzer:
+          type: "string"
+          description: "The analyzer name that the current analyzer is based on. All\
+            \ input and output parameters are inherited.\nAdditional parameters may\
+            \ be present in the current analyzer.\n"
+        input:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ParameterDefinition"
+        output:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ParameterDefinition"
+      required:
+      - "name"
+      - "displayName"
+    AnalyzerCategory:
+      description: "The category of an analyzer used to logically group different\
+        \ analyzers."
+      type: "object"
+      properties:
+        displayName:
+          type: "string"
+      required:
+      - "displayName"
+    AnalyzerDefinitionDetails:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/AnalyzerDefinition"
+      required:
+      - "name"
+      - "displayName"
+      - "type"
+      - "input"
+      - "output"
+    EnumerationElement:
+      type: "object"
+      description: "An object that has a fixed set of possible values differentiated\
+        \ by the `key` property."
+      properties:
+        key:
+          type: "string"
+        displayName:
+          type: "string"
+        description:
+          type: "string"
+      required:
+      - "key"
+      - "displayName"
+      - "description"
+    ParameterDefinition:
+      type: "object"
+      description: "The definition for a single parameter, describing its name and\
+        \ other meta information."
+      properties:
+        name:
+          type: "string"
+        type:
+          type: "string"
+          description: "The type of the parameter, indicating the format of the value\
+            \ to be provided."
+          enum:
+          - "analyzerStructure"
+          - "boolean"
+          - "dimensionQuery"
+          - "enumeration"
+          - "integer"
+          - "number"
+          - "string"
+          - "timeframe"
+          - "timeseriesArray"
+          - "timeseriesQuery"
+          - "timestamp"
+        displayName:
+          type: "string"
+        description:
+          type: "string"
+        advanced:
+          type: "boolean"
+          description: "If true, this parameter is considered to be for advanced usage."
+        extendedType:
+          type: "string"
+          description: "Provides extended type information for this parameter.\nThis\
+            \ allows additional semantics that can be utilized by analyzer consumers.\n"
+        optional:
+          type: "boolean"
+          description: "Whether this parameter can be omitted when executing the analyzer."
+        array:
+          type: "boolean"
+          description: "Whether this parameter can have an array of values. Passing\
+            \ a single, non-array value is also allowed."
+        defaultValue:
+          nullable: true
+          description: "The default value used when the parameter is omitted."
+        maxSize:
+          type: "integer"
+          description: "The maximum number of elements if the parameter is an array."
+          format: "int32"
+        valueConstraints:
+          description: "Defines value constraints for string or number parameters.\
+            \ Not applicable to other parameter types."
+          type: "object"
+        enumerationValues:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/EnumerationElement"
+        fields:
+          type: "array"
+          description: "Given the parameter is of type `structure` this property contains\
+            \ the sub-definition of the parameter."
+          items:
+            $ref: "#/components/schemas/ParameterDefinition"
+      required:
+      - "name"
+      - "type"
+      - "displayName"
+      - "optional"
+      - "array"
+    JsonSchemaConfig:
+      type: "string"
+      enum:
+      - "DEFAULT"
+      - "LLM"
+      default: "DEFAULT"
+      description: "The configuration for the JSON schema generation:\n * `DEFAULT`\
+        \ - Use the standard JSON schema generation (recommended for most clients).\n\
+        \ * `LLM` - Generate a schema optimized for LLM consumption.\n"
+  examples:
+    GenericForecastAnalyzerFullResponse:
+      value:
+        result:
+          resultId: "e4fd114dba084fd9"
+          resultStatus: "SUCCESSFUL"
+          executionStatus: "COMPLETED"
+          input:
+            generalParameters:
+              timeframe: null
+              logVerbosity: "WARNING"
+              resolveDimensionalQueryData: false
+            forecastHorizon: 10
+            timeSeriesData:
+              expression: "timeseries avg(dt.host.cpu.usage)"
+            coverageProbability: 0.9
+            nPaths: 200
+          output:
+          - timeSeriesDataWithPredictions:
+              records:
+              - dt.davis.forecast:lower:
+                - 30.06526744477648
+                - 30.469005693579895
+                - 30.641933747981863
+                - 31.266633573314543
+                - 31.018440163566783
+                - 30.832801407033784
+                - 30.127440957160143
+                - 31.63919313816315
+                - 30.835958661995043
+                - 29.933730613970294
+                dt.davis.forecast:upper:
+                - 44.250848540072205
+                - 45.32430402865753
+                - 45.124536344034915
+                - 44.62291543678966
+                - 44.48090669793653
+                - 43.913223381905276
+                - 42.98826349674527
+                - 43.88073356829243
+                - 44.52412625492842
+                - 42.32966344989203
+                dt.davis.forecast:point:
+                - 37.06917039490001
+                - 38.068881128336955
+                - 37.47658985279556
+                - 37.24624051130464
+                - 37.24271470069583
+                - 37.658750126351876
+                - 37.20201557131627
+                - 38.2574100893675
+                - 36.96177127701703
+                - 37.83834653098133
+                interval: "60000000000"
+                timeframe:
+                  end: "2023-03-22T12:19Z"
+                  start: "2023-03-22T12:09Z"
+                dt.davis.meta.dataName: "avg(dt.host.cpu.usage)"
+              types:
+              - indexRange:
+                - 0
+                - 0
+                mappings:
+                  dt.davis.forecast:lower:
+                    type: "array"
+                    types:
+                    - indexRange:
+                      - 0
+                      - 9
+                      mappings:
+                        element:
+                          type: "double"
+                  timeframe:
+                    type: "timeframe"
+                  dt.davis.meta.dataName:
+                    type: "string"
+                  dt.davis.forecast:upper:
+                    type: "array"
+                    types:
+                    - indexRange:
+                      - 0
+                      - 9
+                      mappings:
+                        element:
+                          type: "double"
+                  dt.davis.forecast:point:
+                    type: "array"
+                    types:
+                    - indexRange:
+                      - 0
+                      - 9
+                      mappings:
+                        element:
+                          type: "double"
+                  interval:
+                    type: "duration"
+            forecastQualityAssessment: "valid"
+            analysisStatus: "OK"
+            analyzedTimeSeriesQuery:
+              expression: "timeseries avg(dt.host.cpu.usage) | "
+              timeframe:
+                startTime: "2023-03-22T10:08:48.997Z"
+                endTime: "2023-03-22T12:08:48.997Z"
+    GenericForecastAnalyzerStillRunningResponse:
+      value:
+        requestToken: "MXw4OTllMWUzZDU0OGQ4ZWFifDE2Nzk0ODgzMTEyMTl8Mw=="
+        ttlInSeconds: 719
+        result:
+          resultId: "899e1e3d548d8eab"
+          resultStatus: "SUCCESSFUL"
+          executionStatus: "RUNNING"
+          input:
+            generalParameters:
+              timeframe:
+                startTime: "2023-03-01T12:00:00Z"
+              logVerbosity: "WARNING"
+              resolveDimensionalQueryData: false
+            forecastHorizon: 10
+            timeSeriesData:
+              expression: "timeseries avg(dt.host.cpu.usage)"
+            coverageProbability: 0.9
+            nPaths: 200
+          output: []
+    GenericForecastAnalyzerInputSchema:
+      value:
+        title: "Input for Generic Forecast Analysis"
+        $schema: "http://json-schema.org/draft-07/schema#"
+        description: "Forecast of a time series"
+        type: "object"
+        additionalProperties: false
+        required:
+        - "timeSeriesData"
+        properties:
+          generalParameters:
+            title: "General parameters"
+            description: "Parameters available for each analyzer."
+            default:
+              timeframe: {}
+              resolveDimensionalQueryData: false
+              logVerbosity: "WARNING"
+            x-parameter-type: "analyzerStructure"
+            type: "object"
+            additionalProperties: false
+            properties:
+              timeframe:
+                title: "Timeframe"
+                description: "By default, the general timeframe for queries is the\
+                  \ last 2 hours from now."
+                default: {}
+                x-parameter-type: "timeframe"
+                type: "object"
+                additionalProperties: false
+                properties:
+                  startTime:
+                    title: "Start time"
+                    description: "Supports absolute or relative timestamps. Specify\
+                      \ an absolute time in the ISO 8601 (yyyy-MM-ddTHH:mm:ssZ) format\
+                      \ or use a relative time such as 'now-2h'."
+                    type: "string"
+                    format: "dt-date-time"
+                    examples:
+                    - "2023-04-10T12:00:00Z"
+                    default: "now-2h"
+                  endTime:
+                    title: "End time"
+                    type: "string"
+                    format: "dt-date-time"
+                    examples:
+                    - "2023-04-12T12:00:00Z"
+                    default: "now"
+                required:
+                - "startTime"
+                examples:
+                - startTime: "2023-04-10T12:00Z"
+                - startTime: "2023-04-10T12:00Z"
+                  endTime: "2023-04-12T12:00Z"
+              resolveDimensionalQueryData:
+                title: "Resolve data"
+                description: "Include output query results in analysis result."
+                default: false
+                x-parameter-type: "boolean"
+                type: "boolean"
+              logVerbosity:
+                title: "Log verbosity"
+                description: "Controls the level of log details in analysis result."
+                default: "WARNING"
+                x-parameter-type: "enumeration"
+                type: "string"
+                anyOf:
+                - title: "Tracing"
+                  description: "Tracing"
+                  enum:
+                  - "TRACING"
+                - title: "Info"
+                  description: "Info"
+                  enum:
+                  - "INFO"
+                - title: "Warning"
+                  description: "Warning"
+                  enum:
+                  - "WARNING"
+                - title: "Severe"
+                  description: "Severe"
+                  enum:
+                  - "SEVERE"
+          timeSeriesData:
+            title: "Time series data"
+            description: "Time series data or query to analyze. Supports the Dynatrace\
+              \ Query Language (DQL)."
+            x-parameter-type: "timeseriesQuery"
+            type: "string"
+          coverageProbability:
+            title: "Coverage probability"
+            description: "The forecast's targeted coverage probability. Defines how\
+              \ many of the observations (in percent) lie within the prediction interval."
+            default: 0.9
+            x-parameter-type: "double"
+            type: "number"
+            minimum: 0.0
+            maximum: 1.0
+          forecastHorizon:
+            title: "Data points to predict"
+            description: "Total steps the time series is forecasted. More steps generally\
+              \ results in less reliable forecasts and longer analyzer runtimes."
+            default: 100
+            x-parameter-type: "integer"
+            type: "integer"
+            minimum: 1
+            maximum: 600
+          nPaths:
+            title: "Number of paths"
+            description: "Total simulated paths. As the forecasting algorithm uses\
+              \ a simulation-based approach, more paths generally result in more accurate\
+              \ forecasts but can increase analyzer runtimes."
+            default: 200
+            x-parameter-type: "integer"
+            type: "integer"
+            minimum: 0
+            maximum: 1000
+          applyZeroLowerBoundHeuristic:
+            title: "Apply zero lower bound heuristic"
+            description: "Apply a lower bound of zero."
+            default: false
+            x-parameter-type: "boolean"
+            type: "boolean"
+          useModelCache:
+            title: "Trained model is stored"
+            description: "If true, the trained model is stored in and loaded from\
+              \ the model store. If false, a new model will be trained."
+            default: true
+            x-parameter-type: "boolean"
+            type: "boolean"
+    GenericForecastAnalyzerResultSchema:
+      value:
+        title: "Result for Generic Forecast Analysis"
+        $schema: "http://json-schema.org/draft-07/schema#"
+        description: "Forecast of a time series"
+        type: "object"
+        additionalProperties: false
+        required:
+        - "resultStatus"
+        - "executionStatus"
+        - "resultId"
+        - "output"
+        properties:
+          resultStatus:
+            title: "resultStatus"
+            x-parameter-type: "enumeration"
+            type: "string"
+            anyOf:
+            - title: "Successful"
+              description: "Successful result"
+              enum:
+              - "SUCCESSFUL"
+            - title: "Successful with warnings"
+              description: "Successful result contains warnings"
+              enum:
+              - "SUCCESSFUL_WITH_WARNINGS"
+            - title: "Failed"
+              description: "Failed result"
+              enum:
+              - "FAILED"
+          executionStatus:
+            title: "executionStatus"
+            x-parameter-type: "enumeration"
+            type: "string"
+            anyOf:
+            - title: "Running"
+              description: "Execution still running"
+              enum:
+              - "RUNNING"
+            - title: "Aborted"
+              description: "Execution manually canceled"
+              enum:
+              - "ABORTED"
+            - title: "Completed"
+              description: "Execution completed"
+              enum:
+              - "COMPLETED"
+          resultId:
+            title: "resultId"
+            x-parameter-type: "string"
+            type: "string"
+          input:
+            type: "object"
+            additionalProperties: false
+            required:
+            - "timeSeriesData"
+            properties:
+              generalParameters:
+                title: "General parameters"
+                description: "Parameters available for each analyzer."
+                default:
+                  timeframe: {}
+                  resolveDimensionalQueryData: false
+                  logVerbosity: "WARNING"
+                x-parameter-type: "analyzerStructure"
+                type: "object"
+                additionalProperties: false
+                properties:
+                  timeframe:
+                    title: "Timeframe"
+                    description: "By default, the general timeframe for queries is\
+                      \ the last 2 hours from now."
+                    default: {}
+                    x-parameter-type: "timeframe"
+                    type: "object"
+                    additionalProperties: false
+                    properties:
+                      startTime:
+                        title: "Start time"
+                        description: "Supports absolute or relative timestamps. Specify\
+                          \ an absolute time in the ISO 8601 (yyyy-MM-ddTHH:mm:ssZ)\
+                          \ format or use a relative time such as 'now-2h'."
+                        type: "string"
+                        format: "dt-date-time"
+                        examples:
+                        - "2023-04-10T12:00:00Z"
+                        default: "now-2h"
+                      endTime:
+                        title: "End time"
+                        type: "string"
+                        format: "dt-date-time"
+                        examples:
+                        - "2023-04-12T12:00:00Z"
+                        default: "now"
+                    required:
+                    - "startTime"
+                    examples:
+                    - startTime: "2023-04-10T12:00Z"
+                    - startTime: "2023-04-10T12:00Z"
+                      endTime: "2023-04-12T12:00Z"
+                  resolveDimensionalQueryData:
+                    title: "Resolve data"
+                    description: "Include output query results in analysis result."
+                    default: false
+                    x-parameter-type: "boolean"
+                    type: "boolean"
+                  logVerbosity:
+                    title: "Log verbosity"
+                    description: "Controls the level of log details in analysis result."
+                    default: "WARNING"
+                    x-parameter-type: "enumeration"
+                    type: "string"
+                    anyOf:
+                    - title: "Tracing"
+                      description: "Tracing"
+                      enum:
+                      - "TRACING"
+                    - title: "Info"
+                      description: "Info"
+                      enum:
+                      - "INFO"
+                    - title: "Warning"
+                      description: "Warning"
+                      enum:
+                      - "WARNING"
+                    - title: "Severe"
+                      description: "Severe"
+                      enum:
+                      - "SEVERE"
+              timeSeriesData:
+                title: "Time series data"
+                description: "Time series data or query to analyze. Supports the Dynatrace\
+                  \ Query Language (DQL)."
+                x-parameter-type: "timeseriesQuery"
+                type: "string"
+              coverageProbability:
+                title: "Coverage probability"
+                description: "The forecast's targeted coverage probability. Defines\
+                  \ how many of the observations (in percent) lie within the prediction\
+                  \ interval."
+                default: 0.9
+                x-parameter-type: "double"
+                type: "number"
+                minimum: 0.0
+                maximum: 1.0
+              forecastHorizon:
+                title: "Data points to predict"
+                description: "Total steps the time series is forecasted. More steps\
+                  \ generally results in less reliable forecasts and longer analyzer\
+                  \ runtimes."
+                default: 100
+                x-parameter-type: "integer"
+                type: "integer"
+                minimum: 1
+                maximum: 600
+              nPaths:
+                title: "Number of paths"
+                description: "Total simulated paths. As the forecasting algorithm\
+                  \ uses a simulation-based approach, more paths generally result\
+                  \ in more accurate forecasts but can increase analyzer runtimes."
+                default: 200
+                x-parameter-type: "integer"
+                type: "integer"
+                minimum: 0
+                maximum: 1000
+              applyZeroLowerBoundHeuristic:
+                title: "Apply zero lower bound heuristic"
+                description: "Apply a lower bound of zero."
+                default: false
+                x-parameter-type: "boolean"
+                type: "boolean"
+              useModelCache:
+                title: "Trained model is stored"
+                description: "If true, the trained model is stored in and loaded from\
+                  \ the model store. If false, a new model will be trained."
+                default: true
+                x-parameter-type: "boolean"
+                type: "boolean"
+          output:
+            type: "array"
+            items:
+              type: "object"
+              additionalProperties: false
+              required:
+              - "analysisStatus"
+              properties:
+                message:
+                  title: "message"
+                  x-parameter-type: "string"
+                  type: "string"
+                detailedDescription:
+                  title: "detailedDescription"
+                  x-parameter-type: "string"
+                  type: "string"
+                system:
+                  title: "System"
+                  description: "Output system parameters"
+                  x-parameter-type: "analyzerStructure"
+                  type: "object"
+                  additionalProperties: false
+                  properties:
+                    logs:
+                      title: "Logs"
+                      description: "Logs connected to a specific output"
+                      x-parameter-type: "analyzerStructure"
+                      type: "array"
+                      items:
+                        type: "object"
+                        additionalProperties: false
+                        required:
+                        - "level"
+                        - "message"
+                        properties:
+                          level:
+                            title: "Level"
+                            x-parameter-type: "enumeration"
+                            type: "string"
+                            anyOf:
+                            - title: "Tracing"
+                              description: "Tracing"
+                              enum:
+                              - "TRACING"
+                            - title: "Info"
+                              description: "Info"
+                              enum:
+                              - "INFO"
+                            - title: "Warning"
+                              description: "Warning"
+                              enum:
+                              - "WARNING"
+                          message:
+                            title: "Message"
+                            x-parameter-type: "string"
+                            type: "string"
+                analysisStatus:
+                  title: "The status of an analysis"
+                  description: "The status of an analysis of a particular univariate\
+                    \ data"
+                  x-parameter-type: "enumeration"
+                  type: "string"
+                  anyOf:
+                  - title: "OK"
+                    description: "The analysis was performed successfully, the result\
+                      \ is available."
+                    enum:
+                    - "OK"
+                  - title: "Failed"
+                    description: "There was a problem during an analysis, the result\
+                      \ is not available"
+                    enum:
+                    - "FAILED"
+                analyzedTimeSeriesQuery:
+                  title: "Analyzed time series query"
+                  description: "Time series query that was analyzed."
+                  x-parameter-type: "timeseriesQuery"
+                  type: "string"
+                forecastQualityAssessment:
+                  title: "Forecast quality assessment explanation"
+                  description: "An assessment of the forecast's quality. 'valid' if\
+                    \ forecast quality is eligible, otherwise the forecast is 'invalid'\
+                    \ and the reason for this assessment is returned."
+                  x-parameter-type: "enumeration"
+                  type: "string"
+                  anyOf:
+                  - title: "Valid forecast"
+                    description: "The quality of the forecast is deemed good."
+                    enum:
+                    - "VALID"
+                  - title: "Invalid forecast"
+                    description: "The quality of the forecast is deemed bad."
+                    enum:
+                    - "INVALID"
+                timeSeriesDataWithPredictions:
+                  title: "Timeseries Data with predictions"
+                  description: "Time series array with predicted data points. Has\
+                    \ properties {dt.davis.forecast: lower, dt.davis.forecast: point,\
+                    \ dt.davis.forecast: upper} on the respective columns."
+                  x-parameter-type: "timeseriesArray"
+                  type: "object"
+          logs:
+            type: "array"
+            items:
+              level:
+                title: "level"
+                x-parameter-type: "enumeration"
+                type: "string"
+                anyOf:
+                - title: "Tracing"
+                  description: "Tracing"
+                  enum:
+                  - "TRACING"
+                - title: "Info"
+                  description: "Info"
+                  enum:
+                  - "INFO"
+                - title: "Warning"
+                  description: "Warning"
+                  enum:
+                  - "WARNING"
+                - title: "Severe"
+                  description: "Severe"
+                  enum:
+                  - "SEVERE"
+              message:
+                title: "message"
+                x-parameter-type: "string"
+                type: "string"
+    TimeseriesArray:
+      value:
+        records:
+        - avg(dt.host.cpu.usage):
+          - 21.37612427605523
+          - 15.580704794989693
+          - 25.961189826329548
+          - 22.53297625647651
+          - 23.16227149963379
+          timeframe:
+            start: "2024-05-08T05:14Z"
+            end: "2024-05-08T05:20Z"
+          interval: "60000000000"
+        types:
+        - indexRange:
+          - 0
+          - 0
+          mappings:
+            timeframe:
+              type: "timeframe"
+            avg(dt.host.cpu.usage):
+              type: "array"
+              types:
+              - mappings:
+                  element:
+                    type: "double"
+                indexRange:
+                - 0
+                - 5
+            interval:
+              type: "duration"
+        metadata:
+          metrics:
+          - metric.key: "dt.host.cpu.usage"
+            fieldName: "avg(dt.host.cpu.usage)"
+            unit: "%"
+            description: "Percentage of CPU time when CPU was utilized. A value close\
+              \ to 100% means most host processing resources are in use, and host\
+              \ CPUs can’t handle additional work"
+            displayName: "CPU usage %"
+    AnalyzerData:
+      value:
+        analyzerStructure:
+          param1: "value1"
+          param2: "value2"
+        boolean: true
+        dimensionQuery: "timeseries avg(dt.host.cpu.usage)"
+        enumeration: "VALUE"
+        integer: 42
+        number: 42.0
+        string: "value"
+        timeframe:
+          startTime: "2023-04-10T12:10:04.123Z"
+          endTime: "2023-04-12T12:10:04.123Z"
+        timeseriesArray:
+          records:
+          - avg(dt.host.cpu.usage):
+            - 21.37612427605523
+            - 15.580704794989693
+            - 25.961189826329548
+            - 22.53297625647651
+            - 23.16227149963379
+            timeframe:
+              start: "2024-05-08T05:14Z"
+              end: "2024-05-08T05:20Z"
+            interval: "60000000000"
+          types:
+          - indexRange:
+            - 0
+            - 0
+            mappings:
+              timeframe:
+                type: "timeframe"
+              avg(dt.host.cpu.usage):
+                type: "array"
+                types:
+                - mappings:
+                    element:
+                      type: "double"
+                  indexRange:
+                  - 0
+                  - 5
+              interval:
+                type: "duration"
+          metadata:
+            metrics:
+            - metric.key: "dt.host.cpu.usage"
+              fieldName: "avg(dt.host.cpu.usage)"
+              unit: "%"
+              description: "Percentage of CPU time when CPU was utilized. A value\
+                \ close to 100% means most host processing resources are in use, and\
+                \ host CPUs can’t handle additional work"
+              displayName: "CPU usage %"
+        timeseriesQuery: "timeseries avg(dt.host.cpu.usage)"
+        timestamp: "2023-04-10T12:10:04.123Z"

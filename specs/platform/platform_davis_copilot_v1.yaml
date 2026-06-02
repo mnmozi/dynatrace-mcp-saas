@@ -1,0 +1,1230 @@
+openapi: "3.0.4"
+info:
+  version: "1.0.1"
+  title: "Davis CoPilot API"
+  x-service-category: "Davis CoPilot"
+  x-summary: "API for interacting with Davis CoPilot Generative AI capabilities."
+  description: "# Overview\nThis API allows you to interact with Davis CoPilot Generative\
+    \ AI. The API is in preview and is subject to the Dynatrace [preview conditions](https://dt-url.net/z402kem).\n\
+    \nRefer to the [feature documentation](https://dt-url.net/gn22k0g) to get familiar\
+    \ with the key concepts.\n"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/davis/copilot/v1"
+  x-api-gateway-url: "/platform/davis/copilot/v1"
+tags:
+- "CopilotService"
+paths:
+  /skills:
+    get:
+      summary: "List all available skills."
+      description: "Returns a list of available skills. The availability depends whether\n\
+        Davis-CoPilot has been enabled for your tenant and if the used token has\n\
+        the required scopes.\n\n*Please note, this endpoint is in preview and is subject\
+        \ to the Dynatrace preview conditions, as linked in the overview.*\n"
+      operationId: "listAvailableSkills"
+      tags:
+      - "CopilotService"
+      responses:
+        "200":
+          description: "All skills available to the user."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailableSkillsResponse"
+        "4XX":
+          description: "Client Error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: "Internal server Error."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+      security:
+      - ssoBearerAuth: []
+  /skills/conversations:message:
+    post:
+      summary: "Retrieve a message from a recommender conversation."
+      description: "**Required scope:** davis-copilot:conversations:execute<br/><br/>Allows\
+        \ clients to send messages to the Davis CoPilot recommender and receive responses.\
+        \ The endpoint can handle\nboth, streaming and non-streaming requests.\n\n\
+        ### Streaming/Non-Streaming mode\nThe mode is is configured via the HTTP Header\
+        \ `Accept`:\n- Non-Streaming `Accept: application/json`\n- Streaming: `Accept:\
+        \ application/x-ndjson`\n\n### Payload Options\nThe payload is a JSON dictionary\
+        \ with the following top level keys. Please review the examples for the correct\n\
+        payload formatting.\n\nParameters:\n- **text**: Message to the AI service.\
+        \ The response is a reply to this input.\n- **state** (Optional): Information\
+        \ containing a conversation between user and ai to be continued. If not\n\
+        \   supplied, a new conversation is started. A state object is obtained from\
+        \ the response of a previous call to\n   the `conversations:message` endpoint.\
+        \ So the client is responsible for storing and providing the state.\n- **context**\
+        \ (Optional): Additional information to provide context to the requests.\n\
+        \  - *document-retrieval* (Optional): \"dynatrace\" for using the Dynatrace\
+        \ documentation as context (default), \"disabled\"\n    for using no document-based\
+        \ context. In the background document-retrieval uses the input text to perform\n\
+        \    a semantic search to find relevant to augment the context of the conversation.\n\
+        \  - *supplementary* (Optional): Custom context to be provided for the request.\
+        \ Note that unlike to the text,\n    the supplementary is not anonymized.\n\
+        \  - *instruction* (Optional): Additional instructions regarding formatting\
+        \ and output structure\n    (e.g. \"- Answer in bullet points\", \"Output\
+        \ the answer as JSON\")\n\n\n*Please note, this endpoint is in preview and\
+        \ is subject to the Dynatrace preview conditions, as linked in the overview.*"
+      operationId: "recommenderConversation"
+      tags:
+      - "CopilotService"
+      security:
+      - ssoAuth:
+        - "davis-copilot:conversations:execute"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationRequest"
+            examples:
+              noHistoryExample:
+                $ref: "#/components/examples/NoStateRequest"
+              withHistoryExample:
+                $ref: "#/components/examples/WithStateRequest"
+              withSupplementaryContextExample:
+                $ref: "#/components/examples/WithSupplementaryContextRequest"
+              withInstructionContextExample:
+                $ref: "#/components/examples/WithInstructionContextRequest"
+      responses:
+        "200":
+          description: "Answer from recommender skill.\n\nThe response is a streaming\
+            \ response consisting of the following possible tokens:\nStart, Progress,\
+            \ Tokens, Notification, Content, End, Error. Please select the individual\
+            \ types to view the\nspecific response format. A usual token stream follows\
+            \ the sequence: Start, Progress, Tokens, ... End.\n"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommenderResponse"
+            application/x-ndjson:
+              schema:
+                anyOf:
+                - $ref: "#/components/schemas/StartEvent"
+                - $ref: "#/components/schemas/ProgressEvent"
+                - $ref: "#/components/schemas/TokensEvent"
+                - $ref: "#/components/schemas/NotificationEvent"
+                - $ref: "#/components/schemas/ContentEvent"
+                - $ref: "#/components/schemas/EndEvent"
+                - $ref: "#/components/schemas/ErrorEvent"
+              examples:
+                startExample:
+                  $ref: "#/components/examples/StartEvent"
+                progressExample:
+                  $ref: "#/components/examples/ProgressEvent"
+                tokensExample:
+                  $ref: "#/components/examples/TokensEvent"
+                notificationExample:
+                  $ref: "#/components/examples/NotificationEvent"
+                contentExample:
+                  $ref: "#/components/examples/ContentEvent"
+                endExample:
+                  $ref: "#/components/examples/EndEvent"
+                errorExample:
+                  $ref: "#/components/examples/ErrorEvent"
+                noStreamingErrorExample:
+                  $ref: "#/components/examples/StreamingNoError"
+                withStreamingErrorExample:
+                  $ref: "#/components/examples/StreamingWithError"
+        "4XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /skills/conversations:feedback:
+    post:
+      summary: "Provide feedback for a recommender conversation."
+      description: "**Required scope:** davis-copilot:conversations:execute<br/><br/>Allows\
+        \ to provide feedback to a conversational recommender response.\nThe payload\
+        \ is a JSON dictionary combining feedback and information from the conversational\
+        \ recommender response.\nPlease review the examples for the correct payload\
+        \ formatting.\n\nParameters:\n- **messageToken**: Message token as provided\
+        \ by conversation:message.\n- **origin**: Application name of the caller.\n\
+        - **feedback**: Feedback dictionary.\n  - *type*: Type of the feedback: \"\
+        positive\" or \"negative\".\n  - *text*: Natural language feedback text.\n\
+        - **userPrompt** (Optional): Message prompt as sent to the conversation:message\
+        \ endpoint.\n- **copilotResponse** (Optional): Response as received from the\
+        \ conversation:message endpoint.\n- **sources** (Optional): List of sources\
+        \ as received from the conversation:message endpoint.\n\n*Please note, this\
+        \ endpoint is in preview and is subject to the Dynatrace preview conditions,\
+        \ as linked in the overview.*\n"
+      operationId: "recommenderFeedback"
+      tags:
+      - "CopilotService"
+      security:
+      - ssoAuth:
+        - "davis-copilot:conversations:execute"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationFeedbackRequest"
+      responses:
+        "202":
+          description: "Feedback successfully submitted"
+        "4XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /skills/document-search:execute:
+    post:
+      summary: "Search for relevant documents."
+      description: "**Required scope:** davis-copilot:document-search:execute<br/><br/>Allows\
+        \ to query documents (Dashboards, Notebooks, ...) relevant for your input.\n\
+        The payload is a JSON dictionary provided from the  response.\nPlease review\
+        \ the examples for the correct payload formatting.\n\nParameters:\n- **texts**:\
+        \ List of search strings.\n- **collections**: List of document collections\
+        \ to search in.\n- **exclude** (Optional): List of document ids to exclude\
+        \ from the search.\n\n*Please note, this endpoint is in preview and is subject\
+        \ to the Dynatrace preview conditions, as linked in the overview.*\n"
+      operationId: "documentSearch"
+      tags:
+      - "CopilotService"
+      security:
+      - ssoAuth:
+        - "davis-copilot:document-search:execute"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentSearchRequest"
+      responses:
+        "200":
+          description: "List of documents with their relevance scores"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentSearchResponse"
+        "4XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /skills/dql2nl:explain:
+    post:
+      summary: "Explain a DQL (Dynatrace Query Language) query in natural language."
+      description: "**Required scope:** davis-copilot:dql2nl:execute<br/><br/>Get\
+        \ an explanation for DQL queries. Note that only valid queries are handled.\n\
+        The payload is a JSON dictionary with the following key. Please review the\
+        \ examples for the correct\npayload formatting.\n\nParameters:\n- **dql**:\
+        \ Dql query to explain.\n\n*Please note, this endpoint is in preview and is\
+        \ subject to the Dynatrace preview conditions, as linked in the overview.*\n"
+      operationId: "dql2nl"
+      tags:
+      - "CopilotService"
+      security:
+      - ssoAuth:
+        - "davis-copilot:dql2nl:execute"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Dql2NlRequest"
+      responses:
+        "200":
+          description: "Answer from Dql2Nl skill"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dql2NlResponse"
+        "4XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /skills/dql2nl:feedback:
+    post:
+      summary: "Provide feedback for a DQL (Dynatrace Query Language) explanation."
+      description: "**Required scope:** davis-copilot:dql2nl:execute<br/><br/>Allows\
+        \ to provide feedback to a dql2nl response.\nThe payload is a JSON dictionary\
+        \ combining feedback and information from the dql2nl response.\nPlease review\
+        \ the examples for the correct payload formatting.\n\nParameters:\n- **messageToken**:\
+        \ Message token as provided by dql2nl:explain.\n- **origin**: Application\
+        \ name of the caller.\n- **feedback**: Feedback dictionary.\n  - *type*: Type\
+        \ of the feedback: \"positive\" or \"negative\".\n  - *text*: Natural language\
+        \ feedback text.\n  - *category* (Optional): One out of \"misunderstood\"\
+        , \"incorrect\", \"incomplete\", \"error\", \"other\".\n  - *improvement*\
+        \ (Optional):\n    - *text*: Suggestion to improve the answer\n    - *confirmation*:\
+        \ true to verify that the improvement suggestion is valid, false otherwise\n\
+        - **userQuery** (Optional): Message prompt as sent to the dql2nl:explain endpoint.\n\
+        - **queryExplanation* (Optional): Response as received from the dql2nl:explain\
+        \ endpoint.\n\n*Please note, this endpoint is in preview and is subject to\
+        \ the Dynatrace preview conditions, as linked in the overview.*\n"
+      operationId: "dql2nlFeedback"
+      tags:
+      - "CopilotService"
+      security:
+      - ssoAuth:
+        - "davis-copilot:dql2nl:execute"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Dql2NlFeedbackRequest"
+      responses:
+        "202":
+          description: "Feedback successfully submitted"
+        "4XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /skills/nl2dql:generate:
+    post:
+      summary: "Generate a DQL (Dynatrace Query Language) query from natural language."
+      description: "**Required scope:** davis-copilot:nl2dql:execute<br/><br/>Create\
+        \ a DQL query from natural language input.\nThe payload is a JSON dictionary\
+        \ with the following keys. Please review the examples for the correct\npayload\
+        \ formatting.\n\nParameters:\n- **text**: Natural language input to create\
+        \ a DQL query.\n\n*Please note, this endpoint is in preview and is subject\
+        \ to the Dynatrace preview conditions, as linked in the overview.*\n"
+      operationId: "nl2dql"
+      tags:
+      - "CopilotService"
+      security:
+      - ssoAuth:
+        - "davis-copilot:nl2dql:execute"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Nl2DqlRequest"
+      responses:
+        "200":
+          description: "Answer from Nl2Dql skill"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Nl2DqlResponse"
+        "4XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /skills/nl2dql:feedback:
+    post:
+      summary: "Provide feedback on DQL (Dynatrace Query Language) result created\
+        \ from natural language."
+      description: "**Required scope:** davis-copilot:nl2dql:execute<br/><br/>Allows\
+        \ to provide feedback to a nl2dql response.\nThe payload is a JSON dictionary\
+        \ combining feedback and information from the nl2dql response.\nPlease review\
+        \ the examples for the correct payload formatting.\n\nParameters:\n- **messageToken**:\
+        \ Message token as provided by nl2dql:explain.\n- **origin**: Application\
+        \ name of the caller.\n- **feedback**: Feedback dictionary.\n  - *type*: Type\
+        \ of the feedback: \"positive\" or \"negative\".\n  - *text*: Natural language\
+        \ feedback text.\n  - *category* (Optional): One out of \"misunderstood\"\
+        , \"incorrect\", \"incomplete\", \"error\", \"other\".\n  - *improvement*\
+        \ (Optional):\n    - *text*: Suggestion to improve the answer\n    - *confirmation*:\
+        \ true to verify that the improvement suggestion is valid, false otherwise\n\
+        - **userQuery** (Optional): Message prompt as sent to the nl2dql:generate\
+        \ endpoint.\n- **generatedDql* (Optional): Response as received from the nl2dql:generate\
+        \ endpoint.\n\n*Please note, this endpoint is in preview and is subject to\
+        \ the Dynatrace preview conditions, as linked in the overview.*\n"
+      operationId: "nl2dqlFeedback"
+      tags:
+      - "CopilotService"
+      security:
+      - ssoAuth:
+        - "davis-copilot:nl2dql:execute"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Nl2DqlFeedbackRequest"
+      responses:
+        "202":
+          description: "Feedback successfully submitted"
+        "4XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientErrorResponse"
+        "5XX":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+components:
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2.0 with the client credentials flow."
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            davis-copilot:conversations:execute: "execute conversational skill"
+            davis-copilot:nl2dql:execute: "execute NL to DQL skill"
+            davis-copilot:dql2nl:execute: "execute DQL to NL skill"
+            davis-copilot:document-search:execute: "execute document-search skill"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  schemas:
+    AvailableSkillsResponse:
+      properties:
+        skills:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SkillType"
+    SkillType:
+      type: "string"
+      enum:
+      - "conversation"
+      - "nl2dql"
+      - "dql2nl"
+      - "documentSearch"
+    Status:
+      type: "string"
+      enum:
+      - "SUCCESSFUL"
+      - "SUCCESSFUL_WITH_WARNINGS"
+      - "FAILED"
+    Nl2DqlRequest:
+      required:
+      - "text"
+      properties:
+        text:
+          type: "string"
+          example: "Generate a query which shows the latest 10 log lines"
+          maxLength: 3000
+    Nl2DqlResponse:
+      required:
+      - "dql"
+      - "messageToken"
+      - "status"
+      properties:
+        dql:
+          type: "string"
+          example: "fetch logs\n| limit 10"
+        messageToken:
+          type: "string"
+          example: "1e9eaca7-2a32-4263-806f-787fa2e1350c"
+        status:
+          $ref: "#/components/schemas/Status"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+    DocumentSearchRequest:
+      required:
+      - "texts"
+      - "collections"
+      properties:
+        texts:
+          type: "array"
+          items:
+            type: "string"
+          example:
+          - "search-string 1"
+          - "search-string 2"
+          - "DQL1"
+          - "DQL2"
+        collections:
+          type: "array"
+          items:
+            type: "string"
+          example:
+          - "documentCollection 1"
+          - "documentCollection 2"
+          - "documentCollection 3"
+          description: "The name of the document collections corresponding to the\
+            \ names in the vectorstore."
+        exclude:
+          type: "array"
+          items:
+            type: "string"
+          example:
+          - "documentId1"
+          - "documentId2"
+          - "documentId3"
+          description: "Must be a uuid hash matching a document (for now, no patterns/wildcards)"
+          nullable: true
+    DocumentMetadata:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          example: "<some UUID hash>"
+        externalId:
+          type: "string"
+          example: "<some UUID hash>"
+          description: "Is deprecated and will be removed. For now, it is a copy of\
+            \ id in order to remain backwards compatible."
+        name:
+          type: "string"
+          example: "Name of document"
+        type:
+          type: "string"
+          example: "notebook"
+          description: "Type of document (notebook or dashboard)"
+        description:
+          type: "string"
+          example: "This notebook analyses problems"
+          description: "Users description of the document"
+        version:
+          type: "string"
+          example: "<some UUID hash>"
+          description: "Starting at 1, every modification of the document to either\
+            \ metadata or content increases the version number"
+    ScoredDocument:
+      required:
+      - "documentId"
+      - "relevanceScore"
+      - "documentMetadata"
+      properties:
+        documentId:
+          type: "string"
+          example: "<some UUID hash>"
+        relevanceScore:
+          type: "number"
+          format: "double"
+          example: 0.9999
+          minimum: 0
+          maximum: 1
+        documentMetadata:
+          $ref: "#/components/schemas/DocumentMetadata"
+    DocumentSearchResponse:
+      required:
+      - "messageToken"
+      - "results"
+      - "status"
+      properties:
+        messageToken:
+          type: "string"
+          example: "<some UUID hash>"
+          description: "Must be a random uuid hash to identify the response"
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ScoredDocument"
+        status:
+          $ref: "#/components/schemas/Status"
+    Dql2NlRequest:
+      required:
+      - "dql"
+      properties:
+        dql:
+          type: "string"
+          maxLength: 5000
+          example: "fetch logs, from:now()-1h, samplingRatio:100\n| fields timestamp,\
+            \ severity, logfile, message, container\n| limit 10\n| filterOut severity\
+            \ == \"NONE\" or severity == \"INFO\"\n| sort timestamp desc"
+    Dql2NlResponse:
+      required:
+      - "summary"
+      - "explanation"
+      - "messageToken"
+      - "status"
+      properties:
+        summary:
+          type: "string"
+          example: "Fetch logs data, group by 'loglevel', and count the number of\
+            \ logs for each log level."
+        explanation:
+          type: "string"
+          example: "- The query fetches logs data.\n- It groups the logs by the 'loglevel'\
+            \ field.\n- It counts the number of logs for each log level."
+        messageToken:
+          type: "string"
+          example: "1e9eaca7-2a32-4263-806f-787fa2e1350c"
+        status:
+          $ref: "#/components/schemas/Status"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+    Nl2DqlFeedback:
+      required:
+      - "type"
+      properties:
+        type:
+          $ref: "#/components/schemas/Nl2DqlFeedbackType"
+        text:
+          type: "string"
+          example: "The DQL statement was not correct."
+        category:
+          $ref: "#/components/schemas/Nl2DqlFeedbackCategory"
+        improvement:
+          $ref: "#/components/schemas/Nl2DqlImprovedSummary"
+    Nl2DqlFeedbackType:
+      type: "string"
+      enum:
+      - "positive"
+      - "negative"
+    Nl2DqlFeedbackCategory:
+      type: "string"
+      example: "misunderstood"
+      description: "Must be one of [ \"misunderstood\", \"incorrect\", \"incomplete\"\
+        , \"error\", \"other\" ]"
+    Nl2DqlImprovedSummary:
+      required:
+      - "text"
+      - "confirmation"
+      properties:
+        text:
+          type: "string"
+          example: "The DQL statement should have shown me metadata for the logs source."
+        confirmation:
+          type: "boolean"
+    Nl2DqlFeedbackRequest:
+      required:
+      - "messageToken"
+      - "origin"
+      - "feedback"
+      - "userQuery"
+      properties:
+        messageToken:
+          type: "string"
+        origin:
+          type: "string"
+          example: "Notebooks DQL to NL feedback"
+        feedback:
+          $ref: "#/components/schemas/Nl2DqlFeedback"
+        userQuery:
+          type: "string"
+          example: "Show me the latest 100 logs."
+        generatedDql:
+          type: "string"
+          example: "fetch logs \n| limit 100 \n| sort timestamp desc"
+    Dql2NlFeedback:
+      required:
+      - "type"
+      properties:
+        type:
+          $ref: "#/components/schemas/Dql2NlFeedbackType"
+        text:
+          type: "string"
+          example: "The DQL statement was not correct."
+        category:
+          $ref: "#/components/schemas/Dql2NlFeedbackCategory"
+        improvement:
+          $ref: "#/components/schemas/Dql2NlImprovedSummary"
+    Dql2NlFeedbackType:
+      type: "string"
+      enum:
+      - "positive"
+      - "negative"
+    Dql2NlFeedbackCategory:
+      type: "string"
+      example: "misunderstood"
+      description: "Must be one of [ \"misunderstood\", \"incorrect\", \"incomplete\"\
+        , \"error\", \"other\" ]"
+    Dql2NlImprovedSummary:
+      required:
+      - "text"
+      - "confirmation"
+      properties:
+        text:
+          type: "string"
+          example: "The DQL statement should have shown me metadata for the logs source."
+        confirmation:
+          type: "boolean"
+    Dql2NlFeedbackRequest:
+      required:
+      - "messageToken"
+      - "origin"
+      - "feedback"
+      - "userQuery"
+      properties:
+        messageToken:
+          type: "string"
+        origin:
+          type: "string"
+          example: "Notebooks DQL to NL feedback"
+        feedback:
+          $ref: "#/components/schemas/Dql2NlFeedback"
+        userQuery:
+          type: "string"
+          example: "describe logs"
+        queryExplanation:
+          type: "string"
+          example: "Show me the metadata of the logs data source."
+    ConversationFeedback:
+      required:
+      - "type"
+      properties:
+        type:
+          $ref: "#/components/schemas/ConversationFeedbackType"
+        text:
+          type: "string"
+          example: "The DQL statement was not correct."
+        category:
+          $ref: "#/components/schemas/ConversationFeedbackCategory"
+        improvement:
+          $ref: "#/components/schemas/ConversationImprovedSummary"
+    ConversationFeedbackType:
+      type: "string"
+      enum:
+      - "positive"
+      - "negative"
+    ConversationFeedbackCategory:
+      type: "string"
+      example: "misunderstood"
+      description: "Must be one of [ \"misunderstood\", \"incorrect\", \"incomplete\"\
+        , \"error\", \"other\" ]"
+    ConversationImprovedSummary:
+      required:
+      - "text"
+      - "confirmation"
+      properties:
+        text:
+          type: "string"
+          example: "The DQL statement should have shown me metadata for the logs source."
+        confirmation:
+          type: "boolean"
+    ConversationFeedbackRequest:
+      required:
+      - "messageToken"
+      - "origin"
+      - "feedback"
+      properties:
+        messageToken:
+          type: "string"
+        origin:
+          type: "string"
+        feedback:
+          $ref: "#/components/schemas/ConversationFeedback"
+        userPrompt:
+          type: "string"
+        copilotResponse:
+          type: "string"
+        sources:
+          type: "array"
+          items:
+            type: "string"
+      example:
+        messageToken: "1e9eaca7-2a32-4263-806f-787fa2e1350c"
+        origin: "Davis CoPilot app"
+        feedback:
+          type: "positive"
+          text: "Exactly I was looking for."
+        userPrompt: "How can I install the Dynatrace OneAgent?"
+        copilotResponse: "To install the Dynatrace OneAgent, follow these steps: ..."
+        sources:
+        - "https://docs.dynatrace.com/docs/setup-and-configuration/dynatrace-oneagent/installation-and-operation/windows/installation/install-oneagent-on-windows"
+        - "https://docs.dynatrace.com/docs/setup-and-configuration/dynatrace-oneagent/oneagent-troubleshooting/troubleshoot-oneagent-installation"
+    RecommenderResponse:
+      oneOf:
+      - $ref: "#/components/schemas/ConversationResponse"
+      - type: "array"
+        items:
+          oneOf:
+          - $ref: "#/components/schemas/StartEvent"
+          - $ref: "#/components/schemas/ProgressEvent"
+          - $ref: "#/components/schemas/TokensEvent"
+          - $ref: "#/components/schemas/NotificationEvent"
+          - $ref: "#/components/schemas/ContentEvent"
+          - $ref: "#/components/schemas/EndEvent"
+          - $ref: "#/components/schemas/ErrorEvent"
+    ConversationRequest:
+      required:
+      - "text"
+      properties:
+        text:
+          type: "string"
+          example: "How can I instrument my java service?"
+          maxLength: 10000
+        context:
+          type: "array"
+          description: "Specify the information sources which will be used to process\
+            \ the request. Empty or null will default to the standard Davis CoPilot\
+            \ documentation search."
+          items:
+            $ref: "#/components/schemas/ConversationContext"
+        annotations:
+          type: "object"
+          description: "Specify the annotation information which will be used to add\
+            \ extra context to the request, e.g. `Origin app`. Annotation key and\
+            \ value are restricted to be at most 128 characters and at most 10 annotations\
+            \ are accepted. This information is not masked."
+          maxProperties: 10
+          additionalProperties:
+            $ref: "#/components/schemas/AnnotationItem"
+          example:
+            application_context: "dynatrace.davis.copilot"
+            origin_application_context: "dynatrace.davis.problems"
+        state:
+          $ref: "#/components/schemas/State"
+    AnnotationItem:
+      type: "string"
+    ConversationContext:
+      required:
+      - "type"
+      - "value"
+      properties:
+        type:
+          type: "string"
+          enum:
+          - "supplementary"
+          - "document-retrieval"
+          - "instruction"
+        value:
+          type: "string"
+          example: "dynatrace"
+          maxLength: 102500
+    ConversationResponse:
+      required:
+      - "text"
+      - "messageToken"
+      - "state"
+      - "metadata"
+      - "status"
+      properties:
+        text:
+          type: "string"
+          example: "To instrument your Java service with Dynatrace, you can follow\
+            \ these steps..."
+        messageToken:
+          type: "string"
+          example: "1e9eaca7-2a32-4263-806f-787fa2e1350c"
+        status:
+          $ref: "#/components/schemas/Status"
+        state:
+          $ref: "#/components/schemas/State"
+        metadata:
+          $ref: "#/components/schemas/MetadataWithSource"
+    Notification:
+      properties:
+        severity:
+          type: "string"
+          example: "WARNING"
+        notificationType:
+          type: "string"
+          example: "POSSIBLY_UNEXPECTED_DQL_BEHAVIOUR"
+        message:
+          type: "string"
+          example: "Your prompt seems to refer to segments or management zones. Please\
+            \ select the segment using the segment selector."
+    MetadataWithSource:
+      properties:
+        notifications:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Notification"
+        sources:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SourceDocument"
+    Metadata:
+      properties:
+        notifications:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Notification"
+    State:
+      properties:
+        version:
+          type: "string"
+          example: "0.3"
+        conversationId:
+          type: "string"
+          example: "68b5d405-03d1-41b0-8ba3-a815fc72f06c"
+        skillName:
+          type: "string"
+          example: "recommender"
+        history:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              role:
+                type: "string"
+              text:
+                type: "string"
+              supplementary:
+                type: "string"
+                nullable: true
+          example:
+          - role: "User"
+            text: "How can I instrument my java service?"
+            supplementary: "The user is new to Dynatrace product"
+          - role: "AI"
+            text: "To instrument your Java service with Dynatrace, you can follow\
+              \ these steps..."
+            supplementary: null
+          - role: "AI"
+            text: "To instrument your Java service with Dynatrace, you can follow\
+              \ these steps..."
+    SourceDocument:
+      properties:
+        title:
+          type: "string"
+          example: "Remote configuration management of OneAgents and ActiveGates"
+        url:
+          type: "string"
+          example: "https://www.dynatrace.com/support/help/setup-and-configuration/bulk-configuration"
+        type:
+          type: "string"
+          example: "Documentation"
+    EventType:
+      type: "string"
+      enum:
+      - "start"
+      - "progress"
+      - "notification"
+      - "tokens"
+      - "content"
+      - "end"
+      - "error"
+    StartEvent:
+      description: "The StartEvent is the first event sent by the server to the client.\n\
+        It contains a `messageToken` that is used to identify the conversation.\n"
+      properties:
+        event:
+          $ref: "#/components/schemas/EventType"
+        data:
+          type: "object"
+          properties:
+            messageToken:
+              type: "string"
+    ProgressEvent:
+      description: "The ProgressEvent is sent by the server to the client to indicate\
+        \ progress.\nIt contains at the `type` of progress and a `message` to be displayed\
+        \ to the user.\n"
+      properties:
+        event:
+          $ref: "#/components/schemas/EventType"
+        data:
+          type: "object"
+          properties:
+            type:
+              type: "string"
+              example: "validation"
+            message:
+              type: "string"
+              example: "Validating user input"
+    TokensEvent:
+      description: "The TokensEvent contains the tokens streamed from the server to\
+        \ the client during the conversation.\nIt may contain multiple `tokens`.\n"
+      properties:
+        event:
+          $ref: "#/components/schemas/EventType"
+        data:
+          type: "object"
+          properties:
+            tokens:
+              type: "array"
+              items:
+                type: "string"
+              example:
+              - "Go"
+              - " to"
+    NotificationEvent:
+      description: "The NotificationEvent is sent by the server in case something\
+        \ do not fully go as planned.\nIt contains the `severity` of the notification\
+        \ (e.g. Warning), the `type` of issue, and a `message`.\n"
+      properties:
+        event:
+          $ref: "#/components/schemas/EventType"
+        data:
+          $ref: "#/components/schemas/Notification"
+    ContentEvent:
+      properties:
+        event:
+          $ref: "#/components/schemas/EventType"
+        data:
+          type: "object"
+          properties:
+            type:
+              type: "string"
+              example: "intent"
+              description: "One of [ \"intent\" ]"
+            message:
+              type: "string"
+              example: "Notebooks"
+    EndEvent:
+      description: "The EndEvent is sent by the server to indicate the end of the\
+        \ conversation.\nIt is comparable to the non-streaming response, containing\
+        \ the full `answer` comprised of all tokens,\nthe `sources` of the answer,\
+        \ and the `state` of the conversation that can be used for continuation.\n"
+      properties:
+        event:
+          $ref: "#/components/schemas/EventType"
+        data:
+          type: "object"
+          properties:
+            answer:
+              type: "string"
+              example: "Go to help page"
+            sources:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/SourceDocument"
+            state:
+              $ref: "#/components/schemas/State"
+    ErrorEvent:
+      description: "The ErrorEvent is sent by the server to indicate an error and\
+        \ that the conversation cannot be continued.\nThis means the stream is closed\
+        \ and the client should not expect any further events.\nIt contains the `code`\
+        \ of the error representing the equivalent HTTP code and human readable `message`.\n"
+      properties:
+        event:
+          $ref: "#/components/schemas/EventType"
+        data:
+          $ref: "#/components/schemas/ErrorMessage"
+    ErrorMessage:
+      required:
+      - "code"
+      - "message"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          example: 500
+        message:
+          type: "string"
+          example: "Internal Server Error"
+    ClientErrorResponse:
+      required:
+      - "error"
+      properties:
+        error:
+          $ref: "#/components/schemas/ClientErrorResponseObject"
+    ClientErrorResponseObject:
+      required:
+      - "code"
+      - "message"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          example: 400
+        message:
+          type: "string"
+          example: "Bad Request"
+    InternalErrorResponse:
+      required:
+      - "error"
+      properties:
+        error:
+          $ref: "#/components/schemas/InternalErrorResponseObject"
+    InternalErrorResponseObject:
+      required:
+      - "code"
+      - "message"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          example: 500
+        message:
+          type: "string"
+          example: "Internal Server Error"
+  examples:
+    StartEvent:
+      summary: "Start"
+      description: "JSON is **always** sent folded in single line. For improved reading\
+        \ this example is shown unfolded. There is no guarantee that this example\
+        \ will be sent and that list of examples is complete."
+      value:
+        event: "start"
+        data:
+          messageToken: "93e445aa-67f9-11ee-8c99-0242ac120002"
+    ProgressEvent:
+      summary: "Progress"
+      description: "JSON is **always** sent folded in single line. For improved reading\
+        \ this example is shown unfolded. There is no guarantee that this example\
+        \ will be sent and that list of examples is complete."
+      value:
+        event: "progress"
+        data:
+          type: "validation"
+          message: "Validating user input"
+    TokensEvent:
+      summary: "Tokens"
+      description: "JSON is **always** sent folded in single line. For improved reading\
+        \ this example is shown unfolded. There is no guarantee that this example\
+        \ will be sent and that list of examples is complete."
+      value:
+        event: "tokens"
+        data:
+          tokens:
+          - "Go"
+          - " to"
+    NotificationEvent:
+      summary: "Notification"
+      description: "JSON is **always** sent folded in single line. For improved reading\
+        \ this example is shown unfolded. There is no guarantee that this example\
+        \ will be sent and that list of examples is complete."
+      value:
+        event: "notification"
+        data:
+          severity: "error"
+          notificationType: "error"
+          message: "Invalid user input"
+    ContentEvent:
+      summary: "Content"
+      description: "JSON is **always** sent folded in single line. For improved reading\
+        \ this example is shown unfolded. There is no guarantee that this example\
+        \ will be sent and that list of examples is complete."
+      value:
+        event: "content"
+        data:
+          type: "intent"
+          message: "Notebooks"
+    EndEvent:
+      summary: "End"
+      description: "JSON is **always** sent folded in single line. For improved reading\
+        \ this example is shown unfolded. There is no guarantee that this example\
+        \ will be sent and that list of examples is complete."
+      value:
+        event: "end"
+        data:
+          answer: "Go to help page"
+          sources:
+          - title: "Remote configuration management of OneAgents and ActiveGates"
+            url: "https://www.dynatrace.com/support/help/setup-and-configuration/bulk-configuration"
+          - title: "Remote configuration management API"
+            url: "https://www.dynatrace.com/support/help/dynatrace-api/environment-api/remote-configuration"
+          state:
+            version: "0.3"
+            conversationId: "68b5d405-03d1-41b0-8ba3-a815fc72f06c"
+            skillName: "recommender"
+            history:
+            - role: "user"
+              text: "Where can I download an OneAgent?"
+            - role: "ai"
+              text: "You can download the OneAgent from the Dynatrace web UI or using\
+                \ the Deployment API..."
+    ErrorEvent:
+      summary: "Error"
+      description: "JSON is **always** sent folded in single line. For improved reading\
+        \ this example is shown unfolded. There is no guarantee that this example\
+        \ will be sent and that list of examples is complete."
+      value:
+        event: "error"
+        data:
+          code: 500
+          message: "I'm sorry, but I can't generate an answer right now due to a technical\
+            \ error. Please try again in a few minutes."
+    StreamingNoError:
+      summary: "Stream without issues"
+      description: "There is no guarantee that this example will be sent and that\
+        \ list of examples is complete."
+      value: "{\"event\": \"documentation\", \"data\": \"start_reading\" }\n{\"event\"\
+        : \"answer\", \"data\": { \"role\": \"AI\", \"text\": \"To\" } }\n{\"event\"\
+        : \"answer\", \"data\": { \"role\": \"AI\", \"text\": \" instrument\" } }"
+    StreamingWithError:
+      summary: "Stream with error"
+      description: "There is no guarantee that this example will be sent and that\
+        \ list of examples is complete."
+      value: "{\"event\": \"documentation\", \"data\": \"Reading documentation\" }\n\
+        {\"event\": \"error\", { \"code\": 500, \"message\": \"Internal Server Error\"\
+        \ } }"
+    NoStateRequest:
+      summary: "No state example"
+      value:
+        text: "How can I instrument my java service?"
+    WithStateRequest:
+      summary: "With state example"
+      value:
+        text: "Where can I download the installer?"
+        state:
+          version: "0.3"
+          conversationId: "68b5d405-03d1-41b0-8ba3-a815fc72f06c"
+          skillName: "recommender"
+          history:
+          - role: "user"
+            text: "How can I instrument my java service?"
+          - role: "ai"
+            text: "To instrument your Java service with Dynatrace, you can follow\
+              \ these steps..."
+    WithSupplementaryContextRequest:
+      summary: "With supplementary context example"
+      value:
+        text: "How can I instrument my java service?"
+        context:
+        - type: "document-retrieval"
+          value: "dynatrace"
+        - type: "supplementary"
+          value: "The user is running these services: Jetty, Spring and JDBC"
+    WithInstructionContextRequest:
+      summary: "With supplementary context and instruction context example"
+      value:
+        text: "How can I instrument my java service?"
+        context:
+        - type: "document-retrieval"
+          value: "dynatrace"
+        - type: "supplementary"
+          value: "The user is running these services: Jetty, Spring and JDBC"
+        - type: "instruction"
+          value: "Answer in bulletpoints"
+    ServiceUnavailable:
+      summary: "High demand"
+      description: "Service temporary unavailable."
+      value:
+        error:
+          code: 503
+          message: "I'm sorry, but I can't generate an answer right now due to a technical\
+            \ error. Please try again in a few minutes."
+security:
+- ssoAuth:
+  - "davis-copilot:conversations:execute"
+  - "davis-copilot:nl2dql:execute"
+  - "davis-copilot:dql2nl:execute"
+  - "davis-copilot:document-search:execute"

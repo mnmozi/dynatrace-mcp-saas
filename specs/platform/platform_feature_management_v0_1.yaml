@@ -1,0 +1,2019 @@
+openapi: "3.0.4"
+info:
+  version: "0.1.37"
+  title: "Feature Management API"
+  x-service-category: "Feature Management"
+  x-summary: "Provide functionality for Feature Management."
+  description: "Feature Management - Endpoints to Manage your Features within Dynatrace"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/feature-management/v0.1"
+  x-api-gateway-url: "/platform/feature-management/v0.1"
+tags:
+- name: "Projects"
+  description: "Operations for managing projects"
+- name: "Context Attribute"
+  description: "Operations for managing context attributes"
+- name: "Release Stages"
+  description: "Operations for managing release stages"
+- name: "SDK Keys"
+  description: "Operations for managing SDK keys per release stage"
+- name: "Features"
+  description: "Operations for managing features and variants"
+- name: "Feature Release Stage Targeting"
+  description: "Operations for managing feature release stage targeting"
+- name: "Flags"
+  description: "Operations for managing feature flags"
+paths:
+  /projects:
+    get:
+      summary: "List all projects"
+      operationId: "listProjects"
+      tags:
+      - "Projects"
+      parameters:
+      - $ref: "#/components/parameters/pageParam"
+      - $ref: "#/components/parameters/pageSizeParam"
+      security:
+      - ssoAuth:
+        - "feature-management:projects:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A paged array of projects"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:projects:read"
+    post:
+      summary: "Create a new project"
+      operationId: "createProject"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-management:projects:write"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        description: "The project to create."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectCreate"
+      responses:
+        "201":
+          description: "The project is successfully created."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:projects:write"
+  /projects/{project-key}:
+    get:
+      summary: "Get a project"
+      operationId: "getProject"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-management:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      responses:
+        "200":
+          description: "The project configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:projects:read"
+    put:
+      summary: "Update a project"
+      operationId: "updateProject"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-management:projects:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      requestBody:
+        required: true
+        description: "The project update payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectUpdate"
+      responses:
+        "200":
+          description: "The project configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:projects:write"
+    delete:
+      summary: "Delete a project"
+      operationId: "deleteProject"
+      tags:
+      - "Projects"
+      security:
+      - ssoAuth:
+        - "feature-management:projects:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      responses:
+        "204":
+          description: "The project was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:projects:delete"
+  /projects/{project-key}/context-attributes:
+    post:
+      summary: "Create a context attribute in a project"
+      operationId: "createContextAttribute"
+      tags:
+      - "Context Attribute"
+      security:
+      - ssoAuth:
+        - "feature-management:context-attributes:write"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        description: "The context attribute to create."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContextAttributeCreate"
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      responses:
+        "201":
+          description: "The context attribute is successfully created."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextAttributeDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:context-attributes:write"
+    get:
+      summary: "List all context attributes"
+      operationId: "listContextAttributes"
+      tags:
+      - "Context Attribute"
+      security:
+      - ssoAuth:
+        - "feature-management:context-attributes:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/pageParam"
+      - $ref: "#/components/parameters/pageSizeParam"
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      responses:
+        "200":
+          description: "A paged array of context attributes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextAttributeList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:context-attributes:read"
+  /projects/{project-key}/context-attributes/{context-attribute-key}:
+    get:
+      summary: "Get a context attribute of a project"
+      operationId: "getContextAttribute"
+      tags:
+      - "Context Attribute"
+      security:
+      - ssoAuth:
+        - "feature-management:context-attributes:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/contextAttributeKeyPathParam"
+      responses:
+        "200":
+          description: "The context attribute"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextAttributeDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:context-attributes:read"
+    put:
+      summary: "Update a context attribute"
+      operationId: "updateContextAttribute"
+      tags:
+      - "Context Attribute"
+      security:
+      - ssoAuth:
+        - "feature-management:context-attributes:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/contextAttributeKeyPathParam"
+      requestBody:
+        required: true
+        description: "The context attribute update payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContextAttributeUpdate"
+      responses:
+        "200":
+          description: "The context attribute"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextAttributeDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:context-attributes:write"
+    delete:
+      summary: "Delete a context attribute"
+      operationId: "deleteContextAttribute"
+      tags:
+      - "Context Attribute"
+      security:
+      - ssoAuth:
+        - "feature-management:context-attributes:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/contextAttributeKeyPathParam"
+      responses:
+        "204":
+          description: "The context attribute was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:context-attributes:delete"
+  /projects/{project-key}/release-stages:
+    get:
+      summary: "List all release stages in a project"
+      operationId: "listReleaseStages"
+      tags:
+      - "Release Stages"
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/pageParam"
+      - $ref: "#/components/parameters/pageSizeParam"
+      security:
+      - ssoAuth:
+        - "feature-management:projects:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "A paged array of release stages in the project"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseStageList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:projects:read"
+    post:
+      summary: "Create a release stage in a project"
+      operationId: "createReleaseStage"
+      tags:
+      - "Release Stages"
+      security:
+      - ssoAuth:
+        - "feature-management:release-stages:write"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        description: "The release stage to create."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReleaseStageCreate"
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      responses:
+        "201":
+          description: "The release stage is successfully created."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseStageDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:release-stages:write"
+  /projects/{project-key}/release-stages/reorder:
+    put:
+      summary: "Update the display order of release stages in a project"
+      operationId: "reorderReleaseStages"
+      tags:
+      - "Release Stages"
+      security:
+      - ssoAuth:
+        - "feature-management:release-stages:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      requestBody:
+        required: true
+        description: "The new order of release stages in the project."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReleaseStageReorder"
+      responses:
+        "200":
+          description: "A paged array of release stages in the project"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseStageList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:release-stages:write"
+  /projects/{project-key}/release-stages/{release-stage-key}:
+    get:
+      summary: "Get a release stage in a project"
+      operationId: "getReleaseStage"
+      tags:
+      - "Release Stages"
+      security:
+      - ssoAuth:
+        - "feature-management:projects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      responses:
+        "200":
+          description: "The release stage details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseStageDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:projects:read"
+    put:
+      summary: "Update a release stage in a project"
+      operationId: "updateReleaseStage"
+      tags:
+      - "Release Stages"
+      security:
+      - ssoAuth:
+        - "feature-management:release-stages:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      requestBody:
+        required: true
+        description: "The release stage update payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReleaseStageUpdate"
+      responses:
+        "200":
+          description: "The release stage details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseStageDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:release-stages:write"
+    delete:
+      summary: "Delete a release stage in a project"
+      operationId: "deleteReleaseStage"
+      tags:
+      - "Release Stages"
+      security:
+      - ssoAuth:
+        - "feature-management:release-stages:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      responses:
+        "204":
+          description: "The release stage was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:release-stages:delete"
+  /projects/{project-key}/release-stages/{release-stage-key}/sdk-keys:
+    get:
+      summary: "List SDK keys for a release stage"
+      operationId: "listSdkKeys"
+      tags:
+      - "SDK Keys"
+      security:
+      - ssoAuth:
+        - "feature-management:sdk-keys:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      responses:
+        "200":
+          description: "List of SDK key entities."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SDKKeyList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:sdk-keys:read"
+    post:
+      summary: "Create an SDK key for a release stage"
+      operationId: "createSdkKey"
+      tags:
+      - "SDK Keys"
+      security:
+      - ssoAuth:
+        - "feature-management:sdk-keys:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      requestBody:
+        required: true
+        description: "The SDK key creation payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SdkKeyCreate"
+      responses:
+        "201":
+          description: "The SDK key was created successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SDKKeyDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:sdk-keys:write"
+  /projects/{project-key}/release-stages/{release-stage-key}/sdk-keys/{sdk-key}:
+    delete:
+      summary: "Delete an SDK key"
+      operationId: "deleteSdkKey"
+      tags:
+      - "SDK Keys"
+      security:
+      - ssoAuth:
+        - "feature-management:sdk-keys:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      - $ref: "#/components/parameters/sdkKeyPathParam"
+      responses:
+        "204":
+          description: "The SDK key was deleted successfully."
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:sdk-keys:delete"
+  /projects/{project-key}/features:
+    get:
+      summary: "List all features"
+      operationId: "listFeatures"
+      tags:
+      - "Features"
+      security:
+      - ssoAuth:
+        - "feature-management:features:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/pageParam"
+      - $ref: "#/components/parameters/filter"
+      - $ref: "#/components/parameters/pageSizeParam"
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      responses:
+        "200":
+          description: "A paged array of features"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:read"
+    post:
+      summary: "Create a new feature"
+      operationId: "createFeature"
+      tags:
+      - "Features"
+      security:
+      - ssoAuth:
+        - "feature-management:features:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      requestBody:
+        required: true
+        description: "The feature to create."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureCreate"
+      responses:
+        "201":
+          description: "The feature is successfully created."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:write"
+  /projects/{project-key}/features/{feature-key}:
+    get:
+      summary: "Get a feature"
+      operationId: "getFeature"
+      tags:
+      - "Features"
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      security:
+      - ssoAuth:
+        - "feature-management:features:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The feature details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:read"
+    put:
+      summary: "Update a feature"
+      operationId: "updateFeature"
+      tags:
+      - "Features"
+      security:
+      - ssoAuth:
+        - "feature-management:features:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      requestBody:
+        required: true
+        description: "The feature update payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureUpdate"
+      responses:
+        "200":
+          description: "The feature details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:write"
+    patch:
+      summary: "Update the status of a feature"
+      operationId: "patchFeature"
+      tags:
+      - "Features"
+      security:
+      - ssoAuth:
+        - "feature-management:features:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      requestBody:
+        required: true
+        description: "The feature update payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeaturePatch"
+      responses:
+        "200":
+          description: "The feature details"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required:
+                - "version"
+                properties:
+                  version:
+                    $ref: "#/components/schemas/OptimisticLockingVersion"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:write"
+    delete:
+      summary: "Delete a feature"
+      operationId: "deleteFeature"
+      tags:
+      - "Features"
+      security:
+      - ssoAuth:
+        - "feature-management:features:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      responses:
+        "204":
+          description: "The feature was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:delete"
+  /projects/{project-key}/features/{feature-key}/release-stage-targeting:
+    get:
+      summary: "List feature release stage targeting for a feature"
+      operationId: "listFeatureReleaseStageTargeting"
+      tags:
+      - "Feature Release Stage Targeting"
+      security:
+      - ssoAuth:
+        - "feature-management:release-stage-targetings:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      responses:
+        "200":
+          description: "An array of feature release stage targeting for the feature"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureReleaseStageTargetingList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:release-stage-targetings:read"
+  /projects/{project-key}/features/{feature-key}/release-stage-targeting/{release-stage-key}:
+    get:
+      summary: "Get feature release stage targeting for a feature"
+      operationId: "getFeatureReleaseStageTargeting"
+      tags:
+      - "Feature Release Stage Targeting"
+      security:
+      - ssoAuth:
+        - "feature-management:release-stage-targetings:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      responses:
+        "200":
+          description: "Feature release stage targeting for the feature"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureReleaseStageTargetingDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:release-stage-targetings:read"
+    put:
+      summary: "Update feature release stage targeting for a feature"
+      operationId: "updateFeatureReleaseStageTargeting"
+      tags:
+      - "Feature Release Stage Targeting"
+      security:
+      - ssoAuth:
+        - "feature-management:release-stage-targetings:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      requestBody:
+        required: true
+        description: "The feature release stage targeting update payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureReleaseStageTargetingUpdate"
+      responses:
+        "200":
+          description: "The feature release stage targeting details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureReleaseStageTargetingDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:release-stage-targetings:write"
+  /projects/{project-key}/features/{feature-key}/flags:
+    get:
+      summary: "List all flags"
+      operationId: "listFlags"
+      tags:
+      - "Flags"
+      security:
+      - ssoAuth:
+        - "feature-management:features:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/pageParam"
+      - $ref: "#/components/parameters/pageSizeParam"
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      responses:
+        "200":
+          description: "A paged array of flags"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlagList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:read"
+    post:
+      summary: "Create a new flag"
+      operationId: "createFlag"
+      tags:
+      - "Flags"
+      security:
+      - ssoAuth:
+        - "feature-management:features:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      requestBody:
+        required: true
+        description: "The flag to create."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlagCreate"
+      responses:
+        "201":
+          description: "The flag is successfully created."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlagDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:write"
+  /projects/{project-key}/features/{feature-key}/flags/{flag-key}:
+    get:
+      summary: "Get a flag"
+      operationId: "getFlag"
+      tags:
+      - "Flags"
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/flagKeyPathParam"
+      security:
+      - ssoAuth:
+        - "feature-management:features:read"
+      - ssoBearerAuth: []
+      responses:
+        "200":
+          description: "The flag details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlagDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:read"
+    put:
+      summary: "Update a flag"
+      operationId: "updateFlag"
+      tags:
+      - "Flags"
+      security:
+      - ssoAuth:
+        - "feature-management:features:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/flagKeyPathParam"
+      requestBody:
+        required: true
+        description: "The flag update payload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlagUpdate"
+      responses:
+        "200":
+          description: "The flag details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlagDetails"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:write"
+    delete:
+      summary: "Delete a flag"
+      operationId: "deleteFlag"
+      tags:
+      - "Flags"
+      security:
+      - ssoAuth:
+        - "feature-management:features:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/flagKeyPathParam"
+      responses:
+        "204":
+          description: "The flag was deleted successfully"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:features:delete"
+components:
+  parameters:
+    pageParam:
+      name: "page"
+      in: "query"
+      schema:
+        $ref: "#/components/schemas/Page"
+    filter:
+      name: "filter"
+      in: "query"
+      description: "A filter expression to filter the results."
+      schema:
+        type: "string"
+      example: "projectKey='my-project' and stageKey='prod'"
+    pageSizeParam:
+      name: "page-size"
+      in: "query"
+      schema:
+        $ref: "#/components/schemas/PageSize"
+    projectKeyPathParam:
+      name: "project-key"
+      in: "path"
+      description: "Specify the key of the project"
+      required: true
+      schema:
+        $ref: "#/components/schemas/ProjectKey"
+    featureKeyPathParam:
+      name: "feature-key"
+      in: "path"
+      description: "Specify the key of the feature"
+      required: true
+      schema:
+        $ref: "#/components/schemas/FeatureKey"
+    flagKeyPathParam:
+      name: "flag-key"
+      in: "path"
+      description: "Specify the key of the flag"
+      required: true
+      schema:
+        $ref: "#/components/schemas/FlagKey"
+    releaseStageKeyPathParam:
+      name: "release-stage-key"
+      in: "path"
+      description: "Specify the key of the release stage"
+      required: true
+      schema:
+        $ref: "#/components/schemas/ReleaseStageKey"
+    sdkKeyPathParam:
+      name: "sdk-key"
+      in: "path"
+      description: "Specify the sdk key"
+      required: true
+      schema:
+        $ref: "#/components/schemas/SdkKey"
+    contextAttributeKeyPathParam:
+      name: "context-attribute-key"
+      in: "path"
+      description: "Specify the key of the context attribute"
+      required: true
+      schema:
+        $ref: "#/components/schemas/ContextAttributeKey"
+  schemas:
+    ResourceName:
+      type: "string"
+      description: "A resource name following the pattern: 3-256 characters total."
+      pattern: "^.{3,256}$"
+      example: "My Resource Name"
+    ProjectKey:
+      type: "string"
+      format: "project-key"
+      description: "The key of a project, unique within a tenant."
+      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      example: "my-project"
+    FeatureKey:
+      type: "string"
+      format: "feature-key"
+      description: "The key of a feature, unique within a project."
+      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      example: "my-feature"
+    FlagKey:
+      type: "string"
+      format: "flag-key"
+      description: "The key of a flag, unique within a feature."
+      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      example: "my-flag"
+    ReleaseStageKey:
+      type: "string"
+      format: "release-stage-key"
+      description: "The key of a release stage, unique within a project."
+      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      example: "my-release-stage"
+    SdkKey:
+      type: "string"
+      format: "sdk-key"
+      description: "The SDK key. Follows the pattern: `{token}.{platform}_{geo}_{publicRandom}.{secret}_{sha1}`.\n\
+        - token: `dt` plus a 2-digit format version (e.g. `dt01`). - platform: one\
+        \ of `web`, `mobile`, `server`. - geo: one of `us`, `eu`, `oc`, `ap`. - publicRandom:\
+        \ 10 alphanumeric characters of entropy (`[a-zA-Z0-9]{10}`), safe to log.\
+        \ - secret: 32 lowercase hex chars (UUIDv4 stripped of hyphens). - sha1: first\
+        \ 10 hex chars of SHA-1 over the preceding segments. Length is bounded\n \
+        \ below at 10 but intentionally open above so the format can grow without\
+        \ re-issuing keys.\n\nThe first two dot-delimited parts (`{token}.{platform}_{geo}_{publicRandom}`)\
+        \ form the public, log-safe identifier. The third part (`{secret}_{sha1}`)\
+        \ is private and must never appear in logs, telemetry, or support bundles.\n"
+      pattern: "^dt[0-9]{2}\\.(web|mobile|server)_[a-z]{2}_[a-zA-Z0-9]{10,}\\.[a-f0-9]{32,}_[a-f0-9]{10,}$"
+      example: "dt01.server_us_ab3xy9kp2q.03ee0ef7cd4244bfb8b71fea8f783f53_d4f8a9c12a"
+    ContextAttributeKey:
+      type: "string"
+      format: "context-attribute-key"
+      description: "The key of a context attribute, unique within a project."
+      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      example: "my-context-attribute"
+    VariantKey:
+      type: "string"
+      format: "variant-key"
+      description: "The key of a variant, unique within a feature."
+      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      example: "my-variant"
+    Description:
+      type: "string"
+      description: "A description of the resource, up to 2048 characters."
+      maxLength: 2048
+      example: "This is a description of the resource."
+    ProjectCreate:
+      type: "object"
+      description: "Request body for creating a new project."
+      required:
+      - "key"
+      - "name"
+      properties:
+        key:
+          $ref: "#/components/schemas/ProjectKey"
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the project."
+        description:
+          $ref: "#/components/schemas/Description"
+        owner:
+          type: "string"
+          example: "Project Owner"
+        maintainers:
+          type: "array"
+          example:
+          - "Maintainer 1"
+          - "Maintainer 2"
+          items:
+            type: "string"
+    ProjectUpdate:
+      type: "object"
+      description: "Request body for updating a project. The key is specified in the\
+        \ path parameter."
+      required:
+      - "version"
+      properties:
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the project."
+        description:
+          $ref: "#/components/schemas/Description"
+        owner:
+          type: "string"
+          example: "Project Owner"
+        maintainers:
+          type: "array"
+          items:
+            type: "string"
+          example:
+          - "Maintainer 1"
+          - "Maintainer 2"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ProjectDetails:
+      type: "object"
+      description: "Response body for project operations."
+      allOf:
+      - $ref: "#/components/schemas/ProjectCreate"
+      properties:
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ProjectList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ProjectDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    ContextAttributeCreate:
+      type: "object"
+      description: "Request body for creating a new context attribute."
+      required:
+      - "key"
+      - "name"
+      - "schema"
+      - "type"
+      properties:
+        key:
+          $ref: "#/components/schemas/ContextAttributeKey"
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the context attribute."
+        description:
+          $ref: "#/components/schemas/Description"
+        schema:
+          type: "string"
+        type:
+          $ref: "#/components/schemas/ContextAttributeType"
+    ContextAttributeUpdate:
+      type: "object"
+      description: "Request body for updating a context attribute. The key is specified\
+        \ in the path parameter."
+      required:
+      - "name"
+      - "version"
+      - "schema"
+      properties:
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the context attribute."
+        description:
+          $ref: "#/components/schemas/Description"
+        schema:
+          type: "string"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ContextAttributeDetails:
+      type: "object"
+      description: "Response body for context attribute operations."
+      required:
+      - "projectKey"
+      allOf:
+      - $ref: "#/components/schemas/ContextAttributeCreate"
+      properties:
+        projectKey:
+          $ref: "#/components/schemas/ProjectKey"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ContextAttributeList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ContextAttributeDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    ContextAttributeType:
+      type: "string"
+      enum:
+      - "BOOLEAN"
+      - "DATE_TIME"
+      - "NUMBER"
+      - "SEM_VER"
+      - "STRING"
+    FeatureCreate:
+      type: "object"
+      description: "Request body for creating a feature. The projectKey is specified\
+        \ in the path parameter."
+      required:
+      - "key"
+      - "name"
+      - "variants"
+      properties:
+        key:
+          $ref: "#/components/schemas/FeatureKey"
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the feature."
+        description:
+          $ref: "#/components/schemas/Description"
+        type:
+          $ref: "#/components/schemas/FeatureType"
+        flags:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FlagCreate"
+        variants:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Variant"
+        owner:
+          type: "string"
+          example: "Feature Owner"
+        maintainers:
+          type: "array"
+          items:
+            type: "string"
+          example:
+          - "Maintainer 1"
+          - "Maintainer 2"
+    FeatureUpdate:
+      type: "object"
+      required:
+      - "version"
+      - "status"
+      properties:
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the feature."
+        description:
+          $ref: "#/components/schemas/Description"
+        type:
+          $ref: "#/components/schemas/FeatureType"
+        variants:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Variant"
+        owner:
+          type: "string"
+          example: "Feature Owner"
+        maintainers:
+          type: "array"
+          items:
+            type: "string"
+          example:
+          - "Maintainer 1"
+          - "Maintainer 2"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+        status:
+          $ref: "#/components/schemas/FeatureStatus"
+    FeaturePatch:
+      type: "object"
+      required:
+      - "status"
+      - "version"
+      properties:
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+        status:
+          $ref: "#/components/schemas/FeatureStatus"
+    FeatureDetails:
+      required:
+      - "projectKey"
+      - "status"
+      allOf:
+      - $ref: "#/components/schemas/FeatureCreate"
+      properties:
+        projectKey:
+          $ref: "#/components/schemas/ProjectKey"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+        status:
+          $ref: "#/components/schemas/FeatureStatus"
+    Variant:
+      type: "object"
+      required:
+      - "key"
+      - "name"
+      properties:
+        key:
+          $ref: "#/components/schemas/VariantKey"
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the variant."
+        displayOrder:
+          type: "integer"
+          description: "The display order of the variant in the feature."
+          default: 0
+          minimum: 0
+          maximum: 100
+    FeatureList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FeatureDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    FeatureType:
+      type: "string"
+      enum:
+      - "RELEASE"
+      - "CONFIGURATION"
+      - "ENTITLEMENTS"
+      - "EXPERIMENT"
+      - "OPS"
+      default: "OPS"
+    FeatureStatus:
+      type: "string"
+      enum:
+      - "ACTIVE"
+      - "ARCHIVED"
+      default: "ACTIVE"
+      description: "The status of the feature. Either ACTIVE or ARCHIVED. Archived\
+        \ features aren't included in the feature config"
+    FlagCreate:
+      type: "object"
+      required:
+      - "key"
+      - "name"
+      - "type"
+      - "variants"
+      properties:
+        key:
+          $ref: "#/components/schemas/FlagKey"
+        name:
+          $ref: "#/components/schemas/ResourceName"
+        description:
+          $ref: "#/components/schemas/Description"
+        tags:
+          type: "array"
+          items:
+            type: "string"
+        type:
+          $ref: "#/components/schemas/FlagType"
+        variants:
+          $ref: "#/components/schemas/FlagVariants"
+    FlagUpdate:
+      type: "object"
+      required:
+      - "version"
+      properties:
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+        description:
+          $ref: "#/components/schemas/Description"
+        tags:
+          type: "array"
+          items:
+            type: "string"
+        variants:
+          $ref: "#/components/schemas/FlagVariants"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    FlagDetails:
+      required:
+      - "projectKey"
+      - "featureKey"
+      allOf:
+      - $ref: "#/components/schemas/FlagCreate"
+      properties:
+        projectKey:
+          $ref: "#/components/schemas/ProjectKey"
+        featureKey:
+          $ref: "#/components/schemas/FeatureKey"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    FlagList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FlagDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    FlagType:
+      type: "string"
+      enum:
+      - "BOOLEAN"
+      - "JSON"
+      - "NUMBER"
+      - "STRING"
+    FlagVariants:
+      type: "object"
+      additionalProperties:
+        oneOf:
+        - type: "boolean"
+        - type: "number"
+        - type: "string"
+        - type: "object"
+    ReleaseStageCreate:
+      type: "object"
+      description: "Request body for creating a new release stage."
+      required:
+      - "key"
+      - "name"
+      - "type"
+      properties:
+        key:
+          $ref: "#/components/schemas/ReleaseStageKey"
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the release stage."
+        description:
+          $ref: "#/components/schemas/Description"
+        type:
+          $ref: "#/components/schemas/ReleaseStageType"
+        guarded:
+          type: "boolean"
+          default: false
+          description: "Whether the release stage is guarded and feature release stage\
+            \ targeting needs an approval to be applied."
+        displayOrder:
+          type: "integer"
+          description: "The order of the release stage in the project within a given\
+            \ environment type. If multiple release stages have the same order, they\
+            \ will be sorted alphabetically by name (a-z)."
+          default: 0
+          minimum: 0
+          maximum: 100
+    ReleaseStageUpdate:
+      type: "object"
+      description: "Request body for updating a release stage. The key is specified\
+        \ in the path parameter."
+      required:
+      - "name"
+      - "type"
+      - "version"
+      properties:
+        name:
+          allOf:
+          - $ref: "#/components/schemas/ResourceName"
+          description: "The name of the release stage."
+        description:
+          $ref: "#/components/schemas/Description"
+        type:
+          $ref: "#/components/schemas/ReleaseStageType"
+        guarded:
+          type: "boolean"
+          default: false
+          description: "Whether the release stage is guarded and feature release stage\
+            \ targeting needs an approval to be applied."
+        displayOrder:
+          type: "integer"
+          description: "The display order of the release stage in the project within\
+            \ a given environment type. If multiple release stages have the same order,\
+            \ they will be sorted alphabetically by name (a-z)."
+          default: 0
+          minimum: 0
+          maximum: 100
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ReleaseStageReorder:
+      type: "object"
+      description: "Request body for updating the display order for release stages\
+        \ in a project."
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          description: "The list of release stages with updated display order. The\
+            \ display order will be updated for the release stages based on the provided\
+            \ order in the list."
+          items:
+            type: "object"
+            required:
+            - "key"
+            - "displayOrder"
+            - "version"
+            properties:
+              key:
+                $ref: "#/components/schemas/ReleaseStageKey"
+              displayOrder:
+                type: "integer"
+                description: "The display order of the release stage in the project\
+                  \ within a given environment type. If multiple release stages have\
+                  \ the same order, they will be sorted alphabetically by name (a-z)."
+                default: 0
+                minimum: 0
+                maximum: 100
+              version:
+                $ref: "#/components/schemas/OptimisticLockingVersion"
+    ReleaseStageDetails:
+      type: "object"
+      description: "Response body for release stage operations."
+      allOf:
+      - $ref: "#/components/schemas/ReleaseStageCreate"
+      properties:
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    ReleaseStageList:
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ReleaseStageDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    ReleaseStageType:
+      type: "string"
+      enum:
+      - "DEVELOPMENT"
+      - "STAGING"
+      - "PRODUCTION"
+    SdkKeyType:
+      type: "string"
+      description: "The type of SDK key."
+      enum:
+      - "web"
+      - "server"
+      - "mobile"
+    SDKKeyDetails:
+      type: "object"
+      description: "SDK key entity details."
+      required:
+      - "sdkKey"
+      - "type"
+      properties:
+        sdkKey:
+          $ref: "#/components/schemas/SdkKey"
+        type:
+          $ref: "#/components/schemas/SdkKeyType"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    SdkKeyCreate:
+      type: "object"
+      description: "Request body for creating an SDK key."
+      required:
+      - "type"
+      properties:
+        type:
+          $ref: "#/components/schemas/SdkKeyType"
+    SDKKeyList:
+      type: "object"
+      description: "List of SDK key entities grouped by type."
+      required:
+      - "web"
+      - "mobile"
+      - "server"
+      properties:
+        web:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SDKKeyDetails"
+        mobile:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SDKKeyDetails"
+        server:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SDKKeyDetails"
+    Targeting:
+      type: "object"
+      description: "Targeting conditions for a feature flag."
+    FeatureReleaseStageTargetingUpdate:
+      type: "object"
+      description: "Request body for updating feature release stage targeting."
+      required:
+      - "version"
+      - "enabled"
+      - "targeting"
+      properties:
+        enabled:
+          type: "boolean"
+          default: false
+        targeting:
+          $ref: "#/components/schemas/Targeting"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+    FeatureReleaseStageTargetingDetails:
+      type: "object"
+      description: "Response body for feature release stage targeting."
+      required:
+      - "projectKey"
+      - "featureKey"
+      - "releaseStageKey"
+      properties:
+        projectKey:
+          allOf:
+          - $ref: "#/components/schemas/ProjectKey"
+          description: "The key of the project where the feature release stage targeting\
+            \ is defined"
+        featureKey:
+          allOf:
+          - $ref: "#/components/schemas/FeatureKey"
+          description: "The key of the feature where the feature release stage targeting\
+            \ is defined"
+        releaseStageKey:
+          allOf:
+          - $ref: "#/components/schemas/ReleaseStageKey"
+          description: "The key of the release stage where the feature release stage\
+            \ targeting is defined"
+        enabled:
+          type: "boolean"
+          default: false
+        targeting:
+          $ref: "#/components/schemas/Targeting"
+        version:
+          $ref: "#/components/schemas/OptimisticLockingVersion"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    FeatureReleaseStageTargetingList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FeatureReleaseStageTargetingDetails"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
+    Page:
+      description: "The index of the page to return. The first page will be returned\
+        \ if this parameters isn't specified."
+      type: "integer"
+      default: 1
+      minimum: 1
+      example: 1
+    PageSize:
+      description: "The number of resources to return in a single request. 20 by default."
+      type: "integer"
+      default: 20
+      minimum: 1
+      maximum: 1000
+      example: 2
+    Pagination:
+      type: "object"
+      readOnly: true
+      properties:
+        page:
+          $ref: "#/components/schemas/Page"
+        pageSize:
+          $ref: "#/components/schemas/PageSize"
+        totalCount:
+          type: "number"
+          minimum: 0
+          example: 100
+    OptimisticLockingVersion:
+      type: "integer"
+      readOnly: true
+      example: 1
+      description: "The optimistic locking version for this entity"
+    ResourceContext:
+      type: "object"
+      readOnly: true
+      properties:
+        operations:
+          type: "array"
+          items:
+            type: "string"
+            enum:
+            - "write"
+            - "delete"
+    ModificationInfo:
+      type: "object"
+      readOnly: true
+      properties:
+        createdBy:
+          type: "string"
+        createdTime:
+          type: "string"
+          format: "date-time"
+        lastModifiedBy:
+          type: "string"
+        lastModifiedTime:
+          type: "string"
+          format: "date-time"
+      required:
+      - "createdBy"
+      - "createdTime"
+      - "lastModifiedBy"
+      - "lastModifiedTime"
+      example:
+        createdBy: "123e4567-e89b-12d3-a456-426614174000"
+        createdTime: "2022-05-25T10:24:04.202Z"
+        lastModifiedBy: "123e4567-e89b-12d3-a456-426614174000"
+        lastModifiedTime: "2022-05-25T10:24:04.202Z"
+    ErrorEnvelope:
+      type: "object"
+      required:
+      - "code"
+      - "message"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+  responses:
+    BadRequestError:
+      description: "Bad Request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ClientError:
+      description: "Client Error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    NotFoundError:
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ForbiddenError:
+      description: "Forbidden"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ConflictError:
+      description: "Conflict"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    InternalServerError:
+      description: "Internal Server Error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2.0."
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            feature-management:projects:write: "create and update projects"
+            feature-management:projects:read: "read projects"
+            feature-management:projects:delete: "delete projects"
+            feature-management:release-stages:write: "create and update release-stages"
+            feature-management:release-stages:delete: "delete release-stages"
+            feature-management:features:write: "create and update features"
+            feature-management:features:read: "read features"
+            feature-management:features:delete: "delete features"
+            feature-management:release-stage-targetings:write: "create and update\
+              \ feature release stage targeting"
+            feature-management:release-stage-targetings:read: "read feature release\
+              \ stage targeting"
+            feature-management:context-attributes:write: "create and update contexts"
+            feature-management:context-attributes:delete: "delete contexts"
+            feature-management:context-attributes:read: "read contexts"
+            feature-management:sdk-keys:write: "generate new sdk keys"
+            feature-management:sdk-keys:delete: "invalidate sdk keys"
+            feature-management:sdk-keys:read: "read sdk keys"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

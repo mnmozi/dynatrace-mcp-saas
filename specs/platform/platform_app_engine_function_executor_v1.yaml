@@ -1,0 +1,277 @@
+openapi: "3.0.1"
+info:
+  title: "AppEngine - Function Executor"
+  description: "## Execute code in the Dynatrace JavaScript runtime\nThis API allows\
+    \ you to execute code in the Dynatrace JavaScript runtime.\n\nA recent version\
+    \ of the dynatrace SDK is available to be imported inside the runtime."
+  version: "1.0.0"
+  x-summary: "The Function Executor API is responsible for executing custom JavaScript\
+    \ code in the Dynatrace JavaScript runtime."
+  x-service-category: "AppEngine"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/app-engine/function-executor/v1"
+  x-api-gateway-url: "/platform/app-engine/function-executor/v1"
+paths:
+  /executions:
+    post:
+      tags:
+      - "Function Executor - API"
+      summary: "Executes a given function"
+      operationId: "proxyToAdhocFunction"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FunctionExecutionRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdhocSuccessResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "540":
+          description: "JavaScript Error occurred"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdhocErrorResponse"
+        "541":
+          description: "Runtime Error occurred"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdhocErrorResponse"
+      security:
+      - ssoAuth:
+        - "app-engine:functions:run"
+      - ssoBearerAuth: []
+      description: "**Required scope:** app-engine:functions:run"
+  /sdk-versions:
+    get:
+      tags:
+      - "Function Executor - SDK"
+      summary: "Lists all SDK versions"
+      operationId: "getSdkVersions"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FunctionSdkVersionsDto"
+      security:
+      - ssoAuth:
+        - "app-engine:functions:run"
+      - ssoBearerAuth: []
+      description: "**Required scope:** app-engine:functions:run"
+components:
+  schemas:
+    FunctionExecutionRequest:
+      required:
+      - "sourceCode"
+      type: "object"
+      properties:
+        sourceCode:
+          minLength: 1
+          type: "string"
+          description: "source code that gets executed"
+          example: "export default async function ({addThis}) { return 1 + addThis\
+            \ }"
+        payload:
+          type: "string"
+          description: "optional argument for the function defined in sourceCode"
+          example: "{\"addThis\":2}"
+        sdkMajorVersions:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            description: "Optional map of SDK package names to their major version\
+              \ numbers. Non-mentioned packages fall back to default versions. Max\
+              \ key length is 300 characters, max value length is 100 characters."
+            example: "{\"@dynatrace-sdk/adhoc-utils\":\"1\",\"@dynatrace-sdk/client-classic-environment-v2\"\
+              :\"5\"}"
+          description: "Optional map of SDK package names to their major version numbers.\
+            \ Non-mentioned packages fall back to default versions. Max key length\
+            \ is 300 characters, max value length is 100 characters."
+          example:
+            '@dynatrace-sdk/adhoc-utils': "1"
+            '@dynatrace-sdk/client-classic-environment-v2': "5"
+      description: "One off code execution request."
+    AdhocSuccessResponse:
+      required:
+      - "logs"
+      - "result"
+      type: "object"
+      properties:
+        logs:
+          type: "string"
+        result:
+          $ref: "#/components/schemas/JsonNode"
+        packageVersions:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            description: "Map of SDK package names to their resolved versions used\
+              \ during execution"
+          description: "Map of SDK package names to their resolved versions used during\
+            \ execution"
+    JsonNode:
+      type: "object"
+    ConstraintViolation:
+      required:
+      - "message"
+      - "path"
+      type: "object"
+      properties:
+        path:
+          type: "string"
+          description: "The path of the property that caused the constraint violation"
+        message:
+          type: "string"
+          description: "The error message"
+        errorCode:
+          type: "string"
+          description: "An optional error code that contains more detailed error information."
+        errorCodeProperties:
+          type: "object"
+          description: "Additional properties related to the provided error code."
+      description: "Contains information about a constraint violation caused by invalid\
+        \ input."
+    Error:
+      required:
+      - "code"
+      - "message"
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          description: "The HTTP status code"
+          format: "int32"
+        message:
+          type: "string"
+          description: "The error message"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+        help:
+          type: "string"
+          description: "Additional information related to the error"
+        retryAfterSeconds:
+          type: "integer"
+          description: "Seconds to wait until the next retry"
+          format: "int32"
+      description: "Contains information for 4xx and 5xx errors."
+    ErrorDetails:
+      type: "object"
+      properties:
+        errorRef:
+          type: "string"
+          description: "Generated unique value for 5xx errors."
+        traceId:
+          type: "string"
+          description: "OpenTelemetry trace id of the trace where error occurs."
+        errorCode:
+          type: "string"
+          description: "An optional error code that contains more detailed error information\
+            \ than the HTTP response code alone."
+        errorCodeProperties:
+          type: "object"
+          description: "Additional properties related to the provided error code"
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+      description: "Contains details for 4xx and 5xx errors."
+    ErrorEnvelope:
+      required:
+      - "error"
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+      description: "Error response for all 4xx and 5xx errors."
+    AdhocErrorResponse:
+      required:
+      - "error"
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/FunctionError"
+        packageVersions:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            description: "Map of SDK package names to their resolved versions used\
+              \ during execution"
+          description: "Map of SDK package names to their resolved versions used during\
+            \ execution"
+    FunctionError:
+      required:
+      - "code"
+      - "details"
+      - "message"
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+          example: "Error Message"
+        details:
+          $ref: "#/components/schemas/FunctionErrorDetails"
+    FunctionErrorDetails:
+      required:
+      - "logs"
+      - "message"
+      - "type"
+      type: "object"
+      properties:
+        logs:
+          type: "string"
+          example: "INFO: log output"
+        type:
+          type: "string"
+          example: "UNCAUGHT_EXCEPTION"
+        message:
+          type: "string"
+          example: "Detailed Error Message"
+        details:
+          $ref: "#/components/schemas/JsonNode"
+    FunctionSdkVersionsDto:
+      required:
+      - "layerVersion"
+      - "packages"
+      type: "object"
+      properties:
+        layerVersion:
+          type: "string"
+        packages:
+          type: "object"
+          additionalProperties:
+            type: "array"
+            items:
+              type: "string"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth2 with the 'Client Credentials' flow"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            app-engine:functions:run: "execute functions"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

@@ -1,0 +1,1483 @@
+openapi: "3.0.1"
+info:
+  description: "Filter-Segment Management for Grail.\n\nSlice, dice and contextualize\
+    \ your data to make it easier to find, understand and work with.\n"
+  title: "Grail Storage Filter-Segments"
+  version: "1.2.0"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/filter-segments/v1"
+  x-api-gateway-url: "/platform/storage/filter-segments/v1"
+paths:
+  /filter-segments:
+    get:
+      description: "Returns all filter-segments.\nIf details like description are\
+        \ not needed then consider using the `:lean` endpoint.\n\nRequired scopes:\n\
+        \n- `storage:filter-segments:read`\n"
+      operationId: "getFilterSegments"
+      parameters:
+      - description: "Add additional fields."
+        in: "query"
+        name: "add-fields"
+        required: false
+        schema:
+          type: "array"
+          items:
+            type: "string"
+            enum:
+            - "VARIABLES"
+            - "EXTERNALID"
+            - "RESOURCECONTEXT"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Example all filter-segments response:
+                  description: "Example all filter-segments response"
+                  value:
+                    filterSegments:
+                    - uid: "D82a1jdA23a"
+                      name: "dev_environment"
+                      description: "only includes data of the dev environment"
+                      isPublic: false
+                      owner: "john.doe"
+                      version: 1
+                    - uid: "aa2E2xA01yA"
+                      name: "prod_environment"
+                      description: "only includes data of the prod environment"
+                      isPublic: true
+                      owner: "john.doe"
+                      version: 1
+              schema:
+                $ref: "#/components/schemas/FilterSegments"
+          description: "Filter-segments successfully retrieved."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "bad request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Get all filter-segments."
+      tags:
+      - "Filter-Segments"
+    post:
+      description: "Create a new segment and define data.\n\nRequired scopes:\n\n\
+        - `storage:filter-segments:write`\n- `storage:filter-segments:share` if `isPublic`\
+        \ is set to `true`\n\n### New Filter-Segment\n\nProvide a name and an optional\
+        \ description for the filter-segment.\n\n#### Variables\n\nCreate variables\
+        \ to apply in your filter-segment data filters\n\n#### Includes (Segment data)\n\
+        \nInclude all data that should be accessible when applying the filter-segment\n\
+        \n#### IsPublic (Visibility)\n\n- `false`: The filter-segment is private and\
+        \ only visible to the owner\n- `true`: The filter-segment is visible to everyone\
+        \ in the environment\n"
+      operationId: "createFilterSegment"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Example new filter-segment request:
+                description: "Example new filter-segment request"
+                value:
+                  name: "dev_environment"
+                  description: "only includes data of the dev environment"
+                  variables:
+                    type: "query"
+                    value: "fetch logs | limit 1"
+                  isPublic: false
+                  includes:
+                  - filter: "{\"type\":\"Group\",\"range\":{\"from\":0,\"to\":19},\"\
+                      logicalOperator\":\"AND\",\"explicit\":false,\"children\":[{\"\
+                      type\":\"Statement\",\"range\":{\"from\":0,\"to\":19},\"key\"\
+                      :{\"type\":\"Key\",\"textValue\":\"content\",\"value\":\"content\"\
+                      ,\"range\":{\"from\":0,\"to\":7}},\"operator\":{\"type\":\"\
+                      ComparisonOperator\",\"textValue\":\"=\",\"value\":\"=\",\"\
+                      range\":{\"from\":8,\"to\":9}},\"value\":{\"type\":\"String\"\
+                      ,\"textValue\":\"\\\"[debug]\\\"\",\"value\":\"[debug]\",\"\
+                      range\":{\"from\":10,\"to\":19},\"isEscaped\":true}}]}"
+                    dataObject: "logs"
+                  - filter: "{\"type\":\"Group\",\"range\":{\"from\":0,\"to\":18},\"\
+                      logicalOperator\":\"AND\",\"explicit\":false,\"children\":[{\"\
+                      type\":\"Statement\",\"range\":{\"from\":0,\"to\":18},\"key\"\
+                      :{\"type\":\"Key\",\"textValue\":\"content\",\"value\":\"content\"\
+                      ,\"range\":{\"from\":0,\"to\":7}},\"operator\":{\"type\":\"\
+                      ComparisonOperator\",\"textValue\":\"=\",\"value\":\"=\",\"\
+                      range\":{\"from\":8,\"to\":9}},\"value\":{\"type\":\"String\"\
+                      ,\"textValue\":\"\\\"[info]\\\"\",\"value\":\"[info]\",\"range\"\
+                      :{\"from\":10,\"to\":18},\"isEscaped\":true}}]}"
+                    dataObject: "events"
+            schema:
+              $ref: "#/components/schemas/NewFilterSegment"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              examples:
+                Example full filter-segment response:
+                  description: "Example full filter-segment response"
+                  value:
+                    uid: "D82a1jdA23a"
+                    name: "dev_environment"
+                    description: "only includes data of the dev environment"
+                    variables:
+                      type: "query"
+                      value: "fetch logs | limit 1"
+                    isPublic: false
+                    owner: "john.doe"
+                    includes:
+                    - filter: "here goes the filter"
+                      dataObject: "logs"
+                    - filter: "here goes another filter"
+                      dataObject: "events"
+                    version: 1
+              schema:
+                $ref: "#/components/schemas/DetailedFilterSegment"
+          description: "Filter-segment successfully created."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+                The json provided as filter in the filter-segment include is malformed:
+                  description: "The json provided as filter in the filter-segment\
+                    \ include is malformed"
+                  value:
+                    error:
+                      code: 400
+                      message: "The filter provided in the filter-segment as include\
+                        \ is malformed"
+                      errorDetails:
+                      - '@type': "request-body"
+                        bodyDescriptor: "$.operator.value"
+                        message: "Unsupported operator value: [==]. Only \"=\" is\
+                          \ allowed."
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Filter-segment Bad Request."
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Create a new filter-segment."
+      tags:
+      - "Filter-Segments"
+  /filter-segments-entity-model:
+    get:
+      description: "Returns the filter-segment-entity-model.\n\nRequired scopes:\n\
+        \n- `storage:filter-segments:read`\n"
+      operationId: "getFilterSegmentsEntityModel"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Example all filter-segments response:
+                  description: "Example all filter-segments response"
+                  value: "{\n    \"name\": \"dt.entity,\n    \"types\" [\n      {\n\
+                    \        \"name\": \"datastore\",\n        \"displayName\": \"\
+                    Datastore\",\n        \"filtersEntitiesOnly\": false,\n      \
+                    \  \"relatedTargetEntityOnly\": false,\n        \"restrictedParentProperties\"\
+                    : [],\n        \"properties\": [\n          {\n            \"\
+                    name\": \"entity.conditional_name\",\n            \"type\": \"\
+                    STRING\"\n          }\n        ],\n        \"fromTypes\": [\n\
+                    \          {\n            \"name\": \"belongs_to\",\n        \
+                    \    \"target\": \"vmware_datacenter\"\n          },\n       \
+                    \   {\n            \"name\": \"belongs_to\",\n            \"target\"\
+                    : \"virtualmachine\"\n          },\n          {\n            \"\
+                    name\": \"belongs_to\",\n            \"target\": \"hypervisor\"\
+                    \n          }\n        ]\n      }\n    ],\n    {\n       \"filterName\"\
+                    : \"in\",\n       \"supportedAttributes\": [\n         \"entity.name\"\
+                    \n       ]\n     },\n     {\n       \"filterName\": \"equals\"\
+                    ,\n       \"supportedAttributes\": [\n         \"entity.name\"\
+                    ,\n         \"type\",\n         \"tag\",\n         \"id\",\n \
+                    \        \"casesensitive\"\n       ]\n     },\n     {\n      \
+                    \ \"filterName\": \"startsWith\",\n       \"supportedAttributes\"\
+                    : [\n         \"entity.name\"\n       ]\n     }\n   ]\n}\n"
+              schema:
+                $ref: "#/components/schemas/FilterSegmentNamespaceDto"
+          description: "Filter-segments-entity-model successfully retrieved."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "bad request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Get filter-segment-entity-model."
+      tags:
+      - "Filter-Segments"
+  /filter-segments/{filterSegmentUid}:
+    delete:
+      description: "Remove the filter-segment from the environment for all users.\n\
+        \nRequired scopes:\n- `storage:filter-segments:delete`\n"
+      operationId: "deleteFilterSegment"
+      parameters:
+      - description: "UID of the filter-segment"
+        example: "D82a1jdA23a"
+        in: "path"
+        name: "filterSegmentUid"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "Filter-segment successfully deleted."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "bad request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                Filter-segment not found:
+                  description: "Filter-segment not found"
+                  value:
+                    error:
+                      code: 404
+                      message: "Filter-segment not found"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Not found: the server cannot find the requested filter-segment."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Delete a filter-segment."
+      tags:
+      - "Filter-Segments"
+    get:
+      description: "Get filter-segment by its UID.\n\nRequired scopes:\n\n- `storage:filter-segments:read`\n"
+      operationId: "getFilterSegment"
+      parameters:
+      - description: "UID of the filter-segment"
+        example: "D82a1jdA23a"
+        in: "path"
+        name: "filterSegmentUid"
+        required: true
+        schema:
+          type: "string"
+      - description: "Add additional fields."
+        in: "query"
+        name: "add-fields"
+        required: false
+        schema:
+          type: "array"
+          items:
+            type: "string"
+            enum:
+            - "INCLUDES"
+            - "VARIABLES"
+            - "EXTERNALID"
+            - "RESOURCECONTEXT"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Example full filter-segment response:
+                  description: "Example full filter-segment response"
+                  value:
+                    uid: "D82a1jdA23a"
+                    name: "dev_environment"
+                    description: "only includes data of the dev environment"
+                    variables:
+                      type: "query"
+                      value: "fetch logs | limit 1"
+                    isPublic: false
+                    owner: "john.doe"
+                    includes:
+                    - filter: "here goes the filter"
+                      dataObject: "logs"
+                    - filter: "here goes another filter"
+                      dataObject: "events"
+                    version: 1
+              schema:
+                $ref: "#/components/schemas/DetailedFilterSegment"
+          description: "Filter-segment successfully retrieved."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "bad request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                Filter-segment not found:
+                  description: "Filter-segment not found"
+                  value:
+                    error:
+                      code: 404
+                      message: "Filter-segment not found"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Not found: the server cannot find the requested filter-segment."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Get filter-segment by UID."
+      tags:
+      - "Filter-Segments"
+    patch:
+      description: "Update one or more fields of a filter-segment.\n\nRequired scopes:\n\
+        - `storage:filter-segments:write`\n- `storage:filter-segments:share` to change\
+        \ `isPublic` to `true`\n\nFollowing fields can be updated:\n\n- `name`\n-\
+        \ `description`\n- `isPublic`\n- `variables`*\n- `includes`*\n\n\\* If given\
+        \ the value will be overridden.\n\nFields not given will be ignored.\n"
+      operationId: "partiallyUpdateFilterSegment"
+      parameters:
+      - description: "UID of the filter-segment"
+        example: "D82a1jdA23a"
+        in: "path"
+        name: "filterSegmentUid"
+        required: true
+        schema:
+          type: "string"
+      - description: "version which should be updated. used for optimistic locking."
+        example: "1"
+        in: "query"
+        name: "optimistic-locking-version"
+        required: true
+        schema:
+          type: "integer"
+          format: "int32"
+          exclusiveMinimum: true
+          minimum: 0
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Example partial update request:
+                description: "Example partial update request"
+                value:
+                  description: "only includes data of the development environment"
+            schema:
+              $ref: "#/components/schemas/PartialUpdateFilterSegment"
+        required: true
+      responses:
+        "200":
+          description: "Filter-segment successfully updated."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "bad request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                Filter-segment not found:
+                  description: "Filter-segment not found"
+                  value:
+                    error:
+                      code: 404
+                      message: "Filter-segment not found"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Not found: the server cannot find the requested filter-segment."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Partially update a filter-segment."
+      tags:
+      - "Filter-Segments"
+    put:
+      description: "Update one or more fields of a filter-segment.\n\nRequired scopes:\n\
+        - `storage:filter-segments:write`\n- `storage:filter-segments:share` to change\
+        \ `isPublic` to `true`\n\nFollowing fields can be updated:\n\n- `name`\n-\
+        \ `description`\n- `isPublic`\n- `variables`*\n- `includes`*\n\n\\* Values\
+        \ of the fields will be overridden or removed if not given.\n\nProvide all\
+        \ other fields with unchanged values.\n"
+      operationId: "updateFilterSegment"
+      parameters:
+      - description: "UID of the filter-segment"
+        example: "D82a1jdA23a"
+        in: "path"
+        name: "filterSegmentUid"
+        required: true
+        schema:
+          type: "string"
+      - description: "version which should be updated. used for optimistic locking."
+        example: "1"
+        in: "query"
+        name: "optimistic-locking-version"
+        required: true
+        schema:
+          type: "integer"
+          format: "int32"
+          exclusiveMinimum: true
+          minimum: 0
+      requestBody:
+        content:
+          application/json:
+            examples:
+              Example update request:
+                description: "Example update request"
+                value:
+                  uid: "D82a1jdA23a"
+                  name: "dev_environment"
+                  description: "only includes data of the development environment"
+                  variables:
+                    type: "query"
+                    value: "fetch logs | limit 1"
+                  isPublic: false
+                  owner: "john.doe"
+                  includes:
+                  - filter: "{\"type\":\"Group\",\"range\":{\"from\":0,\"to\":19},\"\
+                      logicalOperator\":\"AND\",\"explicit\":false,\"children\":[{\"\
+                      type\":\"Statement\",\"range\":{\"from\":0,\"to\":19},\"key\"\
+                      :{\"type\":\"Key\",\"textValue\":\"content\",\"value\":\"content\"\
+                      ,\"range\":{\"from\":0,\"to\":7}},\"operator\":{\"type\":\"\
+                      ComparisonOperator\",\"textValue\":\"=\",\"value\":\"=\",\"\
+                      range\":{\"from\":8,\"to\":9}},\"value\":{\"type\":\"String\"\
+                      ,\"textValue\":\"\\\"[debug]\\\"\",\"value\":\"[debug]\",\"\
+                      range\":{\"from\":10,\"to\":19},\"isEscaped\":true}}]}"
+                    dataObject: "logs"
+                  - filter: "{\"type\":\"Group\",\"range\":{\"from\":0,\"to\":18},\"\
+                      logicalOperator\":\"AND\",\"explicit\":false,\"children\":[{\"\
+                      type\":\"Statement\",\"range\":{\"from\":0,\"to\":18},\"key\"\
+                      :{\"type\":\"Key\",\"textValue\":\"content\",\"value\":\"content\"\
+                      ,\"range\":{\"from\":0,\"to\":7}},\"operator\":{\"type\":\"\
+                      ComparisonOperator\",\"textValue\":\"=\",\"value\":\"=\",\"\
+                      range\":{\"from\":8,\"to\":9}},\"value\":{\"type\":\"String\"\
+                      ,\"textValue\":\"\\\"[info]\\\"\",\"value\":\"[info]\",\"range\"\
+                      :{\"from\":10,\"to\":18},\"isEscaped\":true}}]}"
+                    dataObject: "events"
+            schema:
+              $ref: "#/components/schemas/UpdateFilterSegment"
+        required: true
+      responses:
+        "200":
+          description: "Filter-segment successfully updated."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "bad request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                Filter-segment not found:
+                  description: "Filter-segment not found"
+                  value:
+                    error:
+                      code: 404
+                      message: "Filter-segment not found"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Not found: the server cannot find the requested filter-segment."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Update a filter-segment. All fields will be overwritten (also undefined\
+        \ or null fields)."
+      tags:
+      - "Filter-Segments"
+  /filter-segments:lean:
+    get:
+      description: "Returns all filter-segments in a minimal representational form.\
+        \ This endpoint saves resources\nand as a result quicker response times can\
+        \ be expected over the more detailed get-all\nendpoint.\n\nRequired scopes:\n\
+        \n- `storage:filter-segments:read`\n"
+      operationId: "getLeanFilterSegments"
+      parameters:
+      - description: "Add additional fields."
+        in: "query"
+        name: "add-fields"
+        required: false
+        schema:
+          type: "array"
+          items:
+            type: "string"
+            enum:
+            - "VARIABLES"
+            - "EXTERNALID"
+            - "RESOURCECONTEXT"
+            - "OWNER"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Example all lean filter-segments response:
+                  description: "Example all lean filter-segments response"
+                  value:
+                    filterSegments:
+                    - uid: "D82a1jdA23a"
+                      name: "dev_environment"
+                      variables:
+                        type: "query"
+                        value: "fetch logs | limit 1"
+                      isPublic: false
+                    - uid: "aa2E2xA01yA"
+                      name: "prod_environment"
+                      variables:
+                        type: "query"
+                        value: "fetch logs | limit 1"
+                      isPublic: true
+              schema:
+                $ref: "#/components/schemas/LeanFilterSegments"
+          description: "Filter-segments successfully retrieved."
+        "400":
+          content:
+            application/json:
+              examples:
+                TenantId missing:
+                  value:
+                    error:
+                      code: 400
+                      message: "Missing request header"
+                      errorDetails:
+                      - type: "parameter"
+                        parameterDescriptor: "Dt-Tenant"
+                        message: "is required"
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "bad request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  value:
+                    error:
+                      code: 401
+                      message: "Invalid authorization parameters"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  value:
+                    error:
+                      code: 403
+                      message: "Required permissions not met"
+                      errorDetails: []
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "missing permissions"
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Get all filter-segments in a minimal/lean form."
+      tags:
+      - "Filter-Segments"
+components:
+  schemas:
+    CustomValidationErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      required:
+      - "message"
+    DetailedFilterSegment:
+      type: "object"
+      properties:
+        allowedOperations:
+          type: "array"
+          description: "Defines the allowed operations of the current user."
+          items:
+            type: "string"
+            description: "Defines the allowed operations of the current user."
+            enum:
+            - "READ"
+            - "WRITE"
+            - "DELETE"
+            - "SHARE"
+        description:
+          type: "string"
+          description: "Description of the filter-segment."
+          example: "only includes data of the dev environment"
+        externalId:
+          type: "string"
+          description: "Optional unique identifier of the filter-segment. Used for\
+            \ Dynatrace Configuration as Code"
+        includes:
+          type: "array"
+          description: "List of includes of the filter-segment."
+          items:
+            $ref: "#/components/schemas/Include"
+        isPublic:
+          type: "boolean"
+          description: "Indicates if the filter-segment is publicly accessible within\
+            \ the tenant."
+          example: false
+        isReadyMade:
+          type: "boolean"
+          description: "Indicates if the segment is ready-made."
+          example: false
+        name:
+          type: "string"
+          description: "Name of the filter-segment."
+          example: "dev_environment"
+        owner:
+          type: "string"
+          description: "Defines the owner of the filter-segment."
+          example: "john.doe"
+        uid:
+          type: "string"
+          description: "Unique identifier of the filter-segment."
+          example: "D82a1jdA23a"
+        variables:
+          $ref: "#/components/schemas/FilterSegmentVariables"
+        version:
+          type: "integer"
+          format: "int32"
+          description: "Used for optimistic locking. Update requests define with this\
+            \ on which version the data updated is based on. This must match with\
+            \ the version stored, otherwise the update will fail due to concurrent\
+            \ modification."
+          example: 1
+      required:
+      - "name"
+      - "owner"
+      - "uid"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ExceptionalReturn"
+    ErrorInfo:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+      required:
+      - "message"
+    ExceptionalReturn:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        errorDetails:
+          type: "array"
+          items:
+            oneOf:
+            - $ref: "#/components/schemas/CustomValidationErrorInfo"
+            - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+            - $ref: "#/components/schemas/MediaTypeErrorInfo"
+            - $ref: "#/components/schemas/ParameterErrorInfo"
+            - $ref: "#/components/schemas/ProxyErrorInfo"
+            - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+            - $ref: "#/components/schemas/RequestBodyErrorInfo"
+          properties:
+            empty:
+              type: "boolean"
+            first:
+              oneOf:
+              - $ref: "#/components/schemas/CustomValidationErrorInfo"
+              - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+              - $ref: "#/components/schemas/MediaTypeErrorInfo"
+              - $ref: "#/components/schemas/ParameterErrorInfo"
+              - $ref: "#/components/schemas/ProxyErrorInfo"
+              - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+              - $ref: "#/components/schemas/RequestBodyErrorInfo"
+            last:
+              oneOf:
+              - $ref: "#/components/schemas/CustomValidationErrorInfo"
+              - $ref: "#/components/schemas/InvalidAuditEventsErrorInfo"
+              - $ref: "#/components/schemas/MediaTypeErrorInfo"
+              - $ref: "#/components/schemas/ParameterErrorInfo"
+              - $ref: "#/components/schemas/ProxyErrorInfo"
+              - $ref: "#/components/schemas/QueryFrontendRawErrorInfo"
+              - $ref: "#/components/schemas/RequestBodyErrorInfo"
+        message:
+          type: "string"
+      required:
+      - "errorDetails"
+      - "message"
+    FilterSegment:
+      type: "object"
+      description: "List of filter-segments."
+      properties:
+        allowedOperations:
+          type: "array"
+          description: "Defines the allowed operations of the current user."
+          items:
+            type: "string"
+            description: "Defines the allowed operations of the current user."
+            enum:
+            - "READ"
+            - "WRITE"
+            - "DELETE"
+            - "SHARE"
+        description:
+          type: "string"
+          description: "Description of the filter-segment."
+          example: "only includes data of the dev environment"
+        externalId:
+          type: "string"
+          description: "Optional unique identifier of the filter-segment. Used for\
+            \ Dynatrace Configuration as Code"
+        isPublic:
+          type: "boolean"
+          description: "Indicates if the filter-segment is publicly accessible within\
+            \ the tenant."
+          example: false
+        isReadyMade:
+          type: "boolean"
+          description: "Indicates if the segment is ready-made."
+          example: false
+        name:
+          type: "string"
+          description: "Name of the filter-segment."
+          example: "dev_environment"
+        owner:
+          type: "string"
+          description: "Defines the owner of the filter-segment."
+          example: "john.doe"
+        uid:
+          type: "string"
+          description: "Unique identifier of the filter-segment."
+          example: "D82a1jdA23a"
+        variables:
+          $ref: "#/components/schemas/FilterSegmentVariables"
+        version:
+          type: "integer"
+          format: "int32"
+          description: "Used for optimistic locking. Update requests define with this\
+            \ on which version the data updated is based on. This must match with\
+            \ the version stored, otherwise the update will fail due to concurrent\
+            \ modification."
+          example: 1
+      required:
+      - "name"
+      - "owner"
+      - "uid"
+    FilterSegmentNamespaceDto:
+      type: "object"
+      properties:
+        allowedFilterOperations:
+          type: "array"
+          description: "Allowed filter operations."
+          items:
+            $ref: "#/components/schemas/FilterSegmentPushDownFilterableDto"
+        name:
+          type: "string"
+          description: "Name of the namespace."
+          example: "dt.entity"
+        types:
+          type: "array"
+          description: "Types of the namespace."
+          items:
+            $ref: "#/components/schemas/FilterSegmentTypeDto"
+      required:
+      - "name"
+    FilterSegmentPropertyDto:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        type:
+          type: "string"
+    FilterSegmentPushDownFilterableDto:
+      type: "object"
+      description: "Allowed filter operations."
+      properties:
+        filterName:
+          type: "string"
+        supportedAttributes:
+          type: "array"
+          items:
+            type: "string"
+    FilterSegmentRelationshipDto:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        target:
+          type: "string"
+    FilterSegmentTypeDto:
+      type: "object"
+      description: "Types of the namespace."
+      properties:
+        displayName:
+          type: "string"
+        filtersEntitiesOnly:
+          type: "boolean"
+        fromTypes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FilterSegmentRelationshipDto"
+        name:
+          type: "string"
+        properties:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FilterSegmentPropertyDto"
+        relatedTargetEntityOnly:
+          type: "boolean"
+        restrictedParentProperties:
+          type: "array"
+          items:
+            type: "string"
+    FilterSegmentVariables:
+      type: "object"
+      description: "Variables of the filter-segment."
+      properties:
+        type:
+          type: "string"
+          description: "Type of the variable."
+        value:
+          type: "string"
+          description: "Value of the variable."
+      required:
+      - "type"
+      - "value"
+    FilterSegments:
+      type: "object"
+      properties:
+        filterSegments:
+          type: "array"
+          description: "List of filter-segments."
+          items:
+            $ref: "#/components/schemas/FilterSegment"
+      required:
+      - "filterSegments"
+    Include:
+      type: "object"
+      description: "List of includes of the filter-segment."
+      properties:
+        applyTo:
+          type: "array"
+          description: "[Experimental] The tables that the entity-filter will be applied\
+            \ to."
+          example:
+          - "logs"
+          - "events"
+          items:
+            type: "string"
+            description: "[Experimental] The tables that the entity-filter will be\
+              \ applied to."
+            example: "[\"logs\",\"events\"]"
+        dataObject:
+          type: "string"
+          description: "The data object that the filter will be applied to. Use '_all_data_object'\
+            \ to apply it to all dataObjects."
+          example: "logs"
+        filter:
+          type: "string"
+          description: "Data will be filtered by this value. Field names must only\
+            \ contain letters, numbers and underscores, otherwise they need to be\
+            \ escaped using quotes(`)."
+        relationship:
+          $ref: "#/components/schemas/Relationship"
+      required:
+      - "dataObject"
+      - "filter"
+    InvalidAuditEventsErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          invalidAuditEventIndices:
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
+            properties:
+              empty:
+                type: "boolean"
+              first:
+                type: "integer"
+                format: "int32"
+              last:
+                type: "integer"
+                format: "int32"
+          invalidEventIndices:
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
+            writeOnly: true
+      required:
+      - "invalidAuditEventIndices"
+      - "message"
+    LeanFilterSegment:
+      type: "object"
+      description: "List of filter-segments."
+      properties:
+        allowedOperations:
+          type: "array"
+          description: "Defines the allowed operations of the current user."
+          items:
+            type: "string"
+            description: "Defines the allowed operations of the current user."
+            enum:
+            - "READ"
+            - "WRITE"
+            - "DELETE"
+            - "SHARE"
+        externalId:
+          type: "string"
+          description: "Optional unique identifier of the filter-segment. Used for\
+            \ Dynatrace Configuration as Code"
+        isPublic:
+          type: "boolean"
+          description: "Indicates if the filter-segment is publicly accessible within\
+            \ the tenant."
+          example: false
+        isReadyMade:
+          type: "boolean"
+          description: "Indicates if the segment is ready-made."
+          example: false
+        name:
+          type: "string"
+          description: "Name of the filter-segment."
+          example: "dev_environment"
+        owner:
+          type: "string"
+          description: "Defines the owner of the filter-segment."
+          example: "john.doe"
+        uid:
+          type: "string"
+          description: "Unique identifier of the filter-segment."
+          example: "D82a1jdA23a"
+        variables:
+          $ref: "#/components/schemas/FilterSegmentVariables"
+      required:
+      - "name"
+      - "uid"
+    LeanFilterSegments:
+      type: "object"
+      properties:
+        filterSegments:
+          type: "array"
+          description: "List of filter-segments."
+          items:
+            $ref: "#/components/schemas/LeanFilterSegment"
+      required:
+      - "filterSegments"
+    MediaTypeErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          supportedMediaTypes:
+            type: "array"
+            items:
+              type: "string"
+            properties:
+              empty:
+                type: "boolean"
+              first:
+                type: "string"
+              last:
+                type: "string"
+      required:
+      - "message"
+      - "supportedMediaTypes"
+    NewFilterSegment:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+          description: "Description of the filter-segment."
+          example: "only includes data of the dev environment"
+          maxLength: 200
+          minLength: 0
+        externalId:
+          type: "string"
+          description: "Optional unique identifier of the filter-segment. Used for\
+            \ Dynatrace Configuration as Code"
+          maxLength: 100
+          minLength: 0
+        includes:
+          type: "array"
+          description: "List of includes of the filter-segment."
+          items:
+            $ref: "#/components/schemas/NewInclude"
+          maxItems: 20
+          minItems: 0
+        isPublic:
+          type: "boolean"
+          description: "Indicates if the filter-segment is publicly accessible within\
+            \ the tenant."
+          example: false
+        name:
+          type: "string"
+          description: "Name of the filter-segment."
+          example: "dev_environment"
+          maxLength: 100
+          minLength: 0
+        variables:
+          $ref: "#/components/schemas/FilterSegmentVariables"
+      required:
+      - "isPublic"
+      - "name"
+    NewInclude:
+      type: "object"
+      description: "List of includes of the filter-segment."
+      properties:
+        applyTo:
+          type: "array"
+          description: "[Experimental] The tables that the entity-filter will be applied\
+            \ to."
+          example:
+          - "logs"
+          - "events"
+          items:
+            type: "string"
+            description: "[Experimental] The tables that the entity-filter will be\
+              \ applied to."
+            example: "[\"logs\",\"events\"]"
+        dataObject:
+          type: "string"
+          description: "The data object that the filter will be applied to. Use '_all_data_object'\
+            \ to apply it to all dataObjects."
+          example: "logs"
+          maxLength: 500
+          minLength: 0
+        filter:
+          type: "string"
+          description: "Data will be filtered by this value. Field names must only\
+            \ contain letters, numbers and underscores, otherwise they need to be\
+            \ escaped using quotes(`)."
+          maxLength: 18000
+        relationship:
+          $ref: "#/components/schemas/NewRelationship"
+      required:
+      - "dataObject"
+      - "filter"
+    NewRelationship:
+      type: "object"
+      description: "[Experimental] The relationship of an include which has to be\
+        \ be specified when the data object is an entity view."
+      properties:
+        name:
+          type: "string"
+          description: "Name of the relationship."
+          example: "belongs_to"
+        target:
+          type: "string"
+          description: "Target of the relationship."
+          example: "dt.entity.host"
+      required:
+      - "name"
+      - "target"
+    ParameterErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          parameterDescriptor:
+            type: "string"
+      required:
+      - "message"
+      - "parameterDescriptor"
+    PartialUpdateFilterSegment:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+          description: "Description of the filter-segment."
+          example: "only includes data of the dev environment"
+          maxLength: 200
+          minLength: 0
+        externalId:
+          type: "string"
+          description: "Optional unique identifier of the filter-segment. Used for\
+            \ Dynatrace Configuration as Code"
+          maxLength: 100
+          minLength: 0
+        includes:
+          type: "array"
+          description: "List of includes of the filter-segment."
+          items:
+            $ref: "#/components/schemas/NewInclude"
+          maxItems: 20
+          minItems: 0
+        isPublic:
+          type: "boolean"
+          description: "Indicates if the filter-segment is publicly accessible within\
+            \ the tenant."
+          example: false
+        name:
+          type: "string"
+          description: "Name of the filter-segment."
+          example: "dev_environment"
+          maxLength: 100
+          minLength: 0
+        variables:
+          $ref: "#/components/schemas/FilterSegmentVariables"
+    ProxyErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      required:
+      - "message"
+    QueryFrontendRawErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          rawQueryFrontendResponse:
+            type: "string"
+      required:
+      - "rawQueryFrontendResponse"
+    Relationship:
+      type: "object"
+      description: "[Experimental] The relationship of an include which has to be\
+        \ be specified when the data object is an entity view."
+      properties:
+        name:
+          type: "string"
+          description: "Name of the relationship."
+          example: "belongs_to"
+        target:
+          type: "string"
+          description: "Target of the relationship."
+          example: "dt.entity.host"
+      required:
+      - "name"
+      - "target"
+    RequestBodyErrorInfo:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorInfo"
+      - type: "object"
+        properties:
+          bodyDescriptor:
+            type: "string"
+      required:
+      - "bodyDescriptor"
+      - "message"
+    UpdateFilterSegment:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+          description: "Description of the filter-segment."
+          example: "only includes data of the dev environment"
+          maxLength: 200
+          minLength: 0
+        externalId:
+          type: "string"
+          description: "Optional unique identifier of the filter-segment. Used for\
+            \ Dynatrace Configuration as Code"
+          maxLength: 100
+          minLength: 0
+        includes:
+          type: "array"
+          description: "List of includes of the filter-segment."
+          items:
+            $ref: "#/components/schemas/NewInclude"
+          maxItems: 20
+          minItems: 0
+        isPublic:
+          type: "boolean"
+          description: "Indicates if the filter-segment is publicly accessible within\
+            \ the tenant."
+          example: false
+        name:
+          type: "string"
+          description: "Name of the filter-segment."
+          example: "dev_environment"
+          maxLength: 100
+          minLength: 0
+        owner:
+          type: "string"
+          description: "Defines the owner of the filter-segment."
+          example: "john.doe"
+        uid:
+          type: "string"
+          description: "Unique identifier of the filter-segment."
+          example: "D82a1jdA23a"
+        variables:
+          $ref: "#/components/schemas/FilterSegmentVariables"
+      required:
+      - "isPublic"
+      - "name"
+      - "owner"
+      - "uid"
+  securitySchemes:
+    OAuth2:
+      flows:
+        clientCredentials:
+          scopes:
+            storage:filter-segments:admin: "filter-segment admin"
+            storage:filter-segments:delete: "delete filter-segment"
+            storage:filter-segments:read: "read filter-segment"
+            storage:filter-segments:share: "share filter-segment"
+            storage:filter-segments:write: "write filter-segment"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

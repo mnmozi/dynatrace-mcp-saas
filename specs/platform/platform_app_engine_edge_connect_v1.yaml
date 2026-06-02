@@ -1,0 +1,553 @@
+openapi: "3.0.0"
+info:
+  version: "1.2.3"
+  title: "AppEngine - EdgeConnect"
+  description: "<h1>Overview</h1> EdgeConnect API manages EdgeConnect configurations\
+    \ that specify which HTTP requests matching what URL host patterns will be forwarded\
+    \ to and executed by that EdgeConnect. This enables forwarding of HTTP requests\
+    \ done in the Dynatrace runtime to resources in private networks secured by [a\
+    \ deployed EdgeConnect](https://dt-url.net/edge-connect)."
+  x-summary: "The EdgeConnect API manages EdgeConnect configurations that specify\
+    \ which HTTP requests matching what URL host patterns will be forwarded to and\
+    \ executed by that EdgeConnect."
+  x-service-category: "AppEngine"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/app-engine/edge-connect/v1"
+  x-api-gateway-url: "/platform/app-engine/edge-connect/v1"
+paths:
+  /edge-connects:
+    get:
+      summary: "List all EdgeConnects"
+      operationId: "listEdgeConnects"
+      tags:
+      - "EdgeConnect"
+      security:
+      - ssoAuth:
+        - "app-engine:edge-connects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/addFields"
+      - $ref: "#/components/parameters/filter"
+      - $ref: "#/components/parameters/page"
+      - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: "A list of all EdgeConnects"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EdgeConnects"
+        default:
+          $ref: "#/components/responses/GeneralError"
+      description: "**Required scope:** app-engine:edge-connects:read"
+    post:
+      summary: "Create a new EdgeConnect."
+      description: "**Required scope:** app-engine:edge-connects:write<br/><br/>You\
+        \ can either specify a UUID in the request body or a random UUID\nwill be\
+        \ assigned to the created EdgeConnect configuration.\n\nThe name must not\
+        \ be longer than 50 characters and must be 'RFC 1123' compliant. The OAuth\
+        \ client ID is optional.\nIf no OAuth client ID is provided an OAuth client\
+        \ must be generated for that EdgeConnect. This additionally requires the `oauth2:clients:manage`\
+        \ scope allowing generation of OAuth clients with the `app-engine:edge-connects:connect`\
+        \ scope, e.g. via the following policy statement: `ALLOW oauth2:clients:manage\
+        \ where oauth2:scopes='app-engine:edge-connects:connect'`\nThe `oauth2:clients:manage`\
+        \ scope is not required if you provide an OAuth client ID.\n\nThe OAuth client\
+        \ ID, secret and resource will be returned in the response. The OAuth client\
+        \ secret is not retrievable later on.\n"
+      operationId: "createEdgeConnect"
+      tags:
+      - "EdgeConnect"
+      security:
+      - ssoAuth:
+        - "app-engine:edge-connects:write"
+      - ssoBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EdgeConnect"
+      responses:
+        "201":
+          description: "The EdgeConnect has been created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EdgeConnect"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        default:
+          $ref: "#/components/responses/GeneralError"
+  /edge-connects/{edgeConnectId}:
+    get:
+      summary: "Get an EdgeConnect"
+      operationId: "getEdgeConnect"
+      tags:
+      - "EdgeConnect"
+      security:
+      - ssoAuth:
+        - "app-engine:edge-connects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/edgeConnectIdPathParam"
+      responses:
+        "200":
+          description: "The EdgeConnect configuration"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EdgeConnect"
+        default:
+          $ref: "#/components/responses/GeneralError"
+      description: "**Required scope:** app-engine:edge-connects:read"
+    put:
+      summary: "Update an EdgeConnect"
+      operationId: "updateEdgeConnect"
+      tags:
+      - "EdgeConnect"
+      security:
+      - ssoAuth:
+        - "app-engine:edge-connects:write"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/edgeConnectIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EdgeConnect"
+      responses:
+        "200":
+          description: "The EdgeConnect has been update successfully"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        default:
+          $ref: "#/components/responses/GeneralError"
+      description: "**Required scope:** app-engine:edge-connects:write"
+    delete:
+      summary: "Delete an EdgeConnect"
+      description: "**Required scope:** app-engine:edge-connects:delete<br/><br/>Deletes\
+        \ the specified EdgeConnect configuration. If the configuration used an autogenerated\
+        \ OAuth client, then the `oauth2:clients:manage` for the `app-engine:edge-connects:connect`\
+        \ scope is required (e.g. via a policy statement like `ALLOW oauth2:clients:manage\
+        \ where oauth2:scopes='app-engine:edge-connects:connect'`) in order to allow\
+        \ the deletion of the corresponding OAuth client."
+      operationId: "deleteEdgeConnect"
+      tags:
+      - "EdgeConnect"
+      security:
+      - ssoAuth:
+        - "app-engine:edge-connects:delete"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/edgeConnectIdPathParam"
+      responses:
+        "204":
+          description: "The EdgeConnect configuration was deleted successfully"
+        default:
+          $ref: "#/components/responses/GeneralError"
+  /edge-connects/{edgeConnectId}/oauthClient:rotate:
+    post:
+      summary: "Rotate the secret of the autogenerated OAuth client of the given EdgeConnect."
+      description: "**Required scope:** oauth2:clients:manage<br/><br/>The secret\
+        \ rotation can only be used if the configured OAuth client is an autogenerated\
+        \ OAuth client. The scope `oauth2:clients:manage` for the `app-engine:edge-connects:connect`\
+        \ scope is required (e.g. via a policy like `ALLOW oauth2:clients:manage where\
+        \ oauth2:scopes='app-engine:edge-connects:connect'`)."
+      operationId: "rotateOAuthClientSecret"
+      tags:
+      - "EdgeConnect"
+      security:
+      - ssoAuth:
+        - "oauth2:clients:manage"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/edgeConnectIdPathParam"
+      responses:
+        "200":
+          description: "The OAuth client secret was rotated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OAuthClientRotationResponse"
+        "400":
+          description: "The configured OAuth client isn't supported to be rotated.\
+            \ (i.e. it wasn't autogenerated upon EdgeConnect creation)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        default:
+          $ref: "#/components/responses/GeneralError"
+  /edge-connects:match:
+    get:
+      summary: "Gets the matching EdgeConnect including alternatives for a URL."
+      description: "**Required scope:** app-engine:edge-connects:read<br/><br/>Provides\
+        \ the EdgeConnect which matches the URL due to its configured host patterns.\
+        \ This EdgeConnect would receive a corresponding fetch request if done in\
+        \ the context of the Dynatrace runtime. In addition, this endpoint also provides\
+        \ other EdgeConnects which have matching host patterns that are not as specific\
+        \ (due to wildcard pattern usage) as the matched EdgeConnect"
+      operationId: "getMatchedEdgeConnects"
+      tags:
+      - "EdgeConnect"
+      security:
+      - ssoAuth:
+        - "app-engine:edge-connects:read"
+      - ssoBearerAuth: []
+      parameters:
+      - in: "query"
+        name: "url"
+        description: "The URL which is used to check if there are any EdgeConnects\
+          \ with matching host patterns configured. Must be RFC 2396 compliant and\
+          \ use \"http\" or \"https\" as its scheme"
+        example: "http://my.dynatrace.com"
+        schema:
+          type: "string"
+          maxLength: 2048
+          format: "URL"
+        required: true
+      responses:
+        "200":
+          description: "The matched EdgeConnect and considered alternatives which\
+            \ are more general"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchedResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example: "{ \"error\": { \"code\": 400, \"message\": \"Constraints violated.\"\
+                , \"details\": { \"constraintViolations\": [ { \"path\": \"getMatchedEdgeConnects.arg1\"\
+                , \"message\": \"URL Must be RFC 2396 compliant and use \\\"http\\\
+                \" or \\\"https\\\" as its scheme\" } ] } } }"
+        default:
+          $ref: "#/components/responses/GeneralError"
+components:
+  parameters:
+    edgeConnectIdPathParam:
+      name: "edgeConnectId"
+      in: "path"
+      description: "Specify the ID of the EdgeConnect"
+      required: true
+      schema:
+        type: "string"
+        format: "UUID"
+      example: "11111111-2222-4444-3333-555555555555"
+    addFields:
+      name: "add-fields"
+      description: "Provide a comma separated list of additional properties to be\
+        \ included in the response."
+      in: "query"
+      required: false
+      schema:
+        type: "string"
+      example: "name,hostPatterns,modificationInfo,metadata,hostMappings"
+    filter:
+      in: "query"
+      description: "\nThe filter parameter for filtering the set of returned resources\
+        \ \nIf this parameter is omitted, no filtering is applied and all states will\
+        \ be returned.\n\n Filtering by string type parameters `name`, `modificationInfo.lastModifiedBy`\
+        \ when using one of the operators `contains`, `starts-with` and `ends-with`\
+        \ is **case insensitive**.\n\nWhen using the operators `=`and `!=`, filtering\
+        \ is **case sensitive**.\n\nThe following fields are legal filtering parameters\
+        \ - any other field names will result in a HTTP 400 response:\n\n* `name`,\
+        \ supported operators: `=`, `!=`, `contains`, `starts-with`, `ends-with` \n\
+        * `hostPatterns`, supported operators: `=`, `!=`, `contains`, `starts-with`,\
+        \ `ends-with` \n* `oauthClientId`, supported operators: `=`, `!=`, `contains`,\
+        \ `starts-with`, `ends-with` \n\n* `modificationInfo.lastModifiedTime`, supported\
+        \ operators:\t`=`, `!=`, `<`, `<=`, `>`, `>=`\n\n* `modificationInfo.lastModifiedBy`,\
+        \ supported operators: `=`, `!=`, `contains`, `starts-with`, `ends-with` \n\
+        \nThe following constraints apply:\n* Field names are **case-sensitive**.\n\
+        * Conditions can be connected via operators `and` and `or`. A single condition\
+        \ can be negated by `not`.\n* Strings **must** be enclosed in **single quotes**.\
+        \ e.g. `name contains 'my-string'`\n* Single quotes within a string must be\
+        \ escaped with a backslash: e.g. `name starts-with 'it\\'s a string'`\n* Maximum\
+        \ nesting depth (via brackets) is 2.\n\n* Maximum length is 256 characters.\n\
+        \nExamples:\n\n* `name starts-with 'game-'` \n\n* `modificationInfo.lastModifiedTime\
+        \ >= '2022-07-01T00:10:05.000Z' and not (name contains 'new')`\n"
+      required: false
+      name: "filter"
+      schema:
+        type: "string"
+      example: "modificationInfo.lastModifiedTime >= '2022-02-06T11:00:00Z'"
+    page:
+      in: "query"
+      name: "page"
+      description: "The index of the page to return. The first page will be returned\
+        \ if this parameters isn't specified."
+      schema:
+        type: "integer"
+      example: 1
+    pageSize:
+      in: "query"
+      name: "page-size"
+      description: "The number of resources to return in a single request. 1000 by\
+        \ default."
+      schema:
+        type: "integer"
+      example: 20
+  responses:
+    GeneralError:
+      description: "Error response"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2 with the authorizationCode flow. [More info](https://swagger.io/docs/specification/authentication/oauth2/)"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            app-engine:edge-connects:read: "Read EdgeConnects"
+            app-engine:edge-connects:write: "Create/update EdgeConnects"
+            app-engine:edge-connects:delete: "Delete EdgeConnects"
+            oauth2:clients:manage: "Lightweight OAuth client creation"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+  schemas:
+    EdgeConnects:
+      type: "object"
+      properties:
+        edgeConnects:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/EdgeConnect"
+        totalCount:
+          description: "Total number of currently configured EdgeConnects"
+          type: "integer"
+    EdgeConnect:
+      type: "object"
+      description: "Maps the specified host patterns to this EdgeConnect"
+      properties:
+        id:
+          type: "string"
+          format: "UUID"
+          readOnly: true
+          example: "11111111-2222-4444-3333-555555555555"
+        name:
+          $ref: "#/components/schemas/EdgeConnectName"
+        hostPatterns:
+          type: "array"
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/HostPattern"
+        hostMappings:
+          type: "array"
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/HostMapping"
+        oauthClientId:
+          type: "string"
+          description: "Id of OAuth client used to connect by the EdgeConnect"
+          minLength: 1
+          maxLength: 200
+          example: "REDACTED-EXAMPLE-TOKEN"
+        oauthClientSecret:
+          type: "string"
+          readOnly: true
+          description: "Secret of OAuth client used to connect by the EdgeConnect.\
+            \ Only provided when creating a new EdgeConnect."
+          example: "REDACTED-EXAMPLE-TOKEN"
+        oauthClientResource:
+          type: "string"
+          readOnly: true
+          description: "Resource of OAuth client used to connect by the EdgeConnect.\
+            \ Only provided when creating a new EdgeConnect."
+          example: "urn:dtenvironment:wu31a2p3"
+        modificationInfo:
+          $ref: "#/components/schemas/ModificationInfo"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        managedByDynatraceOperator:
+          type: "boolean"
+          description: "Flag to identify if an EdgeConnect is managed by the Dynatrace\
+            \ operator. False by default!"
+          example: false
+          readOnly: true
+      required:
+      - "name"
+      - "hostPatterns"
+    HostPattern:
+      type: "string"
+      description: "Either an IP, or a domain name which may contain a wildcard ('*')\
+        \ as the leftmost label. If a '*' is used, it must be followed by at least\
+        \ two labels."
+      example: "*.internal.org"
+    HostMapping:
+      type: "object"
+      description: "Todo"
+      properties:
+        from:
+          type: "string"
+        to:
+          type: "string"
+      required:
+      - "from"
+      - "to"
+      example:
+        from: "test.local"
+        to: "kubernetes.my.cluster.local"
+    ModificationInfo:
+      type: "object"
+      readOnly: true
+      properties:
+        lastModifiedBy:
+          type: "string"
+          format: "uuid"
+          example: "12345678-abcd-efgh-1234-123456789"
+        lastModifiedTime:
+          type: "string"
+          format: "date-time"
+          example: "2022-01-01T01:02:03.165Z"
+      required:
+      - "lastModifiedBy"
+      - "lastModifiedTime"
+      example:
+        lastModifiedBy: "12345678-abcd-efgh-1234-123456789"
+        lastModifiedTime: "2022-01-01T01:02:03.165Z"
+    Metadata:
+      type: "object"
+      readOnly: true
+      properties:
+        instances:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/EdgeConnectInstance"
+        oauthClientStatus:
+          type: "string"
+          description: "The status of the OAuth client"
+          enum:
+          - "ACTIVE"
+          - "INACTIVE"
+          - "PENDING_DELETION"
+          - "DELETED"
+    EdgeConnectInstance:
+      type: "object"
+      properties:
+        version:
+          type: "string"
+          example: "1.46.2"
+        instanceId:
+          type: "string"
+          format: "uuid"
+    MatchedEdgeConnect:
+      type: "object"
+      description: "Contains information about the EdgeConnect and the matched pattern"
+      properties:
+        id:
+          type: "string"
+          format: "UUID"
+          readOnly: true
+          example: "11111111-2222-4444-3333-555555555555"
+        name:
+          $ref: "#/components/schemas/EdgeConnectName"
+        matchedPattern:
+          type: "string"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required:
+      - "name"
+      - "matchedPattern"
+      - "id"
+    EdgeConnectName:
+      type: "string"
+      minLength: 1
+      maxLength: 50
+      example: "internal-services"
+    Error:
+      type: "object"
+      required:
+      - "code"
+      - "message"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+    ErrorDetails:
+      type: "object"
+      properties:
+        constraintViolations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+        missingScopes:
+          type: "array"
+          items:
+            type: "string"
+    ConstraintViolation:
+      type: "object"
+      required:
+      - "message"
+      properties:
+        message:
+          type: "string"
+        path:
+          type: "string"
+        parameterLocation:
+          type: "string"
+      example:
+        error:
+          code: 400
+          message: "Constraints violated. Properties already exist in another configuration."
+          details:
+            constraintViolations:
+            - path: "hostPatterns[0]"
+              message: "Host pattern must be unique across configurations.\nHost pattern\
+                \ 'myjira.com' already exists in EdgeConnect configuration 'InternalServices'."
+    ErrorResponse:
+      type: "object"
+      required:
+      - "error"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+    OAuthClientRotationResponse:
+      type: "object"
+      required:
+      - "clientSecret"
+      - "clientId"
+      properties:
+        clientSecret:
+          type: "string"
+        clientId:
+          type: "string"
+    MatchedResponse:
+      type: "object"
+      properties:
+        matched:
+          $ref: "#/components/schemas/MatchedEdgeConnect"
+        secondaryMatching:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MatchedEdgeConnect"
+security:
+- ssoAuth:
+  - "app-engine:edge-connects:read"
+  - "app-engine:edge-connects:write"
+  - "app-engine:edge-connects:delete"
+  - "oauth2:clients:manage"

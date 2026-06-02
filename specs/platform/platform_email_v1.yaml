@@ -1,0 +1,529 @@
+openapi: "3.1.0"
+info:
+  title: "Email"
+  description: "APIs that allow sending emails."
+  version: "1.1.223"
+  x-service-category: "Email"
+  x-summary: "Allows sending email notifications."
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/email/v1"
+  x-api-gateway-url: "/platform/email/v1"
+paths:
+  /emails:
+    post:
+      tags:
+      - "Emails"
+      summary: "Request to send an email"
+      description: "Required scope <b>email:emails:send</b>. Required charset <b>UTF-8</b>.\
+        \ <i>no-reply@dev.apps.dynatracelabs.com</i> will be used as sender. </br>Request\
+        \ <b>notificationSettingsUrl</b> field is optional and can be omitted, which\
+        \ will be reflected in the email body, but if provided it needs to be valid\
+        \ url in tenant's domain."
+      operationId: "sendEmail"
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/SendEmailRequest"
+        required: true
+      responses:
+        "202":
+          description: "Request accepted or partially accepted"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendEmailResponse"
+              examples:
+                RequestAccepted:
+                  description: "Request has been accepted with all recipients treated\
+                    \ as valid."
+                  value:
+                    requestId: "60e44c8e-ae25-484a-a695-6fc311fdcee1"
+                    message: "Email request accepted for at least one recipient"
+                    rejectedDestinations:
+                      bouncingDestinations: []
+                      complainingDestinations: []
+                    unresolvedUserDestinations: []
+                    unresolvedGroupDestinations: []
+                    invalidDestinations: []
+                RequestPartiallyAccepted:
+                  description: "Request has been accepted with at least one valid\
+                    \ recipient. Some recipients have been ignored due to bounces\
+                    \ or complaints, or some recipients could not be resolved."
+                  value:
+                    requestId: "60e44c8e-ae25-484a-a695-6fc311fdcee1"
+                    message: "Email request accepted for at least one recipient"
+                    rejectedDestinations:
+                      bouncingDestinations:
+                      - "name1.surname1@localhost.localdomain"
+                      - "name2.surname2@localhost.localdomain"
+                      complainingDestinations:
+                      - "name2.surname2@localhost.localdomain"
+                    unresolvedUserDestinations:
+                    - "9866c2c3-461a-4351-9850-419c60cdee4a"
+                    unresolvedGroupDestinations:
+                    - "7db1520a-131c-466d-8961-74490d7b1280"
+                    invalidDestinations:
+                    - "name3.surname3@localhost.localdomain"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                TooManyRecipients:
+                  description: "There is a limit to the number of recipients in one\
+                    \ request."
+                  value:
+                    error:
+                      code: 400
+                      message: "Too many recipients, current number of recipients\
+                        \ is 101, maximum allowed is 100"
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "TooManyRecipients"
+                        requestId: "f4ca73b0-f3f0-4007-8058-8fbb5c7c2ca0"
+                        additionalDetails:
+                          value: 101
+                          limit: 100
+                EmptyRecipientsListSpecified:
+                  description: "At least one recipient ID should be specified in the\
+                    \ request."
+                  value:
+                    error:
+                      code: 400
+                      message: "Email request is required to have at least one of:\
+                        \ toRecipients, ccRecipients or bccRecipients."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "EmptyRecipientsListSpecified"
+                AllRecipientsRejected:
+                  description: "All recipients have been rejected because they are\
+                    \ included in bounce or complaint lists."
+                  value:
+                    error:
+                      code: 400
+                      message: "Request rejected because all recipients has been rejected."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "AllRecipientsRejected"
+                        requestId: "c4f97c1d-1cce-42d1-9611-c2340effdb8f"
+                        additionalDetails:
+                          bouncingDestinations:
+                          - "name1.surname1@localhost.localdomain"
+                          - "name2.surname2@localhost.localdomain"
+                          complainingDestinations:
+                          - "name2.surname2@localhost.localdomain"
+                          invalidDestinations:
+                          - "name3.surname3@localhost.localdomain"
+                MalformedNotificationSettingsUrl:
+                  description: "Notification settings url is not valid."
+                  value:
+                    error:
+                      code: 400
+                      message: "Invalid email request - notificationSettingsUrl must\
+                        \ be a valid URL."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "MalformedNotificationSettingsUrl"
+                IncorrectNotificationSettingsUrl:
+                  description: "Notification settings url is not within given tenant\
+                    \ domain."
+                  value:
+                    error:
+                      code: 400
+                      message: "Invalid email request - notificationSettingsUrl must\
+                        \ be within a given tenant domain."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "IncorrectNotificationSettingsUrl"
+                InvalidEmailRequest:
+                  description: "Email request is invalid in a way that is not described\
+                    \ by more specific codes. The request could not be precessed."
+                  value:
+                    error:
+                      code: 400
+                      message: "Email subject must be provided"
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "InvalidEmailRequest"
+                        requestId: "79f1d91a-1bda-4a75-a532-e77f2908b3f9"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                BearerTokenMissing:
+                  description: "Access token missing."
+                  value:
+                    error:
+                      code: 401
+                      message: "Access token missing."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "BearerTokenMissing"
+                BearerTokenInvalid:
+                  description: "Access token malformed or expired."
+                  value:
+                    error:
+                      code: 401
+                      message: "An error occurred while attempting to decode the Jwt:\
+                        \ Malformed token"
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "BearerTokenInvalid"
+        "403":
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                TenantNotAuthorized:
+                  description: "Request has been rejected because tenant provided\
+                    \ in Dt-Tenant header is not authorized to perform this operation.\
+                    \ It happens if the tenant requesting the operation has license\
+                    \ type other than PAYING or is not POC environment. Note that\
+                    \ trial tenants are not authorized to use this API."
+                  value:
+                    error:
+                      code: 403
+                      message: "Tenant abc12345 is not authorized to perform requested\
+                        \ operation. Tenant's license is not PAYING or it's not POC\
+                        \ environment."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "TenantNotAuthorized"
+                        requestId: "79f1d91a-1bda-4a75-a532-e77f2908b3f9"
+                MissingNecessaryPermission:
+                  description: "Access token is missing required permission for sending\
+                    \ email"
+                  value:
+                    error:
+                      code: 403
+                      message: "Missing necessary permission."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "MissingNecessaryPermission"
+                        missingScopes:
+                        - "email:emails:send"
+        "413":
+          description: "Payload too large"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                PayloadTooLarge:
+                  description: "Provided request body is too large."
+                  value:
+                    error:
+                      code: 413
+                      message: "A message cannot be longer than 262144 bytes (including\
+                        \ recipients)."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "PayloadTooLarge"
+                        requestId: "f3caf13c-5695-46b7-be2b-6275780db4f9"
+                        additionalDetails:
+                          limit: 262144
+                          value: 325000
+        "429":
+          description: "Too many requests"
+          headers:
+            Retry-After:
+              description: "<delay-seconds>"
+              style: "simple"
+              schema:
+                type: "integer"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                TooManyRequests:
+                  description: "Requests number in a given time period exceeded allowed\
+                    \ threshold."
+                  value:
+                    error:
+                      code: 429
+                      message: "Too Many Requests"
+                      retryAfterSeconds: 39
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "TooManyRequests"
+                HourlyQuotaExceeded:
+                  description: "Hourly quota exceeded. Quota calculation is based\
+                    \ on a number of recipients. For example, a single email sent\
+                    \ to 30 addresses counts the same as 30 emails sent to one address\
+                    \ each. In both cases it will reduce tenant's quota by 30. Hourly\
+                    \ quota is based on a sliding window. As soon as the number of\
+                    \ emails/recipients for the last hour drops below threshold, the\
+                    \ new request will be accepted."
+                  value:
+                    error:
+                      code: 429
+                      message: "Hourly quota has been exceeded."
+                      retryAfterSeconds: 39
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "HourlyQuotaExceeded"
+                        requestId: "7a52e0d9-afbc-4e5c-9513-bec39aca5b2c"
+                        additionalDetails:
+                          limit: 1000
+                          value: 1001
+                DailyQuotaExceeded:
+                  description: "Daily quota exceeded. Quota calculation is based on\
+                    \ a number of recipients. For example, a single email sent to\
+                    \ 30 addresses counts the same as 30 emails sent to one address\
+                    \ each. In both cases it will reduce tenant's quota by 30. Daily\
+                    \ quota is based on a sliding window. As soon as the number of\
+                    \ emails/recipients for the last 24 hours drops below threshold,\
+                    \ the new request will be accepted."
+                  value:
+                    error:
+                      code: 429
+                      message: "Daily quota has been exceeded."
+                      retryAfterSeconds: 39
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "DailyQuotaExceeded"
+                        requestId: "7a52e0d9-afbc-4e5c-9513-bec39aca5b2c"
+                        additionalDetails:
+                          limit: 50000
+                          value: 50011
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                EmailRequestFailed:
+                  description: "There was an internal problem with email request processing,\
+                    \ which is different than those described by more specific error\
+                    \ codes."
+                  value:
+                    error:
+                      code: 500
+                      message: "Cannot process request"
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "EmailRequestFailed"
+                        requestId: "fe377f4d-18af-4f39-8de6-34efba83657b"
+                UnknownError:
+                  description: "Unknown error occurred."
+                  value:
+                    error:
+                      code: 500
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "UnknownError"
+        "503":
+          description: "Service Unavailable"
+          headers:
+            Retry-After:
+              description: "<delay-seconds>"
+              style: "simple"
+              schema:
+                type: "integer"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                MaintenanceWindow:
+                  description: "The service is currently under maintenance."
+                  value:
+                    error:
+                      code: 503
+                      message: "Service is currently under maintenance."
+                      details:
+                        errorRef: "fddb6700-a451-40ec-80ba-d84c10c87896"
+                        traceId: "c995b75610ccdfb97c23a5f0b47d9eea"
+                        errorCode: "MaintenanceWindow"
+      security:
+      - ssoAuth: []
+      - ssoBearerAuth: []
+components:
+  schemas:
+    EmailBody:
+      type: "object"
+      properties:
+        contentType:
+          type: "string"
+          enum:
+          - "text/plain"
+          - "text/html"
+          examples:
+          - "text/plain"
+        body:
+          type: "string"
+    RecipientLists:
+      type: "object"
+      properties:
+        emailAddresses:
+          type: "array"
+          items:
+            type: "string"
+        ssoUserIds:
+          type: "array"
+          items:
+            type: "string"
+        ssoGroupIds:
+          type: "array"
+          items:
+            type: "string"
+    SendEmailRequest:
+      type: "object"
+      properties:
+        toRecipients:
+          $ref: "#/components/schemas/RecipientLists"
+        ccRecipients:
+          $ref: "#/components/schemas/RecipientLists"
+        bccRecipients:
+          $ref: "#/components/schemas/RecipientLists"
+        subject:
+          type: "string"
+        body:
+          $ref: "#/components/schemas/EmailBody"
+        notificationSettingsUrl:
+          type: "string"
+    RejectedDestinations:
+      type: "object"
+      properties:
+        bouncingDestinations:
+          type: "array"
+          items:
+            type: "string"
+        complainingDestinations:
+          type: "array"
+          items:
+            type: "string"
+    SendEmailResponse:
+      type: "object"
+      properties:
+        requestId:
+          type: "string"
+        message:
+          type: "string"
+        rejectedDestinations:
+          $ref: "#/components/schemas/RejectedDestinations"
+        unresolvedUserDestinations:
+          type: "array"
+          items:
+            type: "string"
+        unresolvedGroupDestinations:
+          type: "array"
+          items:
+            type: "string"
+        invalidUserDestinations:
+          type: "array"
+          items:
+            type: "string"
+        invalidGroupDestinations:
+          type: "array"
+          items:
+            type: "string"
+        invalidDestinations:
+          type: "array"
+          items:
+            type: "string"
+    Error:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "Http status code of the response"
+        message:
+          type: "string"
+        retryAfterSeconds:
+          type: "string"
+          format: "int32"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+        help:
+          type: "string"
+          description: "Link to a help page"
+      required:
+      - "code"
+      - "details"
+      - "message"
+    ErrorDetails:
+      type: "object"
+      properties:
+        errorRef:
+          type: "string"
+          description: "Represents a reference of the error."
+        traceId:
+          type:
+          - "string"
+          - "null"
+          description: "Unique identifier that follows the path of a single request."
+        errorCode:
+          type: "string"
+          description: "Unique code for error."
+        additionalDetails:
+          type:
+          - "object"
+          - "null"
+          $ref: "#/components/schemas/ErrorCodeAttributes"
+          additionalProperties: {}
+          description: "Additional details specific for a certain errorCode in form\
+            \ of String to Object map."
+        missingScopes:
+          type:
+          - "array"
+          - "null"
+          description: "List of missing permissions"
+          items:
+            type: "string"
+      required:
+      - "errorCode"
+      - "errorRef"
+    ErrorResponse:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+    ErrorCodeAttributes:
+      additionalProperties:
+        type: "object"
+        description: "Additional details specific for a certain errorCode in form\
+          \ of String to Object map."
+      description: "Additional details specific for a certain errorCode in form of\
+        \ String to Object map."
+  securitySchemes:
+    ssoAuth:
+      type: "oauth2"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+          scopes:
+            email:emails:send: "Scope for sending emails"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
