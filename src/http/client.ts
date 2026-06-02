@@ -47,10 +47,62 @@ class HostClientImpl implements HostClient {
     }
   }
 
+  private async requestForm<T>(method: string, path: string, form: FormData, query?: QueryParams): Promise<T> {
+    const url = buildUrl(this.base, path, query);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      // Do NOT set Content-Type — let fetch set it with the multipart boundary
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: this.authHeader,
+          Accept: "application/json",
+        },
+        body: form,
+        signal: controller.signal,
+      });
+      const text = await res.text();
+      const parsed = text ? safeJson(text) : undefined;
+      if (!res.ok) {
+        throw new DynatraceApiError(res.status, this.host, parsed ?? text, path);
+      }
+      return parsed as T;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  private async requestText(path: string, query?: QueryParams): Promise<string> {
+    const url = buildUrl(this.base, path, query);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: this.authHeader,
+        },
+        signal: controller.signal,
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        const parsed = text ? safeJson(text) : undefined;
+        throw new DynatraceApiError(res.status, this.host, parsed ?? text, path);
+      }
+      return text;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   get<T>(path: string, query?: QueryParams) { return this.request<T>("GET", path, undefined, query); }
   post<T>(path: string, body?: unknown, query?: QueryParams) { return this.request<T>("POST", path, body, query); }
   put<T>(path: string, body?: unknown, query?: QueryParams) { return this.request<T>("PUT", path, body, query); }
   del<T>(path: string, query?: QueryParams) { return this.request<T>("DELETE", path, undefined, query); }
+  postForm<T>(path: string, form: FormData, query?: QueryParams) { return this.requestForm<T>("POST", path, form, query); }
+  patchForm<T>(path: string, form: FormData, query?: QueryParams) { return this.requestForm<T>("PATCH", path, form, query); }
+  getText(path: string, query?: QueryParams) { return this.requestText(path, query); }
 }
 
 function safeJson(text: string): unknown {
