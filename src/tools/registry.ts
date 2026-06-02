@@ -5,6 +5,7 @@ import { registerDqlTools } from "./dql.js";
 import { registerMetricsTools } from "./metrics.js";
 import { registerEntitiesTools } from "./entities.js";
 import { registerProblemsTools } from "./problems.js";
+import { registerLogsTools } from "./logs.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -14,4 +15,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerMetricsTools(server, deps);
   registerEntitiesTools(server, deps);
   registerProblemsTools(server, deps);
+  registerLogsTools(server, deps);
 }
