@@ -6,6 +6,7 @@ import { registerMetricsTools } from "./metrics.js";
 import { registerEntitiesTools } from "./entities.js";
 import { registerProblemsTools } from "./problems.js";
 import { registerLogsTools } from "./logs.js";
+import { registerTracesTools } from "./traces.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -16,4 +17,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerEntitiesTools(server, deps);
   registerProblemsTools(server, deps);
   registerLogsTools(server, deps);
+  registerTracesTools(server, deps);
 }
