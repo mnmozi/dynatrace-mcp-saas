@@ -2,8 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
-
-function dqlString(v: string): string { return v.replace(/"/g, '\\"'); }
+import { escapeQuotes } from "../util/escape.js";
 
 export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
@@ -20,9 +19,9 @@ export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ contains, loglevel, host, from, limit }) => {
       const filters: string[] = [];
-      if (loglevel) filters.push(`loglevel == "${dqlString(loglevel)}"`);
-      if (host) filters.push(`dt.host.name == "${dqlString(host)}"`);
-      if (contains) filters.push(`contains(content, "${dqlString(contains)}")`);
+      if (loglevel) filters.push(`loglevel == "${escapeQuotes(loglevel)}"`);
+      if (host) filters.push(`dt.host.name == "${escapeQuotes(host)}"`);
+      if (contains) filters.push(`contains(content, "${escapeQuotes(contains)}")`);
       let q = `fetch logs, from:${from ?? "now-1h"}`;
       if (filters.length) q += ` | filter ${filters.join(" and ")}`;
       q += ` | sort timestamp desc | limit ${limit ?? 100}`;

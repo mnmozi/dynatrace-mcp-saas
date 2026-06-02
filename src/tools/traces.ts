@@ -2,8 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
-
-function dqlString(v: string): string { return v.replace(/"/g, '\\"'); }
+import { escapeQuotes } from "../util/escape.js";
 
 export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
@@ -20,7 +19,7 @@ export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ service, onlyErrors, minDurationMs, from, limit }) => {
       const filters: string[] = [];
-      if (service) filters.push(`service.name == "${dqlString(service)}"`);
+      if (service) filters.push(`service.name == "${escapeQuotes(service)}"`);
       if (onlyErrors) filters.push(`request.is_failed == true`);
       if (minDurationMs) filters.push(`duration >= ${minDurationMs}ms`);
       let q = `fetch spans, from:${from ?? "now-1h"}`;
@@ -41,7 +40,7 @@ export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
       },
     },
     async ({ traceId, from }) => {
-      const q = `fetch spans, from:${from ?? "now-4h"} | filter trace.id == "${dqlString(traceId)}" | sort start_time asc | limit 1000`;
+      const q = `fetch spans, from:${from ?? "now-4h"} | filter trace.id == "${escapeQuotes(traceId)}" | sort start_time asc | limit 1000`;
       const result = await deps.client.dqlExecute(q, { maxResultRecords: 1000 });
       return jsonResult({ query: q, spanCount: result.records.length, spans: result.records });
     },

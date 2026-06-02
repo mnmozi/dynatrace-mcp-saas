@@ -12,13 +12,20 @@ const cfg: Config = {
   platformUrl: "https://p", classicUrl: "https://classic.example.com",
   platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
 };
+
+let lastUrl = "";
+
 const server = setupServer(
-  http.get("https://classic.example.com/api/v2/entities", () =>
-    HttpResponse.json({ entities: [{ entityId: "HOST-1", displayName: "web01" }], totalCount: 1 }),
-  ),
+  http.get("https://classic.example.com/api/v2/entities", ({ request }) => {
+    lastUrl = request.url;
+    return HttpResponse.json({ entities: [{ entityId: "HOST-1", displayName: "web01" }], totalCount: 1 });
+  }),
 );
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  lastUrl = "";
+});
 afterAll(() => server.close());
 
 async function makeClient() {
@@ -35,5 +42,19 @@ describe("list_hosts", () => {
     const client = await makeClient();
     const res = await client.callTool({ name: "list_hosts", arguments: {} });
     expect((res.content as Array<{ text: string }>)[0].text).toContain("web01");
+  });
+
+  it("escapes double-quotes in the tag filter of the entitySelector", async () => {
+    const client = await makeClient();
+    await client.callTool({ name: "list_hosts", arguments: { tag: 'env"prod' } });
+    const selector = decodeURIComponent(new URL(lastUrl).searchParams.get("entitySelector")!);
+    expect(selector).toContain('tag("env\\"prod")');
+  });
+
+  it("escapes double-quotes in the managementZone filter of the entitySelector", async () => {
+    const client = await makeClient();
+    await client.callTool({ name: "list_hosts", arguments: { managementZone: 'zone"A' } });
+    const selector = decodeURIComponent(new URL(lastUrl).searchParams.get("entitySelector")!);
+    expect(selector).toContain('mzName("zone\\"A")');
   });
 });

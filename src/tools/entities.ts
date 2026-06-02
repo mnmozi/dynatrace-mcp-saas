@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
+import { escapeQuotes } from "../util/escape.js";
 
 export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
@@ -16,8 +17,8 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ tag, managementZone, pageSize }) => {
       let selector = "type(HOST)";
-      if (tag) selector += `,tag("${tag}")`;
-      if (managementZone) selector += `,mzName("${managementZone}")`;
+      if (tag) selector += `,tag("${escapeQuotes(tag)}")`;
+      if (managementZone) selector += `,mzName("${escapeQuotes(managementZone)}")`;
       return jsonResult(await deps.client.classic.get("/api/v2/entities", {
         entitySelector: selector,
         pageSize: pageSize ?? 100,
