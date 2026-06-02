@@ -3,6 +3,7 @@ import type { DynatraceClient } from "../http/client.js";
 import type { Config } from "../types.js";
 import { registerDqlTools } from "./dql.js";
 import { registerMetricsTools } from "./metrics.js";
+import { registerEntitiesTools } from "./entities.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -10,4 +11,5 @@ export interface ToolDeps { client: DynatraceClient; config: Config }
 export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerDqlTools(server, deps);
   registerMetricsTools(server, deps);
+  registerEntitiesTools(server, deps);
 }
