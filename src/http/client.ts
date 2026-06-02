@@ -1,6 +1,7 @@
 import type { Config } from "../types.js";
 import { DynatraceApiError, type HostKind, type QueryParams } from "./errors.js";
 import type { HostClient } from "../types.js";
+import { dqlExecute, type DqlResult } from "./dql.js";
 
 function buildUrl(base: string, path: string, query?: QueryParams): string {
   const url = new URL(base + path);
@@ -63,5 +64,9 @@ export class DynatraceClient {
   constructor(private readonly cfg: Config) {
     this.classic = new HostClientImpl(cfg.classicUrl, `Api-Token ${cfg.apiToken}`, "classic", cfg.timeoutMs);
     this.platform = new HostClientImpl(cfg.platformUrl, `Bearer ${cfg.platformToken}`, "platform", cfg.timeoutMs);
+  }
+
+  dqlExecute(query: string, opts?: { maxResultRecords?: number; pollIntervalMs?: number; maxPolls?: number }): Promise<DqlResult> {
+    return dqlExecute(this.platform, query, opts);
   }
 }
