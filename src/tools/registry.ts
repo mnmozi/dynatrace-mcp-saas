@@ -10,6 +10,7 @@ import { registerTracesTools } from "./traces.js";
 import { registerVulnerabilitiesTools } from "./vulnerabilities.js";
 import { registerSettingsTools } from "./settings.js";
 import { registerDashboardTools } from "./dashboards.js";
+import { registerNotebookTools } from "./notebooks.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -24,4 +25,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerVulnerabilitiesTools(server, deps);
   registerSettingsTools(server, deps);
   registerDashboardTools(server, deps);
+  registerNotebookTools(server, deps);
 }
