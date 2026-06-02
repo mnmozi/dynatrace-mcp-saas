@@ -140,6 +140,10 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
     async ({ id, version, name, content }) => {
       requireWrites(deps.config);
 
+      if (name === undefined && content === undefined) {
+        throw new Error("update_dashboard requires at least one of 'name' or 'content' to update.");
+      }
+
       const form = new FormData();
       if (name !== undefined) form.append("name", name);
       if (content !== undefined) {

@@ -156,6 +156,11 @@ Set `DT_ENABLE_WRITES=true` in your `.env` (or in the MCP client env config) to 
 
 **Synthetic (7 tools):** `list_monitors`, `get_monitor`, `list_synthetic_locations`, `list_synthetic_nodes`, `create_monitor`, `update_monitor`, `delete_monitor`
 
+### Notes
+
+- `get_entity` returns relationships and host properties inline, so it covers host-detail and entity-relationship use cases (there are no separate `get_host` / `get_entity_relationships` tools).
+- Synthetic location/node tools are named `list_synthetic_locations` / `list_synthetic_nodes`.
+
 ---
 
 ## MCP Client Registration

@@ -75,7 +75,6 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
       const pollIntervalMs = 1000;
 
       for (let i = 0; i < maxPolls; i++) {
-        await sleep(pollIntervalMs);
         const poll = await deps.client.platform.get<SloEvalResp>(
           `${SLO}/evaluation:poll`,
           { "evaluation-token": token, "request-timeout-milliseconds": 5000 },
@@ -84,6 +83,7 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
           // 200 — evaluation complete
           return jsonResult(poll);
         }
+        await sleep(pollIntervalMs);
       }
 
       throw new Error(`SLO evaluation did not complete after ${maxPolls} polls`);

@@ -37,6 +37,19 @@ async function makeClient() {
   return client;
 }
 
+describe("list_entity_types", () => {
+  it("returns entity types", async () => {
+    server.use(
+      http.get("https://classic.example.com/api/v2/entityTypes", () =>
+        HttpResponse.json({ types: [{ type: "HOST" }], totalCount: 1 }),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "list_entity_types", arguments: {} });
+    expect((res.content as Array<{ text: string }>)[0].text).toContain("HOST");
+  });
+});
+
 describe("list_hosts", () => {
   it("returns host entities", async () => {
     const client = await makeClient();
