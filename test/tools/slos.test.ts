@@ -58,3 +58,59 @@ describe("create_slo write-gate", () => {
     expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
   });
 });
+
+describe("evaluate_slo", () => {
+  it("returns inline evaluation result when start responds 200 (no evaluationToken)", async () => {
+    const evalResult = {
+      metadata: { evaluatedSliQuery: "timeseries sli=avg(dt.host.cpu.idle)" },
+      evaluationResults: [{ criteria: "now-7d - now", status: "SUCCESS", value: 99.5, errorBudget: 29.99 }],
+      definition: { id: "SLO-1", name: "My SLO" },
+    };
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/slo/v1/slos/evaluation:start`, () =>
+        HttpResponse.json(evalResult, { status: 200 }),
+      ),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "evaluate_slo",
+      arguments: { id: "SLO-1", timeframeFrom: "now-7d" },
+    });
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("SUCCESS");
+    expect(text).toContain("99.5");
+  });
+
+  it("polls until completion when start responds 202 with evaluationToken", async () => {
+    const evalToken = "FQ5aVZERXZNMjR1SzVnPT0ifQ==";
+    const evalResult = {
+      metadata: { evaluatedSliQuery: "timeseries sli=avg(dt.host.cpu.idle)" },
+      evaluationResults: [{ criteria: "now-7d - now", status: "SUCCESS", value: 98.0, errorBudget: 10.0 }],
+      definition: { id: "SLO-2", name: "Async SLO" },
+    };
+
+    // start → 202 with token
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/slo/v1/slos/evaluation:start`, () =>
+        HttpResponse.json({ ...evalResult, evaluationToken: evalToken }, { status: 202 }),
+      ),
+      // poll → 200 without evaluationToken (done)
+      http.get(`${PLATFORM}/platform/slo/v1/slos/evaluation:poll`, () =>
+        HttpResponse.json(evalResult, { status: 200 }),
+      ),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "evaluate_slo",
+      arguments: { id: "SLO-2" },
+    });
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("SUCCESS");
+    expect(text).toContain("98");
+  });
+});
