@@ -13,6 +13,7 @@ import { registerDashboardTools } from "./dashboards.js";
 import { registerNotebookTools } from "./notebooks.js";
 import { registerSloTools } from "./slos.js";
 import { registerSyntheticTools } from "./synthetic.js";
+import { registerConfigV1Tools } from "./config-v1.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -30,4 +31,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerNotebookTools(server, deps);
   registerSloTools(server, deps);
   registerSyntheticTools(server, deps);
+  registerConfigV1Tools(server, deps);
 }
