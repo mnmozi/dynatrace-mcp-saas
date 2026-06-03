@@ -39,4 +39,12 @@ describe("search_logs", () => {
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("boom");
   });
+
+  it("uses a valid DQL now() timeframe (regression for DQL-SYNTAX-ERROR)", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({ name: "search_logs", arguments: {} });
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("from:now()-1h");
+    expect(text).not.toContain("from:now-1h");
+  });
 });

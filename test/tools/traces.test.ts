@@ -39,4 +39,17 @@ describe("get_trace", () => {
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("GET /x");
   });
+
+  it("uses valid DQL now() timeframes (regression for DQL-SYNTAX-ERROR)", async () => {
+    const client = await makeClient();
+    const spans = await client.callTool({ name: "search_spans", arguments: {} });
+    const spansText = (spans.content as Array<{ text: string }>)[0].text;
+    expect(spansText).toContain("from:now()-1h");
+    expect(spansText).not.toContain("from:now-1h");
+
+    const trace = await client.callTool({ name: "get_trace", arguments: { traceId: "T1" } });
+    const traceText = (trace.content as Array<{ text: string }>)[0].text;
+    expect(traceText).toContain("from:now()-4h");
+    expect(traceText).not.toContain("from:now-4h");
+  });
 });

@@ -13,7 +13,7 @@ export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
         contains: z.string().optional().describe("Substring to match in log content."),
         loglevel: z.string().optional().describe("e.g. 'ERROR', 'WARN'."),
         host: z.string().optional().describe("Host name to filter by (dt.host.name)."),
-        from: z.string().optional().describe("Timeframe start, e.g. 'now-1h' (default)."),
+        from: z.string().optional().describe("DQL timeframe start expression, e.g. 'now()-1h' (default) or 'now()-24h'."),
         limit: z.number().int().positive().max(1000).optional().describe("Max rows (default 100)."),
       },
     },
@@ -22,7 +22,7 @@ export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
       if (loglevel) filters.push(`loglevel == "${escapeQuotes(loglevel)}"`);
       if (host) filters.push(`dt.host.name == "${escapeQuotes(host)}"`);
       if (contains) filters.push(`contains(content, "${escapeQuotes(contains)}")`);
-      let q = `fetch logs, from:${from ?? "now-1h"}`;
+      let q = `fetch logs, from:${from ?? "now()-1h"}`;
       if (filters.length) q += ` | filter ${filters.join(" and ")}`;
       q += ` | sort timestamp desc | limit ${limit ?? 100}`;
       const result = await deps.client.dqlExecute(q, { maxResultRecords: limit ?? 100 });

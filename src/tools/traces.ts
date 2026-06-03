@@ -13,7 +13,7 @@ export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
         service: z.string().optional().describe("Service name (service.name)."),
         onlyErrors: z.boolean().optional().describe("If true, only failed spans."),
         minDurationMs: z.number().optional().describe("Minimum span duration in ms."),
-        from: z.string().optional().describe("Timeframe start (default 'now-1h')."),
+        from: z.string().optional().describe("DQL timeframe start expression (default 'now()-1h')."),
         limit: z.number().int().positive().max(1000).optional().describe("Max rows (default 100)."),
       },
     },
@@ -22,7 +22,7 @@ export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
       if (service) filters.push(`service.name == "${escapeQuotes(service)}"`);
       if (onlyErrors) filters.push(`request.is_failed == true`);
       if (minDurationMs) filters.push(`duration >= ${minDurationMs}ms`);
-      let q = `fetch spans, from:${from ?? "now-1h"}`;
+      let q = `fetch spans, from:${from ?? "now()-1h"}`;
       if (filters.length) q += ` | filter ${filters.join(" and ")}`;
       q += ` | sort duration desc | limit ${limit ?? 100}`;
       const result = await deps.client.dqlExecute(q, { maxResultRecords: limit ?? 100 });
@@ -36,11 +36,11 @@ export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
       description: "Fetch all spans for a single trace id (ordered by start time) for latency/root-cause analysis.",
       inputSchema: {
         traceId: z.string().describe("The trace.id value."),
-        from: z.string().optional().describe("Timeframe start (default 'now-4h')."),
+        from: z.string().optional().describe("DQL timeframe start expression (default 'now()-4h')."),
       },
     },
     async ({ traceId, from }) => {
-      const q = `fetch spans, from:${from ?? "now-4h"} | filter trace.id == "${escapeQuotes(traceId)}" | sort start_time asc | limit 1000`;
+      const q = `fetch spans, from:${from ?? "now()-4h"} | filter trace.id == "${escapeQuotes(traceId)}" | sort start_time asc | limit 1000`;
       const result = await deps.client.dqlExecute(q, { maxResultRecords: 1000 });
       return jsonResult({ query: q, spanCount: result.records.length, spans: result.records });
     },
