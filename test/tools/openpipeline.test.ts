@@ -47,6 +47,38 @@ describe("list_openpipeline_configurations", () => {
   });
 });
 
+describe("get_openpipeline_configuration", () => {
+  it("returns the config directly when GET-by-id works", async () => {
+    mswServer.use(
+      http.get(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () =>
+        HttpResponse.json({ id: "logs", editable: true, definition: { pipelines: ["p1"] } }),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "get_openpipeline_configuration", arguments: { id: "logs" } });
+    expect(res.isError).toBeFalsy();
+    expect((res.content as Array<{ text: string }>)[0].text).toContain("p1");
+  });
+
+  it("falls back to the list when GET-by-id 404s (migration state)", async () => {
+    mswServer.use(
+      http.get(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () =>
+        HttpResponse.json({ error: { code: 404, message: "Migration in-progress/completed." } }, { status: 404 }),
+      ),
+      http.get(`${PLATFORM}/platform/openpipeline/v1/configurations`, () =>
+        HttpResponse.json([
+          { id: "events", editable: true, definition: {} },
+          { id: "logs", editable: true, definition: { pipelines: ["from-list"] } },
+        ]),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "get_openpipeline_configuration", arguments: { id: "logs" } });
+    expect(res.isError).toBeFalsy();
+    expect((res.content as Array<{ text: string }>)[0].text).toContain("from-list");
+  });
+});
+
 describe("preview_openpipeline_processor", () => {
   it("returns preview result with processed record fields", async () => {
     mswServer.use(

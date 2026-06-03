@@ -37,8 +37,23 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
           ),
       },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.platform.get(`${BASE}/configurations/${encodeURIComponent(id)}`)),
+    async ({ id }) => {
+      try {
+        return jsonResult(
+          await deps.client.platform.get(`${BASE}/configurations/${encodeURIComponent(id)}`),
+        );
+      } catch (err) {
+        // Some tenants (during/after platform migration) disable GET-by-id, but the
+        // list endpoint carries each configuration's full `definition` inline.
+        // Fall back to the list and return the matching configuration.
+        const all = await deps.client.platform.get<Array<{ id?: string }>>(
+          `${BASE}/configurations`,
+        );
+        const match = Array.isArray(all) ? all.find((c) => c?.id === id) : undefined;
+        if (match) return jsonResult(match);
+        throw err;
+      }
+    },
   );
 
   server.registerTool(
