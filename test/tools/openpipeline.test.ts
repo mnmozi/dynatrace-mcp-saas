@@ -117,3 +117,111 @@ describe("update_openpipeline_configuration write-gate", () => {
     expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
   });
 });
+
+describe("preview_openpipeline_pipeline", () => {
+  it("chains two processors: step 2 sees step 1's output record", async () => {
+    // Each POST call reads sampleData from the posted body's processor, parses it,
+    // adds a marker field keyed by the current field count, then returns it.
+    // Call 1: { a: 1 } → has 1 field → adds step_1 → { a: 1, step_1: true }  (2 fields)
+    // Call 2: { a: 1, step_1: true } → has 2 fields → adds step_2 → { a: 1, step_1: true, step_2: true }
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/preview/processor`, async ({ request }) => {
+        const body = await request.json() as { processor: { sampleData: string } };
+        const parsed = JSON.parse(body.processor.sampleData) as Record<string, unknown>;
+        const markerKey = `step_${Object.keys(parsed).length}`;
+        const record = { ...parsed, [markerKey]: true };
+        return HttpResponse.json({ results: [{ matched: true, record }] });
+      }),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "preview_openpipeline_pipeline",
+      arguments: {
+        processors: [
+          { id: "p1", type: "fieldsAdd" },
+          { id: "p2", type: "fieldsAdd" },
+        ],
+        sampleData: { a: 1 },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    const parsed = JSON.parse(text) as { steps: Array<{ matched: boolean; record: Record<string, unknown> }>; finalRecord: Record<string, unknown> };
+
+    // Both steps must have run
+    expect(parsed.steps).toHaveLength(2);
+
+    // Step 1: initial record had 1 field → marker is step_1
+    expect(parsed.steps[0].matched).toBe(true);
+    expect(parsed.steps[0].record).toHaveProperty("step_1", true);
+
+    // Step 2: must have received step 1's output (2 fields) → marker is step_2
+    expect(parsed.steps[1].matched).toBe(true);
+    expect(parsed.steps[1].record).toHaveProperty("step_2", true);
+
+    // finalRecord reflects both transformations
+    expect(parsed.finalRecord).toMatchObject({ a: 1, step_1: true, step_2: true });
+  });
+});
+
+describe("list_openpipeline_processor_types", () => {
+  it("returns all configs with stage processor types when called without configId", async () => {
+    mswServer.use(
+      http.get(`${PLATFORM}/platform/openpipeline/v1/configurations`, () =>
+        HttpResponse.json([
+          {
+            id: "logs",
+            definition: {
+              pipelinesSpecification: { processing: ["fieldsAdd", "dql"] },
+            },
+          },
+        ]),
+      ),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "list_openpipeline_processor_types",
+      arguments: {},
+    });
+
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("fieldsAdd");
+  });
+
+  it("filters by configId when provided", async () => {
+    mswServer.use(
+      http.get(`${PLATFORM}/platform/openpipeline/v1/configurations`, () =>
+        HttpResponse.json([
+          {
+            id: "logs",
+            definition: {
+              pipelinesSpecification: { processing: ["fieldsAdd", "dql"] },
+            },
+          },
+          {
+            id: "events",
+            definition: {
+              pipelinesSpecification: { processing: ["drop"] },
+            },
+          },
+        ]),
+      ),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "list_openpipeline_processor_types",
+      arguments: { configId: "logs" },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("fieldsAdd");
+    // "events" config's processor type should not appear
+    expect(text).not.toContain("drop");
+  });
+});

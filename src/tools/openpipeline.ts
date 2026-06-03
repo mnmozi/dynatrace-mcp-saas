@@ -192,6 +192,110 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
       ),
   );
 
+  // ── Code-driven read-only helpers ───────────────────────────────────────────
+
+  server.registerTool(
+    "preview_openpipeline_pipeline",
+    {
+      description:
+        "Preview the effect of an ORDERED SEQUENCE of processors by threading a record through each one " +
+        "via repeated /preview/processor API calls (safe, read-only). " +
+        "Each step's output record becomes the next step's input — this is pure-code orchestration, " +
+        "not a bulk API call. " +
+        "Returns a per-step trace (matched, record) and the finalRecord after all steps. " +
+        "Stops at the first step that returns an error.",
+      inputSchema: {
+        processors: z
+          .array(z.record(z.unknown()))
+          .min(1)
+          .describe(
+            "Ordered list of processor definitions (each like a single-preview processor: " +
+              "type, id, matcher, fields, ...). Do NOT include sampleData; the tool injects it per step.",
+          ),
+        sampleData: z
+          .union([z.string(), z.record(z.unknown())])
+          .describe(
+            "Initial record to feed the pipeline: a JSON-encoded string OR an object.",
+          ),
+      },
+    },
+    async ({ processors, sampleData }) => {
+      let current: Record<string, unknown> =
+        typeof sampleData === "string"
+          ? (JSON.parse(sampleData) as Record<string, unknown>)
+          : (sampleData as Record<string, unknown>);
+
+      const steps: Array<Record<string, unknown>> = [];
+      for (let i = 0; i < processors.length; i++) {
+        const proc = {
+          ...(processors[i] as Record<string, unknown>),
+          sampleData: JSON.stringify(current),
+        };
+        try {
+          const res = await deps.client.platform.post<{
+            results?: Array<{
+              matched?: boolean;
+              record?: Record<string, unknown>;
+              matchedProcessors?: string[];
+            }>;
+          }>(`${BASE}/preview/processor`, { processor: proc });
+          const r = res.results?.[0];
+          const matched = r?.matched ?? false;
+          steps.push({
+            index: i,
+            processorId: (processors[i] as Record<string, unknown>).id,
+            type: (processors[i] as Record<string, unknown>).type,
+            matched,
+            record: r?.record,
+          });
+          if (matched && r?.record) current = r.record;
+        } catch (e) {
+          steps.push({
+            index: i,
+            processorId: (processors[i] as Record<string, unknown>).id,
+            error: (e as Error).message,
+          });
+          break;
+        }
+      }
+      return jsonResult({ steps, finalRecord: current });
+    },
+  );
+
+  server.registerTool(
+    "list_openpipeline_processor_types",
+    {
+      description:
+        "List, per data type, the processor types allowed in each pipeline stage " +
+        "(parsed from each configuration's pipelinesSpecification). " +
+        "Useful for discovering which processor types (e.g. 'fieldsAdd', 'dql', 'drop', 'geoLookup') " +
+        "are valid in a given stage for a given data type. Read-only.",
+      inputSchema: {
+        configId: z
+          .string()
+          .optional()
+          .describe(
+            "Optional data-type id (e.g. 'logs') to return only that one; omit for all.",
+          ),
+      },
+    },
+    async ({ configId }) => {
+      const all = await deps.client.platform.get<
+        Array<{
+          id?: string;
+          definition?: { pipelinesSpecification?: Record<string, unknown> };
+        }>
+      >(`${BASE}/configurations`);
+      const list = Array.isArray(all) ? all : [];
+      const filtered = configId ? list.filter((c) => c.id === configId) : list;
+      const result = filtered.map((c) => ({
+        id: c.id,
+        stages: c.definition?.pipelinesSpecification ?? {},
+      }));
+      return jsonResult(result);
+    },
+  );
+
   // ── Write tool (gated) ───────────────────────────────────────────────────────
 
   server.registerTool(
