@@ -1,7 +1,7 @@
 {
   "name": "dynatrace-saas-mcp",
   "version": "0.1.0",
-  "private": true,
+  "description": "MCP server for Dynatrace SaaS (Gen3 platform): observability + configuration tools (DQL, settings, dashboards, SLOs, synthetic, OpenPipeline) with schema drift detection.",
   "type": "module",
   "bin": {
     "dynatrace-saas-mcp": "dist/index.js"
@@ -27,5 +27,35 @@
     "tsx": "^4.16.0",
     "typescript": "^5.5.0",
     "vitest": "^2.0.0"
-  }
+  },
+  "license": "MIT",
+  "author": "Mostafa Nasr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mnmozi/dynatrace-mcp-saas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mnmozi/dynatrace-mcp-saas/issues"
+  },
+  "homepage": "https://github.com/mnmozi/dynatrace-mcp-saas#readme",
+  "keywords": [
+    "dynatrace",
+    "mcp",
+    "model-context-protocol",
+    "observability",
+    "grail",
+    "dql",
+    "openpipeline",
+    "llm"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "specs",
+    "README.md",
+    "LICENSE",
+    ".env.example"
+  ]
 }

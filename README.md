@@ -1,5 +1,7 @@
 # Dynatrace SaaS MCP Server
 
+![CI](https://github.com/mnmozi/dynatrace-mcp-saas/actions/workflows/ci.yml/badge.svg)
+
 An [MCP](https://modelcontextprotocol.io) server for **Dynatrace SaaS (Gen3 Platform)** that exposes observability and configuration capabilities as tools for LLM agents (Claude Code, Claude Desktop, and any other MCP-compatible client).
 
 ---
@@ -186,3 +188,9 @@ Add the following to your MCP client config (Claude Code `~/.claude/mcp.json` or
 ```
 
 Replace the token values with real credentials. Set `DT_ENABLE_WRITES` to `"true"` only if you intend to allow the agent to create or modify Dynatrace configuration.
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
