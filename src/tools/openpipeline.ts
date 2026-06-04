@@ -3,6 +3,15 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import {
+  openPipelineProcessorSchema,
+  openPipelineConfigurationSchema,
+  dqlProcessorVerifySchema,
+  dqlProcessorAutocompleteSchema,
+  matcherVerifySchema,
+  matcherAutocompleteSchema,
+  lqlToDqlSchema,
+} from "../schemas/openpipeline.js";
 
 const BASE = "/platform/openpipeline/v1";
 
@@ -92,9 +101,9 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Use this to author and validate DQL processing scripts before applying them with " +
         "update_openpipeline_configuration.",
       inputSchema: {
-        body: z
-          .record(z.unknown())
-          .describe("Verify request per spec (the DQL processor / script to validate)."),
+        body: dqlProcessorVerifySchema.describe(
+          "DQL processor verify request: script (the DQL script to validate), optional configurationId, protectedFields.",
+        ),
       },
     },
     async ({ body }) =>
@@ -108,7 +117,9 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Get DQL autocomplete suggestions for a DQL processor script (safe, read-only). " +
         "Useful when authoring pipeline DQL expressions.",
       inputSchema: {
-        body: z.record(z.unknown()).describe("Autocomplete request per spec."),
+        body: dqlProcessorAutocompleteSchema.describe(
+          "DQL processor autocomplete request: script (in-progress DQL), cursorPosition, optional configurationId, protectedFields.",
+        ),
       },
     },
     async ({ body }) =>
@@ -122,9 +133,9 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Validate a matcher (routing condition) expression without mutating any configuration (safe, read-only). " +
         "Use this to validate routing conditions before applying them with update_openpipeline_configuration.",
       inputSchema: {
-        body: z
-          .record(z.unknown())
-          .describe("Matcher (routing condition) verify request per spec."),
+        body: matcherVerifySchema.describe(
+          "Matcher verify request: query (the matcher expression), optional configurationId, context, restrictedFields.",
+        ),
       },
     },
     async ({ body }) =>
@@ -138,7 +149,9 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Get autocomplete suggestions for a matcher (routing condition) expression (safe, read-only). " +
         "Useful when authoring pipeline routing conditions.",
       inputSchema: {
-        body: z.record(z.unknown()).describe("Matcher autocomplete request per spec."),
+        body: matcherAutocompleteSchema.describe(
+          "Matcher autocomplete request: query (in-progress matcher expression), cursorPosition.",
+        ),
       },
     },
     async ({ body }) =>
@@ -152,11 +165,9 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Convert a legacy LQL (Log Query Language) matcher expression to a DQL (Dynatrace Query Language) " +
         "equivalent (safe, read-only). Useful when migrating older pipeline routing conditions.",
       inputSchema: {
-        body: z
-          .record(z.unknown())
-          .describe(
-            "LQL-to-DQL conversion request per spec (e.g. the LQL matcher string).",
-          ),
+        body: lqlToDqlSchema.describe(
+          "LQL-to-DQL conversion request: query (the LQL matcher string to convert, e.g. 'log.source=\"snmptraps\"').",
+        ),
       },
     },
     async ({ body }) =>
@@ -173,15 +184,13 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Use this to author and validate processors before applying them with update_openpipeline_configuration. " +
         "Include a 'sampleData' string field (JSON-encoded record) inside the processor definition.",
       inputSchema: {
-        processor: z
-          .record(z.unknown())
-          .describe(
-            "Processor definition (type, matcher, fields, etc.). " +
-              "Include a 'sampleData' string field with a JSON-encoded record to test against, " +
-              "per the PreviewProcessorEnvelope spec. " +
-              "Example: { type: 'fieldsRename', sampleData: '{\"hostname\":\"my-host\"}', " +
-              "fields: [{ fromName: 'hostname', toName: 'host.name' }] }",
-          ),
+        processor: openPipelineProcessorSchema.describe(
+          "Processor definition (type, matcher, fields, etc.). " +
+            "Include a 'sampleData' string field with a JSON-encoded record to test against, " +
+            "per the PreviewProcessorEnvelope spec. " +
+            "Example: { type: 'fieldsRename', sampleData: '{\"hostname\":\"my-host\"}', " +
+            "fields: [{ fromName: 'hostname', toName: 'host.name' }] }",
+        ),
       },
     },
     async ({ processor }) =>
@@ -206,7 +215,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Stops at the first step that returns an error.",
       inputSchema: {
         processors: z
-          .array(z.record(z.unknown()))
+          .array(openPipelineProcessorSchema)
           .min(1)
           .describe(
             "Ordered list of processor definitions (each like a single-preview processor: " +
@@ -311,12 +320,10 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
           .describe(
             "Configuration id / data type to update, e.g. 'logs', 'events', 'bizevents', 'metrics'.",
           ),
-        configuration: z
-          .record(z.unknown())
-          .describe(
-            "Full configuration object (typically fetched via get_openpipeline_configuration, then modified). " +
-              "PUT replaces the whole configuration.",
-          ),
+        configuration: openPipelineConfigurationSchema.describe(
+          "Full configuration object (typically fetched via get_openpipeline_configuration, then modified). " +
+            "PUT replaces the whole configuration.",
+        ),
       },
     },
     async ({ id, configuration }) => {

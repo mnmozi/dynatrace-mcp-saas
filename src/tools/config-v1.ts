@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import { requestAttributeSchema, requestNamingSchema } from "../schemas/config-v1.js";
 
 const REQUEST_ATTRIBUTES = "/api/config/v1/service/requestAttributes";
 const REQUEST_NAMING = "/api/config/v1/service/requestNaming";
@@ -39,9 +40,9 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
         "Create a new request attribute (WRITE, classic Config API v1). " +
         "Body must include at minimum: name, dataType, dataSources.",
       inputSchema: {
-        requestAttribute: z
-          .record(z.unknown())
-          .describe("Request attribute definition (name, dataType, dataSources, etc.)."),
+        requestAttribute: requestAttributeSchema.describe(
+          "Request attribute definition (name, dataType, dataSources, etc.).",
+        ),
       },
     },
     async ({ requestAttribute }) => {
@@ -56,9 +57,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
       description: "Update an existing request attribute by ID (WRITE, classic Config API v1).",
       inputSchema: {
         id: z.string().describe("Request attribute ID to update."),
-        requestAttribute: z
-          .record(z.unknown())
-          .describe("Updated request attribute definition."),
+        requestAttribute: requestAttributeSchema.describe("Updated request attribute definition."),
       },
     },
     async ({ id, requestAttribute }) => {
@@ -114,9 +113,9 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
         "Create a new request naming rule (WRITE, classic Config API v1). " +
         "Body must include at minimum: naming, enabled, namingPattern, conditions.",
       inputSchema: {
-        requestNaming: z
-          .record(z.unknown())
-          .describe("Request naming rule definition (naming, enabled, namingPattern, conditions, etc.)."),
+        requestNaming: requestNamingSchema.describe(
+          "Request naming rule definition (namingPattern, enabled, conditions, managementZones, etc.).",
+        ),
       },
     },
     async ({ requestNaming }) => {
@@ -131,9 +130,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
       description: "Update an existing request naming rule by ID (WRITE, classic Config API v1).",
       inputSchema: {
         id: z.string().describe("Request naming rule ID to update."),
-        requestNaming: z
-          .record(z.unknown())
-          .describe("Updated request naming rule definition."),
+        requestNaming: requestNamingSchema.describe("Updated request naming rule definition."),
       },
     },
     async ({ id, requestNaming }) => {

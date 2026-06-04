@@ -166,6 +166,225 @@ describe("preview_openpipeline_pipeline", () => {
   });
 });
 
+describe("preview_openpipeline_processor — passthrough acceptance", () => {
+  it("preserves type-specific 'fields' array in the posted body (passthrough)", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/preview/processor`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({
+          results: [{ matched: true, matchedProcessors: [], record: { "host.name": "raspberry-pi 4" } }],
+        });
+      }),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "preview_openpipeline_processor",
+      arguments: {
+        processor: {
+          type: "fieldsRename",
+          enabled: false,
+          editable: true,
+          id: "hostname-field-normalizer",
+          description: "Renames hostname to host.name",
+          matcher: 'isNotNull("hostname")',
+          sampleData: '{"hostname":"raspberry-pi 4"}',
+          // type-specific field — must pass through
+          fields: [{ fromName: "hostname", toName: "host.name" }],
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    // The posted body wraps processor in { processor: … }
+    const posted = capturedBody as { processor: Record<string, unknown> };
+    expect(posted.processor.type).toBe("fieldsRename");
+    expect(posted.processor.id).toBe("hostname-field-normalizer");
+    // Critically: type-specific `fields` must be preserved by .passthrough()
+    expect(Array.isArray(posted.processor.fields)).toBe(true);
+    const fields = posted.processor.fields as Array<{ fromName: string; toName: string }>;
+    expect(fields[0].fromName).toBe("hostname");
+    expect(fields[0].toName).toBe("host.name");
+  });
+});
+
+describe("preview_openpipeline_pipeline — passthrough acceptance", () => {
+  it("preserves type-specific fields in each pipeline processor element", async () => {
+    let capturedBodies: Array<unknown> = [];
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/preview/processor`, async ({ request }) => {
+        const body = await request.json();
+        capturedBodies.push(body);
+        const b = body as { processor: { sampleData: string } };
+        const parsed = JSON.parse(b.processor.sampleData) as Record<string, unknown>;
+        const record = { ...parsed, processed: true };
+        return HttpResponse.json({ results: [{ matched: true, record }] });
+      }),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "preview_openpipeline_pipeline",
+      arguments: {
+        processors: [
+          {
+            type: "fieldsRename",
+            id: "p1",
+            matcher: "true",
+            // type-specific field — must pass through
+            fields: [{ fromName: "hostname", toName: "host.name" }],
+          },
+        ],
+        sampleData: { hostname: "my-host" },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    expect(capturedBodies).toHaveLength(1);
+    const first = capturedBodies[0] as { processor: Record<string, unknown> };
+    expect(first.processor.type).toBe("fieldsRename");
+    // fields must be preserved by .passthrough()
+    expect(Array.isArray(first.processor.fields)).toBe(true);
+  });
+});
+
+describe("verify_openpipeline_dql_processor — typed body acceptance", () => {
+  it("sends script and optional fields to the verify endpoint", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ valid: true, notifications: [] });
+      }),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "verify_openpipeline_dql_processor",
+      arguments: {
+        body: {
+          script: 'parse content, "IPV4:ip LD HTTPDATE:time \']\' LD:text"',
+          configurationId: "logs",
+          protectedFields: ["timestamp"],
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const posted = capturedBody as { script: string; configurationId: string; protectedFields: string[] };
+    expect(posted.script).toContain("parse content");
+    expect(posted.configurationId).toBe("logs");
+    expect(posted.protectedFields).toEqual(["timestamp"]);
+  });
+});
+
+describe("verify_openpipeline_matcher — typed body acceptance", () => {
+  it("sends query and optional fields to the verify endpoint", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ valid: true, notifications: [] });
+      }),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "verify_openpipeline_matcher",
+      arguments: {
+        body: {
+          query: 'matchesValue(type, "security")',
+          configurationId: "events",
+          context: "processing",
+          restrictedFields: ["content"],
+          // extra field — must be preserved by passthrough
+          extraField: "preserved",
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const posted = capturedBody as Record<string, unknown>;
+    expect(posted.query).toBe('matchesValue(type, "security")');
+    expect(posted.configurationId).toBe("events");
+    expect(posted.context).toBe("processing");
+    expect(posted.restrictedFields).toEqual(["content"]);
+    expect(posted.extraField).toBe("preserved");
+  });
+});
+
+describe("convert_lql_to_dql — typed body acceptance", () => {
+  it("sends query to the lqlToDql endpoint", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/lqlToDql`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ query: 'matchesValue(log.source, "snmptraps")' });
+      }),
+    );
+
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "convert_lql_to_dql",
+      arguments: {
+        body: {
+          query: 'log.source="snmptraps" AND snmp.trap_oid="F5-BIGIP-COMMON-MIB"',
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const posted = capturedBody as { query: string };
+    expect(posted.query).toContain("snmptraps");
+  });
+});
+
+describe("update_openpipeline_configuration — typed body acceptance", () => {
+  it("preserves definition tree fields when using typed configuration schema", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ id: "logs" });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "update_openpipeline_configuration",
+      arguments: {
+        id: "logs",
+        configuration: {
+          id: "logs",
+          editable: true,
+          definition: {
+            pipelinesSpecification: { processing: ["fieldsAdd"] },
+            catchAllPipeline: { id: "default" },
+          },
+          // extra field — must be preserved by passthrough
+          customField: "preserved",
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const posted = capturedBody as Record<string, unknown>;
+    expect(posted.id).toBe("logs");
+    expect(posted.editable).toBe(true);
+    expect(posted.customField).toBe("preserved");
+    const def = posted.definition as Record<string, unknown>;
+    expect(def.catchAllPipeline).toBeDefined();
+  });
+});
+
 describe("list_openpipeline_processor_types", () => {
   it("returns all configs with stage processor types when called without configId", async () => {
     mswServer.use(

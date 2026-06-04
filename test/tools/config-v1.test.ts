@@ -67,9 +67,120 @@ describe("create_request_attribute write-gate", () => {
     const client = await makeClient();
     const res = await client.callTool({
       name: "create_request_attribute",
-      arguments: { requestAttribute: {} },
+      arguments: { requestAttribute: { name: "test-attr" } },
     });
     expect(res.isError).toBe(true);
     expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
+  });
+});
+
+describe("create_request_attribute — passthrough acceptance", () => {
+  it("preserves all fields including dataSources[0].parameterName in the POST body", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.post(`${CLASSIC}/api/config/v1/service/requestAttributes`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ id: "RA-NEW", name: "my-param" });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "create_request_attribute",
+      arguments: {
+        requestAttribute: {
+          name: "my-param",
+          enabled: false,
+          dataType: "STRING",
+          normalization: "ORIGINAL",
+          aggregation: "FIRST",
+          confidential: false,
+          skipPersonalDataMasking: false,
+          dataSources: [
+            {
+              enabled: true,
+              source: "POST_PARAMETER",
+              parameterName: "x",
+              // extra field — must be preserved by passthrough
+              extraCapture: "custom",
+            },
+          ],
+          // extra top-level field — must be preserved by passthrough
+          customMetadata: "preserved",
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const posted = capturedBody as Record<string, unknown>;
+    expect(posted.name).toBe("my-param");
+    expect(posted.dataType).toBe("STRING");
+    expect(posted.confidential).toBe(false);
+    expect(posted.customMetadata).toBe("preserved");
+
+    const sources = posted.dataSources as Array<Record<string, unknown>>;
+    expect(Array.isArray(sources)).toBe(true);
+    expect(sources[0].source).toBe("POST_PARAMETER");
+    // Critically: parameterName must be preserved by .passthrough()
+    expect(sources[0].parameterName).toBe("x");
+    expect(sources[0].extraCapture).toBe("custom");
+  });
+});
+
+describe("create_request_naming — passthrough acceptance", () => {
+  it("preserves namingPattern and conditions including comparisonInfo in the POST body", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.post(`${CLASSIC}/api/config/v1/service/requestNaming`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ id: "RN-NEW" });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "create_request_naming",
+      arguments: {
+        requestNaming: {
+          namingPattern: "{serviceMethod} [{serviceType}]",
+          enabled: false,
+          managementZones: [],
+          conditions: [
+            {
+              attribute: "SERVICE_TYPE",
+              comparisonInfo: {
+                type: "SERVICE_TYPE",
+                comparison: "EQUALS",
+                value: "WEB_SERVICE",
+                negate: false,
+                // extra field in comparisonInfo — must be preserved
+                extraFlag: true,
+              },
+            },
+          ],
+          // extra top-level field — must be preserved by passthrough
+          customTag: "my-tag",
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const posted = capturedBody as Record<string, unknown>;
+    expect(posted.namingPattern).toBe("{serviceMethod} [{serviceType}]");
+    expect(posted.enabled).toBe(false);
+    expect(posted.customTag).toBe("my-tag");
+
+    const conditions = posted.conditions as Array<Record<string, unknown>>;
+    expect(Array.isArray(conditions)).toBe(true);
+    expect(conditions[0].attribute).toBe("SERVICE_TYPE");
+    const ci = conditions[0].comparisonInfo as Record<string, unknown>;
+    expect(ci.comparison).toBe("EQUALS");
+    expect(ci.value).toBe("WEB_SERVICE");
+    // extra field must be preserved by .passthrough()
+    expect(ci.extraFlag).toBe(true);
   });
 });
