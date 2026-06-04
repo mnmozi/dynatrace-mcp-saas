@@ -52,10 +52,53 @@ describe("create_slo write-gate", () => {
     const client = await makeClient();
     const res = await client.callTool({
       name: "create_slo",
-      arguments: { slo: {} },
+      arguments: { slo: { name: "Test SLO" } },
     });
     expect(res.isError).toBe(true);
     expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
+  });
+});
+
+describe("create_slo — passthrough acceptance", () => {
+  it("preserves all fields including criteria, tags, and extra fields in the POST body", async () => {
+    let capturedBody: unknown = null;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/slo/v1/slos`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ id: "SLO-NEW" });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "create_slo",
+      arguments: {
+        slo: {
+          name: "Checkout availability",
+          description: "Tracks checkout service availability",
+          criteria: [{ timeframeFrom: "now-7d", timeframeTo: "now", target: 99.5, warning: 99.9 }],
+          tags: ["team:checkout", "env:prod"],
+          customSli: { indicator: "timeseries sli=avg(dt.service.availability)" },
+          // extra field — must be preserved by passthrough
+          someExtraField: true,
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const posted = capturedBody as Record<string, unknown>;
+    expect(posted.name).toBe("Checkout availability");
+    expect(posted.description).toBe("Tracks checkout service availability");
+    // criteria must be preserved by .passthrough()
+    const criteriaArr = posted.criteria as Array<Record<string, unknown>>;
+    expect(Array.isArray(criteriaArr)).toBe(true);
+    expect(criteriaArr[0].target).toBe(99.5);
+    // tags must be preserved
+    expect(posted.tags).toEqual(["team:checkout", "env:prod"]);
+    // extra field must be preserved by .passthrough()
+    expect(posted.someExtraField).toBe(true);
   });
 });
 

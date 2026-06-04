@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import { sloSchema } from "../schemas/slo.js";
 
 const SLO = "/platform/slo/v1/slos";
 
@@ -104,7 +105,7 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
     "create_slo",
     {
       description: "Create an SLO (WRITE). Body fields per the SLO v1 spec (name, criteria, target, etc.).",
-      inputSchema: { slo: z.record(z.unknown()).describe("SLO definition object matching platform SLO v1.") },
+      inputSchema: { slo: sloSchema.describe("SLO definition object matching platform SLO v1.") },
     },
     async ({ slo }) => {
       requireWrites(deps.config);
@@ -116,7 +117,7 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
     "update_slo",
     {
       description: "Update an SLO by id (WRITE).",
-      inputSchema: { id: z.string(), slo: z.record(z.unknown()) },
+      inputSchema: { id: z.string(), slo: sloSchema },
     },
     async ({ id, slo }) => {
       requireWrites(deps.config);

@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import { syntheticMonitorSchema } from "../schemas/synthetic.js";
 
 const BASE = "/platform/synthetic/v1";
 const MONITORS = `${BASE}/monitors`;
@@ -74,9 +75,9 @@ export function registerSyntheticTools(server: McpServer, deps: ToolDeps): void 
         "Pass a full monitor body per the platform synthetic v1 spec " +
         "(SyntheticMultiProtocolMonitorRequest or SyntheticBrowserMonitorRequest).",
       inputSchema: {
-        monitor: z
-          .record(z.unknown())
-          .describe("Monitor definition object matching platform synthetic v1."),
+        monitor: syntheticMonitorSchema.describe(
+          "Monitor definition object matching platform synthetic v1.",
+        ),
       },
     },
     async ({ monitor }) => {
@@ -93,9 +94,9 @@ export function registerSyntheticTools(server: McpServer, deps: ToolDeps): void 
         "Sends a full PUT to /monitors/{monitor-id} per the platform synthetic v1 spec.",
       inputSchema: {
         id: z.string().describe("Synthetic monitor entity ID."),
-        monitor: z
-          .record(z.unknown())
-          .describe("Updated monitor definition object matching platform synthetic v1."),
+        monitor: syntheticMonitorSchema.describe(
+          "Updated monitor definition object matching platform synthetic v1.",
+        ),
       },
     },
     async ({ id, monitor }) => {
