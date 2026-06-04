@@ -45,6 +45,17 @@ function urlToStem(url: string): string {
   return s;
 }
 
+/**
+ * Redact Dynatrace token-shaped EXAMPLE values (dt0X##.SEG[.SEG]) that are baked into
+ * the vendor OpenAPI specs' `example:` fields. These are documentation samples, not real
+ * credentials — but GitHub secret scanning / push protection rejects them. Redacting keeps
+ * committed snapshots push-safe and idempotent with the scrubbed git history.
+ */
+const EXAMPLE_TOKEN_RE = /dt0[a-z][0-9]{2}(\.[A-Za-z0-9]{6,}){1,2}/g;
+function redactTokens(text: string): string {
+  return text.replace(EXAMPLE_TOKEN_RE, "REDACTED-EXAMPLE-TOKEN");
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface SwaggerUiEntry {
@@ -123,9 +134,9 @@ async function downloadPlatformSpecs(client: DynatraceClient): Promise<string[]>
     const stem = urlToStem(entry.url);
     stems.push(stem);
 
-    // Fetch as raw text to preserve YAML formatting
+    // Fetch as raw text to preserve YAML formatting; redact example tokens before writing.
     const content = await client.platform.getText(entry.url);
-    await writeFile(`${PLATFORM_DIR}${stem}.yaml`, content, "utf-8");
+    await writeFile(`${PLATFORM_DIR}${stem}.yaml`, redactTokens(content), "utf-8");
   }
 
   return stems.sort();
@@ -135,10 +146,10 @@ async function downloadClassicSpecs(client: DynatraceClient): Promise<void> {
   await mkdir(CLASSIC_DIR, { recursive: true });
 
   const v2 = await client.classic.get<unknown>("/api/v2/spec3.json");
-  await writeFile(`${CLASSIC_DIR}environment-api-v2.json`, JSON.stringify(v2, null, 2), "utf-8");
+  await writeFile(`${CLASSIC_DIR}environment-api-v2.json`, redactTokens(JSON.stringify(v2, null, 2)), "utf-8");
 
   const v1 = await client.classic.get<unknown>("/api/v1/spec3.json");
-  await writeFile(`${CLASSIC_DIR}environment-api-v1.json`, JSON.stringify(v1, null, 2), "utf-8");
+  await writeFile(`${CLASSIC_DIR}environment-api-v1.json`, redactTokens(JSON.stringify(v1, null, 2)), "utf-8");
 }
 
 async function downloadSettingsManifest(client: DynatraceClient): Promise<Record<string, string | undefined>> {
