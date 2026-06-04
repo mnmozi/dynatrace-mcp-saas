@@ -15,6 +15,7 @@ import { registerSloTools } from "./slos.js";
 import { registerSyntheticTools } from "./synthetic.js";
 import { registerConfigV1Tools } from "./config-v1.js";
 import { registerOpenPipelineTools } from "./openpipeline.js";
+import { registerDriftTools } from "./drift.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -34,4 +35,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerSyntheticTools(server, deps);
   registerConfigV1Tools(server, deps);
   registerOpenPipelineTools(server, deps);
+  registerDriftTools(server, deps);
 }
