@@ -22,6 +22,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import { resolveDocumentContent } from "../util/document-content.js";
 
 const DOC_BASE = "/platform/document/v1/documents";
 
@@ -93,14 +94,17 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "Sends a multipart/form-data POST per the Document Service spec. " +
         "The content object is serialized to JSON and sent as the 'content' part " +
         "with Content-Type application/json. " +
+        "Provide the content inline via 'content' OR from a file via 'contentPath' (not both). " +
         "Requires DT_ENABLE_WRITES=true.",
       inputSchema: {
         name: z.string().max(128).describe("Dashboard display name."),
-        content: z.record(z.unknown()).describe("Dashboard content as a JSON object (e.g. { tiles: [] })."),
+        content: z.record(z.unknown()).optional().describe("Dashboard content as a JSON object (e.g. { tiles: [] })."),
+        contentPath: z.string().optional().describe("Absolute or cwd-relative path to a JSON file whose contents become the dashboard content. Provide exactly one of content or contentPath."),
       },
     },
-    async ({ name, content }) => {
+    async ({ name, content, contentPath }) => {
       requireWrites(deps.config);
+      const resolved = await resolveDocumentContent({ content, contentPath }, { required: true });
 
       const form = new FormData();
       form.append("name", name);
@@ -108,7 +112,7 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
       // The spec says the content part's Content-Type header determines the
       // stored content type. Node's FormData / Blob supports this via a Blob
       // with a type field.
-      const contentBlob = new Blob([JSON.stringify(content)], { type: "application/json" });
+      const contentBlob = new Blob([JSON.stringify(resolved)], { type: "application/json" });
       form.append("content", contentBlob, "dashboard.json");
 
       return jsonResult(
@@ -126,7 +130,7 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "Update an existing dashboard (WRITE). " +
         "Uses PATCH /documents/{id} with multipart/form-data per the spec. " +
         "Optimistic locking: you must supply the current document version. " +
-        "At least one of name or content must be provided. " +
+        "At least one of name, content, or contentPath must be provided. " +
         "Requires DT_ENABLE_WRITES=true.",
       inputSchema: {
         id: z.string().describe("Dashboard document id."),
@@ -135,19 +139,21 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         name: z.string().max(128).optional().describe("New display name (optional)."),
         content: z.record(z.unknown()).optional()
           .describe("New dashboard content as a JSON object (optional)."),
+        contentPath: z.string().optional().describe("Absolute or cwd-relative path to a JSON file whose contents become the new dashboard content. Mutually exclusive with content."),
       },
     },
-    async ({ id, version, name, content }) => {
+    async ({ id, version, name, content, contentPath }) => {
       requireWrites(deps.config);
+      const resolved = await resolveDocumentContent({ content, contentPath });
 
-      if (name === undefined && content === undefined) {
-        throw new Error("update_dashboard requires at least one of 'name' or 'content' to update.");
+      if (name === undefined && resolved === undefined) {
+        throw new Error("update_dashboard requires at least one of 'name', 'content', or 'contentPath' to update.");
       }
 
       const form = new FormData();
       if (name !== undefined) form.append("name", name);
-      if (content !== undefined) {
-        const contentBlob = new Blob([JSON.stringify(content)], { type: "application/json" });
+      if (resolved !== undefined) {
+        const contentBlob = new Blob([JSON.stringify(resolved)], { type: "application/json" });
         form.append("content", contentBlob, "dashboard.json");
       }
 

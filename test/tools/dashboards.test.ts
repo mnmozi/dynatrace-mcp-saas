@@ -1,4 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -196,5 +199,81 @@ describe("delete_dashboard (writes enabled)", () => {
       arguments: { id: "D1", version: 2 },
     });
     expect(res.isError).toBeFalsy();
+  });
+});
+
+// ─── contentPath support ─────────────────────────────────────────────────────
+
+describe("create_dashboard with contentPath", () => {
+  it("reads the file and sends its JSON as the content part", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "dash-create-"));
+    const file = join(dir, "d.json");
+    writeFileSync(file, JSON.stringify({ tiles: [], marker: "FROM_FILE_XYZ" }));
+
+    let body = "";
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/document/v1/documents`, async ({ request }) => {
+        body = await request.text();
+        return HttpResponse.json(
+          { id: "D-new", name: "x", type: "dashboard", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read"], isPrivate: true },
+          { status: 201 },
+        );
+      }),
+    );
+
+    const client = await makeClient(cfgWrites);
+    const res = await client.callTool({
+      name: "create_dashboard",
+      arguments: { name: "x", contentPath: file },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(body).toContain("FROM_FILE_XYZ");
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("errors when neither content nor contentPath is provided", async () => {
+    const client = await makeClient(cfgWrites);
+    const res = await client.callTool({ name: "create_dashboard", arguments: { name: "x" } });
+    expect(res.isError).toBe(true);
+    expect((res.content as Array<{ text: string }>)[0].text).toMatch(/content .*or contentPath/i);
+  });
+
+  it("errors when both content and contentPath are provided", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "dash-both-"));
+    const file = join(dir, "d.json");
+    writeFileSync(file, JSON.stringify({ tiles: [] }));
+    const client = await makeClient(cfgWrites);
+    const res = await client.callTool({
+      name: "create_dashboard",
+      arguments: { name: "x", content: { tiles: [] }, contentPath: file },
+    });
+    expect(res.isError).toBe(true);
+    expect((res.content as Array<{ text: string }>)[0].text).toMatch(/not both/i);
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("update_dashboard with contentPath", () => {
+  it("reads the file and sends its JSON as the content part", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "dash-update-"));
+    const file = join(dir, "d.json");
+    writeFileSync(file, JSON.stringify({ tiles: [], marker: "UPDATED_FROM_FILE" }));
+
+    let body = "";
+    mswServer.use(
+      http.patch(`${PLATFORM}/platform/document/v1/documents/:id`, async ({ request }) => {
+        body = await request.text();
+        return HttpResponse.json({ documentMetadata: { id: "D1", name: "Ops", type: "dashboard", version: "3", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-03T00:00:00Z" }, access: ["read"], isPrivate: true } });
+      }),
+    );
+
+    const client = await makeClient(cfgWrites);
+    const res = await client.callTool({
+      name: "update_dashboard",
+      arguments: { id: "D1", version: 2, contentPath: file },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(body).toContain("UPDATED_FROM_FILE");
+    rmSync(dir, { recursive: true, force: true });
   });
 });

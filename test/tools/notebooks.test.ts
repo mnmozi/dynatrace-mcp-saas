@@ -1,4 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -196,5 +199,67 @@ describe("delete_notebook (writes enabled)", () => {
       arguments: { id: "N1", version: 2 },
     });
     expect(res.isError).toBeFalsy();
+  });
+});
+
+// ─── contentPath support ─────────────────────────────────────────────────────
+
+describe("create_notebook with contentPath", () => {
+  it("reads the file and sends its JSON as the content part", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "nb-create-"));
+    const file = join(dir, "n.json");
+    writeFileSync(file, JSON.stringify({ cells: [], marker: "NB_FROM_FILE" }));
+
+    let body = "";
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/document/v1/documents`, async ({ request }) => {
+        body = await request.text();
+        return HttpResponse.json(
+          { id: "N-new", name: "x", type: "notebook", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read"], isPrivate: true },
+          { status: 201 },
+        );
+      }),
+    );
+
+    const client = await makeClient(cfgWrites);
+    const res = await client.callTool({
+      name: "create_notebook",
+      arguments: { name: "x", contentPath: file },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(body).toContain("NB_FROM_FILE");
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("errors when neither content nor contentPath is provided", async () => {
+    const client = await makeClient(cfgWrites);
+    const res = await client.callTool({ name: "create_notebook", arguments: { name: "x" } });
+    expect(res.isError).toBe(true);
+    expect((res.content as Array<{ text: string }>)[0].text).toMatch(/content .*or contentPath/i);
+  });
+});
+
+describe("update_notebook with contentPath", () => {
+  it("reads the file and sends its JSON as the content part", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "nb-update-"));
+    const file = join(dir, "n.json");
+    writeFileSync(file, JSON.stringify({ cells: [], marker: "NB_UPDATED_FROM_FILE" }));
+
+    let body = "";
+    mswServer.use(
+      http.patch(`${PLATFORM}/platform/document/v1/documents/:id`, async ({ request }) => {
+        body = await request.text();
+        return HttpResponse.json({ documentMetadata: { id: "N1", name: "Investigation", type: "notebook", version: "3", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-03T00:00:00Z" }, access: ["read"], isPrivate: true } });
+      }),
+    );
+
+    const client = await makeClient(cfgWrites);
+    const res = await client.callTool({
+      name: "update_notebook",
+      arguments: { id: "N1", version: 2, contentPath: file },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(body).toContain("NB_UPDATED_FROM_FILE");
+    rmSync(dir, { recursive: true, force: true });
   });
 });
