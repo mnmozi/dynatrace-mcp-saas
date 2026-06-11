@@ -1,6 +1,6 @@
 openapi: "3.0.4"
 info:
-  version: "0.1.37"
+  version: "0.1.42"
   title: "Feature Management API"
   x-service-category: "Feature Management"
   x-summary: "Provide functionality for Feature Management."
@@ -337,11 +337,44 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
         "4XX":
           $ref: "#/components/responses/ClientError"
         "5XX":
           $ref: "#/components/responses/InternalServerError"
       description: "**Required scope:** feature-management:context-attributes:delete"
+  /projects/{project-key}/context-attributes/{context-attribute-key}/usage:
+    get:
+      summary: "List the targeting rules that reference a context attribute"
+      operationId: "getContextAttributeUsage"
+      tags:
+      - "Context Attribute"
+      security:
+      - ssoAuth:
+        - "feature-management:context-attributes:read"
+      - ssoBearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/contextAttributeKeyPathParam"
+      responses:
+        "200":
+          description: "The features whose targeting rules reference the context attribute"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextAttributeUsageList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "4XX":
+          $ref: "#/components/responses/ClientError"
+        "5XX":
+          $ref: "#/components/responses/InternalServerError"
+      description: "**Required scope:** feature-management:context-attributes:read"
   /projects/{project-key}/release-stages:
     get:
       summary: "List all release stages in a project"
@@ -658,6 +691,7 @@ paths:
       parameters:
       - $ref: "#/components/parameters/pageParam"
       - $ref: "#/components/parameters/filter"
+      - $ref: "#/components/parameters/sort"
       - $ref: "#/components/parameters/pageSizeParam"
       - $ref: "#/components/parameters/projectKeyPathParam"
       responses:
@@ -1142,6 +1176,13 @@ components:
       schema:
         type: "string"
       example: "projectKey='my-project' and stageKey='prod'"
+    sort:
+      name: "sort"
+      in: "query"
+      description: "An expression to sort the results."
+      schema:
+        type: "string"
+      example: "status,-lastModifiedAt"
     pageSizeParam:
       name: "page-size"
       in: "query"
@@ -1238,8 +1279,17 @@ components:
       type: "string"
       format: "context-attribute-key"
       description: "The key of a context attribute, unique within a project."
-      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      pattern: "^[a-z$][a-z0-9-_$]{1,254}[a-z0-9]$"
       example: "my-context-attribute"
+    ContextAttributeContextKey:
+      type: "string"
+      format: "context-key"
+      description: "The context key of a context attribute, used to reference the\
+        \ attribute from code. Unlike `key`, it's not restricted to kebab-case characters\
+        \ and digits, allowing the characters commonly used in code identifiers (letters,\
+        \ digits, '.', '_' and '-').\n"
+      pattern: "^[A-Za-z0-9_][A-Za-z0-9._-]{0,255}$"
+      example: "my.Context_Attribute-1"
     VariantKey:
       type: "string"
       format: "variant-key"
@@ -1334,6 +1384,7 @@ components:
       - "name"
       - "schema"
       - "type"
+      - "contextKey"
       properties:
         key:
           $ref: "#/components/schemas/ContextAttributeKey"
@@ -1347,6 +1398,8 @@ components:
           type: "string"
         type:
           $ref: "#/components/schemas/ContextAttributeType"
+        contextKey:
+          $ref: "#/components/schemas/ContextAttributeContextKey"
     ContextAttributeUpdate:
       type: "object"
       description: "Request body for updating a context attribute. The key is specified\
@@ -1403,6 +1456,51 @@ components:
       - "NUMBER"
       - "SEM_VER"
       - "STRING"
+    ContextAttributeUsage:
+      type: "object"
+      description: "A feature whose targeting rules reference the context attribute.\
+        \ The release stages of a feature that reference the attribute are collapsed\
+        \ into a single entry.\n"
+      required:
+      - "featureKey"
+      - "featureName"
+      - "releaseStages"
+      properties:
+        featureKey:
+          $ref: "#/components/schemas/FeatureKey"
+        featureName:
+          type: "string"
+          description: "The display name of the referencing feature."
+        releaseStages:
+          type: "array"
+          description: "The release stages of the feature whose targeting references\
+            \ the attribute."
+          items:
+            $ref: "#/components/schemas/ContextAttributeUsageReleaseStage"
+    ContextAttributeUsageReleaseStage:
+      type: "object"
+      description: "A release stage of a feature whose targeting references the context\
+        \ attribute."
+      required:
+      - "releaseStageKey"
+      - "releaseStageName"
+      properties:
+        releaseStageKey:
+          $ref: "#/components/schemas/ReleaseStageKey"
+        releaseStageName:
+          type: "string"
+          description: "The display name of the release stage."
+    ContextAttributeUsageList:
+      type: "object"
+      required:
+      - "items"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ContextAttributeUsage"
+        resourceContext:
+          $ref: "#/components/schemas/ResourceContext"
     FeatureCreate:
       type: "object"
       description: "Request body for creating a feature. The projectKey is specified\
@@ -1948,6 +2046,29 @@ components:
           format: "int32"
         message:
           type: "string"
+        details:
+          $ref: "#/components/schemas/ErrorDetails"
+    ErrorDetails:
+      properties:
+        traceId:
+          type: "string"
+        constraintViolations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+        missingScopes:
+          type: "array"
+          items:
+            type: "string"
+    ConstraintViolation:
+      type: "object"
+      required:
+      - "message"
+      properties:
+        message:
+          type: "string"
+        path:
+          type: "string"
   responses:
     BadRequestError:
       description: "Bad Request"
@@ -1975,6 +2096,12 @@ components:
             $ref: "#/components/schemas/ErrorEnvelope"
     ConflictError:
       description: "Conflict"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    PreconditionFailedError:
+      description: "Precondition Failed"
       content:
         application/json:
           schema:

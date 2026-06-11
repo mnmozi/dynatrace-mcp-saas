@@ -1,6 +1,6 @@
 {
   "source": "live",
-  "count": 314,
+  "count": 305,
   "schemas": {
     "app:dynatrace.azure.connector:microsoft-entra-identity-developer-connection": {
       "version": "0.2.2",
@@ -102,10 +102,6 @@
       "version": "1",
       "displayName": "Connectivity alerts"
     },
-    "builtin:anomaly-detection.databases": {
-      "version": "0.0.18",
-      "displayName": "Anomaly detection for databases"
-    },
     "builtin:anomaly-detection.holiday-aware-baseline": {
       "version": "1.0.2",
       "displayName": "Holiday-aware baseline modification"
@@ -201,22 +197,6 @@
     "builtin:appsec.third-party-vulnerability-rule-settings": {
       "version": "1",
       "displayName": "Vulnerability Analytics: Monitoring rules for third-party vulnerabilities"
-    },
-    "builtin:attribute-allow-list": {
-      "version": "0.0.19",
-      "displayName": "Allowed attributes"
-    },
-    "builtin:attribute-block-list": {
-      "version": "0.0.2",
-      "displayName": "Blocked attributes"
-    },
-    "builtin:attribute-masking": {
-      "version": "0.0.4",
-      "displayName": "Attribute data masking"
-    },
-    "builtin:attributes-preferences": {
-      "version": "0.0.4",
-      "displayName": "Preferences"
     },
     "builtin:automation.approval": {
       "version": "0.4",
@@ -438,10 +418,6 @@
       "version": "0.1",
       "displayName": "Anomaly detection for infrastructure: Disk Edge"
     },
-    "builtin:kubernetes.generic.metadata.enrichment": {
-      "version": "1.5",
-      "displayName": "Kubernetes Telemetry Enrichment"
-    },
     "builtin:kubernetes.security-posture-management": {
       "version": "1",
       "displayName": "Security Posture Management: Kubernetes"
@@ -545,14 +521,6 @@
     "builtin:monitored-technologies.wsmb": {
       "version": "0.0.2",
       "displayName": "IBM Integration Bus | IBM App Connect Enterprise"
-    },
-    "builtin:monitoredentities.generic.relation": {
-      "version": "1.2",
-      "displayName": "Generic relationships"
-    },
-    "builtin:monitoredentities.generic.type": {
-      "version": "1.4",
-      "displayName": "Generic types"
     },
     "builtin:nettracer.traffic": {
       "version": "1.0.2",
@@ -958,6 +926,10 @@
       "version": "2.7.2",
       "displayName": "Enablement and cost control"
     },
+    "builtin:rum.mobile.frontend-backend-linking": {
+      "version": "0.0.1",
+      "displayName": "Frontend-backend linking"
+    },
     "builtin:rum.mobile.key-performance-metrics": {
       "version": "1.1.6",
       "displayName": "Apdex configuration"
@@ -1038,6 +1010,10 @@
       "version": "1.9.1",
       "displayName": "Enablement and cost control"
     },
+    "builtin:rum.web.frontend-backend-linking": {
+      "version": "0.0.1",
+      "displayName": "Frontend-backend linking"
+    },
     "builtin:rum.web.injection.cookie": {
       "version": "1.0.2",
       "displayName": "Cookie"
@@ -1093,14 +1069,6 @@
     "builtin:service-detection-v2-for-oneagent": {
       "version": "0.8.2",
       "displayName": "Service Detection v2 for OneAgent"
-    },
-    "builtin:service-detection.external-web-request": {
-      "version": "2.1.14",
-      "displayName": "Service detection rules for External Web Requests"
-    },
-    "builtin:service-detection.external-web-service": {
-      "version": "2.1.10",
-      "displayName": "Service detection rules for External Web Services"
     },
     "builtin:service-detection.full-web-request": {
       "version": "2.1.15",
@@ -1229,10 +1197,6 @@
     "builtin:synthetic.synthetic-availability-settings": {
       "version": "1.0.1",
       "displayName": "Synthetic availability"
-    },
-    "builtin:tokens.token-settings": {
-      "version": "2.0.2",
-      "displayName": "Access tokens"
     },
     "builtin:trace.ingest.control": {
       "version": "0.1.3",
