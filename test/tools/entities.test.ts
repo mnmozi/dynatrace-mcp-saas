@@ -15,14 +15,6 @@ const cfg: Config = {
 
 let lastUrl = "";
 
-/** Standard 404 "endpoint unavailable" response from Gen3 tenants (factory — body stream must not be reused) */
-function gen3NotFound() {
-  return HttpResponse.json(
-    { error: { code: 404, message: "REST endpoint is not available for this environment." } },
-    { status: 404 },
-  );
-}
-
 /** Standard DQL success response */
 function dqlSuccess(records: Array<Record<string, unknown>>) {
   return HttpResponse.json({
@@ -31,16 +23,26 @@ function dqlSuccess(records: Array<Record<string, unknown>>) {
   });
 }
 
+// The msw server has NO classic handlers by default.
+// onUnhandledRequest: "error" means if the tool accidentally hits classic, the test fails.
+// That's the proof the inversion worked — default path must NOT call classic.
 const server = setupServer(
-  http.get("https://classic.example.com/api/v2/entities", ({ request }) => {
-    lastUrl = request.url;
-    return HttpResponse.json({ entities: [{ entityId: "HOST-1", displayName: "web01" }], totalCount: 1 });
-  }),
+  // Only the DQL endpoint is registered by default.
+  http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
+    dqlSuccess([{ id: "HOST-1", "entity.name": "web01" }]),
+  ),
 );
+
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => {
   server.resetHandlers();
   lastUrl = "";
+  // Re-register the default DQL handler after resetHandlers
+  server.use(
+    http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
+      dqlSuccess([{ id: "HOST-1", "entity.name": "web01" }]),
+    ),
+  );
 });
 afterAll(() => server.close());
 
@@ -54,84 +56,51 @@ async function makeClient() {
 }
 
 // ---------------------------------------------------------------------------
-// Classic success tests (preserved)
+// Default path (Grail DQL) — NO classic endpoint mocked; any call to classic = test fail
 // ---------------------------------------------------------------------------
 
-describe("list_entity_types", () => {
-  it("returns entity types", async () => {
-    server.use(
-      http.get("https://classic.example.com/api/v2/entityTypes", () =>
-        HttpResponse.json({ types: [{ type: "HOST" }], totalCount: 1 }),
-      ),
-    );
-    const client = await makeClient();
-    const res = await client.callTool({ name: "list_entity_types", arguments: {} });
-    expect((res.content as Array<{ text: string }>)[0].text).toContain("HOST");
-  });
-});
-
-describe("list_hosts", () => {
-  it("returns host entities", async () => {
-    const client = await makeClient();
-    const res = await client.callTool({ name: "list_hosts", arguments: {} });
-    expect((res.content as Array<{ text: string }>)[0].text).toContain("web01");
-  });
-
-  it("escapes double-quotes in the tag filter of the entitySelector", async () => {
-    const client = await makeClient();
-    await client.callTool({ name: "list_hosts", arguments: { tag: 'env"prod' } });
-    const selector = decodeURIComponent(new URL(lastUrl).searchParams.get("entitySelector")!);
-    expect(selector).toContain('tag("env\\"prod")');
-  });
-
-  it("escapes double-quotes in the managementZone filter of the entitySelector", async () => {
-    const client = await makeClient();
-    await client.callTool({ name: "list_hosts", arguments: { managementZone: 'zone"A' } });
-    const selector = decodeURIComponent(new URL(lastUrl).searchParams.get("entitySelector")!);
-    expect(selector).toContain('mzName("zone\\"A")');
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Gen3 / Grail DQL fallback tests
-// ---------------------------------------------------------------------------
-
-describe("list_hosts fallback (Gen3)", () => {
-  it("falls back to Grail DQL when classic Entities API returns 404", async () => {
-    server.use(
-      http.get("https://classic.example.com/api/v2/entities", () => gen3NotFound()),
-      http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
-        dqlSuccess([{ id: "HOST-1", "entity.name": "web01" }]),
-      ),
-    );
+describe("list_hosts (default = Grail DQL)", () => {
+  it("queries Grail DQL directly — does NOT call classic Entities API", async () => {
     const client = await makeClient();
     const res = await client.callTool({ name: "list_hosts", arguments: {} });
     expect(res.isError).toBeFalsy();
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("grail-dql");
-    expect(text).toContain("web01");
     expect(text).toContain("fetch dt.entity.host");
   });
 
-  it("includes a note when tag/managementZone filters cannot be applied in DQL fallback", async () => {
+  it("returns DQL records including entity data", async () => {
     server.use(
-      http.get("https://classic.example.com/api/v2/entities", () => gen3NotFound()),
       http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
         dqlSuccess([{ id: "HOST-1", "entity.name": "web01" }]),
       ),
     );
     const client = await makeClient();
+    const res = await client.callTool({ name: "list_hosts", arguments: {} });
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("web01");
+  });
+
+  it("includes a note when tag is supplied (filters require useClassic)", async () => {
+    const client = await makeClient();
     const res = await client.callTool({ name: "list_hosts", arguments: { tag: "env:prod" } });
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("grail-dql");
-    expect(text).toContain("tag/managementZone filters are not applied");
+    expect(text).toContain("useClassic");
+  });
+
+  it("includes a note when managementZone is supplied", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({ name: "list_hosts", arguments: { managementZone: "my-zone" } });
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("grail-dql");
+    expect(text).toContain("useClassic");
   });
 });
 
-describe("find_entities fallback (Gen3)", () => {
-  it("parses type() and entityName.contains() from selector and falls back to Grail DQL", async () => {
+describe("find_entities (default = Grail DQL)", () => {
+  it("parses type() and entityName.contains() and queries Grail DQL directly", async () => {
     server.use(
-      http.get("https://classic.example.com/api/v2/entities", () => gen3NotFound()),
       http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
         dqlSuccess([{ id: "SERVICE-1", "entity.name": "checkout" }]),
       ),
@@ -146,11 +115,15 @@ describe("find_entities fallback (Gen3)", () => {
     expect(text).toContain("grail-dql");
     expect(text).toContain("fetch dt.entity.service");
     expect(text).toContain("contains(entity.name,");
+    expect(text).toContain("checkout");
   });
 
-  it("returns unavailable response when selector has no type() clause", async () => {
+  it("returns structured unavailable when selector has no type() clause (mentions execute_dql AND useClassic)", async () => {
+    // No DQL call expected here — we return early with the guidance message
     server.use(
-      http.get("https://classic.example.com/api/v2/entities", () => gen3NotFound()),
+      http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
+        dqlSuccess([]),
+      ),
     );
     const client = await makeClient();
     const res = await client.callTool({
@@ -161,13 +134,13 @@ describe("find_entities fallback (Gen3)", () => {
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("unavailable");
     expect(text).toContain("execute_dql");
+    expect(text).toContain("useClassic");
   });
 });
 
-describe("get_entity fallback (Gen3)", () => {
-  it("derives entity table from id prefix and falls back to Grail DQL", async () => {
+describe("get_entity (default = Grail DQL)", () => {
+  it("derives entity table from id prefix and queries Grail DQL directly", async () => {
     server.use(
-      http.get("https://classic.example.com/api/v2/entities/PROCESS_GROUP-12", () => gen3NotFound()),
       http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
         dqlSuccess([{ id: "PROCESS_GROUP-12", "entity.name": "my-process" }]),
       ),
@@ -182,16 +155,84 @@ describe("get_entity fallback (Gen3)", () => {
   });
 });
 
-describe("list_entity_types fallback (Gen3)", () => {
-  it("returns structured unavailable message when classic entityTypes API returns 404", async () => {
-    server.use(
-      http.get("https://classic.example.com/api/v2/entityTypes", () => gen3NotFound()),
-    );
+describe("list_entity_types (default = Grail guidance message)", () => {
+  it("returns Grail entity table guidance WITHOUT calling classic — mentions dt.entity.host", async () => {
+    // No DQL mock needed: this tool returns a static guidance message
+    // If the tool accidentally calls classic, msw will throw (onUnhandledRequest: "error")
     const client = await makeClient();
     const res = await client.callTool({ name: "list_entity_types", arguments: {} });
     expect(res.isError).toBeFalsy();
     const text = (res.content as Array<{ text: string }>)[0].text;
-    expect(text).toContain("unavailable");
     expect(text).toContain("dt.entity.host");
+    expect(text).toContain("useClassic");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// escapeQuotes regression — classic path (useClassic: true)
+// ---------------------------------------------------------------------------
+
+describe("list_hosts useClassic — escapeQuotes regression", () => {
+  it("escapes double-quotes in the tag filter of the entitySelector (classic path)", async () => {
+    server.use(
+      http.get("https://classic.example.com/api/v2/entities", ({ request }) => {
+        lastUrl = request.url;
+        return HttpResponse.json({ entities: [{ entityId: "HOST-1", displayName: "web01" }], totalCount: 1 });
+      }),
+    );
+    const client = await makeClient();
+    await client.callTool({ name: "list_hosts", arguments: { tag: 'env"prod', useClassic: true } });
+    const selector = decodeURIComponent(new URL(lastUrl).searchParams.get("entitySelector")!);
+    expect(selector).toContain('tag("env\\"prod")');
+  });
+
+  it("escapes double-quotes in the managementZone filter (classic path)", async () => {
+    server.use(
+      http.get("https://classic.example.com/api/v2/entities", ({ request }) => {
+        lastUrl = request.url;
+        return HttpResponse.json({ entities: [{ entityId: "HOST-1", displayName: "web01" }], totalCount: 1 });
+      }),
+    );
+    const client = await makeClient();
+    await client.callTool({ name: "list_hosts", arguments: { managementZone: 'zone"A', useClassic: true } });
+    const selector = decodeURIComponent(new URL(lastUrl).searchParams.get("entitySelector")!);
+    expect(selector).toContain('mzName("zone\\"A")');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// useClassic: true — calls the classic API directly, no DQL
+// ---------------------------------------------------------------------------
+
+describe("list_hosts useClassic: true", () => {
+  it("calls classic Entities API and returns its payload (no DQL)", async () => {
+    server.use(
+      http.get("https://classic.example.com/api/v2/entities", () =>
+        HttpResponse.json({ entities: [{ entityId: "HOST-1", displayName: "web01" }], totalCount: 1 }),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "list_hosts", arguments: { useClassic: true } });
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("web01");
+    // Must NOT say "grail-dql"
+    expect(text).not.toContain("grail-dql");
+  });
+});
+
+describe("list_entity_types useClassic: true", () => {
+  it("calls classic entityTypes API and returns its payload", async () => {
+    server.use(
+      http.get("https://classic.example.com/api/v2/entityTypes", () =>
+        HttpResponse.json({ types: [{ type: "HOST", displayName: "Host" }], totalCount: 1 }),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "list_entity_types", arguments: { useClassic: true } });
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("HOST");
+    expect(text).not.toContain("grail-dql");
   });
 });
