@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+- Automation/Workflows tools: list/get/create/update/delete/run workflows + list/get executions (platform Automation v1)
+
 ## 0.2.0
 - Gen3-first: query_metric via Grail DQL timeseries; entities tools default to Grail DQL with optional useClassic flag
 - Drift suite (settings-schema + API-spec drift, live-schema validation) and refresh-snapshots script

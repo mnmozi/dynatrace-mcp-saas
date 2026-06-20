@@ -17,6 +17,7 @@ import { registerConfigV1Tools } from "./config-v1.js";
 import { registerOpenPipelineTools } from "./openpipeline.js";
 import { registerDriftTools } from "./drift.js";
 import { registerServerInfoTools } from "./server-info.js";
+import { registerAutomationTools } from "./automation.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -38,4 +39,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerOpenPipelineTools(server, deps);
   registerDriftTools(server, deps);
   registerServerInfoTools(server, deps);
+  registerAutomationTools(server, deps);
 }
