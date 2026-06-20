@@ -26,6 +26,8 @@ import { registerEmailTools } from "./email.js";
 import { registerExtensionsTools } from "./extensions.js";
 import { registerIngestTools } from "./ingest.js";
 import { registerAuditTools } from "./audit.js";
+import { registerFeatureManagementTools } from "./feature-management.js";
+import { registerIamTools } from "./iam.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -55,4 +57,6 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerExtensionsTools(server, deps);
   registerIngestTools(server, deps);
   registerAuditTools(server, deps);
+  registerFeatureManagementTools(server, deps);
+  registerIamTools(server, deps);
 }

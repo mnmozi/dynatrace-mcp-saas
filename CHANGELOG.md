@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0
+- Feature Management (feature flags): projects, features, flags, release stages
+- IAM: account users/groups/service-users + WIF trust policies & mappings
+
+
 ## 0.4.0
 - Grail bucket management (storage management), filter segments, record deletion
 - Extensions v2 (list/get + monitoring-config CRUD), notifications (self v1 + event v2)
