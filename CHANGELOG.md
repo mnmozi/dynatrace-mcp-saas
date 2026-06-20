@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+- Grail bucket management (storage management), filter segments, record deletion
+- Extensions v2 (list/get + monitoring-config CRUD), notifications (self v1 + event v2)
+- Email send, data ingest (logs/events/bizevents), audit logs read
+
+
 ## 0.3.0
 - Automation/Workflows tools: list/get/create/update/delete/run workflows + list/get executions (platform Automation v1)
 

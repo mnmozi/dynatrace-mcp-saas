@@ -18,10 +18,17 @@ import { registerOpenPipelineTools } from "./openpipeline.js";
 import { registerDriftTools } from "./drift.js";
 import { registerServerInfoTools } from "./server-info.js";
 import { registerAutomationTools } from "./automation.js";
+import { registerBucketTools } from "./buckets.js";
+import { registerFilterSegmentTools } from "./filter-segments.js";
+import { registerRecordDeletionTools } from "./record-deletion.js";
+import { registerNotificationTools } from "./notifications.js";
+import { registerEmailTools } from "./email.js";
+import { registerExtensionsTools } from "./extensions.js";
+import { registerIngestTools } from "./ingest.js";
+import { registerAuditTools } from "./audit.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
-// Tool registrations are added here by Tasks 8–19.
 export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerDqlTools(server, deps);
   registerMetricsTools(server, deps);
@@ -40,4 +47,12 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerDriftTools(server, deps);
   registerServerInfoTools(server, deps);
   registerAutomationTools(server, deps);
+  registerBucketTools(server, deps);
+  registerFilterSegmentTools(server, deps);
+  registerRecordDeletionTools(server, deps);
+  registerNotificationTools(server, deps);
+  registerEmailTools(server, deps);
+  registerExtensionsTools(server, deps);
+  registerIngestTools(server, deps);
+  registerAuditTools(server, deps);
 }
