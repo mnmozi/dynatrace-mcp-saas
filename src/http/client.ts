@@ -204,16 +204,16 @@ export class DynatraceClient {
       `Api-Token ${cfg.apiToken}`,
       "classic",
       cfg.timeoutMs,
-      cfg.maxRetries,
-      cfg.retryBaseMs,
+      cfg.maxRetries ?? 3,
+      cfg.retryBaseMs ?? 500,
     );
     this.platform = new HostClientImpl(
       cfg.platformUrl,
       `Bearer ${cfg.platformToken}`,
       "platform",
       cfg.timeoutMs,
-      cfg.maxRetries,
-      cfg.retryBaseMs,
+      cfg.maxRetries ?? 3,
+      cfg.retryBaseMs ?? 500,
     );
   }
 
