@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0
+- Vendored the official Dynatrace `dt-dql-essentials` skill (Apache-2.0) under knowledge/dql/vendor/
+- dql_reference: new `official` topic + `officialRef` param; new list_dql_official_references tool
+
+
 ## 0.6.0
 - Embedded DQL knowledge: dql_reference + list_dql_topics tools (and dql:// resources) serving a bundled Grail DQL playbook/reference so DQL is authored locally — no Davis CoPilot dependency
 

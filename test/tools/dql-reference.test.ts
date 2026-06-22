@@ -38,5 +38,43 @@ describe("list_dql_topics tool", () => {
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("playbook");
     expect(text).toContain("reference");
+    expect(text).toContain("official");
+  });
+});
+
+describe("vendored official dt-dql-essentials skill", () => {
+  it("topic 'official' returns the official SKILL.md", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({ name: "dql_reference", arguments: { topic: "official" } });
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("dt-dql-essentials");
+  });
+
+  it("list_dql_official_references lists the function-reference docs", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({ name: "list_dql_official_references", arguments: {} });
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("dql/dql-functions-string.md");
+  });
+
+  it("officialRef fetches a specific reference doc", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "dql_reference",
+      arguments: { officialRef: "dql/dql-functions-string.md" },
+    });
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text.length).toBeGreaterThan(50);
+    expect(text).not.toContain("Error: could not read");
+  });
+
+  it("officialRef rejects path traversal", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "dql_reference",
+      arguments: { officialRef: "../../../../../../etc/passwd" },
+    });
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("invalid officialRef path");
   });
 });

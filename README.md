@@ -194,3 +194,13 @@ Replace the token values with real credentials. Set `DT_ENABLE_WRITES` to `"true
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Third-party attribution
+
+This project is MIT-licensed. It vendors one third-party component under its own license:
+
+- **`knowledge/dql/vendor/dynatrace-for-ai/dt-dql-essentials/`** — the official Dynatrace
+  `dt-dql-essentials` skill from [Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai),
+  redistributed unmodified under the **Apache License 2.0**
+  (see `knowledge/dql/vendor/dynatrace-for-ai/LICENSE`). Exposed via the `dql_reference` tool
+  (`topic: "official"` / `officialRef`).
