@@ -5,6 +5,8 @@ export interface Config {
   apiToken: string;
   enableWrites: boolean;
   timeoutMs: number;
+  maxRetries: number;
+  retryBaseMs: number;
 }
 
 export type QueryParams = Record<string, string | number | boolean | undefined>;

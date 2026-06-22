@@ -22,5 +22,7 @@ export function loadConfig(env: Env = process.env): Config {
     apiToken: required(env, "DT_API_TOKEN"),
     enableWrites: env.DT_ENABLE_WRITES === "true",
     timeoutMs: env.DT_HTTP_TIMEOUT_MS ? Number(env.DT_HTTP_TIMEOUT_MS) : 30000,
+    maxRetries: env.DT_MAX_RETRIES ? Number(env.DT_MAX_RETRIES) : 3,
+    retryBaseMs: env.DT_RETRY_BASE_MS ? Number(env.DT_RETRY_BASE_MS) : 500,
   };
 }
