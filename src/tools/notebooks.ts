@@ -34,17 +34,21 @@ export function registerNotebookTools(server: McpServer, deps: ToolDeps): void {
     {
       description:
         "List Dynatrace notebooks accessible to you (Document Service). " +
-        "Filters to type='notebook'. Optionally pass pageSize (max 1000).",
+        "Filters to type='notebook'. Optionally pass pageSize (max 1000). " +
+        "Returns one page; pass pageKey (from a previous response's nextPageKey) to page through results.",
       inputSchema: {
         pageSize: z.number().int().positive().max(1000).optional()
           .describe("Number of results per page (default 20, max 1000)."),
+        pageKey: z.string().optional()
+          .describe("Opaque next-page cursor from a previous response's nextPageKey; pass as page-key to fetch the next page."),
       },
     },
-    async ({ pageSize }) => {
+    async ({ pageSize, pageKey }) => {
       const query: Record<string, string | number | boolean | undefined> = {
         filter: "type == 'notebook'",
       };
       if (pageSize !== undefined) query["page-size"] = pageSize;
+      if (pageKey !== undefined) query["page-key"] = pageKey;
       return jsonResult(
         await deps.client.platform.get(DOC_BASE, query),
       );

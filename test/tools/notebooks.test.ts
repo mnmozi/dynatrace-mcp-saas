@@ -24,16 +24,21 @@ const cfgReadOnly: Config = {
 
 const cfgWrites: Config = { ...cfgReadOnly, enableWrites: true };
 
+// Capture last request URL for pagination assertions
+let lastDocRequestUrl = "";
+
 // MSW server — intercepts real fetch calls
 const mswServer = setupServer(
   // LIST notebooks
   http.get(`${PLATFORM}/platform/document/v1/documents`, ({ request }) => {
+    lastDocRequestUrl = request.url;
     const url = new URL(request.url);
     const filter = url.searchParams.get("filter");
     if (filter && filter.includes("notebook")) {
       return HttpResponse.json({
         documents: [{ id: "N1", name: "Investigation", type: "notebook", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true }],
         totalCount: 1,
+        nextPageKey: "K3",
       });
     }
     return HttpResponse.json({ documents: [], totalCount: 0 });
@@ -78,7 +83,7 @@ const mswServer = setupServer(
 );
 
 beforeAll(() => mswServer.listen({ onUnhandledRequest: "error" }));
-afterEach(() => mswServer.resetHandlers());
+afterEach(() => { mswServer.resetHandlers(); lastDocRequestUrl = ""; });
 afterAll(() => mswServer.close());
 
 async function makeClient(cfg: Config) {
@@ -106,6 +111,16 @@ describe("list_notebooks", () => {
     const text = (res.content as Array<{ text: string }>)[0].text;
     // If page-size is forwarded, the mock still returns our document (filter matches)
     expect(text).toContain("Investigation");
+  });
+
+  it("pageKey: URL contains page-key param and still sends the type filter", async () => {
+    const client = await makeClient(cfgReadOnly);
+    const res = await client.callTool({ name: "list_notebooks", arguments: { pageKey: "K3" } });
+    expect(res.isError).toBeFalsy();
+    const url = new URL(lastDocRequestUrl);
+    expect(url.searchParams.get("page-key")).toBe("K3");
+    // filter (type) is still sent alongside page-key for notebooks
+    expect(url.searchParams.get("filter")).toContain("notebook");
   });
 });
 

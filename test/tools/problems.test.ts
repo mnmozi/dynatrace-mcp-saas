@@ -13,14 +13,17 @@ const cfg: Config = {
   platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
 };
 
+let lastRequestUrl = "";
+
 const server = setupServer(
-  http.get("https://classic.example.com/api/v2/problems", () =>
-    HttpResponse.json({ problems: [{ problemId: "P-1", title: "High CPU" }], totalCount: 1 }),
-  ),
+  http.get("https://classic.example.com/api/v2/problems", ({ request }) => {
+    lastRequestUrl = request.url;
+    return HttpResponse.json({ problems: [{ problemId: "P-1", title: "High CPU" }], totalCount: 1 });
+  }),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => { server.resetHandlers(); lastRequestUrl = ""; });
 afterAll(() => server.close());
 
 async function makeClient() {
@@ -37,5 +40,21 @@ describe("list_problems", () => {
     const client = await makeClient();
     const res = await client.callTool({ name: "list_problems", arguments: {} });
     expect((res.content as Array<{ text: string }>)[0].text).toContain("High CPU");
+  });
+});
+
+describe("list_problems pagination", () => {
+  it("nextPageKey: URL contains only nextPageKey=P2 and no other filters", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "list_problems",
+      arguments: { nextPageKey: "P2", problemSelector: 'status("OPEN")' },
+    });
+    expect(res.isError).toBeFalsy();
+    const url = new URL(lastRequestUrl);
+    expect(url.searchParams.get("nextPageKey")).toBe("P2");
+    expect(url.searchParams.has("problemSelector")).toBe(false);
+    expect(url.searchParams.has("from")).toBe(false);
+    expect(url.searchParams.has("pageSize")).toBe(false);
   });
 });

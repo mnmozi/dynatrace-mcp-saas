@@ -17,14 +17,22 @@ const cfg: Config = {
   timeoutMs: 5000,
 };
 
+// Capture the last request URL for assertion in pagination tests
+let lastRequestUrl = "";
+
 const server = setupServer(
-  http.get("https://classic.example.com/api/v2/settings/schemas", () =>
-    HttpResponse.json({ items: [{ schemaId: "builtin:tags", displayName: "Tags" }], totalCount: 1 }),
-  ),
+  http.get("https://classic.example.com/api/v2/settings/schemas", ({ request }) => {
+    lastRequestUrl = request.url;
+    return HttpResponse.json({ items: [{ schemaId: "builtin:tags", displayName: "Tags" }], totalCount: 1 });
+  }),
+  http.get("https://classic.example.com/api/v2/settings/objects", ({ request }) => {
+    lastRequestUrl = request.url;
+    return HttpResponse.json({ items: [{ objectId: "obj-1", schemaId: "builtin:tags", scope: "environment", value: {} }], totalCount: 1, nextPageKey: "NEXT1" });
+  }),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => { server.resetHandlers(); lastRequestUrl = ""; });
 afterAll(() => server.close());
 
 async function makeClient() {
@@ -53,5 +61,33 @@ describe("create_settings_object write-gate", () => {
     });
     expect(res.isError).toBe(true);
     expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
+  });
+});
+
+describe("list_settings_objects pagination", () => {
+  it("first page: sends schemaIds and fields params", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "list_settings_objects",
+      arguments: { schemaIds: "builtin:tags" },
+    });
+    expect(res.isError).toBeFalsy();
+    const url = new URL(lastRequestUrl);
+    expect(url.searchParams.get("schemaIds")).toBe("builtin:tags");
+    expect(url.searchParams.get("fields")).toBeTruthy();
+  });
+
+  it("nextPageKey: URL contains only nextPageKey and NOT schemaIds/fields/pageSize", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "list_settings_objects",
+      arguments: { nextPageKey: "ABC123", schemaIds: "builtin:tags" },
+    });
+    expect(res.isError).toBeFalsy();
+    const url = new URL(lastRequestUrl);
+    expect(url.searchParams.get("nextPageKey")).toBe("ABC123");
+    expect(url.searchParams.has("schemaIds")).toBe(false);
+    expect(url.searchParams.has("fields")).toBe(false);
+    expect(url.searchParams.has("pageSize")).toBe(false);
   });
 });

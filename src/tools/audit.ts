@@ -18,7 +18,8 @@ export function registerAuditTools(server: McpServer, deps: ToolDeps): void {
       description:
         "List audit log entries (classic Audit Logs API, requires auditLogs.read token scope). " +
         "Returns the `auditLogs` array. Supports time-range filtering via `from`/`to` and a " +
-        "free-text `filter` query. Uses the classic Environment API v2: GET /api/v2/auditlogs.",
+        "free-text `filter` query. Uses the classic Environment API v2: GET /api/v2/auditlogs. " +
+        "Returns one page; pass nextPageKey to page through results.",
       inputSchema: {
         filter: z.string().optional().describe(
           'Filter expression, e.g. category("CONFIG") or user("admin@example.com").',
@@ -32,16 +33,18 @@ export function registerAuditTools(server: McpServer, deps: ToolDeps): void {
         pageSize: z.number().int().positive().max(1000).optional().describe(
           "Number of entries per page (max 1000). Default: 50.",
         ),
+        nextPageKey: z.string().optional().describe(
+          "Opaque next-page cursor from a previous response's nextPageKey; when set, other filters are ignored (classic API requirement).",
+        ),
       },
     },
-    async ({ filter, from, to, pageSize }) =>
+    async ({ filter, from, to, pageSize, nextPageKey }) =>
       jsonResult(
-        await deps.client.classic.get("/api/v2/auditlogs", {
-          filter,
-          from: from ?? "now-2h",
-          to,
-          pageSize: pageSize ?? 50,
-        }),
+        await deps.client.classic.get("/api/v2/auditlogs",
+          nextPageKey
+            ? { nextPageKey }
+            : { filter, from: from ?? "now-2h", to, pageSize: pageSize ?? 50 },
+        ),
       ),
   );
 
