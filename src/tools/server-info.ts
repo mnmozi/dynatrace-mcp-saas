@@ -21,6 +21,10 @@ export function registerServerInfoTools(server: McpServer, deps: ToolDeps): void
         writesEnabled: deps.config.enableWrites,
         platformUrl: deps.config.platformUrl,
         classicUrl: deps.config.classicUrl,
+        configured: {
+          platform: !!(deps.config.platformUrl && deps.config.platformToken),
+          classic: !!(deps.config.classicUrl && deps.config.apiToken),
+        },
       });
     },
   );

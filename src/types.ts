@@ -1,8 +1,8 @@
 export interface Config {
-  platformUrl: string;
-  classicUrl: string;
-  platformToken: string;
-  apiToken: string;
+  platformUrl: string | undefined;
+  classicUrl: string | undefined;
+  platformToken: string | undefined;
+  apiToken: string | undefined;
   enableWrites: boolean;
   timeoutMs: number;
   maxRetries: number;

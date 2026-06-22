@@ -49,3 +49,28 @@ describe("DynatraceClient", () => {
     await expect(c.classic.get("/api/v2/boom")).rejects.toBeInstanceOf(DynatraceApiError);
   });
 });
+
+describe("DynatraceClient — platform-only (partial-credential mode)", () => {
+  const platformOnlyCfg: Config = {
+    platformUrl: "https://plat.example.com",
+    platformToken: "PTOK",
+    classicUrl: undefined,
+    apiToken: undefined,
+    enableWrites: false,
+    timeoutMs: 5000,
+    maxRetries: 0,
+    retryBaseMs: 0,
+  };
+
+  const c = new DynatraceClient(platformOnlyCfg);
+
+  it("classic.get rejects with 'not configured' and names the missing env vars", async () => {
+    await expect(c.classic.get("/x")).rejects.toThrow(/not configured/i);
+    await expect(c.classic.get("/x")).rejects.toThrow(/DT_API_TOKEN/);
+  });
+
+  it("platform still works (mock GET succeeds)", async () => {
+    const r = await c.platform.get<{ auth: string }>("/platform/ping");
+    expect(r.auth).toBe("Bearer PTOK");
+  });
+});

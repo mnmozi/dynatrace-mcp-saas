@@ -194,27 +194,58 @@ function safeJson(text: string): unknown {
   try { return JSON.parse(text); } catch { return text; }
 }
 
+/**
+ * Returns a stub HostClient whose every method rejects with a clear, actionable error
+ * explaining which env vars to set in order to enable the absent host.
+ */
+function unconfiguredHost(hostKind: "classic" | "platform", envVars: string): HostClient {
+  const fail = async (): Promise<never> => {
+    throw new Error(
+      `The ${hostKind} Dynatrace API is not configured on this server. Set ${envVars} to enable this tool.`,
+    );
+  };
+  return {
+    get: fail,
+    post: fail,
+    put: fail,
+    del: fail,
+    postForm: fail,
+    patchForm: fail,
+    getText: fail,
+  } as unknown as HostClient;
+}
+
 export class DynatraceClient {
   readonly classic: HostClient;
   readonly platform: HostClient;
 
   constructor(private readonly cfg: Config) {
-    this.classic = new HostClientImpl(
-      cfg.classicUrl,
-      `Api-Token ${cfg.apiToken}`,
-      "classic",
-      cfg.timeoutMs,
-      cfg.maxRetries ?? 3,
-      cfg.retryBaseMs ?? 500,
-    );
-    this.platform = new HostClientImpl(
-      cfg.platformUrl,
-      `Bearer ${cfg.platformToken}`,
-      "platform",
-      cfg.timeoutMs,
-      cfg.maxRetries ?? 3,
-      cfg.retryBaseMs ?? 500,
-    );
+    const maxRetries = cfg.maxRetries ?? 3;
+    const retryBaseMs = cfg.retryBaseMs ?? 500;
+
+    this.classic =
+      cfg.classicUrl && cfg.apiToken
+        ? new HostClientImpl(
+            cfg.classicUrl,
+            `Api-Token ${cfg.apiToken}`,
+            "classic",
+            cfg.timeoutMs,
+            maxRetries,
+            retryBaseMs,
+          )
+        : unconfiguredHost("classic", "DT_CLASSIC_URL + DT_API_TOKEN");
+
+    this.platform =
+      cfg.platformUrl && cfg.platformToken
+        ? new HostClientImpl(
+            cfg.platformUrl,
+            `Bearer ${cfg.platformToken}`,
+            "platform",
+            cfg.timeoutMs,
+            maxRetries,
+            retryBaseMs,
+          )
+        : unconfiguredHost("platform", "DT_PLATFORM_URL + DT_PLATFORM_TOKEN");
   }
 
   dqlExecute(query: string, opts?: { maxResultRecords?: number; pollIntervalMs?: number; maxPolls?: number }): Promise<DqlResult> {
