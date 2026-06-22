@@ -10,7 +10,8 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
       description:
         "Execute a Dynatrace Query Language (DQL) statement against Grail and return the result records. " +
         "Use for logs, spans/traces, events, metrics, and entities. " +
-        'Example: \'fetch logs | filter loglevel == "ERROR" | limit 50\'.',
+        'Example: \'fetch logs | filter loglevel == "ERROR" | limit 50\'. ' +
+        "If you are unsure of DQL syntax, call dql_reference first for embedded Grail DQL knowledge.",
       inputSchema: {
         query: z.string().describe("The DQL statement to execute."),
         maxResultRecords: z

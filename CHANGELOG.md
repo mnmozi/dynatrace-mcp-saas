@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.0
+- Embedded DQL knowledge: dql_reference + list_dql_topics tools (and dql:// resources) serving a bundled Grail DQL playbook/reference so DQL is authored locally — no Davis CoPilot dependency
+
 ## 0.5.0
 - Feature Management (feature flags): projects, features, flags, release stages
 - IAM: account users/groups/service-users + WIF trust policies & mappings

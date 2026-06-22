@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { DynatraceClient } from "../http/client.js";
 import type { Config } from "../types.js";
 import { registerDqlTools } from "./dql.js";
+import { registerDqlReferenceTools } from "./dql-reference.js";
 import { registerMetricsTools } from "./metrics.js";
 import { registerEntitiesTools } from "./entities.js";
 import { registerProblemsTools } from "./problems.js";
@@ -33,6 +34,7 @@ export interface ToolDeps { client: DynatraceClient; config: Config }
 
 export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerDqlTools(server, deps);
+  registerDqlReferenceTools(server);
   registerMetricsTools(server, deps);
   registerEntitiesTools(server, deps);
   registerProblemsTools(server, deps);
