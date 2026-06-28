@@ -99,7 +99,8 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "The content object is serialized to JSON and sent as the 'content' part " +
         "with Content-Type application/json. " +
         "Provide the content inline via 'content' OR from a file via 'contentPath' (not both). " +
-        "Requires DT_ENABLE_WRITES=true.",
+        "Requires DT_ENABLE_WRITES=true. " +
+        "Call dashboard_reference (topic 'tiles'/'example') first to construct a valid content object.",
       inputSchema: {
         name: z.string().max(128).describe("Dashboard display name."),
         content: z.record(z.unknown()).optional().describe("Dashboard content as a JSON object (e.g. { tiles: [] })."),
@@ -135,7 +136,8 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "Uses PATCH /documents/{id} with multipart/form-data per the spec. " +
         "Optimistic locking: you must supply the current document version. " +
         "At least one of name, content, or contentPath must be provided. " +
-        "Requires DT_ENABLE_WRITES=true.",
+        "Requires DT_ENABLE_WRITES=true. " +
+        "Call dashboard_reference (topic 'tiles'/'example') first to construct a valid content object.",
       inputSchema: {
         id: z.string().describe("Dashboard document id."),
         version: z.number().int().positive()

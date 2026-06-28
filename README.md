@@ -204,3 +204,8 @@ This project is MIT-licensed. It vendors one third-party component under its own
   redistributed unmodified under the **Apache License 2.0**
   (see `knowledge/dql/vendor/dynatrace-for-ai/LICENSE`). Exposed via the `dql_reference` tool
   (`topic: "official"` / `officialRef`).
+- **`knowledge/dashboards/vendor/dynatrace-for-ai/`** — the official Dynatrace
+  `dt-app-dashboards` and `dt-app-notebooks` skills from [Dynatrace/dynatrace-for-ai](https://github.com/Dynatrace/dynatrace-for-ai),
+  redistributed unmodified under the **Apache License 2.0**
+  (see `knowledge/dashboards/vendor/dynatrace-for-ai/LICENSE`). Exposed via the `dashboard_reference` tool
+  (tile types, visualizations, variables, full dashboard/notebook examples).
