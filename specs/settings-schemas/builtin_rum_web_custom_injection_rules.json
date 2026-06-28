@@ -1,1 +1,182 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.custom-injection-rules","displayName":"Define custom injection rules","description":"Define custom injection rules to control when and where RUM is automatically injected into your application's pages.","documentation":"","schemaGroups":["group:rum-injection"],"version":"1.0.2","multiObject":true,"ordered":true,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION"],"enums":{"Operator":{"displayName":"Operator","description":"","documentation":"","items":[{"value":"AllPages","displayName":"All pages"},{"value":"Equals","displayName":"URL equals"},{"value":"Starts","displayName":"URL starts with"},{"value":"Ends","displayName":"URL ends with"},{"value":"Contains","displayName":"URL contains"}],"type":"enum"},"Rule":{"displayName":"Rule","description":"","documentation":"","items":[{"value":"Automatic","displayName":"Automatic injection"},{"value":"BeforeSpecificHtml","displayName":"Before specific HTML"},{"value":"AfterSpecificHtml","displayName":"After specific HTML"},{"value":"DoNotInject","displayName":"Do not inject"}],"type":"enum"}},"types":{},"properties":{"enabled":{"displayName":"Enable rule","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"operator":{"displayName":"Operator","description":"","documentation":"**Example**: \n\n **For the URL:**  \n `http://www.example.com:8080/lorem/ipsum.jsp?mode=desktop` \n\n A rule can be specified on the URL pattern:  \n `/lorem/ipsum.jsp` \n\n Using the operator:  \n `URL ends with` \n\n **Result:**  \n If URL ends with .jsp do not inject the JavaScript library","type":{"$ref":"#/enums/Operator"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"Equals"},"urlPattern":{"displayName":"URL pattern","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":200}],"precondition":{"type":"IN","property":"operator","expectedValues":["Equals","Starts","Ends","Contains"]},"metadata":{"placeholder":"For example, /lorem/ipsum.jsp"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"rule":{"displayName":"Rule","description":"","documentation":"","type":{"$ref":"#/enums/Rule"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"DoNotInject"},"htmlPattern":{"displayName":"","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":200}],"precondition":{"type":"IN","property":"rule","expectedValues":["BeforeSpecificHtml","AfterSpecificHtml"]},"metadata":{"placeholder":"HTML pattern"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"schemaConstraints":[{"type":"MULTI_SCOPE_CUSTOM_VALIDATOR_REF","customMessage":"The number of custom injection rules across all applications exceeds the tenant-wide limit.","customValidatorId":"RumCustomInjectionRulesTenantWideLimitsValidator","skipAsyncValidation":false}],"metadata":{"addItemButton":"Add custom rule"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.custom-injection-rules",
+  "displayName": "Define custom injection rules",
+  "description": "Define custom injection rules to control when and where RUM is automatically injected into your application's pages.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-injection"
+  ],
+  "version": "1.0.2",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION"
+  ],
+  "enums": {
+    "Operator": {
+      "displayName": "Operator",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "AllPages",
+          "displayName": "All pages"
+        },
+        {
+          "value": "Equals",
+          "displayName": "URL equals"
+        },
+        {
+          "value": "Starts",
+          "displayName": "URL starts with"
+        },
+        {
+          "value": "Ends",
+          "displayName": "URL ends with"
+        },
+        {
+          "value": "Contains",
+          "displayName": "URL contains"
+        }
+      ],
+      "type": "enum"
+    },
+    "Rule": {
+      "displayName": "Rule",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "Automatic",
+          "displayName": "Automatic injection"
+        },
+        {
+          "value": "BeforeSpecificHtml",
+          "displayName": "Before specific HTML"
+        },
+        {
+          "value": "AfterSpecificHtml",
+          "displayName": "After specific HTML"
+        },
+        {
+          "value": "DoNotInject",
+          "displayName": "Do not inject"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enable rule",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "operator": {
+      "displayName": "Operator",
+      "description": "",
+      "documentation": "**Example**: \n\n **For the URL:**  \n `http://www.example.com:8080/lorem/ipsum.jsp?mode=desktop` \n\n A rule can be specified on the URL pattern:  \n `/lorem/ipsum.jsp` \n\n Using the operator:  \n `URL ends with` \n\n **Result:**  \n If URL ends with .jsp do not inject the JavaScript library",
+      "type": {
+        "$ref": "#/enums/Operator"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "Equals"
+    },
+    "urlPattern": {
+      "displayName": "URL pattern",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 200
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "operator",
+        "expectedValues": [
+          "Equals",
+          "Starts",
+          "Ends",
+          "Contains"
+        ]
+      },
+      "metadata": {
+        "placeholder": "For example, /lorem/ipsum.jsp"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "rule": {
+      "displayName": "Rule",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/Rule"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "DoNotInject"
+    },
+    "htmlPattern": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 200
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "rule",
+        "expectedValues": [
+          "BeforeSpecificHtml",
+          "AfterSpecificHtml"
+        ]
+      },
+      "metadata": {
+        "placeholder": "HTML pattern"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "MULTI_SCOPE_CUSTOM_VALIDATOR_REF",
+      "customMessage": "The number of custom injection rules across all applications exceeds the tenant-wide limit.",
+      "customValidatorId": "RumCustomInjectionRulesTenantWideLimitsValidator",
+      "skipAsyncValidation": false
+    }
+  ],
+  "metadata": {
+    "addItemButton": "Add custom rule"
+  }
+}

@@ -1,1 +1,137 @@
-{"dynatrace":"1","schemaId":"builtin:ibmmq.ims-bridges","displayName":"IBM MQ IMS bridges","description":"An IMS bridge is the component of IBM MQ for z/OS that allows direct access to the IMS system. Dynatrace needs to know which queue managers and queues belong to which IMS bridge for the end-to-end tracing on z/OS.","documentation":"","schemaGroups":["group:mainframe"],"version":"0.0.8","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{"QueueManager":{"version":"0","versionInfo":"","displayName":"QueueManager","summaryPattern":"{name}","description":"","documentation":"","properties":{"name":{"displayName":"Queue manager name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"queueManagerQueue":{"displayName":"Queues","description":"","documentation":"","type":"set","items":{"displayName":"Queue name","description":"","documentation":"","type":"text","constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"Add queue"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"name":{"displayName":"IMS bridge name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"queueManagers":{"displayName":"Queue managers","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/QueueManager"}},"nullable":false,"metadata":{"addItemButton":"Add queue manager"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"}},"schemaConstraints":[{"type":"UNIQUE","customMessage":"IMS bridge name must be unique.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"addItemButton":"Add IMS bridge"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:ibmmq.ims-bridges",
+  "displayName": "IBM MQ IMS bridges",
+  "description": "An IMS bridge is the component of IBM MQ for z/OS that allows direct access to the IMS system. Dynatrace needs to know which queue managers and queues belong to which IMS bridge for the end-to-end tracing on z/OS.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:mainframe"
+  ],
+  "version": "0.0.8",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "QueueManager": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "QueueManager",
+      "summaryPattern": "{name}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "name": {
+          "displayName": "Queue manager name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "queueManagerQueue": {
+          "displayName": "Queues",
+          "description": "",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "Queue name",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "constraints": [
+              {
+                "type": "NOT_EMPTY"
+              },
+              {
+                "type": "LENGTH",
+                "maxLength": 200,
+                "minLength": 1
+              }
+            ]
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add queue"
+          },
+          "minObjects": 0,
+          "maxObjects": 10000,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "name": {
+      "displayName": "IMS bridge name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "queueManagers": {
+      "displayName": "Queue managers",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/QueueManager"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add queue manager"
+      },
+      "minObjects": 0,
+      "maxObjects": 10000,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "IMS bridge name must be unique.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "addItemButton": "Add IMS bridge"
+  }
+}

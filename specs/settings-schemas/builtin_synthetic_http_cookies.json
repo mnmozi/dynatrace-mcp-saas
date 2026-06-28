@@ -1,1 +1,168 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.http.cookies","displayName":"Cookies","description":"Set cookies to store state information or instruct the server not to send certain kinds of information.","documentation":"","schemaGroups":["group:synthetic.http"],"version":"1.0.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HTTP_CHECK"],"enums":{},"types":{"CookieEntry":{"version":"0","versionInfo":"","displayName":"Cookie","summaryPattern":"{name} (value: ''{value}'', domain: ''{domain}'', path: ''{path}'')","description":"","documentation":"","properties":{"name":{"displayName":"Name","description":"Enclose placeholder values in brackets, for example \\{email\\}","documentation":"","type":"text","subType":"synthetic_variable_placeholder","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Name cannot be empty","minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This cookie is not allowed","customValidatorId":"cookie-name-validator","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"value":{"displayName":"Value","description":"Enclose placeholder values in brackets, for example \\{email\\}","documentation":"","type":"text","subType":"synthetic_variable_placeholder","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Value cannot be empty","minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"domain":{"displayName":"Domain","description":"Enclose placeholder values in brackets, for example \\{email\\}","documentation":"","type":"text","subType":"synthetic_variable_placeholder","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Domain cannot be empty","minLength":1}],"metadata":{"placeholder":"For example, 'example.com'"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"path":{"displayName":"Path (optional)","description":"Enclose placeholder values in brackets, for example \\{email\\}","documentation":"","type":"text","subType":"synthetic_variable_placeholder","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"For example, '/' or '/mydir'"},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"enabled":{"displayName":"Set cookies","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"cookies":{"displayName":"","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/CookieEntry"}},"nullable":false,"constraints":[{"type":"UNIQUE","customMessage":"Cookie name must be unique.","uniqueProperties":["name"]}],"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"metadata":{"addItemButton":"Add cookie"},"minObjects":1,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"synthetic-monitor-count-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.http.cookies",
+  "displayName": "Cookies",
+  "description": "Set cookies to store state information or instruct the server not to send certain kinds of information.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:synthetic.http"
+  ],
+  "version": "1.0.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HTTP_CHECK"
+  ],
+  "enums": {},
+  "types": {
+    "CookieEntry": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Cookie",
+      "summaryPattern": "{name} (value: ''{value}'', domain: ''{domain}'', path: ''{path}'')",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "name": {
+          "displayName": "Name",
+          "description": "Enclose placeholder values in brackets, for example \\{email\\}",
+          "documentation": "",
+          "type": "text",
+          "subType": "synthetic_variable_placeholder",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "customMessage": "Name cannot be empty",
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "This cookie is not allowed",
+              "customValidatorId": "cookie-name-validator",
+              "skipAsyncValidation": false
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "value": {
+          "displayName": "Value",
+          "description": "Enclose placeholder values in brackets, for example \\{email\\}",
+          "documentation": "",
+          "type": "text",
+          "subType": "synthetic_variable_placeholder",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "customMessage": "Value cannot be empty",
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "domain": {
+          "displayName": "Domain",
+          "description": "Enclose placeholder values in brackets, for example \\{email\\}",
+          "documentation": "",
+          "type": "text",
+          "subType": "synthetic_variable_placeholder",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "customMessage": "Domain cannot be empty",
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "For example, 'example.com'"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "path": {
+          "displayName": "Path (optional)",
+          "description": "Enclose placeholder values in brackets, for example \\{email\\}",
+          "documentation": "",
+          "type": "text",
+          "subType": "synthetic_variable_placeholder",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "For example, '/' or '/mydir'"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Set cookies",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "cookies": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/CookieEntry"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "Cookie name must be unique.",
+          "uniqueProperties": [
+            "name"
+          ]
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "metadata": {
+        "addItemButton": "Add cookie"
+      },
+      "minObjects": 1,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "synthetic-monitor-count-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

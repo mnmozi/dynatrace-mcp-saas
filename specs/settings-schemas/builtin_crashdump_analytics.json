@@ -1,1 +1,29 @@
-{"dynatrace":"1","schemaId":"builtin:crashdump.analytics","displayName":"Crash dump analytics","description":"Dynatrace automatically detects application crashes on Windows and Linux and analyzes the crashes' core dumps. Here you can manage crash dump analytics. For details on crash analysis, see the [documentation](https://docs.dynatrace.com/docs/shortlink/crash-analysis)","documentation":"","version":"1.1.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","HOST_GROUP"],"enums":{},"types":{},"properties":{"enableCrashDumpAnalytics":{"displayName":"Crash dump analytics","description":"Disable the feature to stop receiving information about crash details and potential problems. We recommend keeping the feature enabled.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:crashdump.analytics",
+  "displayName": "Crash dump analytics",
+  "description": "Dynatrace automatically detects application crashes on Windows and Linux and analyzes the crashes' core dumps. Here you can manage crash dump analytics. For details on crash analysis, see the [documentation](https://docs.dynatrace.com/docs/shortlink/crash-analysis)",
+  "documentation": "",
+  "version": "1.1.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "HOST_GROUP"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enableCrashDumpAnalytics": {
+      "displayName": "Crash dump analytics",
+      "description": "Disable the feature to stop receiving information about crash details and potential problems. We recommend keeping the feature enabled.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}

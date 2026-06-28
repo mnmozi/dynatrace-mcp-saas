@@ -1,1 +1,125 @@
-{"dynatrace":"1","schemaId":"builtin:container.built-in-monitoring-rule","displayName":"Built-in container monitoring rules","description":"Dynatrace disables monitoring of containers that do not run any applications.","documentation":"","schemaGroups":["group:processes-and-containers.containers","group:processes-and-containers"],"version":"0.0.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"ignoreKubernetesPauseContainer":{"displayName":"Do not monitor containers where Kubernetes container name equals 'POD'","description":"Disable monitoring of platform internal pause containers in Kubernetes and OpenShift.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreDockerPauseContainer":{"displayName":"Do not monitor containers where Docker stripped image name contains 'pause-amd64'","description":"Disable monitoring of platform internal pause containers in Kubernetes and OpenShift.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftSdnNamespace":{"displayName":"Do not monitor containers where Kubernetes namespace equals 'openshift-sdn'","description":"Disable monitoring of platform internal containers in the openshift-sdn namespace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftBuildPodName":{"displayName":"Do not monitor containers where Kubernetes full pod name ends with '-build'","description":"Disable monitoring of intermediate containers created during image build.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftOvnKubernetesNamespace":{"displayName":"Do not monitor containers where Kubernetes namespace equals 'openshift-ovn-kubernetes'","description":"Disable monitoring of platform internal containers in the openshift-ovn-kubernetes namespace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftEtcdNamespace":{"displayName":"Do not monitor containers where Kubernetes namespace equals 'openshift-etcd'","description":"Disable monitoring of platform internal containers in the openshift-etcd namespace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftKubeApiserverNamespace":{"displayName":"Do not monitor containers where Kubernetes namespace equals 'openshift-kube-apiserver'","description":"Disable monitoring of platform internal containers in the openshift-kube-apiserver namespace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftMonitoringNamespace":{"displayName":"Do not monitor containers where Kubernetes namespace equals 'openshift-monitoring'","description":"Disable monitoring of platform internal containers in the openshift-monitoring namespace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftMachineConfigOperatorNamespace":{"displayName":"Do not monitor containers where Kubernetes namespace equals 'openshift-machine-config-operator'","description":"Disable monitoring of platform internal containers in the openshift-machine-config-operator namespace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignoreOpenShiftIngressCanaryNamespace":{"displayName":"Do not monitor containers where Kubernetes namespace equals 'openshift-ingress-canary'","description":"Disable monitoring of platform internal containers in the openshift-ingress-canary namespace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}},"metadata":{"minAgentVersion":"1.171"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:container.built-in-monitoring-rule",
+  "displayName": "Built-in container monitoring rules",
+  "description": "Dynatrace disables monitoring of containers that do not run any applications.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:processes-and-containers.containers",
+    "group:processes-and-containers"
+  ],
+  "version": "0.0.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "ignoreKubernetesPauseContainer": {
+      "displayName": "Do not monitor containers where Kubernetes container name equals 'POD'",
+      "description": "Disable monitoring of platform internal pause containers in Kubernetes and OpenShift.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreDockerPauseContainer": {
+      "displayName": "Do not monitor containers where Docker stripped image name contains 'pause-amd64'",
+      "description": "Disable monitoring of platform internal pause containers in Kubernetes and OpenShift.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftSdnNamespace": {
+      "displayName": "Do not monitor containers where Kubernetes namespace equals 'openshift-sdn'",
+      "description": "Disable monitoring of platform internal containers in the openshift-sdn namespace.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftBuildPodName": {
+      "displayName": "Do not monitor containers where Kubernetes full pod name ends with '-build'",
+      "description": "Disable monitoring of intermediate containers created during image build.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftOvnKubernetesNamespace": {
+      "displayName": "Do not monitor containers where Kubernetes namespace equals 'openshift-ovn-kubernetes'",
+      "description": "Disable monitoring of platform internal containers in the openshift-ovn-kubernetes namespace.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftEtcdNamespace": {
+      "displayName": "Do not monitor containers where Kubernetes namespace equals 'openshift-etcd'",
+      "description": "Disable monitoring of platform internal containers in the openshift-etcd namespace.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftKubeApiserverNamespace": {
+      "displayName": "Do not monitor containers where Kubernetes namespace equals 'openshift-kube-apiserver'",
+      "description": "Disable monitoring of platform internal containers in the openshift-kube-apiserver namespace.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftMonitoringNamespace": {
+      "displayName": "Do not monitor containers where Kubernetes namespace equals 'openshift-monitoring'",
+      "description": "Disable monitoring of platform internal containers in the openshift-monitoring namespace.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftMachineConfigOperatorNamespace": {
+      "displayName": "Do not monitor containers where Kubernetes namespace equals 'openshift-machine-config-operator'",
+      "description": "Disable monitoring of platform internal containers in the openshift-machine-config-operator namespace.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignoreOpenShiftIngressCanaryNamespace": {
+      "displayName": "Do not monitor containers where Kubernetes namespace equals 'openshift-ingress-canary'",
+      "description": "Disable monitoring of platform internal containers in the openshift-ingress-canary namespace.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  },
+  "metadata": {
+    "minAgentVersion": "1.171"
+  }
+}

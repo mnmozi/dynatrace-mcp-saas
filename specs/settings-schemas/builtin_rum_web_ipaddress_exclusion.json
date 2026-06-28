@@ -1,1 +1,132 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.ipaddress-exclusion","displayName":"Exclude IP addresses from monitoring","description":"Enable the switch below if the IP addresses are to be included. Disable the switch if they are to be excluded.","documentation":"","schemaGroups":["group:capturing","group:capturing.exclusions"],"version":"6.0.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION"],"enums":{},"types":{"IpAddressExclusionRule":{"version":"0","versionInfo":"","displayName":"","summaryPattern":"{ip} - {ipTo}","description":"","documentation":"","properties":{"ip":{"displayName":"Single IP or IP range start address","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Invalid IP address","customValidatorId":"ipValidator","skipAsyncValidation":false},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"ipTo":{"displayName":"IP range end","description":"","documentation":"","type":"text","nullable":true,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Invalid IP address","customValidatorId":"ipValidator","skipAsyncValidation":false},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"IP range end must be > IP range start address","customValidatorId":"ipRangeValidator","skipAsyncValidation":false}],"type":"object"}},"properties":{"ipExclusionList":{"displayName":"IP addresses exclusion list","description":"","documentation":"**Examples:**\n\n   - 84.112.10.5\n   - fe80::10a1:c6b2:5f68:785d","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/IpAddressExclusionRule"}},"nullable":false,"metadata":{"addItemButton":"Add an IP address to exclude"},"minObjects":0,"maxObjects":2000,"modificationPolicy":"DEFAULT"},"ipAddressExclusionInclude":{"displayName":"These are the only IP addresses that should be monitored","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"IP address list must have at least one entry.","customValidatorId":"RumIpAddressExclusionSchemaValidator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"The number of IP address exclusions across all applications exceeds the tenant-wide limit.","customValidatorId":"RumIpAddressExclusionTenantWideLimitsValidator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.ipaddress-exclusion",
+  "displayName": "Exclude IP addresses from monitoring",
+  "description": "Enable the switch below if the IP addresses are to be included. Disable the switch if they are to be excluded.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:capturing",
+    "group:capturing.exclusions"
+  ],
+  "version": "6.0.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION"
+  ],
+  "enums": {},
+  "types": {
+    "IpAddressExclusionRule": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "",
+      "summaryPattern": "{ip} - {ipTo}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "ip": {
+          "displayName": "Single IP or IP range start address",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "Invalid IP address",
+              "customValidatorId": "ipValidator",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "ipTo": {
+          "displayName": "IP range end",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "Invalid IP address",
+              "customValidatorId": "ipValidator",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "IP range end must be > IP range start address",
+          "customValidatorId": "ipRangeValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "ipExclusionList": {
+      "displayName": "IP addresses exclusion list",
+      "description": "",
+      "documentation": "**Examples:**\n\n   - 84.112.10.5\n   - fe80::10a1:c6b2:5f68:785d",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/IpAddressExclusionRule"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add an IP address to exclude"
+      },
+      "minObjects": 0,
+      "maxObjects": 2000,
+      "modificationPolicy": "DEFAULT"
+    },
+    "ipAddressExclusionInclude": {
+      "displayName": "These are the only IP addresses that should be monitored",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "IP address list must have at least one entry.",
+      "customValidatorId": "RumIpAddressExclusionSchemaValidator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "The number of IP address exclusions across all applications exceeds the tenant-wide limit.",
+      "customValidatorId": "RumIpAddressExclusionTenantWideLimitsValidator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

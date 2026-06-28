@@ -1,1 +1,521 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.multiprotocol.config","displayName":"Network Availability monitor config","description":"Network Availability monitor","documentation":"","schemaGroups":["group:synthetic.multiprotocol"],"version":"1.2.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["MULTIPROTOCOL_MONITOR"],"enums":{"RequestType":{"displayName":"RequestType","description":"","documentation":"","items":[{"value":"ICMP","displayName":"ICMP"},{"value":"TCP","displayName":"TCP"},{"value":"DNS","displayName":"DNS"}],"type":"enum"}},"types":{"Property":{"version":"0","versionInfo":"","displayName":"Property","summaryPattern":"Property {key} with a value of {value}","description":"","documentation":"","properties":{"key":{"displayName":"Property key","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"value":{"displayName":"Property value","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":4096,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"Constraint":{"version":"0","versionInfo":"","displayName":"Constraint","summaryPattern":"Constraint with a type {type}","description":"","documentation":"","properties":{"type":{"displayName":"Constraint type","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"properties":{"displayName":"Properties","description":"","documentation":"","type":"set","items":{"displayName":"","description":"Examples:\n- property key: \"operator\" and property value: one of [>=, >, <=, <, =, !=]\n- property key: \"value\" and property value: 0-100","documentation":"","type":{"$ref":"#/types/Property"}},"nullable":false,"metadata":{"addItemButton":"Add property"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"type":"object"},"RequestConfiguration":{"version":"0","versionInfo":"","displayName":"RequestConfiguration","summaryPattern":"Request configuration","description":"","documentation":"","properties":{"constraints":{"displayName":"Request constraints","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Constraint"}},"nullable":false,"metadata":{"addItemButton":"Add constraint"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"properties":{"displayName":"Properties","description":"","documentation":"Option not supported yet","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Property"}},"nullable":false,"metadata":{"addItemButton":"Add property"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"patternMatcher":{"displayName":"Pattern matcher","description":"","documentation":"Option not supported yet","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Option not supported yet"},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"Step":{"version":"0","versionInfo":"","displayName":"Monitor step","summaryPattern":"{name}","description":"","documentation":"","properties":{"name":{"displayName":"Step name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"requestType":{"displayName":"Request type","description":"All steps in the monitor must be the same request type. Learn more about request types in [Dynatrace documentation](https://dt-url.net/0803zt8 \"Visit Dynatrace documentation\")","documentation":"","type":{"$ref":"#/enums/RequestType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ICMP"},"targetList":{"displayName":"Target list","description":"","documentation":"","type":"set","items":{"displayName":"Target addresses","description":"","documentation":"","type":"text","constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"For example: 1.1.1.1"}},"nullable":false,"metadata":{"addItemButton":"Add IP address or DNS name"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"},"targetFilter":{"displayName":"Target filter","description":"See syntax and examples in [Dynatrace documentation](https://dt-url.net/3443zor \"Visit Dynatrace documentation\")","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Optional. For example: ipMask == 127.0.0.1/24"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"properties":{"displayName":"Configuration properties","description":"See possible configuration properties in [Dynatrace documentation](https://dt-url.net/gq83z4l \"Visit Dynatrace documentation\")","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Property"}},"nullable":false,"metadata":{"addItemButton":"Add configuration property"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"constraints":{"displayName":"Step-level constraints","description":"See possible step-level constraints in [Dynatrace documentation](https://dt-url.net/x3a3zev \"Visit Dynatrace documentation\")","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Constraint"}},"nullable":false,"metadata":{"addItemButton":"Add step-level constraint"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"requestConfigurations":{"displayName":"Request-level configuration","description":"See possible request-level configurations in [Dynatrace documentation](https://dt-url.net/b803zmi \"Visit Dynatrace documentation\")","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/RequestConfiguration"}},"nullable":false,"metadata":{"addItemButton":"Add request-level configuration"},"uiCustomization":{"expandable":{"sections":[{"displayName":"Advanced request configuration options (not supported yet)","expanded":false,"properties":["properties","patternMatcher"]}]}},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"preScript":{"displayName":"Pre-execution script","description":"","documentation":"Option not supported yet","type":"text","subType":"code","nullable":true,"constraints":[{"type":"LENGTH","maxLength":50000,"minLength":1}],"metadata":{"placeholder":"Option not supported yet"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"postScript":{"displayName":"Post-execution script","description":"","documentation":"Option not supported yet","type":"text","subType":"code","nullable":true,"constraints":[{"type":"LENGTH","maxLength":50000,"minLength":1}],"metadata":{"placeholder":"Option not supported yet"},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"enabled":{"displayName":"Monitor enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"description":{"displayName":"Monitor description","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"steps":{"displayName":"Steps","description":"","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Step"}},"nullable":false,"metadata":{"addItemButton":"Add step"},"uiCustomization":{"expandable":{"sections":[{"displayName":"Advanced step options (not supported yet)","expanded":false,"properties":["preScript","postScript"]}]}},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"properties":{"displayName":"Monitor properties","description":"","documentation":"Option not supported yet","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Property"}},"nullable":false,"metadata":{"addItemButton":"Add property"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"multi-protocol-monitor-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"synthetic-monitor-count-validator","skipAsyncValidation":false}],"uiCustomization":{"expandable":{"sections":[{"displayName":"Advanced monitor options (not supported yet)","expanded":false,"properties":["properties"]}]}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.multiprotocol.config",
+  "displayName": "Network Availability monitor config",
+  "description": "Network Availability monitor",
+  "documentation": "",
+  "schemaGroups": [
+    "group:synthetic.multiprotocol"
+  ],
+  "version": "1.2.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "MULTIPROTOCOL_MONITOR"
+  ],
+  "enums": {
+    "RequestType": {
+      "displayName": "RequestType",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "ICMP",
+          "displayName": "ICMP"
+        },
+        {
+          "value": "TCP",
+          "displayName": "TCP"
+        },
+        {
+          "value": "DNS",
+          "displayName": "DNS"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "Property": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Property",
+      "summaryPattern": "Property {key} with a value of {value}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "key": {
+          "displayName": "Property key",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "value": {
+          "displayName": "Property value",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 4096,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "Constraint": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Constraint",
+      "summaryPattern": "Constraint with a type {type}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "type": {
+          "displayName": "Constraint type",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "properties": {
+          "displayName": "Properties",
+          "description": "",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "Examples:\n- property key: \"operator\" and property value: one of [>=, >, <=, <, =, !=]\n- property key: \"value\" and property value: 0-100",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/Property"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add property"
+          },
+          "minObjects": 0,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "RequestConfiguration": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "RequestConfiguration",
+      "summaryPattern": "Request configuration",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "constraints": {
+          "displayName": "Request constraints",
+          "description": "",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/Constraint"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add constraint"
+          },
+          "minObjects": 0,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        },
+        "properties": {
+          "displayName": "Properties",
+          "description": "",
+          "documentation": "Option not supported yet",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/Property"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add property"
+          },
+          "minObjects": 0,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        },
+        "patternMatcher": {
+          "displayName": "Pattern matcher",
+          "description": "",
+          "documentation": "Option not supported yet",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Option not supported yet"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "Step": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Monitor step",
+      "summaryPattern": "{name}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "name": {
+          "displayName": "Step name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "requestType": {
+          "displayName": "Request type",
+          "description": "All steps in the monitor must be the same request type. Learn more about request types in [Dynatrace documentation](https://dt-url.net/0803zt8 \"Visit Dynatrace documentation\")",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/RequestType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "ICMP"
+        },
+        "targetList": {
+          "displayName": "Target list",
+          "description": "",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "Target addresses",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "constraints": [
+              {
+                "type": "LENGTH",
+                "maxLength": 500,
+                "minLength": 1
+              }
+            ],
+            "metadata": {
+              "placeholder": "For example: 1.1.1.1"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add IP address or DNS name"
+          },
+          "minObjects": 0,
+          "maxObjects": 10000,
+          "modificationPolicy": "DEFAULT"
+        },
+        "targetFilter": {
+          "displayName": "Target filter",
+          "description": "See syntax and examples in [Dynatrace documentation](https://dt-url.net/3443zor \"Visit Dynatrace documentation\")",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Optional. For example: ipMask == 127.0.0.1/24"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "properties": {
+          "displayName": "Configuration properties",
+          "description": "See possible configuration properties in [Dynatrace documentation](https://dt-url.net/gq83z4l \"Visit Dynatrace documentation\")",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/Property"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add configuration property"
+          },
+          "minObjects": 0,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        },
+        "constraints": {
+          "displayName": "Step-level constraints",
+          "description": "See possible step-level constraints in [Dynatrace documentation](https://dt-url.net/x3a3zev \"Visit Dynatrace documentation\")",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/Constraint"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add step-level constraint"
+          },
+          "minObjects": 0,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        },
+        "requestConfigurations": {
+          "displayName": "Request-level configuration",
+          "description": "See possible request-level configurations in [Dynatrace documentation](https://dt-url.net/b803zmi \"Visit Dynatrace documentation\")",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/RequestConfiguration"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add request-level configuration"
+          },
+          "uiCustomization": {
+            "expandable": {
+              "sections": [
+                {
+                  "displayName": "Advanced request configuration options (not supported yet)",
+                  "expanded": false,
+                  "properties": [
+                    "properties",
+                    "patternMatcher"
+                  ]
+                }
+              ]
+            }
+          },
+          "minObjects": 0,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        },
+        "preScript": {
+          "displayName": "Pre-execution script",
+          "description": "",
+          "documentation": "Option not supported yet",
+          "type": "text",
+          "subType": "code",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 50000,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Option not supported yet"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "postScript": {
+          "displayName": "Post-execution script",
+          "description": "",
+          "documentation": "Option not supported yet",
+          "type": "text",
+          "subType": "code",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 50000,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Option not supported yet"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Monitor enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "description": {
+      "displayName": "Monitor description",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 1000
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "steps": {
+      "displayName": "Steps",
+      "description": "",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/Step"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add step"
+      },
+      "uiCustomization": {
+        "expandable": {
+          "sections": [
+            {
+              "displayName": "Advanced step options (not supported yet)",
+              "expanded": false,
+              "properties": [
+                "preScript",
+                "postScript"
+              ]
+            }
+          ]
+        }
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "properties": {
+      "displayName": "Monitor properties",
+      "description": "",
+      "documentation": "Option not supported yet",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/Property"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add property"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "multi-protocol-monitor-validator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "synthetic-monitor-count-validator",
+      "skipAsyncValidation": false
+    }
+  ],
+  "uiCustomization": {
+    "expandable": {
+      "sections": [
+        {
+          "displayName": "Advanced monitor options (not supported yet)",
+          "expanded": false,
+          "properties": [
+            "properties"
+          ]
+        }
+      ]
+    }
+  }
+}

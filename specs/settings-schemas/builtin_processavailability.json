@@ -1,1 +1,481 @@
-{"dynatrace":"1","schemaId":"builtin:processavailability","displayName":"Process availability","description":"This feature allows you to monitor if a minimum number of processes matching the specified monitoring rule are running on your host. If there aren't enough processes matching the rule, you receive an alert. If you also enable **Process instance snapshots**, you receive a detailed report on the activity of the most resource-consuming processes, as well as on the latest activity of the processes matching the rule.","documentation":"\n\nIn order to monitor the availability of a certain group of processes, you must first define a monitoring rule. Give your monitoring rule a unique name and add its detection rules to which Dynatrace will match the processes on your host.\n\nFor more details, see [Process availability](https://dt-url.net/v923x37)","schemaGroups":["group:processes-and-containers.processes","group:processes-and-containers"],"version":"1.1.18","multiObject":true,"ordered":true,"maxObjects":400,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","HOST_GROUP","environment"],"enums":{"ProcessItem":{"displayName":"ProcessItem","description":"","documentation":"","items":[{"value":"executable","displayName":"Executable"},{"value":"executablePath","displayName":"Executable path"},{"value":"commandLine","displayName":"Command line - single argument"},{"value":"fullCommandLine","displayName":"Command line"},{"value":"user","displayName":"User"}],"type":"enum"},"OperatingSystem":{"displayName":"Operating System","description":"","documentation":"","items":[{"value":"WINDOWS","displayName":"Windows"},{"value":"LINUX","displayName":"Linux"},{"value":"AIX","displayName":"AIX"}],"type":"enum"},"RuleType":{"displayName":"Rule scope","description":"","documentation":"","items":[{"value":"RuleTypeProcess","displayName":"Process"},{"value":"RuleTypeHost","displayName":"Host"}],"type":"enum"}},"types":{"MetadataItem":{"version":"0","versionInfo":"","displayName":"","summaryPattern":"{metadataKey}: {metadataValue}","description":"","documentation":"","properties":{"metadataKey":{"displayName":"Key","description":"Type 'dt.' for key hints.","documentation":"","type":"text","subType":"event_template_property_key","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Unknown predefined property key.","customValidatorId":"event-property-key-validator","skipAsyncValidation":false},{"type":"PATTERN","customMessage":"Key property must not contain '{' or '}'.","pattern":"^[^{}]*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"metadataValue":{"displayName":"Value","description":"Type '{' for placeholder hints.","documentation":"","type":"text","subType":"event_template_variable_placeholder","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"HostMetadataCondition":{"version":"2","versionInfo":"Moved from custom metadata to resource attributes","displayName":"","summaryPattern":"Resource attribute ","description":"","documentation":"","properties":{"keyMustExist":{"displayName":"Key must exist","description":"","documentation":"When enabled, the condition requires a resource attribute to exist and match the constraints; when disabled, the key is optional but must still match the constrains if it is present.","type":"boolean","nullable":false,"metadata":{"minAgentVersion":"1.297"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"metadataKey":{"displayName":"Key","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Key property must not contain '{' or '}'.","pattern":"^[^{}]*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"metadataCondition":{"displayName":"Condition","description":"","documentation":"This string has to match a required format.\n\n- `$match(ver*_1.2.?)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(production)` – Matches if `production` appears anywhere in the host metadata value.\n- `$eq(production)` – Matches if `production` matches the host metadata value exactly.\n- `$prefix(production)` – Matches if `production` matches the prefix of the host metadata value.\n- `$suffix(production)` – Matches if `production` matches the suffix of the host metadata value.\n\nAvailable logic operations:\n- `$not($eq(production))` – Matches if the host metadata value is different from `production`.\n- `$and($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` and ends with `main`.\n- `$or($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` or ends with `main`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**","type":"text","subType":"event_template_variable_placeholder","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"ConditionGeneralRule","skipAsyncValidation":false}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"DetectionCondition":{"version":"0","versionInfo":"","displayName":"DetectionCondition","summaryPattern":"{ruleType}: {hostMetadataCondition}{property}{hostMetadataCondition/metadataKey} matches {condition}{hostMetadataCondition/metadataCondition}","description":"","documentation":"","properties":{"ruleType":{"displayName":"Rule scope","description":"","documentation":"","type":{"$ref":"#/enums/RuleType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"RuleTypeProcess"},"property":{"displayName":"Select process property","description":"","documentation":"","type":{"$ref":"#/enums/ProcessItem"},"nullable":false,"precondition":{"type":"OR","preconditions":[{"type":"IN","property":"ruleType","expectedValues":["RuleTypeProcess"]}]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"executable"},"condition":{"displayName":"Condition","description":"- $contains(svc) – Matches if svc appears anywhere in the process property value.\n- $eq(svc.exe) – Matches if svc.exe matches the process property value exactly.\n- $prefix(svc) – Matches if app matches the prefix of the process property value.\n- $suffix(svc.py) – Matches if svc.py matches the suffix of the process property value.\n\nFor example, $suffix(svc.py) would detect processes named loyaltysvc.py and paymentssvc.py.\n\nFor more details, see [Process availability](https://dt-url.net/v923x37).","documentation":"","type":"text","nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Should have one of the following formats: $prefix(parameter), $eq(parameter), $suffix(parameter), $contains(parameter)","pattern":"^\\$(eq|prefix|suffix|contains)\\(((?:[^()$,~]|~[()])+?)\\)$"},{"type":"LENGTH","maxLength":1000,"minLength":1}],"precondition":{"type":"OR","preconditions":[{"type":"IN","property":"ruleType","expectedValues":["RuleTypeProcess"]}]},"metadata":{"placeholder":"Enter the property condition to be detected using the syntax below."},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"hostMetadataCondition":{"displayName":"Resource attribute","description":"","documentation":"Host resource attributes are dimensions enriching the host including custom metadata which are user-defined key-value pairs that you can assign to hosts monitored by Dynatrace.\n\nBy defining custom metadata, you can enrich the monitoring data with context specific to your organization's needs, such as environment names, team ownership, application versions, or any other relevant details.\n\nSee [Define tags and metadata for hosts](https://dt-url.net/w3hv0kbw).\n\nNote: Starting from version 1.325 host resource attributes are supported in addition to host custom metadata.","type":{"$ref":"#/types/HostMetadataCondition"},"nullable":false,"precondition":{"type":"IN","property":"ruleType","expectedValues":["RuleTypeHost"]},"metadata":{"minAgentVersion":"1.287"},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"name":{"displayName":"Monitoring rule name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Enter a display name for the monitoring rule."},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"operatingSystem":{"displayName":"Operating system","description":"","documentation":"Select the operating systems on which the monitoring rule should be applied.","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/enums/OperatingSystem"}},"nullable":false,"minObjects":1,"maxObjects":3,"modificationPolicy":"DEFAULT","default":["AIX","LINUX","WINDOWS"]},"minimumProcesses":{"displayName":"Minimum number of matching processes","description":"","documentation":"Specify a minimum number of processes matching the monitoring rule. An alert is triggered if any host falls below this threshold.","type":"integer","nullable":false,"constraints":[{"type":"RANGE","minimum":1}],"metadata":{"minAgentVersion":"1.287"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1},"rules":{"displayName":"Define detection rules","description":"Define process detection rules by selecting a process property and a condition. Each monitoring rule can have multiple detection rules associated with it.","documentation":"","type":"list","items":{"displayName":"Detection rule definition","description":"","documentation":"","type":{"$ref":"#/types/DetectionCondition"}},"nullable":false,"metadata":{"itemDisplayName":"New detection rule","addItemButton":"Add detection rule"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"metadata":{"displayName":"Properties","description":"Set of additional key-value properties to be attached to the triggered event. You can retrieve the available property keys using the [Events API v2](https://dt-url.net/9622g1w). Additionally any Host resource attribute can be dynamically substituted (agent 1.325+).","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/MetadataItem"}},"nullable":false,"metadata":{"itemDisplayName":"New property","addItemButton":"Add Property"},"minObjects":0,"maxObjects":30,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"At least one non-host scope detection rule must be defined","customValidatorId":"requireOneNonHostScopedRule","skipAsyncValidation":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"This name already exists. Please provide a different name.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"itemDisplayName":"New monitoring rule","minAgentVersion":"1.237","addItemButton":"Add monitoring rule"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:processavailability",
+  "displayName": "Process availability",
+  "description": "This feature allows you to monitor if a minimum number of processes matching the specified monitoring rule are running on your host. If there aren't enough processes matching the rule, you receive an alert. If you also enable **Process instance snapshots**, you receive a detailed report on the activity of the most resource-consuming processes, as well as on the latest activity of the processes matching the rule.",
+  "documentation": "\n\nIn order to monitor the availability of a certain group of processes, you must first define a monitoring rule. Give your monitoring rule a unique name and add its detection rules to which Dynatrace will match the processes on your host.\n\nFor more details, see [Process availability](https://dt-url.net/v923x37)",
+  "schemaGroups": [
+    "group:processes-and-containers.processes",
+    "group:processes-and-containers"
+  ],
+  "version": "1.1.18",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 400,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "ProcessItem": {
+      "displayName": "ProcessItem",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "executable",
+          "displayName": "Executable"
+        },
+        {
+          "value": "executablePath",
+          "displayName": "Executable path"
+        },
+        {
+          "value": "commandLine",
+          "displayName": "Command line - single argument"
+        },
+        {
+          "value": "fullCommandLine",
+          "displayName": "Command line"
+        },
+        {
+          "value": "user",
+          "displayName": "User"
+        }
+      ],
+      "type": "enum"
+    },
+    "OperatingSystem": {
+      "displayName": "Operating System",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "WINDOWS",
+          "displayName": "Windows"
+        },
+        {
+          "value": "LINUX",
+          "displayName": "Linux"
+        },
+        {
+          "value": "AIX",
+          "displayName": "AIX"
+        }
+      ],
+      "type": "enum"
+    },
+    "RuleType": {
+      "displayName": "Rule scope",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "RuleTypeProcess",
+          "displayName": "Process"
+        },
+        {
+          "value": "RuleTypeHost",
+          "displayName": "Host"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "MetadataItem": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "",
+      "summaryPattern": "{metadataKey}: {metadataValue}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "metadataKey": {
+          "displayName": "Key",
+          "description": "Type 'dt.' for key hints.",
+          "documentation": "",
+          "type": "text",
+          "subType": "event_template_property_key",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "Unknown predefined property key.",
+              "customValidatorId": "event-property-key-validator",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Key property must not contain '{' or '}'.",
+              "pattern": "^[^{}]*$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "metadataValue": {
+          "displayName": "Value",
+          "description": "Type '{' for placeholder hints.",
+          "documentation": "",
+          "type": "text",
+          "subType": "event_template_variable_placeholder",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "HostMetadataCondition": {
+      "version": "2",
+      "versionInfo": "Moved from custom metadata to resource attributes",
+      "displayName": "",
+      "summaryPattern": "Resource attribute ",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "keyMustExist": {
+          "displayName": "Key must exist",
+          "description": "",
+          "documentation": "When enabled, the condition requires a resource attribute to exist and match the constraints; when disabled, the key is optional but must still match the constrains if it is present.",
+          "type": "boolean",
+          "nullable": false,
+          "metadata": {
+            "minAgentVersion": "1.297"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "metadataKey": {
+          "displayName": "Key",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "PATTERN",
+              "customMessage": "Key property must not contain '{' or '}'.",
+              "pattern": "^[^{}]*$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "metadataCondition": {
+          "displayName": "Condition",
+          "description": "",
+          "documentation": "This string has to match a required format.\n\n- `$match(ver*_1.2.?)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(production)` – Matches if `production` appears anywhere in the host metadata value.\n- `$eq(production)` – Matches if `production` matches the host metadata value exactly.\n- `$prefix(production)` – Matches if `production` matches the prefix of the host metadata value.\n- `$suffix(production)` – Matches if `production` matches the suffix of the host metadata value.\n\nAvailable logic operations:\n- `$not($eq(production))` – Matches if the host metadata value is different from `production`.\n- `$and($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` and ends with `main`.\n- `$or($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` or ends with `main`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**",
+          "type": "text",
+          "subType": "event_template_variable_placeholder",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "This value does not match the required format.",
+              "customValidatorId": "ConditionGeneralRule",
+              "skipAsyncValidation": false
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "DetectionCondition": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "DetectionCondition",
+      "summaryPattern": "{ruleType}: {hostMetadataCondition}{property}{hostMetadataCondition/metadataKey} matches {condition}{hostMetadataCondition/metadataCondition}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "ruleType": {
+          "displayName": "Rule scope",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/RuleType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "RuleTypeProcess"
+        },
+        "property": {
+          "displayName": "Select process property",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/ProcessItem"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "OR",
+            "preconditions": [
+              {
+                "type": "IN",
+                "property": "ruleType",
+                "expectedValues": [
+                  "RuleTypeProcess"
+                ]
+              }
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "executable"
+        },
+        "condition": {
+          "displayName": "Condition",
+          "description": "- $contains(svc) – Matches if svc appears anywhere in the process property value.\n- $eq(svc.exe) – Matches if svc.exe matches the process property value exactly.\n- $prefix(svc) – Matches if app matches the prefix of the process property value.\n- $suffix(svc.py) – Matches if svc.py matches the suffix of the process property value.\n\nFor example, $suffix(svc.py) would detect processes named loyaltysvc.py and paymentssvc.py.\n\nFor more details, see [Process availability](https://dt-url.net/v923x37).",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "PATTERN",
+              "customMessage": "Should have one of the following formats: $prefix(parameter), $eq(parameter), $suffix(parameter), $contains(parameter)",
+              "pattern": "^\\$(eq|prefix|suffix|contains)\\(((?:[^()$,~]|~[()])+?)\\)$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "OR",
+            "preconditions": [
+              {
+                "type": "IN",
+                "property": "ruleType",
+                "expectedValues": [
+                  "RuleTypeProcess"
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "placeholder": "Enter the property condition to be detected using the syntax below."
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "hostMetadataCondition": {
+          "displayName": "Resource attribute",
+          "description": "",
+          "documentation": "Host resource attributes are dimensions enriching the host including custom metadata which are user-defined key-value pairs that you can assign to hosts monitored by Dynatrace.\n\nBy defining custom metadata, you can enrich the monitoring data with context specific to your organization's needs, such as environment names, team ownership, application versions, or any other relevant details.\n\nSee [Define tags and metadata for hosts](https://dt-url.net/w3hv0kbw).\n\nNote: Starting from version 1.325 host resource attributes are supported in addition to host custom metadata.",
+          "type": {
+            "$ref": "#/types/HostMetadataCondition"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "ruleType",
+            "expectedValues": [
+              "RuleTypeHost"
+            ]
+          },
+          "metadata": {
+            "minAgentVersion": "1.287"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "name": {
+      "displayName": "Monitoring rule name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "metadata": {
+        "placeholder": "Enter a display name for the monitoring rule."
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "operatingSystem": {
+      "displayName": "Operating system",
+      "description": "",
+      "documentation": "Select the operating systems on which the monitoring rule should be applied.",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/enums/OperatingSystem"
+        }
+      },
+      "nullable": false,
+      "minObjects": 1,
+      "maxObjects": 3,
+      "modificationPolicy": "DEFAULT",
+      "default": [
+        "AIX",
+        "LINUX",
+        "WINDOWS"
+      ]
+    },
+    "minimumProcesses": {
+      "displayName": "Minimum number of matching processes",
+      "description": "",
+      "documentation": "Specify a minimum number of processes matching the monitoring rule. An alert is triggered if any host falls below this threshold.",
+      "type": "integer",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "RANGE",
+          "minimum": 1
+        }
+      ],
+      "metadata": {
+        "minAgentVersion": "1.287"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": 1
+    },
+    "rules": {
+      "displayName": "Define detection rules",
+      "description": "Define process detection rules by selecting a process property and a condition. Each monitoring rule can have multiple detection rules associated with it.",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "Detection rule definition",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/DetectionCondition"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "itemDisplayName": "New detection rule",
+        "addItemButton": "Add detection rule"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "metadata": {
+      "displayName": "Properties",
+      "description": "Set of additional key-value properties to be attached to the triggered event. You can retrieve the available property keys using the [Events API v2](https://dt-url.net/9622g1w). Additionally any Host resource attribute can be dynamically substituted (agent 1.325+).",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/MetadataItem"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "itemDisplayName": "New property",
+        "addItemButton": "Add Property"
+      },
+      "minObjects": 0,
+      "maxObjects": 30,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "At least one non-host scope detection rule must be defined",
+      "customValidatorId": "requireOneNonHostScopedRule",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "This name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "itemDisplayName": "New monitoring rule",
+    "minAgentVersion": "1.237",
+    "addItemButton": "Add monitoring rule"
+  }
+}

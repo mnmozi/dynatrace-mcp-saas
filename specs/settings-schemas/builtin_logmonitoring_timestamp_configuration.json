@@ -1,1 +1,472 @@
-{"dynatrace":"1","schemaId":"builtin:logmonitoring.timestamp-configuration","displayName":"Timestamp/Splitting patterns","description":"Dynatrace OneAgent detects number of timestamp formats in your log records. In case of custom timestamps included in log record define them below. This will assure data quality for analysis.\nTimestamp detection also influence proper log splitting. If no timestamp is detected or log format prevents auto-timestamping, adjacent lines can be merged into single log record (also indentations are considered).","documentation":"","schemaGroups":["group:log-monitoring","group:log-monitoring.ingest-and-processing"],"version":"1.0.19","multiObject":true,"ordered":true,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","KUBERNETES_CLUSTER","HOST_GROUP","environment"],"enums":{"MatcherType":{"displayName":"Matcher type","description":"","documentation":"","items":[{"value":"dt.entity.process_group","displayName":"Process group","icon":"process"},{"value":"log.source","displayName":"Log source","icon":"logfile"},{"value":"log.source.origin","displayName":"Log source origin","icon":"agent"},{"value":"host.tag","displayName":"Host tag","icon":"filter"},{"value":"k8s.container.name","displayName":"Kubernetes container name","icon":"kubernetes-container-services"},{"value":"k8s.namespace.name","displayName":"Kubernetes namespace name","icon":"kubernetes-ns"},{"value":"k8s.deployment.name","displayName":"Kubernetes deployment name","icon":"kubernetes-deploy"},{"value":"k8s.pod.annotation","displayName":"Kubernetes pod annotation","icon":"filter"},{"value":"k8s.pod.label","displayName":"Kubernetes pod label","icon":"filter"},{"value":"k8s.workload.name","displayName":"Kubernetes workload name","icon":"filter"},{"value":"k8s.workload.kind","displayName":"Kubernetes workload kind","icon":"filter"},{"value":"container.name","displayName":"Docker container name","icon":"container"},{"value":"dt.entity.container_group","displayName":"DT entity container group ID","icon":"container-registries"},{"value":"process.technology","displayName":"Process technology","icon":"services"}],"type":"enum"},"Operator":{"displayName":"Operator","description":"","documentation":"","items":[{"value":"MATCHES","displayName":"matches","icon":"plus-add"}],"type":"enum"}},"types":{"Matcher":{"version":"0","versionInfo":"","displayName":"Matcher","summaryPattern":"{attribute} matches any of [{values}]","description":"","documentation":"","properties":{"attribute":{"displayName":"Attribute","description":"","documentation":"","type":{"$ref":"#/enums/MatcherType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"log.source"},"operator":{"displayName":"Operator","description":"","documentation":"","type":{"$ref":"#/enums/Operator"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"MATCHES"},"values":{"displayName":"","description":"","documentation":"","type":"set","items":{"displayName":"Values","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"logmonitoring.log-storage-settings.datasource","filterProperties":["../attribute"],"resetValue":"ALWAYS","validate":true,"fullContext":true,"useApiSearch":true},"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":1024,"minLength":1}]},"nullable":false,"metadata":{"uiDefaultValue":"","placeholder":"Required","addItemButton":"Add value"},"minObjects":1,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringHostTagValueValidator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringK8sInternalMatcherValueValidator","skipAsyncValidation":false}],"type":"object"},"EntryBoundary":{"version":"0","versionInfo":"","displayName":"EntryBoundary","summaryPattern":"","description":"","documentation":"","properties":{"pattern":{"displayName":"","description":"","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"JSONConfiguration":{"version":"0","versionInfo":"","displayName":"JSONConfiguration","summaryPattern":"","description":"","documentation":"","properties":{"formatDetection":{"displayName":"","description":"","documentation":"","type":"boolean","nullable":true,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"enabled":{"displayName":"Active","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"config-item-title":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":1024}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"date-time-pattern":{"displayName":"Date-time pattern","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"logmonitoring.date-time-pattern-settings.datasource","filterProperties":[],"resetValue":"NEVER","validate":true,"fullContext":false,"useApiSearch":false},"nullable":false,"constraints":[{"type":"LENGTH","maxLength":1024},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringDateTimePatternValidator","skipAsyncValidation":false}],"metadata":{"placeholder":"Optional"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"timezone":{"displayName":"Timezone","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"logmonitoring.timezone-settings.datasource","filterProperties":[],"resetValue":"ALWAYS","validate":true,"fullContext":false,"useApiSearch":true},"nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":1024}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":"Local time zone"},"date-search-limit":{"displayName":"Timestamp search limit","description":"Defines the number of characters in every log line (starting from the first character in the line) where the timestamp is searched.","documentation":"","type":"integer","nullable":true,"constraints":[{"type":"RANGE","maximum":8192,"minimum":0}],"metadata":{"suffix":"bytes"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"skip-indented-lines":{"displayName":"Skip indented lines","description":"Don't parse timestamps in lines starting with white character","documentation":"","type":"boolean","nullable":true,"maxObjects":1,"modificationPolicy":"DEFAULT"},"matchers":{"displayName":"","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Matcher"}},"nullable":false,"metadata":{"addItemButton":"Add matcher"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"entry-boundary":{"displayName":"Entry boundary pattern","description":"Optional field. Enter a fragment of the line text that starts the entry. No support for wildcards - the text is treated literally.","documentation":"","type":{"$ref":"#/types/EntryBoundary"},"nullable":true,"maxObjects":1,"modificationPolicy":"DEFAULT"},"json-configuration":{"displayName":"Detect JSON format","description":"","documentation":"","type":{"$ref":"#/types/JSONConfiguration"},"nullable":true,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringTimezoneValidator","skipAsyncValidation":false}],"schemaConstraints":[{"type":"UNIQUE","uniqueProperties":["config-item-title"],"flattenCollections":false}],"metadata":{"minAgentVersion":"1.247","addItemButton":"Add rule"},"uiCustomization":{"table":{"columns":[{"displayName":"Rule name","builtinColumnRef":"summary"},{"id":"dateTimePattern","displayName":"Pattern","propertyRef":"date-time-pattern"},{"id":"timezone","displayName":"Timezone","propertyRef":"timezone"},{"id":"dateSearchLimit","displayName":"Timestamp search limit","propertyRef":"date-search-limit"},{"id":"entryBoundary","displayName":"Entry boundary","propertyRef":"entry-boundary/pattern"}],"emptyState":{"text":"**Create your first rule**\n\nAdd the first rule to configure timestamp patterns"}}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:logmonitoring.timestamp-configuration",
+  "displayName": "Timestamp/Splitting patterns",
+  "description": "Dynatrace OneAgent detects number of timestamp formats in your log records. In case of custom timestamps included in log record define them below. This will assure data quality for analysis.\nTimestamp detection also influence proper log splitting. If no timestamp is detected or log format prevents auto-timestamping, adjacent lines can be merged into single log record (also indentations are considered).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:log-monitoring",
+    "group:log-monitoring.ingest-and-processing"
+  ],
+  "version": "1.0.19",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "KUBERNETES_CLUSTER",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "MatcherType": {
+      "displayName": "Matcher type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "dt.entity.process_group",
+          "displayName": "Process group",
+          "icon": "process"
+        },
+        {
+          "value": "log.source",
+          "displayName": "Log source",
+          "icon": "logfile"
+        },
+        {
+          "value": "log.source.origin",
+          "displayName": "Log source origin",
+          "icon": "agent"
+        },
+        {
+          "value": "host.tag",
+          "displayName": "Host tag",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.container.name",
+          "displayName": "Kubernetes container name",
+          "icon": "kubernetes-container-services"
+        },
+        {
+          "value": "k8s.namespace.name",
+          "displayName": "Kubernetes namespace name",
+          "icon": "kubernetes-ns"
+        },
+        {
+          "value": "k8s.deployment.name",
+          "displayName": "Kubernetes deployment name",
+          "icon": "kubernetes-deploy"
+        },
+        {
+          "value": "k8s.pod.annotation",
+          "displayName": "Kubernetes pod annotation",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.pod.label",
+          "displayName": "Kubernetes pod label",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.workload.name",
+          "displayName": "Kubernetes workload name",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.workload.kind",
+          "displayName": "Kubernetes workload kind",
+          "icon": "filter"
+        },
+        {
+          "value": "container.name",
+          "displayName": "Docker container name",
+          "icon": "container"
+        },
+        {
+          "value": "dt.entity.container_group",
+          "displayName": "DT entity container group ID",
+          "icon": "container-registries"
+        },
+        {
+          "value": "process.technology",
+          "displayName": "Process technology",
+          "icon": "services"
+        }
+      ],
+      "type": "enum"
+    },
+    "Operator": {
+      "displayName": "Operator",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "MATCHES",
+          "displayName": "matches",
+          "icon": "plus-add"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "Matcher": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Matcher",
+      "summaryPattern": "{attribute} matches any of [{values}]",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "attribute": {
+          "displayName": "Attribute",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/MatcherType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "log.source"
+        },
+        "operator": {
+          "displayName": "Operator",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/Operator"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "MATCHES"
+        },
+        "values": {
+          "displayName": "",
+          "description": "",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "Values",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "subType": "datasource",
+            "datasource": {
+              "identifier": "logmonitoring.log-storage-settings.datasource",
+              "filterProperties": [
+                "../attribute"
+              ],
+              "resetValue": "ALWAYS",
+              "validate": true,
+              "fullContext": true,
+              "useApiSearch": true
+            },
+            "constraints": [
+              {
+                "type": "NOT_EMPTY"
+              },
+              {
+                "type": "LENGTH",
+                "maxLength": 1024,
+                "minLength": 1
+              }
+            ]
+          },
+          "nullable": false,
+          "metadata": {
+            "uiDefaultValue": "",
+            "placeholder": "Required",
+            "addItemButton": "Add value"
+          },
+          "minObjects": 1,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "logMonitoringHostTagValueValidator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "logMonitoringK8sInternalMatcherValueValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "type": "object"
+    },
+    "EntryBoundary": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "EntryBoundary",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "pattern": {
+          "displayName": "",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "JSONConfiguration": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "JSONConfiguration",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "formatDetection": {
+          "displayName": "",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": true,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Active",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "config-item-title": {
+      "displayName": "Name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1024
+        }
+      ],
+      "metadata": {
+        "placeholder": "Required"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "date-time-pattern": {
+      "displayName": "Date-time pattern",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "subType": "datasource",
+      "datasource": {
+        "identifier": "logmonitoring.date-time-pattern-settings.datasource",
+        "filterProperties": [],
+        "resetValue": "NEVER",
+        "validate": true,
+        "fullContext": false,
+        "useApiSearch": false
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 1024
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "logMonitoringDateTimePatternValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "metadata": {
+        "placeholder": "Optional"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "timezone": {
+      "displayName": "Timezone",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "subType": "datasource",
+      "datasource": {
+        "identifier": "logmonitoring.timezone-settings.datasource",
+        "filterProperties": [],
+        "resetValue": "ALWAYS",
+        "validate": true,
+        "fullContext": false,
+        "useApiSearch": true
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1024
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "Local time zone"
+    },
+    "date-search-limit": {
+      "displayName": "Timestamp search limit",
+      "description": "Defines the number of characters in every log line (starting from the first character in the line) where the timestamp is searched.",
+      "documentation": "",
+      "type": "integer",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "RANGE",
+          "maximum": 8192,
+          "minimum": 0
+        }
+      ],
+      "metadata": {
+        "suffix": "bytes"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "skip-indented-lines": {
+      "displayName": "Skip indented lines",
+      "description": "Don't parse timestamps in lines starting with white character",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": true,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "matchers": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/Matcher"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add matcher"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "entry-boundary": {
+      "displayName": "Entry boundary pattern",
+      "description": "Optional field. Enter a fragment of the line text that starts the entry. No support for wildcards - the text is treated literally.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/EntryBoundary"
+      },
+      "nullable": true,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "json-configuration": {
+      "displayName": "Detect JSON format",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/JSONConfiguration"
+      },
+      "nullable": true,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "logMonitoringTimezoneValidator",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "uniqueProperties": [
+        "config-item-title"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "minAgentVersion": "1.247",
+    "addItemButton": "Add rule"
+  },
+  "uiCustomization": {
+    "table": {
+      "columns": [
+        {
+          "displayName": "Rule name",
+          "builtinColumnRef": "summary"
+        },
+        {
+          "id": "dateTimePattern",
+          "displayName": "Pattern",
+          "propertyRef": "date-time-pattern"
+        },
+        {
+          "id": "timezone",
+          "displayName": "Timezone",
+          "propertyRef": "timezone"
+        },
+        {
+          "id": "dateSearchLimit",
+          "displayName": "Timestamp search limit",
+          "propertyRef": "date-search-limit"
+        },
+        {
+          "id": "entryBoundary",
+          "displayName": "Entry boundary",
+          "propertyRef": "entry-boundary/pattern"
+        }
+      ],
+      "emptyState": {
+        "text": "**Create your first rule**\n\nAdd the first rule to configure timestamp patterns"
+      }
+    }
+  }
+}

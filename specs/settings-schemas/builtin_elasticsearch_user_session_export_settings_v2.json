@@ -1,1 +1,582 @@
-{"dynatrace":"1","schemaId":"builtin:elasticsearch.user-session-export-settings-v2","displayName":"User session exports","description":"A user session export enables you to stream real user monitoring data from Dynatrace to an external data source where it can be leveraged as input for big data analytics, or for extending data retention. ","documentation":"\n\nStreamed data includes all user sessions, user actions, events, and high-level timing and error data.\n\nUse your existing analytics infrastructure to perform ad-hoc analysis on large numbers of user sessions, and combine this data with data mined from other sources.\n\nOnce enabled, user session export automatically sends JSON data for all monitored user sessions in your environment to the configured HTTPS endpoint.\n\nYou can also filter on a management zone per user session export.\nYou can define up to three user session exports to send specific data to different endpoints.\n\nFor complete details, visit [Configure user session exports](https://dt-url.net/user-session-exports).","schemaGroups":["group:integration.external","group:integration"],"version":"0.0.18","multiObject":true,"ordered":false,"maxObjects":3,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"authType":{"displayName":"Authentication type","description":"","documentation":"","items":[{"value":"basic","displayName":"Basic authentication"},{"value":"oauth2","displayName":"OAuth 2.0 (Early Adopter)"}],"type":"enum"},"sendCredentials":{"displayName":"Send credentials","description":"","documentation":"","items":[{"value":"header","displayName":"As authentication header"}],"type":"enum"},"grantType":{"displayName":"Grant type","description":"","documentation":"","items":[{"value":"clientCredentials","displayName":"Client credentials"}],"type":"enum"}},"types":{"EndpointDefinition":{"version":"0","versionInfo":"","displayName":"EndpointDefinition","summaryPattern":"","description":"","documentation":"","properties":{"endpointUrl":{"displayName":"Endpoint URL","description":"","documentation":"","type":"text","subType":"url","nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"urlHttpsValidator","skipAsyncValidation":false},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"enableUserSessionExport":{"displayName":"Enable user session export","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"contentType":{"displayName":"Content type","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":"application/json"},"usePost":{"displayName":"Use POST method (instead of PUT)","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"type":"object"},"BasicAuth":{"version":"0","versionInfo":"","displayName":"Basic authentication","summaryPattern":"{username}: {password}","description":"","documentation":"","properties":{"username":{"displayName":"User name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"password":{"displayName":"Password","description":"","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"OAuth2":{"version":"0","versionInfo":"","displayName":"OAuth2","summaryPattern":"","description":"","documentation":"","properties":{"grantType":{"displayName":"Grant type","description":"","documentation":"","type":{"$ref":"#/enums/grantType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"clientCredentials"},"accessTokenUrl":{"displayName":"Access token URL","description":"","documentation":"","type":"text","subType":"url","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1},{"type":"PATTERN","customMessage":"For security reasons we only allow HTTPS endpoints","pattern":"^(https)://.*$"},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clientId":{"displayName":"Client ID","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clientSecret":{"displayName":"Client secret","description":"","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"scope":{"displayName":"Scope","description":"The scope of access you are requesting","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"},"sendCredentials":{"displayName":"Send credentials","description":"","documentation":"","type":{"$ref":"#/enums/sendCredentials"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"header"}},"type":"object"},"Authentication":{"version":"0","versionInfo":"","displayName":"Authentication","summaryPattern":"","description":"","documentation":"","properties":{"active":{"displayName":"Activate","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"authType":{"displayName":"Authentication type","description":"","documentation":"","type":{"$ref":"#/enums/authType"},"nullable":false,"precondition":{"type":"EQUALS","property":"active","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"basic"},"basicAuth":{"displayName":"Basic authentication","description":"","documentation":"","type":{"$ref":"#/types/BasicAuth"},"nullable":false,"precondition":{"type":"EQUALS","property":"authType","expectedValue":"basic"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"oAuth2":{"displayName":"OAuth 2.0 (Early Adopter)","description":"","documentation":"","type":{"$ref":"#/types/OAuth2"},"nullable":false,"precondition":{"type":"EQUALS","property":"authType","expectedValue":"oauth2"},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"SendDirect":{"version":"0","versionInfo":"","displayName":"SendDirect","summaryPattern":"","description":"","documentation":"","properties":{"active":{"displayName":"Activate","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"indexName":{"displayName":"Name of the index where data is sent","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"active","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"docType":{"displayName":"Type of documents in the Elasticsearch index","description":"","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"active","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"ExportBehavior":{"version":"0","versionInfo":"","displayName":"ExportBehavior","summaryPattern":"","description":"","documentation":"","properties":{"disableNotification":{"displayName":"Disable notification","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"customConfiguration":{"displayName":"Custom configuration properties","description":"Here you can set additional properties for this export configuration. Changing these values might only be necessary in some rare cases. Please contact support before changing this field.","documentation":"","type":"text","nullable":true,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"ExportBulkSize needs to be between 102,400 and 524,288,000 bytes","customValidatorId":"exportBulkSize","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"ExportBulkActions needs to be between 100 and 100,000 bytes","customValidatorId":"exportBulkActions","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"ConnectionRequestTimeout needs to be between 1,000 and 120,000 ms","customValidatorId":"connectionRequestTimeout","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"ConnectTimeout needs to be between 1,000 and 120,000 ms","customValidatorId":"connectTimeout","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"SocketTimeout needs to be between 1,000 and 120,000 ms","customValidatorId":"socketTimeout","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"DisableGlobalProxy needs to be \"true\" or \"false\"","customValidatorId":"disableGlobalProxy","skipAsyncValidation":false},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"endpointDefinition":{"displayName":"Define your endpoint","description":"Dynatrace will send JSON data periodically to this endpoint. You can also pause and disable an endpoint to stop the data stream from Dynatrace to your endpoint.","documentation":"","type":{"$ref":"#/types/EndpointDefinition"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"authentication":{"displayName":"Authentication","description":"Dynatrace can automatically send bulk data to Elasticsearch. You can use an SSL certificate, basic authentication or OAuth 2.0 to secure access. For Dynatrace SaaS installations, the Elasticsearch instance must be publicly reachable by the Dynatrace Cluster.","documentation":"","type":{"$ref":"#/types/Authentication"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"sendDirect":{"displayName":"Send data directly to Elasticsearch","description":"Activate this if you want to export user session data to your own Elasticsearch cluster. If you run Elasticsearch 7, make sure to enter <em>_doc</em> as the type. For Elasticsearch 8 omit the type. If you really want to use a type, then you have to add <em>include_type_name=true</em> when creating your Elasticsearch index. See more information in the Dynatrace help.","documentation":"","type":{"$ref":"#/types/SendDirect"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"exportBehavior":{"displayName":"Export scope, alerting, and advanced configuration","description":"Define the scope of your export by using a specific management zone. You can also disable UI notifications for failing exports, or add special settings provided by Dynatrace support for troubleshooting.","documentation":"","type":{"$ref":"#/types/ExportBehavior"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"SECRET_RESUBMISSION","customMessage":"For security reasons please re-enter the Secret to update the setting.","checkAllProperties":true}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:elasticsearch.user-session-export-settings-v2",
+  "displayName": "User session exports",
+  "description": "A user session export enables you to stream real user monitoring data from Dynatrace to an external data source where it can be leveraged as input for big data analytics, or for extending data retention. ",
+  "documentation": "\n\nStreamed data includes all user sessions, user actions, events, and high-level timing and error data.\n\nUse your existing analytics infrastructure to perform ad-hoc analysis on large numbers of user sessions, and combine this data with data mined from other sources.\n\nOnce enabled, user session export automatically sends JSON data for all monitored user sessions in your environment to the configured HTTPS endpoint.\n\nYou can also filter on a management zone per user session export.\nYou can define up to three user session exports to send specific data to different endpoints.\n\nFor complete details, visit [Configure user session exports](https://dt-url.net/user-session-exports).",
+  "schemaGroups": [
+    "group:integration.external",
+    "group:integration"
+  ],
+  "version": "0.0.18",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 3,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "authType": {
+      "displayName": "Authentication type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "basic",
+          "displayName": "Basic authentication"
+        },
+        {
+          "value": "oauth2",
+          "displayName": "OAuth 2.0 (Early Adopter)"
+        }
+      ],
+      "type": "enum"
+    },
+    "sendCredentials": {
+      "displayName": "Send credentials",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "header",
+          "displayName": "As authentication header"
+        }
+      ],
+      "type": "enum"
+    },
+    "grantType": {
+      "displayName": "Grant type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "clientCredentials",
+          "displayName": "Client credentials"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "EndpointDefinition": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "EndpointDefinition",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "endpointUrl": {
+          "displayName": "Endpoint URL",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "subType": "url",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customValidatorId": "urlHttpsValidator",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid URI",
+              "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid http(s) URL",
+              "pattern": "^https?://.*$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "enableUserSessionExport": {
+          "displayName": "Enable user session export",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "contentType": {
+          "displayName": "Content type",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "application/json"
+        },
+        "usePost": {
+          "displayName": "Use POST method (instead of PUT)",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    },
+    "BasicAuth": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Basic authentication",
+      "summaryPattern": "{username}: {password}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "username": {
+          "displayName": "User name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "password": {
+          "displayName": "Password",
+          "description": "",
+          "documentation": "",
+          "type": "secret",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "OAuth2": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "OAuth2",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "grantType": {
+          "displayName": "Grant type",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/grantType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "clientCredentials"
+        },
+        "accessTokenUrl": {
+          "displayName": "Access token URL",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "subType": "url",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "For security reasons we only allow HTTPS endpoints",
+              "pattern": "^(https)://.*$"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid URI",
+              "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid http(s) URL",
+              "pattern": "^https?://.*$"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "clientId": {
+          "displayName": "Client ID",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "clientSecret": {
+          "displayName": "Client secret",
+          "description": "",
+          "documentation": "",
+          "type": "secret",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "scope": {
+          "displayName": "Scope",
+          "description": "The scope of access you are requesting",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "sendCredentials": {
+          "displayName": "Send credentials",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/sendCredentials"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "header"
+        }
+      },
+      "type": "object"
+    },
+    "Authentication": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Authentication",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "active": {
+          "displayName": "Activate",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "authType": {
+          "displayName": "Authentication type",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/authType"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "active",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "basic"
+        },
+        "basicAuth": {
+          "displayName": "Basic authentication",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/BasicAuth"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "authType",
+            "expectedValue": "basic"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "oAuth2": {
+          "displayName": "OAuth 2.0 (Early Adopter)",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/OAuth2"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "authType",
+            "expectedValue": "oauth2"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "SendDirect": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "SendDirect",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "active": {
+          "displayName": "Activate",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "indexName": {
+          "displayName": "Name of the index where data is sent",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "active",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "docType": {
+          "displayName": "Type of documents in the Elasticsearch index",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "active",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "ExportBehavior": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "ExportBehavior",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "disableNotification": {
+          "displayName": "Disable notification",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "customConfiguration": {
+          "displayName": "Custom configuration properties",
+          "description": "Here you can set additional properties for this export configuration. Changing these values might only be necessary in some rare cases. Please contact support before changing this field.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "ExportBulkSize needs to be between 102,400 and 524,288,000 bytes",
+              "customValidatorId": "exportBulkSize",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "ExportBulkActions needs to be between 100 and 100,000 bytes",
+              "customValidatorId": "exportBulkActions",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "ConnectionRequestTimeout needs to be between 1,000 and 120,000 ms",
+              "customValidatorId": "connectionRequestTimeout",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "ConnectTimeout needs to be between 1,000 and 120,000 ms",
+              "customValidatorId": "connectTimeout",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "SocketTimeout needs to be between 1,000 and 120,000 ms",
+              "customValidatorId": "socketTimeout",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "DisableGlobalProxy needs to be \"true\" or \"false\"",
+              "customValidatorId": "disableGlobalProxy",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "endpointDefinition": {
+      "displayName": "Define your endpoint",
+      "description": "Dynatrace will send JSON data periodically to this endpoint. You can also pause and disable an endpoint to stop the data stream from Dynatrace to your endpoint.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/EndpointDefinition"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "authentication": {
+      "displayName": "Authentication",
+      "description": "Dynatrace can automatically send bulk data to Elasticsearch. You can use an SSL certificate, basic authentication or OAuth 2.0 to secure access. For Dynatrace SaaS installations, the Elasticsearch instance must be publicly reachable by the Dynatrace Cluster.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/Authentication"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "sendDirect": {
+      "displayName": "Send data directly to Elasticsearch",
+      "description": "Activate this if you want to export user session data to your own Elasticsearch cluster. If you run Elasticsearch 7, make sure to enter <em>_doc</em> as the type. For Elasticsearch 8 omit the type. If you really want to use a type, then you have to add <em>include_type_name=true</em> when creating your Elasticsearch index. See more information in the Dynatrace help.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/SendDirect"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "exportBehavior": {
+      "displayName": "Export scope, alerting, and advanced configuration",
+      "description": "Define the scope of your export by using a specific management zone. You can also disable UI notifications for failing exports, or add special settings provided by Dynatrace support for troubleshooting.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/ExportBehavior"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "SECRET_RESUBMISSION",
+      "customMessage": "For security reasons please re-enter the Secret to update the setting.",
+      "checkAllProperties": true
+    }
+  ]
+}

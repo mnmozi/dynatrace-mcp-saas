@@ -1,1 +1,29 @@
-{"dynatrace":"1","schemaId":"builtin:geo-settings","displayName":"Geolocation settings","description":"Settings related to geolocations","documentation":"","version":"1.0.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment","environment-default"],"enums":{},"types":{},"properties":{"displayWorldmap":{"displayName":"Display the world map","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:geo-settings",
+  "displayName": "Geolocation settings",
+  "description": "Settings related to geolocations",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment",
+    "environment-default"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "displayWorldmap": {
+      "displayName": "Display the world map",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}

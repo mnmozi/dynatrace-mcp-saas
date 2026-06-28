@@ -1,1 +1,54 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.frontend-backend-linking","displayName":"Frontend-backend linking","description":"Configure frontend-backend linking via [W3C trace context](https://dt-url.net/t0039ye).","documentation":"","version":"1","multiObject":false,"maxObjects":1,"maturity":"EARLY_ADOPTER","allowedScopes":["APPLICATION"],"enums":{},"types":{},"properties":{"enabled":{"displayName":"Enable frontend-backend linking via W3C trace context","description":"When enabled, the RUM JavaScript includes the  W3C trace context in XHR and Fetch requests.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"crossOriginUrlPattern":{"displayName":"Cross-origin URL pattern","description":"Specify a regular expression to match Fetch and XHR URLs for cross-origin requests. When the pattern matches, the `traceparent` and `tracestate` request headers are added to link the request with backend traces.\n\nImportant: Endpoints must implement CORS handling that allows the `traceparent` and `tracestate` request headers. Otherwise, requests will fail and break your application!","documentation":"","type":"text","subType":"safe_regex","nullable":true,"constraints":[{"type":"REGEX","disallowDangerousRegex":true},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.frontend-backend-linking",
+  "displayName": "Frontend-backend linking",
+  "description": "Configure frontend-backend linking via [W3C trace context](https://dt-url.net/t0039ye).",
+  "documentation": "",
+  "version": "1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "APPLICATION"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enable frontend-backend linking via W3C trace context",
+      "description": "When enabled, the RUM JavaScript includes the  W3C trace context in XHR and Fetch requests.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "crossOriginUrlPattern": {
+      "displayName": "Cross-origin URL pattern",
+      "description": "Specify a regular expression to match Fetch and XHR URLs for cross-origin requests. When the pattern matches, the `traceparent` and `tracestate` request headers are added to link the request with backend traces.\n\nImportant: Endpoints must implement CORS handling that allows the `traceparent` and `tracestate` request headers. Otherwise, requests will fail and break your application!",
+      "documentation": "",
+      "type": "text",
+      "subType": "safe_regex",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "REGEX",
+          "disallowDangerousRegex": true
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

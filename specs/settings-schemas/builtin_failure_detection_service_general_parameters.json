@@ -1,1 +1,407 @@
-{"dynatrace":"1","schemaId":"builtin:failure-detection.service.general-parameters","displayName":"General failure detection parameters","description":"Dynatrace failure detection automatically detects the vast majority of error conditions in your environment. However, detected service errors don't necessarily mean that the underlying requests have failed. There may be cases where the default service failure detection settings don't meet your particular needs. In such cases, you can configure the settings provided below. Please note that these settings are not applicable to services of type 'Span service'. For complete details, see [configure service failure detection](https://dt-url.net/ys5k0p4y).","documentation":"","schemaGroups":["group:failure-detection"],"version":"1.0.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["SERVICE"],"enums":{},"types":{"compareOperation":{"version":"0","versionInfo":"","displayName":"compareOperation","summaryPattern":"","description":"A comparison operation that tests the value of a request attribute. The type of comparison and the value to compare against depend on the data type of the request attribute.","documentation":"","properties":{"compareOperationType":{"displayName":"Apply this comparison","description":"The type of comparison to apply. Available types depend on the data type of the request attribute:\n* String types support `STRING_EXISTS`, `STRING_EQUALS`, `NOT_STRING_EQUALS`, `STARTS_WITH`, `NOT_STARTS_WITH`, `CONTAINS`, `NOT_CONTAINS`, `ENDS_WITH`, `NOT_ENDS_WITH`.\n* Integer types support `INTEGER_EQUALS` and related comparisons;\n* Double types support `DOUBLE_EQUALS` and related comparisons.","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"compare_operation_source","filterProperties":["../requestAttribute"],"resetValue":"NEVER","validate":true,"fullContext":true,"useApiSearch":false},"nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":"STRING_EXISTS"},"textValue":{"displayName":"Value","description":"The text value to compare the request attribute against. Only applicable for string comparison types.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"IN","property":"compareOperationType","expectedValues":["STRING_EQUALS","NOT_STRING_EQUALS","STARTS_WITH","NOT_STARTS_WITH","CONTAINS","NOT_CONTAINS","ENDS_WITH","NOT_ENDS_WITH"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"caseSensitive":{"displayName":"Case sensitive","description":"If `true`, the comparison is case-sensitive. Only applicable for string comparison types. Default: `false`.","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"IN","property":"compareOperationType","expectedValues":["STRING_EQUALS","NOT_STRING_EQUALS","STARTS_WITH","NOT_STARTS_WITH","CONTAINS","NOT_CONTAINS","ENDS_WITH","NOT_ENDS_WITH"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"intValue":{"displayName":"Value","description":"The integer value to compare the request attribute against. Only applicable for integer comparison types.","documentation":"","type":"integer","nullable":false,"precondition":{"type":"IN","property":"compareOperationType","expectedValues":["INTEGER_EQUALS","NOT_INTEGER_EQUALS","INTEGER_GREATER_THAN","INTEGER_GREATER_THAN_OR_EQUALS","INTEGER_LESS_THAN","INTEGER_LESS_THAN_OR_EQUALS"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":0},"doubleValue":{"displayName":"Value","description":"The floating-point value to compare the request attribute against. Only applicable for double comparison types.","documentation":"","type":"float","nullable":false,"precondition":{"type":"IN","property":"compareOperationType","expectedValues":["DOUBLE_EQUALS","NOT_DOUBLE_EQUALS","DOUBLE_GREATER_THAN","DOUBLE_GREATER_THAN_OR_EQUALS","DOUBLE_LESS_THAN","DOUBLE_LESS_THAN_OR_EQUALS"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":0.0}},"type":"object"},"customErrorRule":{"version":"0","versionInfo":"","displayName":"customErrorRule","summaryPattern":"**{requestAttribute}** {condition.compareOperationType|toLowerCase} {condition.textValue|valueSet, select, true{\"{condition.textValue}\"} other{}}{condition.intValue}{condition.doubleValue}","description":"A custom error rule that determines if a request has failed based on the value of a request attribute. Define a request attribute that captures the relevant data, then configure a condition to check the captured value.","documentation":"","properties":{"requestAttribute":{"displayName":"Request attribute","description":"The ID of the request attribute to check. The request attribute must already be defined.","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"request_attribute_source","filterProperties":[],"resetValue":"NEVER","validate":true,"fullContext":false,"useApiSearch":true},"nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"condition":{"displayName":"Request attribute condition","description":"The condition that determines whether the request attribute value indicates a failure.","documentation":"","type":{"$ref":"#/types/compareOperation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"exception":{"version":"0","versionInfo":"","displayName":"exception","summaryPattern":"{classPattern|valueSet, select, true {{messagePattern|valueSet, select, true {**{classPattern}** where message contains \"**{messagePattern}**\"} other {**{classPattern}**}}} other {{messagePattern|valueSet, select, true {Any exception where message contains \"**{messagePattern}**\"} other {Any exception}}}}","description":"An exception pattern used to match exceptions by class name and/or message content.","documentation":"","properties":{"classPattern":{"displayName":"Class pattern","description":"The pattern will match if it is contained within the actual class name.","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"},"messagePattern":{"displayName":"Exception message pattern","description":"Optionally, define an exception message pattern. The pattern will match if the actual exception message contains the pattern.","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"exceptionRules":{"version":"0","versionInfo":"","displayName":"exceptionRules","summaryPattern":"","description":"Exception and custom error rules that determine how specific exceptions, handled errors, and request-attribute-based conditions affect failure detection.","documentation":"","properties":{"ignoreAllExceptions":{"displayName":"Ignore all exceptions","description":"If `true`, all exceptions are ignored for failure detection. Success forcing exceptions, ignored exceptions, and custom handled exceptions have no effect. Exceptions are still tracked and appear in distributed traces, but requests are not labeled as failed. Default: `false`.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"successForcingExceptions":{"displayName":"Success forcing exceptions","description":"Define exceptions which indicate that an entire service call should not be considered as failed. E.g. an exception indicating that the client aborted the operation. If an exception matching any of the defined patterns occurs on the __entry node__ of the service, it will be considered successful. Compared to ignored exceptions, the request will be considered successful even if other exceptions occur in the same request.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/exception"}},"nullable":false,"precondition":{"type":"EQUALS","property":"ignoreAllExceptions","expectedValue":false},"metadata":{"addItemButton":"Add exception"},"minObjects":0,"maxObjects":200,"modificationPolicy":"DEFAULT"},"ignoredExceptions":{"displayName":"Ignored exceptions","description":"Some exceptions that are thrown by legacy or 3rd-party code indicate a specific response, not an error. Use this setting to instruct Dynatrace to treat such exceptions as non-failed requests. If an exception matching any of the defined patterns occurs on the __entry node__ of the service, it will not be considered as a failure. Other exceptions occurring at the same request might still mark the request as failed.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/exception"}},"nullable":false,"precondition":{"type":"EQUALS","property":"ignoreAllExceptions","expectedValue":false},"metadata":{"addItemButton":"Add exception"},"minObjects":0,"maxObjects":200,"modificationPolicy":"DEFAULT"},"customHandledExceptions":{"displayName":"Custom handled exceptions","description":"There may be situations where your application code handles exceptions gracefully in a manner that these failures aren't detected by Dynatrace. Use this setting to define specific gracefully-handled exceptions that should be treated as service failures.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/exception"}},"nullable":false,"precondition":{"type":"EQUALS","property":"ignoreAllExceptions","expectedValue":false},"metadata":{"addItemButton":"Add exception"},"minObjects":0,"maxObjects":200,"modificationPolicy":"DEFAULT"},"customErrorRules":{"displayName":"Custom error rules","description":"Some custom error situations are only detectable via a return value or other means. To support such cases, [define a request attribute](https://dt-url.net/ys5k0p4y) that captures the required data. Then define a custom error rule that determines if the request has failed based on the value of the request attribute.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/customErrorRule"}},"nullable":false,"metadata":{"addItemButton":"Add custom error rule"},"minObjects":0,"maxObjects":250,"modificationPolicy":"DEFAULT"},"ignoreSpanFailureDetection":{"displayName":"Ignore span failure detection","description":"If `true`, span failure detection is ignored. This is specific to OpenTelemetry. Default: `false`.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"type":"object"}},"properties":{"enabled":{"displayName":"Override global failure detection settings","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"exceptionRules":{"displayName":"Customize failure detection for specific exceptions and errors","description":"","documentation":"","type":{"$ref":"#/types/exceptionRules"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:failure-detection.service.general-parameters",
+  "displayName": "General failure detection parameters",
+  "description": "Dynatrace failure detection automatically detects the vast majority of error conditions in your environment. However, detected service errors don't necessarily mean that the underlying requests have failed. There may be cases where the default service failure detection settings don't meet your particular needs. In such cases, you can configure the settings provided below. Please note that these settings are not applicable to services of type 'Span service'. For complete details, see [configure service failure detection](https://dt-url.net/ys5k0p4y).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:failure-detection"
+  ],
+  "version": "1.0.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "SERVICE"
+  ],
+  "enums": {},
+  "types": {
+    "compareOperation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "compareOperation",
+      "summaryPattern": "",
+      "description": "A comparison operation that tests the value of a request attribute. The type of comparison and the value to compare against depend on the data type of the request attribute.",
+      "documentation": "",
+      "properties": {
+        "compareOperationType": {
+          "displayName": "Apply this comparison",
+          "description": "The type of comparison to apply. Available types depend on the data type of the request attribute:\n* String types support `STRING_EXISTS`, `STRING_EQUALS`, `NOT_STRING_EQUALS`, `STARTS_WITH`, `NOT_STARTS_WITH`, `CONTAINS`, `NOT_CONTAINS`, `ENDS_WITH`, `NOT_ENDS_WITH`.\n* Integer types support `INTEGER_EQUALS` and related comparisons;\n* Double types support `DOUBLE_EQUALS` and related comparisons.",
+          "documentation": "",
+          "type": "text",
+          "subType": "datasource",
+          "datasource": {
+            "identifier": "compare_operation_source",
+            "filterProperties": [
+              "../requestAttribute"
+            ],
+            "resetValue": "NEVER",
+            "validate": true,
+            "fullContext": true,
+            "useApiSearch": false
+          },
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "STRING_EXISTS"
+        },
+        "textValue": {
+          "displayName": "Value",
+          "description": "The text value to compare the request attribute against. Only applicable for string comparison types.",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "STRING_EQUALS",
+              "NOT_STRING_EQUALS",
+              "STARTS_WITH",
+              "NOT_STARTS_WITH",
+              "CONTAINS",
+              "NOT_CONTAINS",
+              "ENDS_WITH",
+              "NOT_ENDS_WITH"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "caseSensitive": {
+          "displayName": "Case sensitive",
+          "description": "If `true`, the comparison is case-sensitive. Only applicable for string comparison types. Default: `false`.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "STRING_EQUALS",
+              "NOT_STRING_EQUALS",
+              "STARTS_WITH",
+              "NOT_STARTS_WITH",
+              "CONTAINS",
+              "NOT_CONTAINS",
+              "ENDS_WITH",
+              "NOT_ENDS_WITH"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "intValue": {
+          "displayName": "Value",
+          "description": "The integer value to compare the request attribute against. Only applicable for integer comparison types.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "INTEGER_EQUALS",
+              "NOT_INTEGER_EQUALS",
+              "INTEGER_GREATER_THAN",
+              "INTEGER_GREATER_THAN_OR_EQUALS",
+              "INTEGER_LESS_THAN",
+              "INTEGER_LESS_THAN_OR_EQUALS"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "doubleValue": {
+          "displayName": "Value",
+          "description": "The floating-point value to compare the request attribute against. Only applicable for double comparison types.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "DOUBLE_EQUALS",
+              "NOT_DOUBLE_EQUALS",
+              "DOUBLE_GREATER_THAN",
+              "DOUBLE_GREATER_THAN_OR_EQUALS",
+              "DOUBLE_LESS_THAN",
+              "DOUBLE_LESS_THAN_OR_EQUALS"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        }
+      },
+      "type": "object"
+    },
+    "customErrorRule": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "customErrorRule",
+      "summaryPattern": "**{requestAttribute}** {condition.compareOperationType|toLowerCase} {condition.textValue|valueSet, select, true{\"{condition.textValue}\"} other{}}{condition.intValue}{condition.doubleValue}",
+      "description": "A custom error rule that determines if a request has failed based on the value of a request attribute. Define a request attribute that captures the relevant data, then configure a condition to check the captured value.",
+      "documentation": "",
+      "properties": {
+        "requestAttribute": {
+          "displayName": "Request attribute",
+          "description": "The ID of the request attribute to check. The request attribute must already be defined.",
+          "documentation": "",
+          "type": "text",
+          "subType": "datasource",
+          "datasource": {
+            "identifier": "request_attribute_source",
+            "filterProperties": [],
+            "resetValue": "NEVER",
+            "validate": true,
+            "fullContext": false,
+            "useApiSearch": true
+          },
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "condition": {
+          "displayName": "Request attribute condition",
+          "description": "The condition that determines whether the request attribute value indicates a failure.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/compareOperation"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "exception": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "exception",
+      "summaryPattern": "{classPattern|valueSet, select, true {{messagePattern|valueSet, select, true {**{classPattern}** where message contains \"**{messagePattern}**\"} other {**{classPattern}**}}} other {{messagePattern|valueSet, select, true {Any exception where message contains \"**{messagePattern}**\"} other {Any exception}}}}",
+      "description": "An exception pattern used to match exceptions by class name and/or message content.",
+      "documentation": "",
+      "properties": {
+        "classPattern": {
+          "displayName": "Class pattern",
+          "description": "The pattern will match if it is contained within the actual class name.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "messagePattern": {
+          "displayName": "Exception message pattern",
+          "description": "Optionally, define an exception message pattern. The pattern will match if the actual exception message contains the pattern.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "exceptionRules": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "exceptionRules",
+      "summaryPattern": "",
+      "description": "Exception and custom error rules that determine how specific exceptions, handled errors, and request-attribute-based conditions affect failure detection.",
+      "documentation": "",
+      "properties": {
+        "ignoreAllExceptions": {
+          "displayName": "Ignore all exceptions",
+          "description": "If `true`, all exceptions are ignored for failure detection. Success forcing exceptions, ignored exceptions, and custom handled exceptions have no effect. Exceptions are still tracked and appear in distributed traces, but requests are not labeled as failed. Default: `false`.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "successForcingExceptions": {
+          "displayName": "Success forcing exceptions",
+          "description": "Define exceptions which indicate that an entire service call should not be considered as failed. E.g. an exception indicating that the client aborted the operation. If an exception matching any of the defined patterns occurs on the __entry node__ of the service, it will be considered successful. Compared to ignored exceptions, the request will be considered successful even if other exceptions occur in the same request.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/exception"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "ignoreAllExceptions",
+            "expectedValue": false
+          },
+          "metadata": {
+            "addItemButton": "Add exception"
+          },
+          "minObjects": 0,
+          "maxObjects": 200,
+          "modificationPolicy": "DEFAULT"
+        },
+        "ignoredExceptions": {
+          "displayName": "Ignored exceptions",
+          "description": "Some exceptions that are thrown by legacy or 3rd-party code indicate a specific response, not an error. Use this setting to instruct Dynatrace to treat such exceptions as non-failed requests. If an exception matching any of the defined patterns occurs on the __entry node__ of the service, it will not be considered as a failure. Other exceptions occurring at the same request might still mark the request as failed.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/exception"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "ignoreAllExceptions",
+            "expectedValue": false
+          },
+          "metadata": {
+            "addItemButton": "Add exception"
+          },
+          "minObjects": 0,
+          "maxObjects": 200,
+          "modificationPolicy": "DEFAULT"
+        },
+        "customHandledExceptions": {
+          "displayName": "Custom handled exceptions",
+          "description": "There may be situations where your application code handles exceptions gracefully in a manner that these failures aren't detected by Dynatrace. Use this setting to define specific gracefully-handled exceptions that should be treated as service failures.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/exception"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "ignoreAllExceptions",
+            "expectedValue": false
+          },
+          "metadata": {
+            "addItemButton": "Add exception"
+          },
+          "minObjects": 0,
+          "maxObjects": 200,
+          "modificationPolicy": "DEFAULT"
+        },
+        "customErrorRules": {
+          "displayName": "Custom error rules",
+          "description": "Some custom error situations are only detectable via a return value or other means. To support such cases, [define a request attribute](https://dt-url.net/ys5k0p4y) that captures the required data. Then define a custom error rule that determines if the request has failed based on the value of the request attribute.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/customErrorRule"
+            }
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add custom error rule"
+          },
+          "minObjects": 0,
+          "maxObjects": 250,
+          "modificationPolicy": "DEFAULT"
+        },
+        "ignoreSpanFailureDetection": {
+          "displayName": "Ignore span failure detection",
+          "description": "If `true`, span failure detection is ignored. This is specific to OpenTelemetry. Default: `false`.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Override global failure detection settings",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "exceptionRules": {
+      "displayName": "Customize failure detection for specific exceptions and errors",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/exceptionRules"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

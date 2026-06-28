@@ -1,1 +1,831 @@
-{"dynatrace":"1","schemaId":"builtin:os-services-monitoring","displayName":"OS services monitoring","description":"Set up alerts for OS services in undesirable states both for Windows and Linux systemd.\n Note: If monitoring is turned on for full availability metric, custom metric consumption takes place. Refer to [documentation](https://dt-url.net/vl03xzk) for more details.\n\nPlease provide feedback to us about this feature on [Dynatrace Community](https://dt-url.net/nl02tbm).","documentation":"\n\nIn order to set up the alert for a certain group of OS services, you must first define a new policy. Specify which service's states you would like to be alerted about and then add detection rules in order to tell Dynatrace which exact OS services you are interested in. You may specify multiple detection rules.\n\nNote that policies are specified for each of supported operating systems individually and that some of the parameters and properties vary between them.","schemaGroups":["group:monitoring"],"version":"1.3.13","multiObject":true,"ordered":true,"maxObjects":400,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","HOST_GROUP","environment"],"enums":{"System":{"displayName":"System","description":"","documentation":"","items":[{"value":"WINDOWS","displayName":"Windows","icon":"windows"},{"value":"LINUX","displayName":"Linux","icon":"linux"}],"type":"enum"},"RuleType":{"displayName":"Rule scope","description":"","documentation":"","items":[{"value":"RuleTypeOsService","displayName":"OS Service"},{"value":"RuleTypeHost","displayName":"Host"}],"type":"enum"},"linuxServiceProp":{"displayName":"ServiceItem","description":"","documentation":"","items":[{"value":"ServiceName","displayName":"Service Name"},{"value":"StartupType","displayName":"Startup Type"}],"type":"enum"},"windowsServiceProps":{"displayName":"ServiceItem","description":"","documentation":"","items":[{"value":"DisplayName","displayName":"Display Name"},{"value":"ServiceName","displayName":"Service Name"},{"value":"Path","displayName":"Path"},{"value":"StartupType","displayName":"Startup Type"},{"value":"Manufacturer","displayName":"Manufacturer"}],"type":"enum"}},"types":{"MetadataItem":{"version":"0","versionInfo":"","displayName":"","summaryPattern":"{metadataKey}: {metadataValue}","description":"","documentation":"","properties":{"metadataKey":{"displayName":"Key","description":"Type 'dt.' for key hints.","documentation":"","type":"text","subType":"event_template_property_key","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Unknown predefined property key.","customValidatorId":"event-property-key-validator","skipAsyncValidation":false},{"type":"PATTERN","customMessage":"Key property must not contain '{' or '}'.","pattern":"^[^{}]*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"metadataValue":{"displayName":"Value","description":"Type '{' for placeholder hints.","documentation":"","type":"text","subType":"event_template_variable_placeholder","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"HostMetadataCondition":{"version":"2","versionInfo":"Moved from custom metadata to resource attributes","displayName":"","summaryPattern":"Resource attribute ","description":"","documentation":"","properties":{"keyMustExist":{"displayName":"Key must exist","description":"","documentation":"When enabled, the condition requires a resource attribute to exist and match the constraints; when disabled, the key is optional but must still match the constrains if it is present.","type":"boolean","nullable":false,"metadata":{"minAgentVersion":"1.297"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"metadataKey":{"displayName":"Key","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Key property must not contain '{' or '}'.","pattern":"^[^{}]*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"metadataCondition":{"displayName":"Condition","description":"","documentation":"This string has to match a required format.\n\n- `$match(ver*_1.2.?)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(production)` – Matches if `production` appears anywhere in the host metadata value.\n- `$eq(production)` – Matches if `production` matches the host metadata value exactly.\n- `$prefix(production)` – Matches if `production` matches the prefix of the host metadata value.\n- `$suffix(production)` – Matches if `production` matches the suffix of the host metadata value.\n\nAvailable logic operations:\n- `$not($eq(production))` – Matches if the host metadata value is different from `production`.\n- `$and($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` and ends with `main`.\n- `$or($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` or ends with `main`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**","type":"text","subType":"event_template_variable_placeholder","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"ConditionGeneralRule","skipAsyncValidation":false}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"linuxDetectionCondition":{"version":"0","versionInfo":"","displayName":"DetectionCondition","summaryPattern":"{ruleType}: {hostMetadataCondition}{property}{hostMetadataCondition/metadataKey} matches {condition}{startupCondition}{hostMetadataCondition/metadataCondition}","description":"","documentation":"","properties":{"ruleType":{"displayName":"Rule scope","description":"","documentation":"","type":{"$ref":"#/enums/RuleType"},"nullable":true,"maxObjects":1,"modificationPolicy":"DEFAULT"},"property":{"displayName":"Service property","description":"","documentation":"","type":{"$ref":"#/enums/linuxServiceProp"},"nullable":false,"precondition":{"type":"OR","preconditions":[{"type":"NULL","property":"ruleType"},{"type":"IN","property":"ruleType","expectedValues":["RuleTypeOsService"]}]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ServiceName"},"condition":{"displayName":"Condition","description":"","documentation":"This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$match(ip?tables*)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(ssh)` – Matches if `ssh` appears anywhere in the service's property value.\n- `$eq(sshd)` – Matches if `sshd` matches the service's property value exactly.\n- `$prefix(ss)` – Matches if `ss` matches the prefix of the service's property value.\n- `$suffix(hd)` – Matches if `hd` matches the suffix of the service's property value.\n\nAvailable logic operations:\n- `$not($eq(sshd))` – Matches if the service's property value is different from `sshd`.\n- `$and($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` and ends with `hd`.\n- `$or($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` or ends with `hd`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"ConditionGeneralRule","skipAsyncValidation":false}],"precondition":{"type":"IN","property":"property","expectedValues":["ServiceName"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"startupCondition":{"displayName":"Condition","description":"","documentation":"This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(enabled)` – Matches services with startup type equal to enabled.\n\nAvailable logic operations:\n- `$not($eq(enabled))` – Matches services with startup type different from enabled.\n- `$or($eq(enabled),$eq(disabled))` - Matches services that are either enabled or disabled.\n\nUse one of the following values as a parameter for this condition:\n\n- `enabled`\n- `enabled-runtime`\n- `static`\n- `disabled`","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"OSServicesLinuxStartupRule","skipAsyncValidation":false}],"precondition":{"type":"IN","property":"property","expectedValues":["StartupType"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"hostMetadataCondition":{"displayName":"Resource attribute","description":"","documentation":"Host resource attributes are dimensions enriching the host including custom metadata which are user-defined key-value pairs that you can assign to hosts monitored by Dynatrace.\n\nBy defining custom metadata, you can enrich the monitoring data with context specific to your organization's needs, such as environment names, team ownership, application versions, or any other relevant details.\n\nSee [Define tags and metadata for hosts](https://dt-url.net/w3hv0kbw).\n\nNote: Starting from version 1.325 host resource attributes are supported in addition to host custom metadata.","type":{"$ref":"#/types/HostMetadataCondition"},"nullable":false,"precondition":{"type":"IN","property":"ruleType","expectedValues":["RuleTypeHost"]},"metadata":{"minAgentVersion":"1.277"},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"windowsDetectionCondition":{"version":"0","versionInfo":"","displayName":"DetectionCondition","summaryPattern":"{ruleType}: {hostMetadataCondition}{property}{hostMetadataCondition/metadataKey} matches {condition}{startupCondition}{hostMetadataCondition/metadataCondition}","description":"","documentation":"","properties":{"ruleType":{"displayName":"Rule scope","description":"","documentation":"","type":{"$ref":"#/enums/RuleType"},"nullable":true,"maxObjects":1,"modificationPolicy":"DEFAULT"},"property":{"displayName":"Service property","description":"","documentation":"","type":{"$ref":"#/enums/windowsServiceProps"},"nullable":false,"precondition":{"type":"OR","preconditions":[{"type":"NULL","property":"ruleType"},{"type":"IN","property":"ruleType","expectedValues":["RuleTypeOsService"]}]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ServiceName"},"condition":{"displayName":"Condition","description":"","documentation":"This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$match(ip?tables*)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(ssh)` – Matches if `ssh` appears anywhere in the service's property value.\n- `$eq(sshd)` – Matches if `sshd` matches the service's property value exactly.\n- `$prefix(ss)` – Matches if `ss` matches the prefix of the service's property value.\n- `$suffix(hd)` – Matches if `hd` matches the suffix of the service's property value.\n\nAvailable logic operations:\n- `$not($eq(sshd))` – Matches if the service's property value is different from `sshd`.\n- `$and($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` and ends with `hd`.\n- `$or($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` or ends with `hd`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"ConditionGeneralRule","skipAsyncValidation":false}],"precondition":{"type":"IN","property":"property","expectedValues":["Manufacturer","ServiceName","DisplayName","Path"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"startupCondition":{"displayName":"Condition","description":"","documentation":"This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(manual)` – Matches services that are started manually.\n\nAvailable logic operations:\n- `$not($eq(auto))` – Matches services with startup type different from Automatic.\n- `$or($eq(auto),$eq(manual))` – Matches if service's startup type is either Automatic or Manual.\n\nUse one of the following values as a parameter for this condition:\n\n- `manual` for Manual\n- `manual_trigger` for Manual (Trigger Start)\n- `auto` for Automatic\n- `auto_delay` for Automatic (Delayed Start)\n- `auto_trigger` for Automatic (Trigger Start)\n- `auto_delay_trigger` for Automatic (Delayed Start, Trigger Start)\n- `disabled` for Disabled","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"OSServicesWinStartupRule","skipAsyncValidation":false}],"precondition":{"type":"IN","property":"property","expectedValues":["StartupType"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"hostMetadataCondition":{"displayName":"Resource attribute","description":"","documentation":"","type":{"$ref":"#/types/HostMetadataCondition"},"nullable":false,"precondition":{"type":"IN","property":"ruleType","expectedValues":["RuleTypeHost"]},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"system":{"displayName":"System","description":"","documentation":"","type":{"$ref":"#/enums/System"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"LINUX"},"name":{"displayName":"Rule name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"monitoring":{"displayName":"Monitor","description":"","documentation":"Toggle the switch in order to enable or disable availability metric monitoring for this policy. Availability metrics produce custom metrics. Refer to [documentation](https://dt-url.net/vl03xzk) for consumption examples. Each monitored service consumes one custom metric.\n\n**The feature can't be configured on hosts in Discovery mode**","type":"boolean","nullable":false,"metadata":{"minAgentVersion":"1.243"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"alerting":{"displayName":"Alert","description":"","documentation":"Toggle the switch in order to enable or disable alerting for this policy","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"notInstalledAlerting":{"displayName":"Alert if service is not installed","description":"","documentation":"By default, Dynatrace does not alert if the service is not installed. Toggle the switch to enable or disable this feature","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"alerting","expectedValue":true},"metadata":{"minAgentVersion":"1.257"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"statusConditionWindows":{"displayName":"Service status condition for alerting","description":"","documentation":"This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(paused)` – Matches services that are in paused state.\n\nAvailable logic operations:\n- `$not($eq(paused))` – Matches services that are in state different from paused.\n- `$or($eq(paused),$eq(running))` – Matches services that are either in paused or running state.\n\nUse one of the following values as a parameter for this condition:\n\n- `running`\n- `stopped`\n- `start_pending`\n- `stop_pending`\n- `continue_pending`\n- `pause_pending`\n- `paused`","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY","customMessage":"This value is mandatory"},{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"OSServicesWinStatusRule","skipAsyncValidation":false}],"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"system","expectedValue":"WINDOWS"},{"type":"EQUALS","property":"alerting","expectedValue":true}]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"$not($eq(running))"},"statusConditionLinux":{"displayName":"Service status condition for alerting","description":"","documentation":"This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(failed)` – Matches services that are in failed state.\n\nAvailable logic operations:\n- `$not($eq(active))` – Matches services with state different from active.\n- `$or($eq(inactive),$eq(failed))` – Matches services that are either in inactive or failed state.\n\nUse one of the following values as a parameter for this condition:\n\n- `reloading`\n- `activating`\n- `deactivating`\n- `failed`\n- `inactive`\n- `active`","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY","customMessage":"This value is mandatory"},{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This value does not match the required format.","customValidatorId":"OSServicesLinuxStatusRule","skipAsyncValidation":false}],"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"system","expectedValue":"LINUX"},{"type":"EQUALS","property":"alerting","expectedValue":true}]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"$eq(failed)"},"alertActivationDuration":{"displayName":"Alerting delay","description":"The number of **10-second measurement cycles** before alerting is triggered","documentation":"Set this value to control the speed of alerting. One is the lowest setting equal to one 10-second sample. If you set this value to 30, alerting is triggered after 5 minutes.","type":"integer","nullable":false,"constraints":[{"type":"RANGE","customMessage":"The value must be in range of 1 to 180.","maximum":180,"minimum":1}],"precondition":{"type":"EQUALS","property":"alerting","expectedValue":true},"metadata":{"minAgentVersion":"1.257"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1},"detectionConditionsWindows":{"displayName":"Detection rules","description":"","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/windowsDetectionCondition"}},"nullable":false,"precondition":{"type":"IN","property":"system","expectedValues":["WINDOWS"]},"metadata":{"itemDisplayName":"New rule","addItemButton":"Add rule"},"minObjects":1,"maxObjects":100,"modificationPolicy":"DEFAULT"},"detectionConditionsLinux":{"displayName":"Detection rules","description":"","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/linuxDetectionCondition"}},"nullable":false,"precondition":{"type":"IN","property":"system","expectedValues":["LINUX"]},"metadata":{"itemDisplayName":"New rule","addItemButton":"Add rule"},"minObjects":1,"maxObjects":100,"modificationPolicy":"DEFAULT"},"metadata":{"displayName":"Properties","description":"Set of additional key-value properties to be attached to the triggered event. You can retrieve the available property keys using the [Events API v2](https://dt-url.net/9622g1w). Additionally any Host resource attribute can be dynamically substituted (agent 1.325+).","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/MetadataItem"}},"nullable":false,"precondition":{"type":"EQUALS","property":"alerting","expectedValue":true},"metadata":{"itemDisplayName":"New property","addItemButton":"Add Property"},"minObjects":0,"maxObjects":30,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"At least one non-host scope detection rule must be defined","customValidatorId":"requireOneNonHostScopedRule","skipAsyncValidation":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"Specified name already exists. Please provide a different name.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"itemDisplayName":"Add policy","minAgentVersion":"1.239","addItemButton":"Add policy"},"uiCustomization":{"table":{"columns":[{"id":"system","displayName":"System","propertyRef":"system"},{"id":"alerting","displayName":"Alert","propertyRef":"alerting"},{"id":"monitoring","displayName":"Monitor","propertyRef":"monitoring"}]}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:os-services-monitoring",
+  "displayName": "OS services monitoring",
+  "description": "Set up alerts for OS services in undesirable states both for Windows and Linux systemd.\n Note: If monitoring is turned on for full availability metric, custom metric consumption takes place. Refer to [documentation](https://dt-url.net/vl03xzk) for more details.\n\nPlease provide feedback to us about this feature on [Dynatrace Community](https://dt-url.net/nl02tbm).",
+  "documentation": "\n\nIn order to set up the alert for a certain group of OS services, you must first define a new policy. Specify which service's states you would like to be alerted about and then add detection rules in order to tell Dynatrace which exact OS services you are interested in. You may specify multiple detection rules.\n\nNote that policies are specified for each of supported operating systems individually and that some of the parameters and properties vary between them.",
+  "schemaGroups": [
+    "group:monitoring"
+  ],
+  "version": "1.3.13",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 400,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "System": {
+      "displayName": "System",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "WINDOWS",
+          "displayName": "Windows",
+          "icon": "windows"
+        },
+        {
+          "value": "LINUX",
+          "displayName": "Linux",
+          "icon": "linux"
+        }
+      ],
+      "type": "enum"
+    },
+    "RuleType": {
+      "displayName": "Rule scope",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "RuleTypeOsService",
+          "displayName": "OS Service"
+        },
+        {
+          "value": "RuleTypeHost",
+          "displayName": "Host"
+        }
+      ],
+      "type": "enum"
+    },
+    "linuxServiceProp": {
+      "displayName": "ServiceItem",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "ServiceName",
+          "displayName": "Service Name"
+        },
+        {
+          "value": "StartupType",
+          "displayName": "Startup Type"
+        }
+      ],
+      "type": "enum"
+    },
+    "windowsServiceProps": {
+      "displayName": "ServiceItem",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "DisplayName",
+          "displayName": "Display Name"
+        },
+        {
+          "value": "ServiceName",
+          "displayName": "Service Name"
+        },
+        {
+          "value": "Path",
+          "displayName": "Path"
+        },
+        {
+          "value": "StartupType",
+          "displayName": "Startup Type"
+        },
+        {
+          "value": "Manufacturer",
+          "displayName": "Manufacturer"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "MetadataItem": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "",
+      "summaryPattern": "{metadataKey}: {metadataValue}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "metadataKey": {
+          "displayName": "Key",
+          "description": "Type 'dt.' for key hints.",
+          "documentation": "",
+          "type": "text",
+          "subType": "event_template_property_key",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "Unknown predefined property key.",
+              "customValidatorId": "event-property-key-validator",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Key property must not contain '{' or '}'.",
+              "pattern": "^[^{}]*$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "metadataValue": {
+          "displayName": "Value",
+          "description": "Type '{' for placeholder hints.",
+          "documentation": "",
+          "type": "text",
+          "subType": "event_template_variable_placeholder",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "HostMetadataCondition": {
+      "version": "2",
+      "versionInfo": "Moved from custom metadata to resource attributes",
+      "displayName": "",
+      "summaryPattern": "Resource attribute ",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "keyMustExist": {
+          "displayName": "Key must exist",
+          "description": "",
+          "documentation": "When enabled, the condition requires a resource attribute to exist and match the constraints; when disabled, the key is optional but must still match the constrains if it is present.",
+          "type": "boolean",
+          "nullable": false,
+          "metadata": {
+            "minAgentVersion": "1.297"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "metadataKey": {
+          "displayName": "Key",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "PATTERN",
+              "customMessage": "Key property must not contain '{' or '}'.",
+              "pattern": "^[^{}]*$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "metadataCondition": {
+          "displayName": "Condition",
+          "description": "",
+          "documentation": "This string has to match a required format.\n\n- `$match(ver*_1.2.?)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(production)` – Matches if `production` appears anywhere in the host metadata value.\n- `$eq(production)` – Matches if `production` matches the host metadata value exactly.\n- `$prefix(production)` – Matches if `production` matches the prefix of the host metadata value.\n- `$suffix(production)` – Matches if `production` matches the suffix of the host metadata value.\n\nAvailable logic operations:\n- `$not($eq(production))` – Matches if the host metadata value is different from `production`.\n- `$and($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` and ends with `main`.\n- `$or($prefix(production),$suffix(main))` – Matches if host metadata value starts with `production` or ends with `main`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**",
+          "type": "text",
+          "subType": "event_template_variable_placeholder",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "This value does not match the required format.",
+              "customValidatorId": "ConditionGeneralRule",
+              "skipAsyncValidation": false
+            }
+          ],
+          "metadata": {
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "linuxDetectionCondition": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "DetectionCondition",
+      "summaryPattern": "{ruleType}: {hostMetadataCondition}{property}{hostMetadataCondition/metadataKey} matches {condition}{startupCondition}{hostMetadataCondition/metadataCondition}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "ruleType": {
+          "displayName": "Rule scope",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/RuleType"
+          },
+          "nullable": true,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "property": {
+          "displayName": "Service property",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/linuxServiceProp"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "OR",
+            "preconditions": [
+              {
+                "type": "NULL",
+                "property": "ruleType"
+              },
+              {
+                "type": "IN",
+                "property": "ruleType",
+                "expectedValues": [
+                  "RuleTypeOsService"
+                ]
+              }
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "ServiceName"
+        },
+        "condition": {
+          "displayName": "Condition",
+          "description": "",
+          "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$match(ip?tables*)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(ssh)` – Matches if `ssh` appears anywhere in the service's property value.\n- `$eq(sshd)` – Matches if `sshd` matches the service's property value exactly.\n- `$prefix(ss)` – Matches if `ss` matches the prefix of the service's property value.\n- `$suffix(hd)` – Matches if `hd` matches the suffix of the service's property value.\n\nAvailable logic operations:\n- `$not($eq(sshd))` – Matches if the service's property value is different from `sshd`.\n- `$and($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` and ends with `hd`.\n- `$or($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` or ends with `hd`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "This value does not match the required format.",
+              "customValidatorId": "ConditionGeneralRule",
+              "skipAsyncValidation": false
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "property",
+            "expectedValues": [
+              "ServiceName"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "startupCondition": {
+          "displayName": "Condition",
+          "description": "",
+          "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(enabled)` – Matches services with startup type equal to enabled.\n\nAvailable logic operations:\n- `$not($eq(enabled))` – Matches services with startup type different from enabled.\n- `$or($eq(enabled),$eq(disabled))` - Matches services that are either enabled or disabled.\n\nUse one of the following values as a parameter for this condition:\n\n- `enabled`\n- `enabled-runtime`\n- `static`\n- `disabled`",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "This value does not match the required format.",
+              "customValidatorId": "OSServicesLinuxStartupRule",
+              "skipAsyncValidation": false
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "property",
+            "expectedValues": [
+              "StartupType"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "hostMetadataCondition": {
+          "displayName": "Resource attribute",
+          "description": "",
+          "documentation": "Host resource attributes are dimensions enriching the host including custom metadata which are user-defined key-value pairs that you can assign to hosts monitored by Dynatrace.\n\nBy defining custom metadata, you can enrich the monitoring data with context specific to your organization's needs, such as environment names, team ownership, application versions, or any other relevant details.\n\nSee [Define tags and metadata for hosts](https://dt-url.net/w3hv0kbw).\n\nNote: Starting from version 1.325 host resource attributes are supported in addition to host custom metadata.",
+          "type": {
+            "$ref": "#/types/HostMetadataCondition"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "ruleType",
+            "expectedValues": [
+              "RuleTypeHost"
+            ]
+          },
+          "metadata": {
+            "minAgentVersion": "1.277"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "windowsDetectionCondition": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "DetectionCondition",
+      "summaryPattern": "{ruleType}: {hostMetadataCondition}{property}{hostMetadataCondition/metadataKey} matches {condition}{startupCondition}{hostMetadataCondition/metadataCondition}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "ruleType": {
+          "displayName": "Rule scope",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/RuleType"
+          },
+          "nullable": true,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "property": {
+          "displayName": "Service property",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/windowsServiceProps"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "OR",
+            "preconditions": [
+              {
+                "type": "NULL",
+                "property": "ruleType"
+              },
+              {
+                "type": "IN",
+                "property": "ruleType",
+                "expectedValues": [
+                  "RuleTypeOsService"
+                ]
+              }
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "ServiceName"
+        },
+        "condition": {
+          "displayName": "Condition",
+          "description": "",
+          "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$match(ip?tables*)` – Matches string with wildcards: `*` any number (including zero) of characters and `?` exactly one character.\n- `$contains(ssh)` – Matches if `ssh` appears anywhere in the service's property value.\n- `$eq(sshd)` – Matches if `sshd` matches the service's property value exactly.\n- `$prefix(ss)` – Matches if `ss` matches the prefix of the service's property value.\n- `$suffix(hd)` – Matches if `hd` matches the suffix of the service's property value.\n\nAvailable logic operations:\n- `$not($eq(sshd))` – Matches if the service's property value is different from `sshd`.\n- `$and($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` and ends with `hd`.\n- `$or($prefix(ss),$suffix(hd))` – Matches if service's property value starts with `ss` or ends with `hd`.\n\nBrackets **(** and **)** that are part of the matched property **must be escaped with a tilde (~)**",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "This value does not match the required format.",
+              "customValidatorId": "ConditionGeneralRule",
+              "skipAsyncValidation": false
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "property",
+            "expectedValues": [
+              "Manufacturer",
+              "ServiceName",
+              "DisplayName",
+              "Path"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "startupCondition": {
+          "displayName": "Condition",
+          "description": "",
+          "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(manual)` – Matches services that are started manually.\n\nAvailable logic operations:\n- `$not($eq(auto))` – Matches services with startup type different from Automatic.\n- `$or($eq(auto),$eq(manual))` – Matches if service's startup type is either Automatic or Manual.\n\nUse one of the following values as a parameter for this condition:\n\n- `manual` for Manual\n- `manual_trigger` for Manual (Trigger Start)\n- `auto` for Automatic\n- `auto_delay` for Automatic (Delayed Start)\n- `auto_trigger` for Automatic (Trigger Start)\n- `auto_delay_trigger` for Automatic (Delayed Start, Trigger Start)\n- `disabled` for Disabled",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "This value does not match the required format.",
+              "customValidatorId": "OSServicesWinStartupRule",
+              "skipAsyncValidation": false
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "property",
+            "expectedValues": [
+              "StartupType"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "hostMetadataCondition": {
+          "displayName": "Resource attribute",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/HostMetadataCondition"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "ruleType",
+            "expectedValues": [
+              "RuleTypeHost"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "system": {
+      "displayName": "System",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/System"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "LINUX"
+    },
+    "name": {
+      "displayName": "Rule name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "monitoring": {
+      "displayName": "Monitor",
+      "description": "",
+      "documentation": "Toggle the switch in order to enable or disable availability metric monitoring for this policy. Availability metrics produce custom metrics. Refer to [documentation](https://dt-url.net/vl03xzk) for consumption examples. Each monitored service consumes one custom metric.\n\n**The feature can't be configured on hosts in Discovery mode**",
+      "type": "boolean",
+      "nullable": false,
+      "metadata": {
+        "minAgentVersion": "1.243"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "alerting": {
+      "displayName": "Alert",
+      "description": "",
+      "documentation": "Toggle the switch in order to enable or disable alerting for this policy",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "notInstalledAlerting": {
+      "displayName": "Alert if service is not installed",
+      "description": "",
+      "documentation": "By default, Dynatrace does not alert if the service is not installed. Toggle the switch to enable or disable this feature",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "alerting",
+        "expectedValue": true
+      },
+      "metadata": {
+        "minAgentVersion": "1.257"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "statusConditionWindows": {
+      "displayName": "Service status condition for alerting",
+      "description": "",
+      "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(paused)` – Matches services that are in paused state.\n\nAvailable logic operations:\n- `$not($eq(paused))` – Matches services that are in state different from paused.\n- `$or($eq(paused),$eq(running))` – Matches services that are either in paused or running state.\n\nUse one of the following values as a parameter for this condition:\n\n- `running`\n- `stopped`\n- `start_pending`\n- `stop_pending`\n- `continue_pending`\n- `pause_pending`\n- `paused`",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY",
+          "customMessage": "This value is mandatory"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1000,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "This value does not match the required format.",
+          "customValidatorId": "OSServicesWinStatusRule",
+          "skipAsyncValidation": false
+        }
+      ],
+      "precondition": {
+        "type": "AND",
+        "preconditions": [
+          {
+            "type": "EQUALS",
+            "property": "system",
+            "expectedValue": "WINDOWS"
+          },
+          {
+            "type": "EQUALS",
+            "property": "alerting",
+            "expectedValue": true
+          }
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "$not($eq(running))"
+    },
+    "statusConditionLinux": {
+      "displayName": "Service status condition for alerting",
+      "description": "",
+      "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(failed)` – Matches services that are in failed state.\n\nAvailable logic operations:\n- `$not($eq(active))` – Matches services with state different from active.\n- `$or($eq(inactive),$eq(failed))` – Matches services that are either in inactive or failed state.\n\nUse one of the following values as a parameter for this condition:\n\n- `reloading`\n- `activating`\n- `deactivating`\n- `failed`\n- `inactive`\n- `active`",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY",
+          "customMessage": "This value is mandatory"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1000,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "This value does not match the required format.",
+          "customValidatorId": "OSServicesLinuxStatusRule",
+          "skipAsyncValidation": false
+        }
+      ],
+      "precondition": {
+        "type": "AND",
+        "preconditions": [
+          {
+            "type": "EQUALS",
+            "property": "system",
+            "expectedValue": "LINUX"
+          },
+          {
+            "type": "EQUALS",
+            "property": "alerting",
+            "expectedValue": true
+          }
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "$eq(failed)"
+    },
+    "alertActivationDuration": {
+      "displayName": "Alerting delay",
+      "description": "The number of **10-second measurement cycles** before alerting is triggered",
+      "documentation": "Set this value to control the speed of alerting. One is the lowest setting equal to one 10-second sample. If you set this value to 30, alerting is triggered after 5 minutes.",
+      "type": "integer",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "RANGE",
+          "customMessage": "The value must be in range of 1 to 180.",
+          "maximum": 180,
+          "minimum": 1
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "alerting",
+        "expectedValue": true
+      },
+      "metadata": {
+        "minAgentVersion": "1.257"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": 1
+    },
+    "detectionConditionsWindows": {
+      "displayName": "Detection rules",
+      "description": "",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/windowsDetectionCondition"
+        }
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "IN",
+        "property": "system",
+        "expectedValues": [
+          "WINDOWS"
+        ]
+      },
+      "metadata": {
+        "itemDisplayName": "New rule",
+        "addItemButton": "Add rule"
+      },
+      "minObjects": 1,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "detectionConditionsLinux": {
+      "displayName": "Detection rules",
+      "description": "",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/linuxDetectionCondition"
+        }
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "IN",
+        "property": "system",
+        "expectedValues": [
+          "LINUX"
+        ]
+      },
+      "metadata": {
+        "itemDisplayName": "New rule",
+        "addItemButton": "Add rule"
+      },
+      "minObjects": 1,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "metadata": {
+      "displayName": "Properties",
+      "description": "Set of additional key-value properties to be attached to the triggered event. You can retrieve the available property keys using the [Events API v2](https://dt-url.net/9622g1w). Additionally any Host resource attribute can be dynamically substituted (agent 1.325+).",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/MetadataItem"
+        }
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "alerting",
+        "expectedValue": true
+      },
+      "metadata": {
+        "itemDisplayName": "New property",
+        "addItemButton": "Add Property"
+      },
+      "minObjects": 0,
+      "maxObjects": 30,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "At least one non-host scope detection rule must be defined",
+      "customValidatorId": "requireOneNonHostScopedRule",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "Specified name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "itemDisplayName": "Add policy",
+    "minAgentVersion": "1.239",
+    "addItemButton": "Add policy"
+  },
+  "uiCustomization": {
+    "table": {
+      "columns": [
+        {
+          "id": "system",
+          "displayName": "System",
+          "propertyRef": "system"
+        },
+        {
+          "id": "alerting",
+          "displayName": "Alert",
+          "propertyRef": "alerting"
+        },
+        {
+          "id": "monitoring",
+          "displayName": "Monitor",
+          "propertyRef": "monitoring"
+        }
+      ]
+    }
+  }
+}

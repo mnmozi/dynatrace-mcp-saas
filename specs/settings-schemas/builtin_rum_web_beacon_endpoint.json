@@ -1,1 +1,102 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.beacon-endpoint","displayName":"Beacon endpoint settings","description":"Define where OneAgent is to send your web application monitoring data.\nLearn more about how to [configure the beacon endpoint](https://dt-url.net/yp036lb).","documentation":"","schemaGroups":["group:rum-settings"],"version":"1.0.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION"],"enums":{"WebBeaconEndpointType":{"displayName":"Type","description":"","documentation":"","items":[{"value":"DEFAULT_CONFIG","displayName":"Default settings"},{"value":"ACTIVEGATE","displayName":"Cluster ActiveGate"},{"value":"ONEAGENT","displayName":"OneAgent"}],"type":"enum"}},"types":{},"properties":{"type":{"displayName":"Type","description":"","documentation":"","type":{"$ref":"#/enums/WebBeaconEndpointType"},"nullable":false,"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"DEFAULT_CONFIG"},"url":{"displayName":"URL","description":"You can specify either path segments or an absolute URL.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":512},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"The beacon endpoint URL must be either absolute, root-relative or relative and must not contain a query string or a fragment","customValidatorId":"rumBeaconEndpointSettingsUrlValidator","skipAsyncValidation":false}],"precondition":{"type":"EQUALS","property":"type","expectedValue":"ONEAGENT"},"metadata":{"placeholder":""},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"useCors":{"displayName":"Send beacon data via CORS","description":"","documentation":"Learn more about [sending beacon data via CORS](https://dt-url.net/r7038sa)","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"type","expectedValue":"ONEAGENT"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.beacon-endpoint",
+  "displayName": "Beacon endpoint settings",
+  "description": "Define where OneAgent is to send your web application monitoring data.\nLearn more about how to [configure the beacon endpoint](https://dt-url.net/yp036lb).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-settings"
+  ],
+  "version": "1.0.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION"
+  ],
+  "enums": {
+    "WebBeaconEndpointType": {
+      "displayName": "Type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "DEFAULT_CONFIG",
+          "displayName": "Default settings"
+        },
+        {
+          "value": "ACTIVEGATE",
+          "displayName": "Cluster ActiveGate"
+        },
+        {
+          "value": "ONEAGENT",
+          "displayName": "OneAgent"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "type": {
+      "displayName": "Type",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/WebBeaconEndpointType"
+      },
+      "nullable": false,
+      "metadata": {
+        "sortItems": "disabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "DEFAULT_CONFIG"
+    },
+    "url": {
+      "displayName": "URL",
+      "description": "You can specify either path segments or an absolute URL.",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 512
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "The beacon endpoint URL must be either absolute, root-relative or relative and must not contain a query string or a fragment",
+          "customValidatorId": "rumBeaconEndpointSettingsUrlValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "type",
+        "expectedValue": "ONEAGENT"
+      },
+      "metadata": {
+        "placeholder": ""
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "useCors": {
+      "displayName": "Send beacon data via CORS",
+      "description": "",
+      "documentation": "Learn more about [sending beacon data via CORS](https://dt-url.net/r7038sa)",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "type",
+        "expectedValue": "ONEAGENT"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  }
+}

@@ -1,1 +1,182 @@
-{"dynatrace":"1","schemaId":"builtin:service-detection-v2-for-oneagent","displayName":"Service Detection v2 for OneAgent","description":"Enabling SDv2 for OneAgent will use the same attribute-based rules as OpenTelemetry for detecting services, endpoints, and failures. Refer to the [SDv2 documentation](https://dt-url.net/5e0309z) for more information.\n\nThis is a **Public Preview** feature. You must complete the [access request form and agree to preview terms](https://dt-url.net/cb300tiz) before enabling.\n\n**Important**\n\nThe services matching your conditions will get new metric keys, breaking existing API queries, dashboards, and service names. Custom, opaque, third party, database, and message queue services are detected differently in SDv2. Analysis views for service to database and message queue operations will be announced in upcoming releases.","documentation":"","schemaGroups":["group:service-detection"],"version":"0.8.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["CLOUD_APPLICATION_NAMESPACE","KUBERNETES_CLUSTER","HOST_GROUP","environment"],"enums":{},"types":{},"properties":{"enableSDV2ForKubernetesWorkloads":{"displayName":"Enable Service detection v2 for Kubernetes workloads","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"condition":{"displayName":"Matching condition for Kubernetes workloads","description":"Limits the opt-in’s scope by filtering with [DQL matcher](https://dt-url.net/l603wby) conditions on a selected set of attributes.","documentation":"Service detection v2 is only applied if this condition matches. \nAllowed attributes: Resource attributes, and custom attributes.\nIf empty, the condition will always match.","type":"text","subType":"code/dql","nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"dql-condition-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"only-resource-and-custom-attributes-dql-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"forbidden-attributes-dql-validator","skipAsyncValidation":false},{"type":"LENGTH","maxLength":1000},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"dql-syntax-validator","skipAsyncValidation":false}],"precondition":{"type":"EQUALS","property":"enableSDV2ForKubernetesWorkloads","expectedValue":true},"metadata":{"placeholder":""},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"enableSDV2ForFaaS":{"displayName":"Enable Service detection v2 for FaaS","description":"","documentation":"","type":"boolean","nullable":true,"metadata":{"featureFlag":"com.compuware.enable-sdv2-faas-toggle.feature","maturity":"IN_DEVELOPMENT"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"conditionForFaaS":{"displayName":"Matching condition for FaaS","description":"Limits the opt-in’s scope by filtering with [DQL matcher](https://dt-url.net/l603wby) conditions on a selected set of attributes.","documentation":"Service detection v2 is only applied if this condition matches. \nAllowed attributes: Resource attributes, and custom attributes.\nIf empty, the condition will always match.","type":"text","subType":"code/dql","nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"dql-condition-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"only-resource-and-custom-attributes-dql-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"forbidden-attributes-dql-validator","skipAsyncValidation":false},{"type":"LENGTH","maxLength":1000},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"dql-syntax-validator","skipAsyncValidation":false}],"precondition":{"type":"EQUALS","property":"enableSDV2ForFaaS","expectedValue":true},"metadata":{"placeholder":""},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"isNotNull(aws.region) and isNotNull(aws.account.id)"},"conditionForAnyWorkload":{"displayName":"Matching condition for any workload","description":"Limits the opt-in’s scope by filtering with [DQL matcher](https://dt-url.net/l603wby) conditions on a selected set of attributes. Resource attributes must be present.","documentation":"Service detection v2 is only applied if this condition matches. \nAllowed attributes: Resource attributes, and custom attributes.\nIf empty, the condition will always match.\nIf the set of resource attributes is missing or empty, the condition will be considered not to match.","type":"text","subType":"code/dql","nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"dql-condition-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"only-resource-and-custom-attributes-dql-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"forbidden-attributes-dql-validator","skipAsyncValidation":false},{"type":"LENGTH","maxLength":1000},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"dql-syntax-validator","skipAsyncValidation":false}],"precondition":{"type":"EQUALS","property":"enableSDV2ForAnyWorkload","expectedValue":true},"metadata":{"placeholder":""},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:service-detection-v2-for-oneagent",
+  "displayName": "Service Detection v2 for OneAgent",
+  "description": "Enabling SDv2 for OneAgent will use the same attribute-based rules as OpenTelemetry for detecting services, endpoints, and failures. Refer to the [SDv2 documentation](https://dt-url.net/5e0309z) for more information.\n\nThis is a **Public Preview** feature. You must complete the [access request form and agree to preview terms](https://dt-url.net/cb300tiz) before enabling.\n\n**Important**\n\nThe services matching your conditions will get new metric keys, breaking existing API queries, dashboards, and service names. Custom, opaque, third party, database, and message queue services are detected differently in SDv2. Analysis views for service to database and message queue operations will be announced in upcoming releases.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:service-detection"
+  ],
+  "version": "0.8.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "CLOUD_APPLICATION_NAMESPACE",
+    "KUBERNETES_CLUSTER",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enableSDV2ForKubernetesWorkloads": {
+      "displayName": "Enable Service detection v2 for Kubernetes workloads",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "condition": {
+      "displayName": "Matching condition for Kubernetes workloads",
+      "description": "Limits the opt-in’s scope by filtering with [DQL matcher](https://dt-url.net/l603wby) conditions on a selected set of attributes.",
+      "documentation": "Service detection v2 is only applied if this condition matches. \nAllowed attributes: Resource attributes, and custom attributes.\nIf empty, the condition will always match.",
+      "type": "text",
+      "subType": "code/dql",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "dql-condition-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "only-resource-and-custom-attributes-dql-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "forbidden-attributes-dql-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1000
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "dql-syntax-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enableSDV2ForKubernetesWorkloads",
+        "expectedValue": true
+      },
+      "metadata": {
+        "placeholder": ""
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "enableSDV2ForFaaS": {
+      "displayName": "Enable Service detection v2 for FaaS",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": true,
+      "metadata": {
+        "featureFlag": "com.compuware.enable-sdv2-faas-toggle.feature",
+        "maturity": "IN_DEVELOPMENT"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "conditionForFaaS": {
+      "displayName": "Matching condition for FaaS",
+      "description": "Limits the opt-in’s scope by filtering with [DQL matcher](https://dt-url.net/l603wby) conditions on a selected set of attributes.",
+      "documentation": "Service detection v2 is only applied if this condition matches. \nAllowed attributes: Resource attributes, and custom attributes.\nIf empty, the condition will always match.",
+      "type": "text",
+      "subType": "code/dql",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "dql-condition-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "only-resource-and-custom-attributes-dql-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "forbidden-attributes-dql-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1000
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "dql-syntax-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enableSDV2ForFaaS",
+        "expectedValue": true
+      },
+      "metadata": {
+        "placeholder": ""
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "isNotNull(aws.region) and isNotNull(aws.account.id)"
+    },
+    "conditionForAnyWorkload": {
+      "displayName": "Matching condition for any workload",
+      "description": "Limits the opt-in’s scope by filtering with [DQL matcher](https://dt-url.net/l603wby) conditions on a selected set of attributes. Resource attributes must be present.",
+      "documentation": "Service detection v2 is only applied if this condition matches. \nAllowed attributes: Resource attributes, and custom attributes.\nIf empty, the condition will always match.\nIf the set of resource attributes is missing or empty, the condition will be considered not to match.",
+      "type": "text",
+      "subType": "code/dql",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "dql-condition-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "only-resource-and-custom-attributes-dql-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "forbidden-attributes-dql-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1000
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "dql-syntax-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enableSDV2ForAnyWorkload",
+        "expectedValue": true
+      },
+      "metadata": {
+        "placeholder": ""
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  }
+}

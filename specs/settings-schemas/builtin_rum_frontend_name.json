@@ -1,1 +1,56 @@
-{"dynatrace":"1","schemaId":"builtin:rum.frontend.name","displayName":"Frontend name","description":"This name serves as the primary identifier for frontends in the New RUM Experience, used for managing permissions, segments, and Smartscape on Grail. Changing the frontend name impacts permissions, segments and Frontend entities.","documentation":"","version":"1.0.1","multiObject":false,"maxObjects":1,"maturity":"EARLY_ADOPTER","allowedScopes":["APPLICATION","MOBILE_APPLICATION"],"enums":{},"types":{},"properties":{"frontendName":{"displayName":"Frontend name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":255,"minLength":1},{"type":"PATTERN","customMessage":"The frontend name must contain only URI-safe characters. Reserved characters or special characters are not allowed.","pattern":"^[A-Za-z0-9\\-_.~]+$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"frontendNameImmutableValidator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"frontendNameUniqueValidator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.frontend.name",
+  "displayName": "Frontend name",
+  "description": "This name serves as the primary identifier for frontends in the New RUM Experience, used for managing permissions, segments, and Smartscape on Grail. Changing the frontend name impacts permissions, segments and Frontend entities.",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "APPLICATION",
+    "MOBILE_APPLICATION"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "frontendName": {
+      "displayName": "Frontend name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "The frontend name must contain only URI-safe characters. Reserved characters or special characters are not allowed.",
+          "pattern": "^[A-Za-z0-9\\-_.~]+$"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "frontendNameImmutableValidator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "frontendNameUniqueValidator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

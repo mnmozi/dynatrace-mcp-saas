@@ -1,1 +1,129 @@
-{"dynatrace":"1","schemaId":"builtin:trace.ingest.control","displayName":"Trace ingest control","description":"Dynatrace OneAgent automatically manages the volume of ingested trace data via Adaptive Traffic Management (ATM). It continuously adjusts the [adaptive trace sampling rate](https://dt-url.net/u602t9t) to keep ingested trace data within your [total licensed Full-Stack trace volume](https://dt-url.net/fd22tbu). By default, this equals your [Full-Stack included trace volume](https://dt-url.net/hs0338s), but you can increase it via [extended trace ingest](https://dt-url.net/nf233j7).\n\nWith trace ingest control, you can steer how your licensed trace volume is used at a deployment scope level, such as a specific host group, Kubernetes namespace, or process group. Use the adaptive sampling switch to select which option to configure for this scope:\n\n• **Adaptive sampling**: Adjust the adaptive trace ingest rate factor to increase or decrease how much of the usable adaptive trace volume a scope receives relative to other scopes. ATM continues to manage the overall volume.\n\n• **Fixed-rate sampling**: Set a deterministic capture rate for all traces initiated within this scope, bypassing ATM for that scope. Fixed-rate sampled traces are not counted against the usable adaptive trace volume.\n\nFor details, see [Adaptive Traffic Management with DPS](https://dt-url.net/jk036gk).","documentation":"","schemaGroups":["group:service-monitoring","group:preferences"],"version":"0.1.3","multiObject":true,"ordered":true,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["PROCESS_GROUP_INSTANCE","PROCESS_GROUP","CLOUD_APPLICATION","CLOUD_APPLICATION_NAMESPACE","KUBERNETES_CLUSTER","HOST_GROUP","environment"],"enums":{"FixedSamplingRate":{"displayName":"FixedSamplingRate","description":"","documentation":"","items":[{"value":"0","displayName":"Capture every trace (100%)"},{"value":"1","displayName":"Capture every 2nd trace (50%)"},{"value":"2","displayName":"Capture every 4th trace (25%)"},{"value":"3","displayName":"Capture every 8th trace (12.5%)"},{"value":"4","displayName":"Capture every 16th trace (6.25%)"},{"value":"5","displayName":"Capture every 32nd trace (3.125%)"},{"value":"6","displayName":"Capture every 64th trace (1.5625%)"},{"value":"7","displayName":"Capture every 128th trace (~0.78%)"}],"type":"enum"}},"types":{},"properties":{"adaptiveSamplingSwitch":{"displayName":"Adaptive Sampling","description":"Determines which sampling configuration is applied for this scope. When enabled, the adaptive trace ingest rate factor can be configured. When disabled, a fixed sampling rate can be configured instead.","documentation":"For details on both options, see [Adaptive Traffic Management with DPS](https://dt-url.net/jk036gk). ","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"adaptiveTraceIngestRateFactor":{"displayName":"Adaptive trace ingest rate factor","description":"Setting the factor to 1 enables OneAgents within this scope to capture traces at a standard, adaptively determined rate. You can increase or decrease this rate limit. For example, choosing a factor of 0.5 means that the trace ingest rate limit will be halved, and choosing a factor of 10 means the trace ingest rate will be 10 times the default limit.","documentation":"For details, see [Adjust adaptive trace sampling rate](https://dt-url.net/u602t9t).","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":100.0,"minimum":0.01}],"precondition":{"type":"EQUALS","property":"adaptiveSamplingSwitch","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1.0},"fixedSamplingRate":{"displayName":"(Preview) Fixed sampling rate","description":"This is a preview feature available to selected customers starting with OneAgent version 1.337.\n\nSets a deterministic capture rate for all traces initiated by OneAgents within this scope. When fixed-rate sampling is active, Adaptive Traffic Management does not control the sampling decision: every trace is independently and probabilistically sampled at the configured rate. Fixed-rate sampled traces do not count against the usable adaptive trace volume and are billed separately.\n\nThis setting only applies to traces that originate within the configured scope. Traces that are started outside the scope inherit the sampling decision made at the trace origin. Configure the scope to match the entry point of the traces you want to control.","documentation":"For details, see [Configure fixed-rate sampling](https://dt-url.net/u542t12) and [Fixed-rate sampling](https://dt-url.net/1762tjz).","type":{"$ref":"#/enums/FixedSamplingRate"},"nullable":false,"precondition":{"type":"EQUALS","property":"adaptiveSamplingSwitch","expectedValue":false},"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"0"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"fixed-sampling-rate-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:trace.ingest.control",
+  "displayName": "Trace ingest control",
+  "description": "Dynatrace OneAgent automatically manages the volume of ingested trace data via Adaptive Traffic Management (ATM). It continuously adjusts the [adaptive trace sampling rate](https://dt-url.net/u602t9t) to keep ingested trace data within your [total licensed Full-Stack trace volume](https://dt-url.net/fd22tbu). By default, this equals your [Full-Stack included trace volume](https://dt-url.net/hs0338s), but you can increase it via [extended trace ingest](https://dt-url.net/nf233j7).\n\nWith trace ingest control, you can steer how your licensed trace volume is used at a deployment scope level, such as a specific host group, Kubernetes namespace, or process group. Use the adaptive sampling switch to select which option to configure for this scope:\n\n• **Adaptive sampling**: Adjust the adaptive trace ingest rate factor to increase or decrease how much of the usable adaptive trace volume a scope receives relative to other scopes. ATM continues to manage the overall volume.\n\n• **Fixed-rate sampling**: Set a deterministic capture rate for all traces initiated within this scope, bypassing ATM for that scope. Fixed-rate sampled traces are not counted against the usable adaptive trace volume.\n\nFor details, see [Adaptive Traffic Management with DPS](https://dt-url.net/jk036gk).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:service-monitoring",
+    "group:preferences"
+  ],
+  "version": "0.1.3",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "PROCESS_GROUP_INSTANCE",
+    "PROCESS_GROUP",
+    "CLOUD_APPLICATION",
+    "CLOUD_APPLICATION_NAMESPACE",
+    "KUBERNETES_CLUSTER",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "FixedSamplingRate": {
+      "displayName": "FixedSamplingRate",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "0",
+          "displayName": "Capture every trace (100%)"
+        },
+        {
+          "value": "1",
+          "displayName": "Capture every 2nd trace (50%)"
+        },
+        {
+          "value": "2",
+          "displayName": "Capture every 4th trace (25%)"
+        },
+        {
+          "value": "3",
+          "displayName": "Capture every 8th trace (12.5%)"
+        },
+        {
+          "value": "4",
+          "displayName": "Capture every 16th trace (6.25%)"
+        },
+        {
+          "value": "5",
+          "displayName": "Capture every 32nd trace (3.125%)"
+        },
+        {
+          "value": "6",
+          "displayName": "Capture every 64th trace (1.5625%)"
+        },
+        {
+          "value": "7",
+          "displayName": "Capture every 128th trace (~0.78%)"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "adaptiveSamplingSwitch": {
+      "displayName": "Adaptive Sampling",
+      "description": "Determines which sampling configuration is applied for this scope. When enabled, the adaptive trace ingest rate factor can be configured. When disabled, a fixed sampling rate can be configured instead.",
+      "documentation": "For details on both options, see [Adaptive Traffic Management with DPS](https://dt-url.net/jk036gk). ",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "adaptiveTraceIngestRateFactor": {
+      "displayName": "Adaptive trace ingest rate factor",
+      "description": "Setting the factor to 1 enables OneAgents within this scope to capture traces at a standard, adaptively determined rate. You can increase or decrease this rate limit. For example, choosing a factor of 0.5 means that the trace ingest rate limit will be halved, and choosing a factor of 10 means the trace ingest rate will be 10 times the default limit.",
+      "documentation": "For details, see [Adjust adaptive trace sampling rate](https://dt-url.net/u602t9t).",
+      "type": "float",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "RANGE",
+          "maximum": 100,
+          "minimum": 0.01
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "adaptiveSamplingSwitch",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": 1
+    },
+    "fixedSamplingRate": {
+      "displayName": "(Preview) Fixed sampling rate",
+      "description": "This is a preview feature available to selected customers starting with OneAgent version 1.337.\n\nSets a deterministic capture rate for all traces initiated by OneAgents within this scope. When fixed-rate sampling is active, Adaptive Traffic Management does not control the sampling decision: every trace is independently and probabilistically sampled at the configured rate. Fixed-rate sampled traces do not count against the usable adaptive trace volume and are billed separately.\n\nThis setting only applies to traces that originate within the configured scope. Traces that are started outside the scope inherit the sampling decision made at the trace origin. Configure the scope to match the entry point of the traces you want to control.",
+      "documentation": "For details, see [Configure fixed-rate sampling](https://dt-url.net/u542t12) and [Fixed-rate sampling](https://dt-url.net/1762tjz).",
+      "type": {
+        "$ref": "#/enums/FixedSamplingRate"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "adaptiveSamplingSwitch",
+        "expectedValue": false
+      },
+      "metadata": {
+        "sortItems": "disabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "0"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "fixed-sampling-rate-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

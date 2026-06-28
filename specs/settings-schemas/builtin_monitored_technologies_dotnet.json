@@ -1,1 +1,44 @@
-{"dynatrace":"1","schemaId":"builtin:monitored-technologies.dotnet","displayName":".NET","description":"By default, .NET monitoring is enabled on all hosts. If you want to disable .NET monitoring on selected hosts, disable it on these hosts via their settings.\n\nIf you want to enable .NET monitoring only on selected hosts, disable global .NET monitoring and enable it on these hosts via their settings.","documentation":"","version":"0.0.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","environment"],"enums":{},"types":{},"properties":{"enabled":{"displayName":"Monitor .NET","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"enabledDotNetCore":{"displayName":"Enable .NET Core","description":"","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:monitored-technologies.dotnet",
+  "displayName": ".NET",
+  "description": "By default, .NET monitoring is enabled on all hosts. If you want to disable .NET monitoring on selected hosts, disable it on these hosts via their settings.\n\nIf you want to enable .NET monitoring only on selected hosts, disable global .NET monitoring and enable it on these hosts via their settings.",
+  "documentation": "",
+  "version": "0.0.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Monitor .NET",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "enabledDotNetCore": {
+      "displayName": "Enable .NET Core",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}

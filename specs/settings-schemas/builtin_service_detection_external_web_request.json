@@ -1,0 +1,1386 @@
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:service-detection.external-web-request",
+  "displayName": "Service detection rules for External Web Requests",
+  "description": "Rules are evaluated from top to bottom, and the first matching rule applies. Rule conditions are evaluated before Service Id Contributors are applied. Note that conditions do not modify attributes of requests. If conditions match, then Service Id Contributors are applied. **All of the Contributors except for the port are always applied.** You can exclude the port contribution by disabling the switch. You can enable the transformation of other Service Id Contributors values to manage which Services are created.\\\nMore extensive information on Service detection rules can be found [here](https://dt-url.net/9i03b79).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:service-detection"
+  ],
+  "version": "2.1.14",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 1000,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "contributionTypeWithOverride": {
+      "displayName": "Contribution type with the ability to override to constant value",
+      "description": "Defines whether the original value should be used, transformations should be applied or it should be overridden to a constant value.",
+      "documentation": "",
+      "items": [
+        {
+          "value": "OriginalValue",
+          "displayName": "Use the original value",
+          "description": "Use the value as it is."
+        },
+        {
+          "value": "OverrideValue",
+          "displayName": "Override to constant value",
+          "description": "Use a fixed value."
+        },
+        {
+          "value": "TransformValue",
+          "displayName": "Use transformed value",
+          "description": "Apply transformations to the original value."
+        }
+      ],
+      "type": "enum"
+    },
+    "transformationType": {
+      "displayName": "Transformation type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "BEFORE",
+          "displayName": "before"
+        },
+        {
+          "value": "AFTER",
+          "displayName": "after"
+        },
+        {
+          "value": "BETWEEN",
+          "displayName": "between"
+        },
+        {
+          "value": "REPLACE_BETWEEN",
+          "displayName": "replace between"
+        },
+        {
+          "value": "REMOVE_NUMBERS",
+          "displayName": "remove numbers"
+        },
+        {
+          "value": "REMOVE_CREDIT_CARDS",
+          "displayName": "remove credit card numbers"
+        },
+        {
+          "value": "REMOVE_IBANS",
+          "displayName": "remove IBANs"
+        },
+        {
+          "value": "REMOVE_IPS",
+          "displayName": "remove IPs"
+        },
+        {
+          "value": "SPLIT_SELECT",
+          "displayName": "split select"
+        },
+        {
+          "value": "TAKE_SEGMENTS",
+          "displayName": "take segments"
+        }
+      ],
+      "type": "enum"
+    },
+    "contributionType": {
+      "displayName": "Contribution type",
+      "description": "Defines whether the original value should be used or transformations should be applied.",
+      "documentation": "",
+      "items": [
+        {
+          "value": "OriginalValue",
+          "displayName": "Use the original value",
+          "description": "Use the value as it is."
+        },
+        {
+          "value": "OverrideValue",
+          "displayName": "Override to constant value",
+          "description": "Use a fixed value."
+        },
+        {
+          "value": "TransformValue",
+          "displayName": "Use transformed value",
+          "description": "Apply transformations to the original value."
+        },
+        {
+          "value": "TransformURL",
+          "displayName": "Use transformed URL path",
+          "description": "Extract segments from the URL path and optionally transform them."
+        }
+      ],
+      "type": "enum"
+    },
+    "contextRootTransformationType": {
+      "displayName": "Transformation type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "BEFORE",
+          "displayName": "before"
+        },
+        {
+          "value": "REPLACE_BETWEEN",
+          "displayName": "replace between"
+        },
+        {
+          "value": "REMOVE_NUMBERS",
+          "displayName": "remove numbers"
+        },
+        {
+          "value": "REMOVE_CREDIT_CARDS",
+          "displayName": "remove credit card numbers"
+        },
+        {
+          "value": "REMOVE_IBANS",
+          "displayName": "remove IBANs"
+        },
+        {
+          "value": "REMOVE_IPS",
+          "displayName": "remove IPs"
+        }
+      ],
+      "type": "enum"
+    },
+    "frameworkType": {
+      "displayName": "Framework type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "AXIS",
+          "displayName": "Apache Axis"
+        },
+        {
+          "value": "CXF",
+          "displayName": "Apache CXF"
+        },
+        {
+          "value": "HESSIAN",
+          "displayName": "Hessian"
+        },
+        {
+          "value": "JAX_WS_RI",
+          "displayName": "JAX-WS Reference Implementation"
+        },
+        {
+          "value": "JBOSS",
+          "displayName": "JBoss"
+        },
+        {
+          "value": "JERSEY",
+          "displayName": "Jersey"
+        },
+        {
+          "value": "PROGRESS",
+          "displayName": "PROGRESS"
+        },
+        {
+          "value": "RESTEASY",
+          "displayName": "RESTEasy"
+        },
+        {
+          "value": "RESTLET",
+          "displayName": "Restlet"
+        },
+        {
+          "value": "SPRING",
+          "displayName": "Spring"
+        },
+        {
+          "value": "TIBCO",
+          "displayName": "TIBCO"
+        },
+        {
+          "value": "WEBLOGIC",
+          "displayName": "WebLogic"
+        },
+        {
+          "value": "WEBMETHODS",
+          "displayName": "WebMethods"
+        },
+        {
+          "value": "WEBSPHERE",
+          "displayName": "Websphere"
+        },
+        {
+          "value": "WINK",
+          "displayName": "Apache Wink"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "condition": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "condition",
+      "summaryPattern": "{attribute|enumValue, select, IpInRange {{attribute} {compareOperationType|toLowerCase} from {ipRangeFrom} to {ipRangeTo}} NotIpInRange {{attribute} {compareOperationType|toLowerCase} from {ipRangeFrom} to {ipRangeTo}} other {{attribute} {compareOperationType|toLowerCase} {textValues}{tagValues}{intValue}{framework}}}",
+      "description": "Matches requests by comparing one detected attribute with one operation.",
+      "documentation": "",
+      "properties": {
+        "attribute": {
+          "displayName": "Take the value of this attribute",
+          "description": "The detected attribute that should be compared with the specified operation.",
+          "documentation": "",
+          "type": "text",
+          "subType": "datasource",
+          "datasource": {
+            "identifier": "Condition_Attribute_DataSource",
+            "filterProperties": [],
+            "resetValue": "NEVER",
+            "validate": true,
+            "fullContext": false,
+            "useApiSearch": false
+          },
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "PG_Tag"
+        },
+        "compareOperationType": {
+          "displayName": "Apply this operation",
+          "description": "The type of comparison operation that should be applied to the detected attribute.",
+          "documentation": "When using this field over the Settings API, it is stored as a string and must use one of the fixed compare-operation identifiers. The available subset depends on the selected `attribute`.\n\n- `Exists`, `NotExists`\n- `BoolIsTrue`, `BoolIsFalse`\n- `TagEquals`, `TagKeyEquals`\n- `StringEquals`, `NotStringEquals`, `StringStartsWith`, `NotStringStartsWith`, `StringEndsWith`, `NotStringEndsWith`, `StringContains`, `NotStringContains`\n- `FrameworkEquals`, `NotFrameworkEquals`\n- `IpInRange`, `NotIpInRange`\n- `IntEquals`, `NotIntEquals`, `IntGreaterThan`, `IntLessThan`",
+          "type": "text",
+          "subType": "datasource",
+          "datasource": {
+            "identifier": "Condition_CompareOperation_DataSource",
+            "filterProperties": [
+              "attribute"
+            ],
+            "resetValue": "NEVER",
+            "validate": true,
+            "fullContext": false,
+            "useApiSearch": false
+          },
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "TagEquals"
+        },
+        "textValues": {
+          "displayName": "Values",
+          "description": "If multiple values are specified, at least one of them must match for the condition to match",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "constraints": [
+              {
+                "type": "LENGTH"
+              }
+            ]
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "TagKeyEquals",
+              "StringEndsWith",
+              "NotStringEndsWith",
+              "StringStartsWith",
+              "NotStringStartsWith",
+              "StringContains",
+              "NotStringContains",
+              "StringEquals",
+              "NotStringEquals"
+            ]
+          },
+          "minObjects": 1,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        },
+        "tagValues": {
+          "displayName": "Values",
+          "description": "If multiple values are specified, at least one of them must match for the condition to match.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "subType": "tag",
+            "constraints": [
+              {
+                "type": "CUSTOM_VALIDATOR_REF",
+                "customValidatorId": "universal-tag-validator",
+                "skipAsyncValidation": false
+              },
+              {
+                "type": "LENGTH",
+                "maxLength": 500,
+                "minLength": 1
+              }
+            ]
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "compareOperationType",
+            "expectedValue": "TagEquals"
+          },
+          "minObjects": 1,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        },
+        "intValue": {
+          "displayName": "Value",
+          "description": "The integer value to compare the detected attribute with.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 0
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "IntGreaterThan",
+              "IntLessThan"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "intValues": {
+          "displayName": "Values",
+          "description": "If multiple values are specified, at least one of them must match for the condition to match.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": "integer"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "IntEquals",
+              "NotIntEquals"
+            ]
+          },
+          "minObjects": 1,
+          "maxObjects": 10,
+          "modificationPolicy": "DEFAULT"
+        },
+        "ipRangeFrom": {
+          "displayName": "From",
+          "description": "The beginning of the IP range. The condition matches if the detected attribute value is greater than or equal to this value (for `IpInRange`) or less than this value (for `NotIpInRange`).",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "IpInRange",
+              "NotIpInRange"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "0.0.0.0"
+        },
+        "ipRangeTo": {
+          "displayName": "To",
+          "description": "The end of the IP range. The condition matches if the detected attribute value is less than or equal to this value (for `IpInRange`) or greater than this value (for `NotIpInRange`).",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "IpInRange",
+              "NotIpInRange"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "255.255.255.255"
+        },
+        "framework": {
+          "displayName": "Technology",
+          "description": "The technology that should be compared with the detected attribute.\n\nSelect one or more technologies. The condition matches if the detected attribute value equals (for `FrameworkEquals`) or does not equal (for `NotFrameworkEquals`) at least one of the selected technologies.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/enums/frameworkType"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "FrameworkEquals",
+              "NotFrameworkEquals"
+            ]
+          },
+          "minObjects": 1,
+          "maxObjects": 10,
+          "modificationPolicy": "DEFAULT"
+        },
+        "ignoreCase": {
+          "displayName": "Ignore case",
+          "description": "Ignore case sensitivity for texts.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "compareOperationType",
+            "expectedValues": [
+              "TagEquals",
+              "TagKeyEquals",
+              "StringEndsWith",
+              "NotStringEndsWith",
+              "StringStartsWith",
+              "NotStringStartsWith",
+              "StringContains",
+              "NotStringContains",
+              "StringEquals",
+              "NotStringEquals"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "ip-validation",
+          "skipAsyncValidation": false
+        }
+      ],
+      "type": "object"
+    },
+    "reducedTransformation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Transformation",
+      "summaryPattern": "{transformationType|enumValue, select, BEFORE {Use value before {suffix}} REPLACE_BETWEEN {Replace value between {prefix|valueSet, select, true {{prefix}} other {the beginning}} and {suffix|valueSet, select, true {{suffix}} other {the end}} with {replacementValue}} REMOVE_NUMBERS {Remove numbers {minDigitCount|valueSet, select, true {with a minimum of {minDigitCount, plural, one {# digit} other {# digits}}} other {}}} REMOVE_CREDIT_CARDS {Remove credit card numbers} REMOVE_IBANS {Remove IBANs} REMOVE_IPS {Remove IPs} other {}}",
+      "description": "Transforms a detected context root value before it contributes to the Service Id.",
+      "documentation": "",
+      "properties": {
+        "transformationType": {
+          "displayName": "Transformation Type",
+          "description": "Defines what kind of transformation will be applied on the original value.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/contextRootTransformationType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "BEFORE"
+        },
+        "prefix": {
+          "displayName": "prefix",
+          "description": "The part of the text that serves as a reference point for the transformation. Its use depends on the transformation type.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "transformationType",
+            "expectedValues": [
+              "REPLACE_BETWEEN"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "suffix": {
+          "displayName": "suffix",
+          "description": "The part of the text that serves as a reference point for the transformation. Its use depends on the transformation type.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "transformationType",
+            "expectedValues": [
+              "BEFORE",
+              "REPLACE_BETWEEN"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "replacementValue": {
+          "displayName": "replacement",
+          "description": "The text that replaces the part between `prefix` and `suffix`. It is used only when the transformation type is `REPLACE_BETWEEN`.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "REPLACE_BETWEEN"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "minDigitCount": {
+          "displayName": "min digit count",
+          "description": "The minimum number of digits that a numeric sequence must have to be removed. It is used only when the transformation type is `REMOVE_NUMBERS`.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "REMOVE_NUMBERS"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        },
+        "includeHexNumbers": {
+          "displayName": "include hexadecimal numbers",
+          "description": "Whether to also remove hexadecimal numbers (sequences of at least `minDigitCount` hexadecimal digits preceded by '0x'). It is used only when the transformation type is `REMOVE_NUMBERS`.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "REMOVE_NUMBERS"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    },
+    "valueOverride": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Value override",
+      "summaryPattern": "",
+      "description": "Defines the constant value used when overriding a detected contributor value.",
+      "documentation": "Provide the fixed value that should replace the detected one when `contributionType` is `OverrideValue`.",
+      "properties": {
+        "value": {
+          "displayName": "Value",
+          "description": "The value to be used instead of the detected value.",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "contextRoot": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "contextRoot",
+      "summaryPattern": "",
+      "description": "Configures how the detected URL context root contributes to the Service Id.",
+      "documentation": "",
+      "properties": {
+        "contributionType": {
+          "displayName": "Contribution type",
+          "description": "Defines whether the original value should be used or if a transformation set should be used to override a value or transform it.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/contributionType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "OriginalValue"
+        },
+        "valueOverride": {
+          "displayName": "Value override",
+          "description": "The value to be used instead of the detected value.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/valueOverride"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "contributionType",
+            "expectedValue": "OverrideValue"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "segmentCount": {
+          "displayName": "Segments to copy from URL path",
+          "description": "The number of segments of the URL to be kept. The URL is divided by slashes (/), the indexing starts with 1 at context root. For example, if you specify 2 for the `www.dynatrace.com/support/help/dynatrace-api/` URL, the value of `support/help` is used.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 0
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "contributionType",
+            "expectedValue": "TransformURL"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "transformations": {
+          "displayName": "Transformations",
+          "description": "Choose how to transform a value before it contributes to the Service Id. Note that all of the Transformations are always applied. Transformations are applied in the order they are specified, and the output of the previous transformation is the input for the next one. The resulting value contributes to the Service Id and can be found on the **Service overview page** under **Properties and tags**.",
+          "documentation": "",
+          "type": "list",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/reducedTransformation"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "contributionType",
+            "expectedValues": [
+              "TransformValue",
+              "TransformURL"
+            ]
+          },
+          "minObjects": 0,
+          "maxObjects": 10,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "context-root-transformation-validation",
+          "skipAsyncValidation": false
+        }
+      ],
+      "type": "object"
+    },
+    "contextIdContributor": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "contextIdContributor",
+      "summaryPattern": "",
+      "description": "Enables and configures the context root as a Service Id contributor.",
+      "documentation": "Set `enableIdContributor` to `true` to let the context root contribute to the Service Id and configure the nested `serviceIdContributor` block. If the switch stays `false`, this contributor does not participate in service detection.",
+      "properties": {
+        "enableIdContributor": {
+          "displayName": "Transform this value before letting it contribute to the Service Id",
+          "description": "When enabled, the context root contributes to the Service Id.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "serviceIdContributor": {
+          "displayName": "",
+          "description": "Choose how to transform the context root value before it contributes to the Service Id. Note that all of the Transformations are always applied. Transformations are applied in the order they are specified, and the output of the previous transformation is the input for the next one.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/contextRoot"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enableIdContributor",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "transformation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Transformation",
+      "summaryPattern": "{transformationType|enumValue, select, BEFORE {Use value before {suffix}} AFTER {Use value after {prefix}} BETWEEN {Use value between {prefix|valueSet, select, true {{prefix}} other {the beginning}} and {suffix|valueSet, select, true {{suffix}} other {the end}}} REPLACE_BETWEEN {Replace value between {prefix|valueSet, select, true {{prefix}} other {the beginning}} and {suffix|valueSet, select, true {{suffix}} other {the end}} with {replacementValue}} REMOVE_NUMBERS {Remove numbers {minDigitCount|valueSet, select, true {with a minimum of {minDigitCount, plural, one {# digit} other {# digits}}} other {}}} REMOVE_CREDIT_CARDS {Remove credit card numbers} REMOVE_IBANS {Remove IBANs} REMOVE_IPS {Remove IPs} SPLIT_SELECT {Split text by {splitDelimiter} and select the element at index {selectIndex}} TAKE_SEGMENTS {Split text by {splitDelimiter} and take the {takeFromEnd, select, true {last} other {first}} {segmentCount, plural, one {# element} other {# elements}}} other {}}",
+      "description": "Transforms a detected contributor value before it contributes to the Service Id.",
+      "documentation": "",
+      "properties": {
+        "transformationType": {
+          "displayName": "Transformation type",
+          "description": "Defines what kind of transformation will be applied on the original value.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/transformationType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "BEFORE"
+        },
+        "prefix": {
+          "displayName": "prefix",
+          "description": "The part of the text that serves as a reference point for the transformation. Its use depends on the transformation type.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "transformationType",
+            "expectedValues": [
+              "AFTER",
+              "BETWEEN",
+              "REPLACE_BETWEEN"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "suffix": {
+          "displayName": "suffix",
+          "description": "The part of the text that serves as a reference point for the transformation. Its use depends on the transformation type.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "transformationType",
+            "expectedValues": [
+              "BEFORE",
+              "BETWEEN",
+              "REPLACE_BETWEEN"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "replacementValue": {
+          "displayName": "replacement",
+          "description": "The text that replaces the part between `prefix` and `suffix`. It is used only when the transformation type is `REPLACE_BETWEEN`.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "REPLACE_BETWEEN"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "splitDelimiter": {
+          "displayName": "split by",
+          "description": "The delimiter used for splitting the text. It is used only when the transformation type is `SPLIT_SELECT` or `TAKE_SEGMENTS`.",
+          "documentation": "",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "transformationType",
+            "expectedValues": [
+              "SPLIT_SELECT",
+              "TAKE_SEGMENTS"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "selectIndex": {
+          "displayName": "select index",
+          "description": "The index of the element to keep after splitting. The index is zero-based. It is used only when the transformation type is `SPLIT_SELECT`.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "SPLIT_SELECT"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        },
+        "minDigitCount": {
+          "displayName": "min digit count",
+          "description": "The minimum number of digits that a numeric sequence must have to be removed. It is used only when the transformation type is `REMOVE_NUMBERS`.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "REMOVE_NUMBERS"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        },
+        "includeHexNumbers": {
+          "displayName": "include hexadecimal numbers",
+          "description": "Whether to also remove hexadecimal numbers (sequences of at least `minDigitCount` hexadecimal digits preceded by '0x'). It is used only when the transformation type is `REMOVE_NUMBERS`.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "REMOVE_NUMBERS"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "segmentCount": {
+          "displayName": "segment count",
+          "description": "How many segments should be taken.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "TAKE_SEGMENTS"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        },
+        "takeFromEnd": {
+          "displayName": "take from end",
+          "description": "Whether to take segments from the end of the text instead of the beginning. It is used only when the transformation type is `TAKE_SEGMENTS`.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "transformationType",
+            "expectedValue": "TAKE_SEGMENTS"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    },
+    "transformationSet": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "transformationSet",
+      "summaryPattern": "",
+      "description": "Configures how a detected contributor value contributes to the Service Id.",
+      "documentation": "",
+      "properties": {
+        "contributionType": {
+          "displayName": "Contribution type",
+          "description": "Defines whether the original value should be used or if a transformation set should be used to override a value or transform it.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/contributionTypeWithOverride"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "OriginalValue"
+        },
+        "valueOverride": {
+          "displayName": "Value override",
+          "description": "The value to be used instead of the detected value.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/valueOverride"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "contributionType",
+            "expectedValue": "OverrideValue"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "transformations": {
+          "displayName": "Transformations",
+          "description": "Choose how to transform a value before it contributes to the Service Id. Note that all of the Transformations are always applied. Transformations are applied in the order they are specified, and the output of the previous transformation is the input for the next one. The resulting value contributes to the Service Id and can be found on the **Service overview page** under **Properties and tags**.",
+          "documentation": "",
+          "type": "list",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/transformation"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "contributionType",
+            "expectedValue": "TransformValue"
+          },
+          "minObjects": 1,
+          "maxObjects": 10,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "serviceIdContributor": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "serviceIdContributor",
+      "summaryPattern": "",
+      "description": "Enables and configures a Service Id contributor.",
+      "documentation": "Set `enableIdContributor` to `true` to let the detected value contribute to the Service Id and configure the nested `serviceIdContributor` block. If the switch stays `false`, this contributor does not participate in service detection.",
+      "properties": {
+        "enableIdContributor": {
+          "displayName": "Transform this value before letting it contribute to the Service Id",
+          "description": "When enabled, the detected value contributes to the Service Id.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "serviceIdContributor": {
+          "displayName": "",
+          "description": "Choose how to transform the detected value before it contributes to the Service Id. Note that all of the Transformations are always applied. Transformations are applied in the order they are specified, and the output of the previous transformation is the input for the next one.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/transformationSet"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enableIdContributor",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "publicDomainTransformationSet": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "publicDomainTransformationSet",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "contributionType": {
+          "displayName": "Contribution type",
+          "description": "Defines whether the original value should be used or if a transformation set should be used to override a value or transform it.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/contributionTypeWithOverride"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "OriginalValue"
+        },
+        "valueOverride": {
+          "displayName": "Value override",
+          "description": "The value to be used instead of the detected value.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/valueOverride"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "contributionType",
+            "expectedValue": "OverrideValue"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "copyFromHostName": {
+          "displayName": "Copy from host name",
+          "description": "Use the detected host name instead of the request's domain name.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "IN",
+            "property": "contributionType",
+            "expectedValues": [
+              "OriginalValue",
+              "TransformValue"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "transformations": {
+          "displayName": "Transformations",
+          "description": "Choose how to transform a value before it contributes to the Service Id. Note that all of the Transformations are always applied. Transformations are applied in the order they are specified, and the output of the previous transformation is the input for the next one. The resulting value contributes to the Service Id and can be found on the **Service overview page** under **Properties and tags**.",
+          "documentation": "",
+          "type": "list",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/transformation"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "contributionType",
+            "expectedValue": "TransformValue"
+          },
+          "minObjects": 1,
+          "maxObjects": 10,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "publicDomainIdContributor": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "publicDomainIdContributor",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enableIdContributor": {
+          "displayName": "Transform this value before letting it contribute to the Service Id",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "serviceIdContributor": {
+          "displayName": "",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/publicDomainTransformationSet"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enableIdContributor",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "idContributorsType": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "idContributorsType",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "applicationId": {
+          "displayName": "Application identifier",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/serviceIdContributor"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "contextRoot": {
+          "displayName": "URL context root",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/contextIdContributor"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "publicDomainName": {
+          "displayName": "Public domain name",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/publicDomainIdContributor"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "portForServiceId": {
+          "displayName": "Port",
+          "description": "Let the port contribute to the Service Id",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        }
+      },
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "At least one service identifier contributor (application identifier, URL context root, port or public domain name) must exist.",
+          "customValidatorId": "at-least-one-service-id-contributor",
+          "skipAsyncValidation": false
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "name": {
+      "displayName": "Rule name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "New Name"
+    },
+    "description": {
+      "displayName": "Description",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "subType": "multiline",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "idContributors": {
+      "displayName": "Service identifier contributors",
+      "description": "Contributors to the Service Identifier calculation. All of the Contributors except for the port are always applied. You can exclude the port contribution by disabling the switch.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/idContributorsType"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "conditions": {
+      "displayName": "Conditions",
+      "description": "A list of conditions necessary for the rule to take effect. If multiple conditions are specified, they must **all** match a Request for the rule to apply. If there is no condition at all, the rule is always applied. Conditions are evaluated against attributes, but do not modify them.",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/condition"
+        }
+      },
+      "nullable": false,
+      "minObjects": 0,
+      "maxObjects": 10,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "uiCustomization": {
+    "table": {
+      "columns": [
+        {
+          "id": "applicationId",
+          "displayName": "Application ID",
+          "propertyRef": "./idContributors/applicationId/enableIdContributor"
+        },
+        {
+          "id": "contextRoot",
+          "displayName": "URL context root",
+          "propertyRef": "./idContributors/contextRoot/enableIdContributor"
+        },
+        {
+          "id": "publicDomainName",
+          "displayName": "Public domain name",
+          "propertyRef": "./idContributors/publicDomainName/enableIdContributor"
+        },
+        {
+          "id": "portForServiceId",
+          "displayName": "Port",
+          "propertyRef": "./idContributors/portForServiceId"
+        }
+      ]
+    }
+  }
+}

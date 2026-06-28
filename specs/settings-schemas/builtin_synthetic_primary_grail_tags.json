@@ -1,1 +1,97 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.primary-grail-tags","displayName":"Synthetic monitor's primary grail tags","description":"Set synthetic monitor's primary grail tags.","documentation":"","version":"1.0.1","multiObject":false,"maxObjects":1,"maturity":"EARLY_ADOPTER","allowedScopes":["SYNTHETIC_TEST","HTTP_CHECK","MULTIPROTOCOL_MONITOR"],"enums":{},"types":{"PrimaryGrailTag":{"version":"0","versionInfo":"","displayName":"Primary grail tag","summaryPattern":"Primary grail tag with key: {key}, and value: {value}.","description":"","documentation":"","properties":{"key":{"displayName":"Primary grail tag's key","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":50,"minLength":1},{"type":"NOT_BLANK"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"value":{"displayName":"Primary grail tag's value","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":200,"minLength":1},{"type":"NOT_BLANK"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"tags":{"displayName":"Primary grail tags","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/PrimaryGrailTag"}},"nullable":false,"minObjects":0,"maxObjects":10,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"primary_grail_tags_validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.primary-grail-tags",
+  "displayName": "Synthetic monitor's primary grail tags",
+  "description": "Set synthetic monitor's primary grail tags.",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "SYNTHETIC_TEST",
+    "HTTP_CHECK",
+    "MULTIPROTOCOL_MONITOR"
+  ],
+  "enums": {},
+  "types": {
+    "PrimaryGrailTag": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Primary grail tag",
+      "summaryPattern": "Primary grail tag with key: {key}, and value: {value}.",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "key": {
+          "displayName": "Primary grail tag's key",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 50,
+              "minLength": 1
+            },
+            {
+              "type": "NOT_BLANK"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "value": {
+          "displayName": "Primary grail tag's value",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            },
+            {
+              "type": "NOT_BLANK"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "tags": {
+      "displayName": "Primary grail tags",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/PrimaryGrailTag"
+        }
+      },
+      "nullable": false,
+      "minObjects": 0,
+      "maxObjects": 10,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "primary_grail_tags_validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

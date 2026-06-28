@@ -1,1 +1,187 @@
-{"dynatrace":"1","schemaId":"builtin:openpipeline.metrics.routing","displayName":"Ingest routing configuration (metrics)","description":"Contains configuration of routing","documentation":"","schemaGroups":["group:openpipeline.all.routing"],"version":"1.69","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"PipelineType":{"displayName":"Pipeline Type","description":"","documentation":"","items":[{"value":"custom","displayName":"Custom pipeline type"},{"value":"builtin","displayName":"Builtin pipeline type"}],"type":"enum"}},"types":{"RoutingEntry":{"version":"0","versionInfo":"","displayName":"RoutingEntry","summaryPattern":"{description}","description":"","documentation":"","properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"pipelineType":{"displayName":"Pipeline Type","description":"","documentation":"","type":{"$ref":"#/enums/PipelineType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"custom"},"pipelineId":{"displayName":"Pipeline ID","description":"","documentation":"","type":"setting","referencedType":"builtin:openpipeline.metrics.pipelines","nullable":false,"precondition":{"type":"EQUALS","property":"pipelineType","expectedValue":"custom"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"00000000-0000-0000-0000-000000000000"},"builtinPipelineId":{"displayName":"Builtin Pipeline ID","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"pipelineType","expectedValue":"builtin"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"00000000-0000-0000-0000-000000000000"},"matcher":{"displayName":"Query which determines whether the record should be routed to the target pipeline of this rule.","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":4096}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"description":{"displayName":"Description","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":512},{"type":"PATTERN","customMessage":"Must not start with 'dt.' or 'dynatrace.'","pattern":"^(?![Dd][Tt]\\.|[Dd][Yy][Nn][Aa][Tt][Rr][Aa][Cc][Ee]\\.).*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"routingEntries":{"displayName":"Routing for pipelines","description":"","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/RoutingEntry"}},"nullable":false,"constraints":[{"type":"UNIQUE","uniqueProperties":["description"]}],"minObjects":0,"maxObjects":3000,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"routing-container-validator","skipAsyncValidation":false,"timeout":10}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:openpipeline.metrics.routing",
+  "displayName": "Ingest routing configuration (metrics)",
+  "description": "Contains configuration of routing",
+  "documentation": "",
+  "schemaGroups": [
+    "group:openpipeline.all.routing"
+  ],
+  "version": "1.69",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "PipelineType": {
+      "displayName": "Pipeline Type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "custom",
+          "displayName": "Custom pipeline type"
+        },
+        {
+          "value": "builtin",
+          "displayName": "Builtin pipeline type"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "RoutingEntry": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "RoutingEntry",
+      "summaryPattern": "{description}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Enabled",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "pipelineType": {
+          "displayName": "Pipeline Type",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/PipelineType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "custom"
+        },
+        "pipelineId": {
+          "displayName": "Pipeline ID",
+          "description": "",
+          "documentation": "",
+          "type": "setting",
+          "referencedType": "builtin:openpipeline.metrics.pipelines",
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "pipelineType",
+            "expectedValue": "custom"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "00000000-0000-0000-0000-000000000000"
+        },
+        "builtinPipelineId": {
+          "displayName": "Builtin Pipeline ID",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "pipelineType",
+            "expectedValue": "builtin"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "00000000-0000-0000-0000-000000000000"
+        },
+        "matcher": {
+          "displayName": "Query which determines whether the record should be routed to the target pipeline of this rule.",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 4096
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "description": {
+          "displayName": "Description",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 512
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Must not start with 'dt.' or 'dynatrace.'",
+              "pattern": "^(?![Dd][Tt]\\.|[Dd][Yy][Nn][Aa][Tt][Rr][Aa][Cc][Ee]\\.).*$"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "routingEntries": {
+      "displayName": "Routing for pipelines",
+      "description": "",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/RoutingEntry"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "uniqueProperties": [
+            "description"
+          ]
+        }
+      ],
+      "minObjects": 0,
+      "maxObjects": 3000,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "routing-container-validator",
+      "skipAsyncValidation": false,
+      "timeout": 10
+    }
+  ]
+}

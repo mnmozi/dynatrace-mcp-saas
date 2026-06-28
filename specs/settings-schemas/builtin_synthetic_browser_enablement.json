@@ -1,1 +1,41 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.browser.enablement","displayName":"Browser monitor enablement","description":"Browser monitor enablement","documentation":"","version":"2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["SYNTHETIC_TEST","environment"],"enums":{},"types":{},"properties":{"enableOnGrail":{"displayName":"Enable 3rd gen JS agent reporting.","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"browser_enablement_settings_validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"synthetic-monitor-count-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.browser.enablement",
+  "displayName": "Browser monitor enablement",
+  "description": "Browser monitor enablement",
+  "documentation": "",
+  "version": "2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "SYNTHETIC_TEST",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enableOnGrail": {
+      "displayName": "Enable 3rd gen JS agent reporting.",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "browser_enablement_settings_validator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "synthetic-monitor-count-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

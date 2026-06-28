@@ -1,1 +1,89 @@
-{"dynatrace":"1","schemaId":"builtin:rum.mobile.name","displayName":"Application name","description":"This name is used to refer to your mobile app throughout this Dynatrace environment. Be sure that your app has a meaningful name.","documentation":"","schemaGroups":["group:rum-general"],"version":"1.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["MOBILE_APPLICATION"],"enums":{},"types":{"ApplicationName":{"version":"0","versionInfo":"","displayName":"ApplicationName","summaryPattern":"","description":"","documentation":"","properties":{"name":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"applicationName":{"displayName":"Update app name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":255,"minLength":1},{"type":"TRIMMED"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This scope does not identify a valid application.","customValidatorId":"valid-application-scope","skipAsyncValidation":false}],"schemaConstraints":[{"type":"MULTI_SCOPE_CUSTOM_VALIDATOR_REF","customMessage":"This name is already taken","customValidatorId":"name-unique-case-insensitive","skipAsyncValidation":false}],"metadata":{"reloadUiContext":"enabled"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.mobile.name",
+  "displayName": "Application name",
+  "description": "This name is used to refer to your mobile app throughout this Dynatrace environment. Be sure that your app has a meaningful name.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-general"
+  ],
+  "version": "1.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "MOBILE_APPLICATION"
+  ],
+  "enums": {},
+  "types": {
+    "ApplicationName": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "ApplicationName",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "name": {
+          "displayName": "Name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "applicationName": {
+      "displayName": "Update app name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        {
+          "type": "TRIMMED"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "This scope does not identify a valid application.",
+      "customValidatorId": "valid-application-scope",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "MULTI_SCOPE_CUSTOM_VALIDATOR_REF",
+      "customMessage": "This name is already taken",
+      "customValidatorId": "name-unique-case-insensitive",
+      "skipAsyncValidation": false
+    }
+  ],
+  "metadata": {
+    "reloadUiContext": "enabled"
+  }
+}

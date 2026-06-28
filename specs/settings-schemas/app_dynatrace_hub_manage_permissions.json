@@ -1,1 +1,77 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.hub:manage.permissions","displayName":"Hub Requests","description":"Please add at least one admin with all necessary permissions to fulfill the requests.\n\nYou can either enter team or individual email addresses to receive request notifications.","documentation":"","version":"0.0.6","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"email":{"displayName":"Contact Email","description":"","documentation":"","type":"text","subType":"email","nullable":false,"constraints":[{"type":"LENGTH","maxLength":320,"minLength":5},{"type":"PATTERN","customMessage":"Please ensure your email address includes an '@' symbol, followed by a domain name, and ends with a valid top-level domain (such as .com).","pattern":"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"},{"type":"PATTERN","customMessage":"Email address is not valid","pattern":"^[\\.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?)*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"description":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":2}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"schemaConstraints":[{"type":"UNIQUE","customMessage":"This email address has already been added. Please choose a different one.","uniqueProperties":["email"],"flattenCollections":false}],"metadata":{"appName":"Hub"}}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.hub:manage.permissions",
+  "displayName": "Hub Requests",
+  "description": "Please add at least one admin with all necessary permissions to fulfill the requests.\n\nYou can either enter team or individual email addresses to receive request notifications.",
+  "documentation": "",
+  "version": "0.0.6",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "email": {
+      "displayName": "Contact Email",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "subType": "email",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 320,
+          "minLength": 5
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Please ensure your email address includes an '@' symbol, followed by a domain name, and ends with a valid top-level domain (such as .com).",
+          "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Email address is not valid",
+          "pattern": "^[\\.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?)*$"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "description": {
+      "displayName": "Name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 1000,
+          "minLength": 2
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "This email address has already been added. Please choose a different one.",
+      "uniqueProperties": [
+        "email"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "appName": "Hub"
+  }
+}

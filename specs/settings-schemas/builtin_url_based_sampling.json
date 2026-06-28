@@ -1,1 +1,390 @@
-{"dynatrace":"1","schemaId":"builtin:url-based-sampling","displayName":"Trace sampling for HTTP requests","description":"This setting allows you to configure how OneAgent treats specific HTTP requests when sampling is needed. More precisely, you can advise OneAgent on the importance of specific HTTP requests in relation to other HTTP requests. HTTP requests with the URL with higher importance will be treated to be captured more often and vice versa. Additionally, you can turn off tracing for specific HTTP requests completely. Full-Stack Monitoring includes a defined amount of trace data volume. Every contributing GiB of host or application memory adds a certain amount of trace volume ingest rate to your environment. Depending on that transaction volume, OneAgent captures end-to-end traces every minute up to a peak trace volume. Adaptive Traffic management automatically adjusts the sampling rate of trace data collection so that the collected trace data doesn't exceed the included trace volume. You can learn more about this [here](https://dt-url.net/2y23wt3) \n\nHint: Use [this Multi-dimensional analysis](/ui/diagnostictools/mda?mdaId=atm) to get an overview over the current sample rates per URL. Additionally use the context-menu of the URLs to up- or downscale certain URLs in a convenient way.","documentation":"\n\nThis configuration represents an ordered list of rules. Each rule has conditions, based on request method, the URL path and query parameters. The first rule where all conditions are met will be applied. Each non-matching rule adds an overhead of a microsecond to the monitored process. All string comparisons of the conditions are case sensitive. Use the Enabled switch to turn a rule on or off.","schemaGroups":["group:service-monitoring","group:preferences"],"version":"1.0.3","multiObject":true,"ordered":true,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["PROCESS_GROUP_INSTANCE","PROCESS_GROUP","CLOUD_APPLICATION","CLOUD_APPLICATION_NAMESPACE","KUBERNETES_CLUSTER","HOST_GROUP","environment"],"enums":{"HttpMethod":{"displayName":"HttpMethod","description":"","documentation":"","items":[{"value":"GET","displayName":"GET"},{"value":"POST","displayName":"POST"},{"value":"PUT","displayName":"PUT"},{"value":"DELETE","displayName":"DELETE"},{"value":"HEAD","displayName":"HEAD"},{"value":"CONNECT","displayName":"CONNECT"},{"value":"OPTIONS","displayName":"OPTIONS"},{"value":"TRACE","displayName":"TRACE"},{"value":"PATCH","displayName":"PATCH"}],"type":"enum"},"PathComparisonType":{"displayName":"PathComparisonType","description":"","documentation":"","items":[{"value":"EQUALS","displayName":"Equals"},{"value":"DOES_NOT_EQUAL","displayName":"Does not equal"},{"value":"CONTAINS","displayName":"Contains"},{"value":"DOES_NOT_CONTAIN","displayName":"Does not contain"},{"value":"STARTS_WITH","displayName":"Starts with"},{"value":"DOES_NOT_START_WITH","displayName":"Does not start with"},{"value":"ENDS_WITH","displayName":"Ends with"},{"value":"DOES_NOT_END_WITH","displayName":"Does not end with"}],"type":"enum"},"SamplingScaleFactor":{"displayName":"SamplingScaleFactor","description":"","documentation":"","items":[{"value":"0","displayName":"Increase capturing 128 times"},{"value":"1","displayName":"Increase capturing 64 times"},{"value":"2","displayName":"Increase capturing 32 times"},{"value":"3","displayName":"Increase capturing 16 times"},{"value":"4","displayName":"Increase capturing 8 times"},{"value":"5","displayName":"Increase capturing 4 times"},{"value":"6","displayName":"Increase capturing 2 times"},{"value":"8","displayName":"Reduce capturing by factor 2"},{"value":"9","displayName":"Reduce capturing by factor 4"},{"value":"10","displayName":"Reduce capturing by factor 8"},{"value":"11","displayName":"Reduce capturing by factor 16"},{"value":"12","displayName":"Reduce capturing by factor 32"},{"value":"13","displayName":"Reduce capturing by factor 64"},{"value":"14","displayName":"Reduce capturing by factor 128"}],"type":"enum"}},"types":{"QueryParameter":{"version":"0","versionInfo":"","displayName":"QueryParameter","summaryPattern":"{name}{value|valueSet, select, true {={value}} other {}}","description":"","documentation":"","properties":{"name":{"displayName":"Query parameter name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"TRIMMED"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"value":{"displayName":"Query parameter value","description":"","documentation":"The value must be equal for a match.","type":"text","nullable":true,"constraints":[{"type":"TRIMMED"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"},"valueIsUndefined":{"displayName":"Query parameter value is undefined","description":"","documentation":"If enabled, the value is treated as undefined (/...&foo), otherwise as empty (/...&foo=).","type":"boolean","nullable":false,"precondition":{"type":"NULL","property":"value"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"type":"object"}},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ignore":{"displayName":"Disable tracing for matching HTTP requests","description":"","documentation":"No Traces will be captured for the matching HTTP requests. This applies always, even if Adaptive Traffic Management is inactive.","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"factor":{"displayName":"Importance of the specific URL","description":"","documentation":"Select the scaling factor for the current sampling rate of the system. Note, that the importance is only considered when sampling is needed.","type":{"$ref":"#/enums/SamplingScaleFactor"},"nullable":false,"precondition":{"type":"EQUALS","property":"ignore","expectedValue":false},"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"6"},"path":{"displayName":"Path of the URL","description":"","documentation":"Specify the URL path without including any preceding or subsequent elements of the URL. You can use the wildcard '**' between two path segments to ignore that part. If the path is empty, at least one query parameter must be specified that can be used for URL matching.","type":"text","nullable":true,"constraints":[{"type":"TRIMMED"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"},"pathComparisonType":{"displayName":"Path comparison condition","description":"","documentation":"","type":{"$ref":"#/enums/PathComparisonType"},"nullable":false,"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"EQUALS"},"queryParameters":{"displayName":"Query parameters","description":"Add URL parameters in any order. **All** specified parameters must be present in the query of an URL to get a match.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/QueryParameter"}},"nullable":false,"minObjects":0,"maxObjects":10,"modificationPolicy":"DEFAULT"},"httpMethodAny":{"displayName":"Any HTTP method","description":"","documentation":"The scaling factor for the matching URLs will be applied to any HTTP method.","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"httpMethod":{"displayName":"HTTP method","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/enums/HttpMethod"}},"nullable":false,"precondition":{"type":"EQUALS","property":"httpMethodAny","expectedValue":false},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT","default":["GET","POST","PUT"]}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"path-or-parameters-mandatory-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"no-parameters-allowed-in-path-validator","skipAsyncValidation":false}],"metadata":{"minAgentVersion":"1.281","itemDisplayName":"URL","addItemButton":"Add URL"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:url-based-sampling",
+  "displayName": "Trace sampling for HTTP requests",
+  "description": "This setting allows you to configure how OneAgent treats specific HTTP requests when sampling is needed. More precisely, you can advise OneAgent on the importance of specific HTTP requests in relation to other HTTP requests. HTTP requests with the URL with higher importance will be treated to be captured more often and vice versa. Additionally, you can turn off tracing for specific HTTP requests completely. Full-Stack Monitoring includes a defined amount of trace data volume. Every contributing GiB of host or application memory adds a certain amount of trace volume ingest rate to your environment. Depending on that transaction volume, OneAgent captures end-to-end traces every minute up to a peak trace volume. Adaptive Traffic management automatically adjusts the sampling rate of trace data collection so that the collected trace data doesn't exceed the included trace volume. You can learn more about this [here](https://dt-url.net/2y23wt3) \n\nHint: Use [this Multi-dimensional analysis](/ui/diagnostictools/mda?mdaId=atm) to get an overview over the current sample rates per URL. Additionally use the context-menu of the URLs to up- or downscale certain URLs in a convenient way.",
+  "documentation": "\n\nThis configuration represents an ordered list of rules. Each rule has conditions, based on request method, the URL path and query parameters. The first rule where all conditions are met will be applied. Each non-matching rule adds an overhead of a microsecond to the monitored process. All string comparisons of the conditions are case sensitive. Use the Enabled switch to turn a rule on or off.",
+  "schemaGroups": [
+    "group:service-monitoring",
+    "group:preferences"
+  ],
+  "version": "1.0.3",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "PROCESS_GROUP_INSTANCE",
+    "PROCESS_GROUP",
+    "CLOUD_APPLICATION",
+    "CLOUD_APPLICATION_NAMESPACE",
+    "KUBERNETES_CLUSTER",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "HttpMethod": {
+      "displayName": "HttpMethod",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "GET",
+          "displayName": "GET"
+        },
+        {
+          "value": "POST",
+          "displayName": "POST"
+        },
+        {
+          "value": "PUT",
+          "displayName": "PUT"
+        },
+        {
+          "value": "DELETE",
+          "displayName": "DELETE"
+        },
+        {
+          "value": "HEAD",
+          "displayName": "HEAD"
+        },
+        {
+          "value": "CONNECT",
+          "displayName": "CONNECT"
+        },
+        {
+          "value": "OPTIONS",
+          "displayName": "OPTIONS"
+        },
+        {
+          "value": "TRACE",
+          "displayName": "TRACE"
+        },
+        {
+          "value": "PATCH",
+          "displayName": "PATCH"
+        }
+      ],
+      "type": "enum"
+    },
+    "PathComparisonType": {
+      "displayName": "PathComparisonType",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "EQUALS",
+          "displayName": "Equals"
+        },
+        {
+          "value": "DOES_NOT_EQUAL",
+          "displayName": "Does not equal"
+        },
+        {
+          "value": "CONTAINS",
+          "displayName": "Contains"
+        },
+        {
+          "value": "DOES_NOT_CONTAIN",
+          "displayName": "Does not contain"
+        },
+        {
+          "value": "STARTS_WITH",
+          "displayName": "Starts with"
+        },
+        {
+          "value": "DOES_NOT_START_WITH",
+          "displayName": "Does not start with"
+        },
+        {
+          "value": "ENDS_WITH",
+          "displayName": "Ends with"
+        },
+        {
+          "value": "DOES_NOT_END_WITH",
+          "displayName": "Does not end with"
+        }
+      ],
+      "type": "enum"
+    },
+    "SamplingScaleFactor": {
+      "displayName": "SamplingScaleFactor",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "0",
+          "displayName": "Increase capturing 128 times"
+        },
+        {
+          "value": "1",
+          "displayName": "Increase capturing 64 times"
+        },
+        {
+          "value": "2",
+          "displayName": "Increase capturing 32 times"
+        },
+        {
+          "value": "3",
+          "displayName": "Increase capturing 16 times"
+        },
+        {
+          "value": "4",
+          "displayName": "Increase capturing 8 times"
+        },
+        {
+          "value": "5",
+          "displayName": "Increase capturing 4 times"
+        },
+        {
+          "value": "6",
+          "displayName": "Increase capturing 2 times"
+        },
+        {
+          "value": "8",
+          "displayName": "Reduce capturing by factor 2"
+        },
+        {
+          "value": "9",
+          "displayName": "Reduce capturing by factor 4"
+        },
+        {
+          "value": "10",
+          "displayName": "Reduce capturing by factor 8"
+        },
+        {
+          "value": "11",
+          "displayName": "Reduce capturing by factor 16"
+        },
+        {
+          "value": "12",
+          "displayName": "Reduce capturing by factor 32"
+        },
+        {
+          "value": "13",
+          "displayName": "Reduce capturing by factor 64"
+        },
+        {
+          "value": "14",
+          "displayName": "Reduce capturing by factor 128"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "QueryParameter": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "QueryParameter",
+      "summaryPattern": "{name}{value|valueSet, select, true {={value}} other {}}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "name": {
+          "displayName": "Query parameter name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "TRIMMED"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "value": {
+          "displayName": "Query parameter value",
+          "description": "",
+          "documentation": "The value must be equal for a match.",
+          "type": "text",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "TRIMMED"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "valueIsUndefined": {
+          "displayName": "Query parameter value is undefined",
+          "description": "",
+          "documentation": "If enabled, the value is treated as undefined (/...&foo), otherwise as empty (/...&foo=).",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "NULL",
+            "property": "value"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ignore": {
+      "displayName": "Disable tracing for matching HTTP requests",
+      "description": "",
+      "documentation": "No Traces will be captured for the matching HTTP requests. This applies always, even if Adaptive Traffic Management is inactive.",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "factor": {
+      "displayName": "Importance of the specific URL",
+      "description": "",
+      "documentation": "Select the scaling factor for the current sampling rate of the system. Note, that the importance is only considered when sampling is needed.",
+      "type": {
+        "$ref": "#/enums/SamplingScaleFactor"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "ignore",
+        "expectedValue": false
+      },
+      "metadata": {
+        "sortItems": "disabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "6"
+    },
+    "path": {
+      "displayName": "Path of the URL",
+      "description": "",
+      "documentation": "Specify the URL path without including any preceding or subsequent elements of the URL. You can use the wildcard '**' between two path segments to ignore that part. If the path is empty, at least one query parameter must be specified that can be used for URL matching.",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "TRIMMED"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "pathComparisonType": {
+      "displayName": "Path comparison condition",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/PathComparisonType"
+      },
+      "nullable": false,
+      "metadata": {
+        "sortItems": "disabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "EQUALS"
+    },
+    "queryParameters": {
+      "displayName": "Query parameters",
+      "description": "Add URL parameters in any order. **All** specified parameters must be present in the query of an URL to get a match.",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/QueryParameter"
+        }
+      },
+      "nullable": false,
+      "minObjects": 0,
+      "maxObjects": 10,
+      "modificationPolicy": "DEFAULT"
+    },
+    "httpMethodAny": {
+      "displayName": "Any HTTP method",
+      "description": "",
+      "documentation": "The scaling factor for the matching URLs will be applied to any HTTP method.",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "httpMethod": {
+      "displayName": "HTTP method",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/enums/HttpMethod"
+        }
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "httpMethodAny",
+        "expectedValue": false
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT",
+      "default": [
+        "GET",
+        "POST",
+        "PUT"
+      ]
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "path-or-parameters-mandatory-validator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "no-parameters-allowed-in-path-validator",
+      "skipAsyncValidation": false
+    }
+  ],
+  "metadata": {
+    "minAgentVersion": "1.281",
+    "itemDisplayName": "URL",
+    "addItemButton": "Add URL"
+  }
+}

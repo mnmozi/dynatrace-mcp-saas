@@ -1,1 +1,55 @@
-{"dynatrace":"1","schemaId":"builtin:metric.query","displayName":"Metric query","description":"A stored metric query allows you to calculate the metrics' values through a metric expression.","documentation":"","schemaGroups":["group:metrics"],"version":"4.0.3","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["metric"],"enums":{},"types":{},"properties":{"metricSelector":{"displayName":"Query","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":6000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"stored-query-selector-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"stored-query-requires-func-metric-validator","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"stored-query-limit-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:metric.query",
+  "displayName": "Metric query",
+  "description": "A stored metric query allows you to calculate the metrics' values through a metric expression.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:metrics"
+  ],
+  "version": "4.0.3",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "metric"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "metricSelector": {
+      "displayName": "Query",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 6000,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "stored-query-selector-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "stored-query-requires-func-metric-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "stored-query-limit-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

@@ -1,1 +1,203 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.jira:connection","displayName":"Jira Connections","description":"Credentials for the Jira App","documentation":"","version":"1.0.4","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"Type":{"displayName":"Type","description":"","documentation":"","items":[{"value":"basic","displayName":"Basic Authentication (Jira Server)"},{"value":"pat","displayName":"Personal Access Token (PAT for Jira Server)"},{"value":"cloud-token","displayName":"Access Token (Jira Cloud)"}],"type":"enum"}},"types":{},"properties":{"name":{"displayName":"Connection name","description":"The name of the Jira connection","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Name has to be between 1 and 50 characters long","maxLength":50,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"url":{"displayName":"Jira URL","description":"URL of the Jira server","documentation":"","type":"text","subType":"url","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"URL has to be between 1 and 100 characters long","maxLength":100,"minLength":1},{"type":"PATTERN","customMessage":"The Jira URL must be secure (https://) and must not contain a trailing slash (/).","pattern":"^https://.*[^/]$"},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","forceSecretResubmission":true,"default":""},"type":{"displayName":"Type","description":"Type of authentication method that should be used","documentation":"","type":{"$ref":"#/enums/Type"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","forceSecretResubmission":true,"default":"basic"},"user":{"displayName":"User","description":"Username or E-Mail address","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Username or E-Mail address has to be between 1 and 254 characters long","maxLength":254,"minLength":1}],"precondition":{"type":"IN","property":"type","expectedValues":["basic","cloud-token"]},"maxObjects":1,"modificationPolicy":"DEFAULT","forceSecretResubmission":true,"default":""},"password":{"displayName":"Password","description":"Password of the Jira user","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Password has to be between 1 and 50 characters long","maxLength":50,"minLength":1}],"precondition":{"type":"EQUALS","property":"type","expectedValue":"basic"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"token":{"displayName":"Token","description":"Token for the selected authentication type","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Token has to be between 20 and 1000 characters long","maxLength":1000,"minLength":20}],"precondition":{"type":"IN","property":"type","expectedValues":["pat","cloud-token"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"SECRET_RESUBMISSION","customMessage":"For security reasons please re-enter token/password to save the new configuration.","checkAllProperties":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"A connection with the same name already exists. Please provide a different name.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"appName":"Jira"},"ownerBasedAccessControl":true}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.jira:connection",
+  "displayName": "Jira Connections",
+  "description": "Credentials for the Jira App",
+  "documentation": "",
+  "version": "1.0.4",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "Type": {
+      "displayName": "Type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "basic",
+          "displayName": "Basic Authentication (Jira Server)"
+        },
+        {
+          "value": "pat",
+          "displayName": "Personal Access Token (PAT for Jira Server)"
+        },
+        {
+          "value": "cloud-token",
+          "displayName": "Access Token (Jira Cloud)"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Connection name",
+      "description": "The name of the Jira connection",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Name has to be between 1 and 50 characters long",
+          "maxLength": 50,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "url": {
+      "displayName": "Jira URL",
+      "description": "URL of the Jira server",
+      "documentation": "",
+      "type": "text",
+      "subType": "url",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "URL has to be between 1 and 100 characters long",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "The Jira URL must be secure (https://) and must not contain a trailing slash (/).",
+          "pattern": "^https://.*[^/]$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid URI",
+          "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid http(s) URL",
+          "pattern": "^https?://.*$"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "forceSecretResubmission": true,
+      "default": ""
+    },
+    "type": {
+      "displayName": "Type",
+      "description": "Type of authentication method that should be used",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/Type"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "forceSecretResubmission": true,
+      "default": "basic"
+    },
+    "user": {
+      "displayName": "User",
+      "description": "Username or E-Mail address",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Username or E-Mail address has to be between 1 and 254 characters long",
+          "maxLength": 254,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "type",
+        "expectedValues": [
+          "basic",
+          "cloud-token"
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "forceSecretResubmission": true,
+      "default": ""
+    },
+    "password": {
+      "displayName": "Password",
+      "description": "Password of the Jira user",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Password has to be between 1 and 50 characters long",
+          "maxLength": 50,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "type",
+        "expectedValue": "basic"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "token": {
+      "displayName": "Token",
+      "description": "Token for the selected authentication type",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Token has to be between 20 and 1000 characters long",
+          "maxLength": 1000,
+          "minLength": 20
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "type",
+        "expectedValues": [
+          "pat",
+          "cloud-token"
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "SECRET_RESUBMISSION",
+      "customMessage": "For security reasons please re-enter token/password to save the new configuration.",
+      "checkAllProperties": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "A connection with the same name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "appName": "Jira"
+  },
+  "ownerBasedAccessControl": true
+}

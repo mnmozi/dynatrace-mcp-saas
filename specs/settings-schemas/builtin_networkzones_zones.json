@@ -1,1 +1,165 @@
-{"dynatrace":"1","schemaId":"builtin:networkzones.zones","displayName":"Network zone","description":"Define rules to organize network structures and improve routing efficiency.","documentation":"","version":"1.0.1","multiObject":true,"ordered":false,"maxObjects":20000,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment","environment-default"],"keyProperty":"id","enums":{"FallbackMode":{"displayName":"FallbackMode","description":"","documentation":"","items":[{"value":"ANY_ACTIVE_GATE","displayName":"Any ActiveGate"},{"value":"ONLY_DEFAULT_ZONE","displayName":"Only DefaultZone"},{"value":"NONE","displayName":"None (drop traffic)"}],"type":"enum"}},"types":{},"properties":{"id":{"displayName":"Identifier","description":"A lowercase string limited to 256 characters that can contain alphanumerics (0-9, a-z), hyphens (-), underscores (_), and dots (.), but can not start with a dot.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Invalid identifier, allowed characters: lowercase alphanumerics (0-9, a-z), hyphens (-), underscores (_), and dots (.). Must not start with a dot.","pattern":"^[a-z0-9-_][a-z0-9-_.]*$"},{"type":"LENGTH","customMessage":"Identifier is mandatory and must not be longer than 256 characters.","maxLength":256,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Creating or updating the default network zone is not allowed.","customValidatorId":"prevent-default-network-zone-modification-validator","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"NEVER","default":""},"description":{"displayName":"Description","description":"","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","customMessage":"Description must be between 1 and 500 characters.","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"},"alternativeZones":{"displayName":"Alternative zones","description":"Network zones that should be used when the primary zone is not available.","documentation":"","type":"set","items":{"displayName":"Identifier","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"NetworkZoneAlternativeZoneDataSource","filterProperties":[],"resetValue":"NEVER","validate":true,"fullContext":true,"useApiSearch":false},"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}]},"nullable":false,"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"fallbackMode":{"displayName":"Fallback mode","description":"Determines the network zone fallback behavior in case the primary and alternative zones are not available.","documentation":"","type":{"$ref":"#/enums/FallbackMode"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ANY_ACTIVE_GATE"}},"schemaConstraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Not allowed because network zones are disabled.","customValidatorId":"network-zone-operation-state-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Creation of cluster network zone not possible on this cluster.","customValidatorId":"creation-of-cluster-network-zones-allowed-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"within-max-allowed-network-zone-limit-validator","skipAsyncValidation":false},{"type":"UNIQUE","customMessage":"Key property must have unique value","uniqueProperties":["id"],"flattenCollections":false}],"deletionConstraints":[{"customValidatorId":"network-zone-deletion-validator","type":"CUSTOM_VALIDATOR_REF"}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:networkzones.zones",
+  "displayName": "Network zone",
+  "description": "Define rules to organize network structures and improve routing efficiency.",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 20000,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment",
+    "environment-default"
+  ],
+  "keyProperty": "id",
+  "enums": {
+    "FallbackMode": {
+      "displayName": "FallbackMode",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "ANY_ACTIVE_GATE",
+          "displayName": "Any ActiveGate"
+        },
+        {
+          "value": "ONLY_DEFAULT_ZONE",
+          "displayName": "Only DefaultZone"
+        },
+        {
+          "value": "NONE",
+          "displayName": "None (drop traffic)"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "id": {
+      "displayName": "Identifier",
+      "description": "A lowercase string limited to 256 characters that can contain alphanumerics (0-9, a-z), hyphens (-), underscores (_), and dots (.), but can not start with a dot.",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "PATTERN",
+          "customMessage": "Invalid identifier, allowed characters: lowercase alphanumerics (0-9, a-z), hyphens (-), underscores (_), and dots (.). Must not start with a dot.",
+          "pattern": "^[a-z0-9-_][a-z0-9-_.]*$"
+        },
+        {
+          "type": "LENGTH",
+          "customMessage": "Identifier is mandatory and must not be longer than 256 characters.",
+          "maxLength": 256,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "Creating or updating the default network zone is not allowed.",
+          "customValidatorId": "prevent-default-network-zone-modification-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "NEVER",
+      "default": ""
+    },
+    "description": {
+      "displayName": "Description",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Description must be between 1 and 500 characters.",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "alternativeZones": {
+      "displayName": "Alternative zones",
+      "description": "Network zones that should be used when the primary zone is not available.",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "Identifier",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "subType": "datasource",
+        "datasource": {
+          "identifier": "NetworkZoneAlternativeZoneDataSource",
+          "filterProperties": [],
+          "resetValue": "NEVER",
+          "validate": true,
+          "fullContext": true,
+          "useApiSearch": false
+        },
+        "constraints": [
+          {
+            "type": "LENGTH",
+            "maxLength": 500,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "fallbackMode": {
+      "displayName": "Fallback mode",
+      "description": "Determines the network zone fallback behavior in case the primary and alternative zones are not available.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/FallbackMode"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "ANY_ACTIVE_GATE"
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "Not allowed because network zones are disabled.",
+      "customValidatorId": "network-zone-operation-state-validator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "Creation of cluster network zone not possible on this cluster.",
+      "customValidatorId": "creation-of-cluster-network-zones-allowed-validator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "within-max-allowed-network-zone-limit-validator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "UNIQUE",
+      "customMessage": "Key property must have unique value",
+      "uniqueProperties": [
+        "id"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "deletionConstraints": [
+    {
+      "customValidatorId": "network-zone-deletion-validator",
+      "type": "CUSTOM_VALIDATOR_REF"
+    }
+  ]
+}

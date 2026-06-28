@@ -1,1 +1,49 @@
-{"dynatrace":"1","schemaId":"builtin:activegate-token","displayName":"Network security","description":"Dynatrace assures out-of-the-box connection security between Dynatrace environment’s elements.","documentation":"","schemaGroups":["group:preferences"],"version":"1.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"authTokenEnforcementManuallyEnabled":{"displayName":"Manually enforce ActiveGate token authentication","description":"","documentation":"","type":"boolean","nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Validation already enforced by system. Changing property will have no effect.","customValidatorId":"validation-already-enforced","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"expiringTokenNotificationsEnabled":{"displayName":"Enable notifications about ActiveGate tokens expiration dates","description":"Note: ActiveGate tokens notifications are sent only when you deployed ActiveGate tokens with expiration dates in your environment and notifications are defined ([see notification settings](/ui/settings/builtin:problem.notifications))","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:activegate-token",
+  "displayName": "Network security",
+  "description": "Dynatrace assures out-of-the-box connection security between Dynatrace environment’s elements.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:preferences"
+  ],
+  "version": "1.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "authTokenEnforcementManuallyEnabled": {
+      "displayName": "Manually enforce ActiveGate token authentication",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "Validation already enforced by system. Changing property will have no effect.",
+          "customValidatorId": "validation-already-enforced",
+          "skipAsyncValidation": false
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "expiringTokenNotificationsEnabled": {
+      "displayName": "Enable notifications about ActiveGate tokens expiration dates",
+      "description": "Note: ActiveGate tokens notifications are sent only when you deployed ActiveGate tokens with expiration dates in your environment and notifications are defined ([see notification settings](/ui/settings/builtin:problem.notifications))",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}

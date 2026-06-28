@@ -1,1 +1,196 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.multiprotocol.performance-thresholds","displayName":"Performance thresholds","description":"Dynatrace generates a new problem if this synthetic monitor exceeds any of the performance thresholds below in {violatingSamples} of the {samples} most recent request executions at a given location, unless there is an open maintenance window for the synthetic monitor. Multiple locations with {violatingSamples} such violations can be included in a problem. The problem is closed if no performance threshold is violated in the {dealertingSamples} most recent request executions at each of the previously affected locations.","documentation":"","schemaGroups":["group:web-and-mobile-monitoring","group:synthetic.multiprotocol","group:web-and-mobile-monitoring.multiprotocol-monitor-default-settings"],"version":"1.0.5","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["MULTIPROTOCOL_MONITOR"],"enums":{"AggregationType":{"displayName":"AggregationType","description":"","documentation":"","items":[{"value":"AVG","displayName":"AVG"},{"value":"MIN","displayName":"MIN"},{"value":"MAX","displayName":"MAX"}],"type":"enum"}},"types":{"ThresholdEntry":{"version":"0","versionInfo":"","displayName":"Performance threshold","summaryPattern":"Step index {stepIndex} with a threshold of {threshold} ms","description":"","documentation":"","properties":{"threshold":{"displayName":"Threshold (in ms)","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":100},"stepIndex":{"displayName":"Step index","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":0},"aggregation":{"displayName":"Aggregation type","description":"","documentation":"","type":{"$ref":"#/enums/AggregationType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"AVG"},"violatingSamples":{"displayName":"Number of violating request executions in analyzed sliding window","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"samples":{"displayName":"Number of request executions in analyzed sliding window (sliding window size)","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":10,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5},"dealertingSamples":{"displayName":"Number of most recent non-violating request executions that closes the problem","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"type":"object"}},"properties":{"enabled":{"displayName":"Generate a problem and send an alert on performance threshold violations","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"thresholds":{"displayName":"Performance thresholds","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/ThresholdEntry"}},"nullable":false,"constraints":[{"type":"UNIQUE","customMessage":"A threshold for the specified step already exists.","uniqueProperties":["stepIndex"]}],"metadata":{"addItemButton":"Add threshold"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"synthetic-monitor-count-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.multiprotocol.performance-thresholds",
+  "displayName": "Performance thresholds",
+  "description": "Dynatrace generates a new problem if this synthetic monitor exceeds any of the performance thresholds below in {violatingSamples} of the {samples} most recent request executions at a given location, unless there is an open maintenance window for the synthetic monitor. Multiple locations with {violatingSamples} such violations can be included in a problem. The problem is closed if no performance threshold is violated in the {dealertingSamples} most recent request executions at each of the previously affected locations.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:web-and-mobile-monitoring",
+    "group:synthetic.multiprotocol",
+    "group:web-and-mobile-monitoring.multiprotocol-monitor-default-settings"
+  ],
+  "version": "1.0.5",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "MULTIPROTOCOL_MONITOR"
+  ],
+  "enums": {
+    "AggregationType": {
+      "displayName": "AggregationType",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "AVG",
+          "displayName": "AVG"
+        },
+        {
+          "value": "MIN",
+          "displayName": "MIN"
+        },
+        {
+          "value": "MAX",
+          "displayName": "MAX"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "ThresholdEntry": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Performance threshold",
+      "summaryPattern": "Step index {stepIndex} with a threshold of {threshold} ms",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "Threshold (in ms)",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 100
+        },
+        "stepIndex": {
+          "displayName": "Step index",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "aggregation": {
+          "displayName": "Aggregation type",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/AggregationType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "AVG"
+        },
+        "violatingSamples": {
+          "displayName": "Number of violating request executions in analyzed sliding window",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "samples": {
+          "displayName": "Number of request executions in analyzed sliding window (sliding window size)",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 10,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        },
+        "dealertingSamples": {
+          "displayName": "Number of most recent non-violating request executions that closes the problem",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Generate a problem and send an alert on performance threshold violations",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "thresholds": {
+      "displayName": "Performance thresholds",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/ThresholdEntry"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "A threshold for the specified step already exists.",
+          "uniqueProperties": [
+            "stepIndex"
+          ]
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add threshold"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "synthetic-monitor-count-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

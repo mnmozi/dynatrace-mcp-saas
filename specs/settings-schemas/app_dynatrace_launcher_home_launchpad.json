@@ -1,1 +1,98 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.launcher:home.launchpad","displayName":"Launcher","description":"Set up your teams home launchpads to streamline your workflow and enhance productivity. Configure up to 100 custom home launchpads in this environment to suit your specific needs.","documentation":"","version":"0.0.3","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{"GroupLaunchpadItem":{"version":"0","versionInfo":"","displayName":"GroupLaunchpadItem","summaryPattern":"{launchpadId} {userGroupId} {isEnabled}","description":"","documentation":"","properties":{"launchpadId":{"displayName":"Launchpad","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"userGroupId":{"displayName":"User Group","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"isEnabled":{"displayName":"State","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}},"type":"object"}},"properties":{"groupLaunchpads":{"displayName":"Home launchpad","description":"Set home launchpads for user groups. The highest ranked will be shown to the user of a group.","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/GroupLaunchpadItem"}},"nullable":false,"metadata":{"addItemButton":"Add home launchpad"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"metadata":{"appName":"Launcher"}}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.launcher:home.launchpad",
+  "displayName": "Launcher",
+  "description": "Set up your teams home launchpads to streamline your workflow and enhance productivity. Configure up to 100 custom home launchpads in this environment to suit your specific needs.",
+  "documentation": "",
+  "version": "0.0.3",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "GroupLaunchpadItem": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "GroupLaunchpadItem",
+      "summaryPattern": "{launchpadId} {userGroupId} {isEnabled}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "launchpadId": {
+          "displayName": "Launchpad",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "userGroupId": {
+          "displayName": "User Group",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "isEnabled": {
+          "displayName": "State",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "groupLaunchpads": {
+      "displayName": "Home launchpad",
+      "description": "Set home launchpads for user groups. The highest ranked will be shown to the user of a group.",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/GroupLaunchpadItem"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add home launchpad"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "metadata": {
+    "appName": "Launcher"
+  }
+}

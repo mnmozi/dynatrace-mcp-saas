@@ -1,1 +1,54 @@
-{"dynatrace":"1","schemaId":"builtin:process-visibility","displayName":"Process instance snapshots","description":"If this feature is enabled, Dynatrace examines the most resource-consuming processes running on your host and the processes monitored by **Process availability**. \nWhen a triggering event occurs, metrics reported 10 minutes before and 10 minutes after the event for those processes are sent to the cluster.\n\nA graph of the resource consumption by process is available.\n\nIf **Process instance snapshots** is triggered by **Process availability**, you can see the behavior of processes before they ended, and whether they restarted within 10 minutes.","documentation":"\n\nReported process metrics:\n- CPU usage (%)\n- Memory usage (B)\n- Incoming network traffic (KB)\n- Outgoing network traffic (KB)\n\nMetrics are reported once per minute and cover the number of processes defined in **Reported processes limit**.\n\nEach host can report up to 60 minutes of these metrics per day. When the limit is exceeded, metrics aren't sent even when a new event arises.\n\nEvents triggering **Process instance snapshots**:\n- High host CPU usage\n- High system load\n- High host memory usage\n- High packet drop rates\n- High NIC utilization rates\n- High number of NIC errors\n- Manual requests\n- Process availability events\n\nFor details, see [Process instance snapshots](https://dt-url.net/yw02uea)","schemaGroups":["group:processes-and-containers.processes","group:processes-and-containers"],"version":"1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","HOST_GROUP","environment"],"enums":{},"types":{},"properties":{"enabled":{"displayName":"Enable Process instance snapshots","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"maxProcesses":{"displayName":"Reported processes limit","description":"","documentation":"The maximum amount of processes that host may report is **100**","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":100}},"metadata":{"minAgentVersion":"1.237"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:process-visibility",
+  "displayName": "Process instance snapshots",
+  "description": "If this feature is enabled, Dynatrace examines the most resource-consuming processes running on your host and the processes monitored by **Process availability**. \nWhen a triggering event occurs, metrics reported 10 minutes before and 10 minutes after the event for those processes are sent to the cluster.\n\nA graph of the resource consumption by process is available.\n\nIf **Process instance snapshots** is triggered by **Process availability**, you can see the behavior of processes before they ended, and whether they restarted within 10 minutes.",
+  "documentation": "\n\nReported process metrics:\n- CPU usage (%)\n- Memory usage (B)\n- Incoming network traffic (KB)\n- Outgoing network traffic (KB)\n\nMetrics are reported once per minute and cover the number of processes defined in **Reported processes limit**.\n\nEach host can report up to 60 minutes of these metrics per day. When the limit is exceeded, metrics aren't sent even when a new event arises.\n\nEvents triggering **Process instance snapshots**:\n- High host CPU usage\n- High system load\n- High host memory usage\n- High packet drop rates\n- High NIC utilization rates\n- High number of NIC errors\n- Manual requests\n- Process availability events\n\nFor details, see [Process instance snapshots](https://dt-url.net/yw02uea)",
+  "schemaGroups": [
+    "group:processes-and-containers.processes",
+    "group:processes-and-containers"
+  ],
+  "version": "1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enable Process instance snapshots",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "maxProcesses": {
+      "displayName": "Reported processes limit",
+      "description": "",
+      "documentation": "The maximum amount of processes that host may report is **100**",
+      "type": "integer",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "RANGE",
+          "maximum": 100,
+          "minimum": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": 100
+    }
+  },
+  "metadata": {
+    "minAgentVersion": "1.237"
+  }
+}

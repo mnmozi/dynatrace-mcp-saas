@@ -1,1 +1,90 @@
-{"dynatrace":"1","schemaId":"builtin:rum.mobile.request-errors","displayName":"Request errors","description":"Create exclusion rules to define which HTTP response codes should not be treated as errors. By default, Dynatrace considers all 4xx and 5xx response status codes to be web request errors.","documentation":"","version":"1.0.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["MOBILE_APPLICATION","CUSTOM_APPLICATION"],"enums":{},"types":{"RequestErrorRule":{"version":"0","versionInfo":"","displayName":"RequestErrorRule","summaryPattern":"Exclude HTTP {errorCodes}","description":"","documentation":"","properties":{"errorCodes":{"displayName":"Exclude response codes","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"The entered rules are not valid","customValidatorId":"httpErrorCodes","skipAsyncValidation":false}],"metadata":{"placeholder":"For example, 401-409, 500"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"errorRules":{"displayName":"","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/RequestErrorRule"}},"nullable":false,"constraints":[{"type":"UNIQUE","customMessage":"Duplicate error rule found","uniqueProperties":["errorCodes"]}],"metadata":{"addItemButton":"Add exclusion rule"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"metadata":{"itemDisplayName":"New request error rule","addItemButton":"Add request error rule"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.mobile.request-errors",
+  "displayName": "Request errors",
+  "description": "Create exclusion rules to define which HTTP response codes should not be treated as errors. By default, Dynatrace considers all 4xx and 5xx response status codes to be web request errors.",
+  "documentation": "",
+  "version": "1.0.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "MOBILE_APPLICATION",
+    "CUSTOM_APPLICATION"
+  ],
+  "enums": {},
+  "types": {
+    "RequestErrorRule": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "RequestErrorRule",
+      "summaryPattern": "Exclude HTTP {errorCodes}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "errorCodes": {
+          "displayName": "Exclude response codes",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "The entered rules are not valid",
+              "customValidatorId": "httpErrorCodes",
+              "skipAsyncValidation": false
+            }
+          ],
+          "metadata": {
+            "placeholder": "For example, 401-409, 500"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "errorRules": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/RequestErrorRule"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "Duplicate error rule found",
+          "uniqueProperties": [
+            "errorCodes"
+          ]
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add exclusion rule"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "metadata": {
+    "itemDisplayName": "New request error rule",
+    "addItemButton": "Add request error rule"
+  }
+}

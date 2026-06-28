@@ -1,1 +1,125 @@
-{"dynatrace":"1","schemaId":"builtin:mainframe.txstartfilters","displayName":"Transaction start filters","description":"Dynatrace automatically traces CICS and IMS transactions when monitored services call them. Transactions that originate on the mainframe, on a terminal, or are called by unmonitored services must be explicitly listed to be monitored.\n\nAdd CICS and IMS transactions originating on a terminal (e.g., IBM 3270 green screen terminal) to the terminal transaction start filter. Add all other transactions to the transaction start filters.\n\nNote that traces started using the transaction filters will never be linked to a previous trace, regardless of how the transaction was initiated.","documentation":"","schemaGroups":["group:mainframe"],"version":"1.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"includedCicsTerminalTransactionIds":{"displayName":"CICS terminal transaction start filter","description":"","documentation":"You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.","type":"set","items":{"displayName":"CICS terminal transaction ID","description":"","documentation":"","type":"text","constraints":[{"type":"LENGTH","maxLength":4,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"CICS: Add transaction ID"},"minObjects":0,"maxObjects":300,"modificationPolicy":"DEFAULT"},"includedCicsTransactionIds":{"displayName":"CICS transaction start filter","description":"","documentation":"You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.","type":"set","items":{"displayName":"CICS transaction ID","description":"","documentation":"","type":"text","constraints":[{"type":"LENGTH","maxLength":4,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"CICS: Add transaction ID"},"minObjects":0,"maxObjects":300,"modificationPolicy":"DEFAULT"},"includedImsTerminalTransactionIds":{"displayName":"IMS terminal transaction start filter","description":"","documentation":"You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.","type":"set","items":{"displayName":"IMS terminal transaction ID","description":"","documentation":"","type":"text","constraints":[{"type":"LENGTH","maxLength":8,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"IMS: Add transaction ID"},"minObjects":0,"maxObjects":300,"modificationPolicy":"DEFAULT"},"includedImsTransactionIds":{"displayName":"IMS transaction start filter","description":"","documentation":"You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.","type":"set","items":{"displayName":"IMS transaction ID","description":"","documentation":"","type":"text","constraints":[{"type":"LENGTH","maxLength":8,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"IMS: Add transaction ID"},"minObjects":0,"maxObjects":300,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:mainframe.txstartfilters",
+  "displayName": "Transaction start filters",
+  "description": "Dynatrace automatically traces CICS and IMS transactions when monitored services call them. Transactions that originate on the mainframe, on a terminal, or are called by unmonitored services must be explicitly listed to be monitored.\n\nAdd CICS and IMS transactions originating on a terminal (e.g., IBM 3270 green screen terminal) to the terminal transaction start filter. Add all other transactions to the transaction start filters.\n\nNote that traces started using the transaction filters will never be linked to a previous trace, regardless of how the transaction was initiated.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:mainframe"
+  ],
+  "version": "1.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "includedCicsTerminalTransactionIds": {
+      "displayName": "CICS terminal transaction start filter",
+      "description": "",
+      "documentation": "You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.",
+      "type": "set",
+      "items": {
+        "displayName": "CICS terminal transaction ID",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "LENGTH",
+            "maxLength": 4,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "CICS: Add transaction ID"
+      },
+      "minObjects": 0,
+      "maxObjects": 300,
+      "modificationPolicy": "DEFAULT"
+    },
+    "includedCicsTransactionIds": {
+      "displayName": "CICS transaction start filter",
+      "description": "",
+      "documentation": "You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.",
+      "type": "set",
+      "items": {
+        "displayName": "CICS transaction ID",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "LENGTH",
+            "maxLength": 4,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "CICS: Add transaction ID"
+      },
+      "minObjects": 0,
+      "maxObjects": 300,
+      "modificationPolicy": "DEFAULT"
+    },
+    "includedImsTerminalTransactionIds": {
+      "displayName": "IMS terminal transaction start filter",
+      "description": "",
+      "documentation": "You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.",
+      "type": "set",
+      "items": {
+        "displayName": "IMS terminal transaction ID",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "LENGTH",
+            "maxLength": 8,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "IMS: Add transaction ID"
+      },
+      "minObjects": 0,
+      "maxObjects": 300,
+      "modificationPolicy": "DEFAULT"
+    },
+    "includedImsTransactionIds": {
+      "displayName": "IMS transaction start filter",
+      "description": "",
+      "documentation": "You can use * as wildcard. For example use A* to trace all transaction IDs that start with A.",
+      "type": "set",
+      "items": {
+        "displayName": "IMS transaction ID",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "LENGTH",
+            "maxLength": 8,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "IMS: Add transaction ID"
+      },
+      "minObjects": 0,
+      "maxObjects": 300,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

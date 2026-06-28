@@ -1,1 +1,651 @@
-{"dynatrace":"1","schemaId":"builtin:anomaly-detection.kubernetes.cluster","displayName":"Kubernetes cluster anomaly detection","description":"Dynatrace automatically detects a wide range of common Kubernetes-related issues. Use these settings to configure alerts relevant to your Kubernetes cluster. Changing thresholds resets the observation period. Additional information can be found on our [documentation page](https://dt-url.net/wq02okj#cluster).","documentation":"","schemaGroups":["group:anomaly-detection.kubernetes","group:anomaly-detection"],"version":"1.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["KUBERNETES_CLUSTER","environment"],"enums":{},"types":{"CpuRequestsSaturationConfig":{"version":"0","versionInfo":"","displayName":"CpuRequestsSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"amount of requested CPU is above","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of cluster CPU capacity for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"CpuRequestsSaturation":{"version":"0","versionInfo":"","displayName":"CpuRequestsSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect cluster CPU-request saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/CpuRequestsSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"MemoryRequestsSaturationConfig":{"version":"0","versionInfo":"","displayName":"MemoryRequestsSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"amount of requested memory is above","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of cluster memory capacity for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"MemoryRequestsSaturation":{"version":"0","versionInfo":"","displayName":"MemoryRequestsSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect cluster memory-request saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/MemoryRequestsSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"ReadinessIssuesConfig":{"version":"0","versionInfo":"","displayName":"ReadinessIssuesConfig","summaryPattern":"","description":"","documentation":"","properties":{"samplePeriodInMinutes":{"displayName":"cluster is not ready for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"ReadinessIssues":{"version":"0","versionInfo":"","displayName":"ReadinessIssues","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect cluster readiness issues","description":"","documentation":"Evaluates the Kubernetes readyz endpoint","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/ReadinessIssuesConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"PodsSaturationConfig":{"version":"0","versionInfo":"","displayName":"PodsSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"number of running pods is higher than","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of schedulable pod capacity for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"PodsSaturation":{"version":"0","versionInfo":"","displayName":"PodsSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect cluster pod-saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/PodsSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"MonitoringIssuesConfig":{"version":"0","versionInfo":"","displayName":"MonitoringIssuesConfig","summaryPattern":"","description":"","documentation":"","properties":{"samplePeriodInMinutes":{"displayName":"monitoring is not available for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":30}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"MonitoringIssues":{"version":"0","versionInfo":"","displayName":"MonitoringIssues","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect monitoring issues","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/MonitoringIssuesConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"readinessIssues":{"displayName":"","description":"","documentation":"Alerts if cluster has not been ready for a given amount of time","type":{"$ref":"#/types/ReadinessIssues"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"cpuRequestsSaturation":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/CpuRequestsSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"memoryRequestsSaturation":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/MemoryRequestsSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"podsSaturation":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/PodsSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"monitoringIssues":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/MonitoringIssues"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"metadata":{"minActiveGateVersion":"1.253"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:anomaly-detection.kubernetes.cluster",
+  "displayName": "Kubernetes cluster anomaly detection",
+  "description": "Dynatrace automatically detects a wide range of common Kubernetes-related issues. Use these settings to configure alerts relevant to your Kubernetes cluster. Changing thresholds resets the observation period. Additional information can be found on our [documentation page](https://dt-url.net/wq02okj#cluster).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:anomaly-detection.kubernetes",
+    "group:anomaly-detection"
+  ],
+  "version": "1.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "KUBERNETES_CLUSTER",
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "CpuRequestsSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "CpuRequestsSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "amount of requested CPU is above",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of cluster CPU capacity for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "CpuRequestsSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "CpuRequestsSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect cluster CPU-request saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/CpuRequestsSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "MemoryRequestsSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MemoryRequestsSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "amount of requested memory is above",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of cluster memory capacity for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "MemoryRequestsSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MemoryRequestsSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect cluster memory-request saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/MemoryRequestsSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "ReadinessIssuesConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "ReadinessIssuesConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "samplePeriodInMinutes": {
+          "displayName": "cluster is not ready for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "ReadinessIssues": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "ReadinessIssues",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect cluster readiness issues",
+          "description": "",
+          "documentation": "Evaluates the Kubernetes readyz endpoint",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/ReadinessIssuesConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "PodsSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "PodsSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "number of running pods is higher than",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of schedulable pod capacity for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "PodsSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "PodsSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect cluster pod-saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/PodsSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "MonitoringIssuesConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MonitoringIssuesConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "samplePeriodInMinutes": {
+          "displayName": "monitoring is not available for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 30
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "MonitoringIssues": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MonitoringIssues",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect monitoring issues",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/MonitoringIssuesConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "readinessIssues": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts if cluster has not been ready for a given amount of time",
+      "type": {
+        "$ref": "#/types/ReadinessIssues"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "cpuRequestsSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/CpuRequestsSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "memoryRequestsSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/MemoryRequestsSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "podsSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/PodsSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "monitoringIssues": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/MonitoringIssues"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "metadata": {
+    "minActiveGateVersion": "1.253"
+  }
+}

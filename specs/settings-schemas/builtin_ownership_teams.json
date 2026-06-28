@@ -1,1 +1,684 @@
-{"dynatrace":"1","schemaId":"builtin:ownership.teams","displayName":"Ownership teams","description":"Set up teams and assign responsibilities to them. Link teams to monitored entities in Dynatrace by referencing the team identifier in entity metadata. [See documentation](https://dt-url.net/bq238bi)","documentation":"","schemaGroups":["group:ownership"],"version":"1.0.7","multiObject":true,"ordered":false,"maxObjects":1000,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"LinkType":{"displayName":"Link","description":"","documentation":"","items":[{"value":"DOCUMENTATION","displayName":"Documentation"},{"value":"RUNBOOK","displayName":"Runbook"},{"value":"WIKI","displayName":"Wiki"},{"value":"DASHBOARD","displayName":"Dashboard"},{"value":"HEALTH_APP","displayName":"Health App"},{"value":"URL","displayName":"URL"},{"value":"REPOSITORY","displayName":"Repository"}],"type":"enum"},"IntegrationType":{"displayName":"Integration Type","description":"","documentation":"","items":[{"value":"JIRA","displayName":"Jira"},{"value":"EMAIL","displayName":"Email"},{"value":"MS_TEAMS","displayName":"MS Teams"},{"value":"SLACK","displayName":"Slack"}],"type":"enum"}},"types":{"AdditionalInformation":{"version":"0","versionInfo":"","displayName":"AdditionalInformation","summaryPattern":"{key} : {value}","description":"","documentation":"","properties":{"key":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"value":{"displayName":"Value","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":400,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"url":{"displayName":"URL","description":"","documentation":"","type":"text","subType":"url","nullable":true,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"Link":{"version":"0","versionInfo":"","displayName":"Link","summaryPattern":"{linkType} - {url}","description":"","documentation":"","properties":{"linkType":{"displayName":"Type","description":"","documentation":"","type":{"$ref":"#/enums/LinkType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"URL"},"url":{"displayName":"URL","description":"","documentation":"","type":"text","subType":"url","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"Responsibilities":{"version":"0","versionInfo":"","displayName":"Responsibilities","summaryPattern":"","description":"","documentation":"","properties":{"development":{"displayName":"Development","description":"Responsible for developing and maintaining high quality software. Development teams are responsible for making code changes to address performance regressions, errors, or security vulnerabilities.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"security":{"displayName":"Security","description":"Responsible for the security posture of the organization. Teams with security responsibility must understand the impact, priority, and team responsible for addressing security vulnerabilities.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"operations":{"displayName":"Operations","description":"Responsible for deploying and managing software, with a focus on high availability and performance. Teams with operations responsibilities needs to understand the impact, priority, and team responsible for addressing problems detected by Dynatrace.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"infrastructure":{"displayName":"Infrastructure","description":"Responsible for the administration, management, and support of the IT infrastructure including physical servers, virtualization, and cloud. Teams with infrastructure responsibility are responsible for addressing hardware issues, resource limits, and operating system vulnerabilities.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"lineOfBusiness":{"displayName":"Line of Business","description":"Responsible for ensuring that applications in development align with business needs and meet the usability requirements of users, stakeholders, customers, and external partners. Teams with line of business responsibility are responsible for understanding the customer experience and how it affects business goals.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"type":"object"},"JiraConnection":{"version":"0","versionInfo":"","displayName":"Jira Connection","summaryPattern":"","description":"","documentation":"","properties":{"project":{"displayName":"Project","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"defaultAssignee":{"displayName":"Default Assignee","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"ContactDetails":{"version":"0","versionInfo":"","displayName":"Contact details","summaryPattern":"{integrationType}","description":"","documentation":"","properties":{"integrationType":{"displayName":"Integration type","description":"","documentation":"","type":{"$ref":"#/enums/IntegrationType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"EMAIL"},"email":{"displayName":"Email","description":"","documentation":"","type":"text","subType":"email","nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Email address is not valid","pattern":"^[\\.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?)*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"integrationType","expectedValue":"EMAIL"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"msTeams":{"displayName":"Team","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"integrationType","expectedValue":"MS_TEAMS"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"jira":{"displayName":"Jira","description":"","documentation":"","type":{"$ref":"#/types/JiraConnection"},"nullable":false,"precondition":{"type":"EQUALS","property":"integrationType","expectedValue":"JIRA"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"slackChannel":{"displayName":"Channel","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1}],"precondition":{"type":"EQUALS","property":"integrationType","expectedValue":"SLACK"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"url":{"displayName":"URL","description":"","documentation":"","type":"text","subType":"uri","nullable":true,"constraints":[{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"IN","property":"integrationType","expectedValues":["SLACK","JIRA","MS_TEAMS"]},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"SupplementaryIdentifier":{"version":"0","versionInfo":"","displayName":"SupplementaryIdentifier","summaryPattern":"{supplementaryIdentifier}","description":"","documentation":"","properties":{"supplementaryIdentifier":{"displayName":"Supplementary Identifier","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Supplementary identifier field can not contain special characters or blank spaces and it must start and end with an alphanumeric character.","customValidatorId":"team-identifier-validator","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"name":{"displayName":"Team name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"description":{"displayName":"Description","description":"","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"},"identifier":{"displayName":"Team identifier","description":"The team identifier is used to reference the team from any entity in Dynatrace. If you are using Kubernetes labels, keep in mind the 63 character limit that they enforce.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Team identifier field can not contain special characters or blank spaces and it must start and end with an alphanumeric character.","customValidatorId":"team-identifier-validator","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"NEVER","default":"team_identifier"},"supplementaryIdentifiers":{"displayName":"Supplementary identifiers","description":"The supplementary team identifiers can be optionally used in addition to the main team identifier to reference this team from any entity in Dynatrace. Up to 3 supplementary identifiers are supported.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/SupplementaryIdentifier"}},"nullable":false,"constraints":[{"type":"UNIQUE","customMessage":"Supplementary identifier must be unique.","uniqueProperties":["supplementaryIdentifier"]}],"metadata":{"addItemButton":"Add supplementary identifier"},"minObjects":0,"maxObjects":3,"modificationPolicy":"DEFAULT"},"responsibilities":{"displayName":"Responsibilities","description":"Turn on all responsibility assignments that apply to this team.","documentation":"","type":{"$ref":"#/types/Responsibilities"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"contactDetails":{"displayName":"Contact details","description":"Define options for messaging integration or other means of contacting this team.","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/ContactDetails"}},"nullable":false,"metadata":{"addItemButton":"Add contact information"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"links":{"displayName":"Links","description":"Include links to online resources where information relevant to this team’s responsibilities can be found.","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Link"}},"nullable":false,"metadata":{"addItemButton":"Add link"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"additionalInformation":{"displayName":"Additional information","description":"Define key/value pairs that further describe this team — for example, cost center, solution type, or business unit assignments.","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/AdditionalInformation"}},"nullable":false,"metadata":{"addItemButton":"Add additional info"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"},"externalId":{"displayName":"External ID","description":"This field should only be used for the automation purpose when importing team information.","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"NEVER"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"The team identifier cannot be part of the supplementary identifiers.","customValidatorId":"identifier-supIdentifier-validator","skipAsyncValidation":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"There cannot be 2 teams with the same identifier.","uniqueProperties":["identifier"],"flattenCollections":false}],"metadata":{"addItemButton":"Add team"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:ownership.teams",
+  "displayName": "Ownership teams",
+  "description": "Set up teams and assign responsibilities to them. Link teams to monitored entities in Dynatrace by referencing the team identifier in entity metadata. [See documentation](https://dt-url.net/bq238bi)",
+  "documentation": "",
+  "schemaGroups": [
+    "group:ownership"
+  ],
+  "version": "1.0.7",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 1000,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "LinkType": {
+      "displayName": "Link",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "DOCUMENTATION",
+          "displayName": "Documentation"
+        },
+        {
+          "value": "RUNBOOK",
+          "displayName": "Runbook"
+        },
+        {
+          "value": "WIKI",
+          "displayName": "Wiki"
+        },
+        {
+          "value": "DASHBOARD",
+          "displayName": "Dashboard"
+        },
+        {
+          "value": "HEALTH_APP",
+          "displayName": "Health App"
+        },
+        {
+          "value": "URL",
+          "displayName": "URL"
+        },
+        {
+          "value": "REPOSITORY",
+          "displayName": "Repository"
+        }
+      ],
+      "type": "enum"
+    },
+    "IntegrationType": {
+      "displayName": "Integration Type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "JIRA",
+          "displayName": "Jira"
+        },
+        {
+          "value": "EMAIL",
+          "displayName": "Email"
+        },
+        {
+          "value": "MS_TEAMS",
+          "displayName": "MS Teams"
+        },
+        {
+          "value": "SLACK",
+          "displayName": "Slack"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "AdditionalInformation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "AdditionalInformation",
+      "summaryPattern": "{key} : {value}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "key": {
+          "displayName": "Name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 100,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "value": {
+          "displayName": "Value",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 400,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "url": {
+          "displayName": "URL",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "subType": "url",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid URI",
+              "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid http(s) URL",
+              "pattern": "^https?://.*$"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "Link": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Link",
+      "summaryPattern": "{linkType} - {url}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "linkType": {
+          "displayName": "Type",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/LinkType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "URL"
+        },
+        "url": {
+          "displayName": "URL",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "subType": "url",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid URI",
+              "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid http(s) URL",
+              "pattern": "^https?://.*$"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "Responsibilities": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Responsibilities",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "development": {
+          "displayName": "Development",
+          "description": "Responsible for developing and maintaining high quality software. Development teams are responsible for making code changes to address performance regressions, errors, or security vulnerabilities.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "security": {
+          "displayName": "Security",
+          "description": "Responsible for the security posture of the organization. Teams with security responsibility must understand the impact, priority, and team responsible for addressing security vulnerabilities.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "operations": {
+          "displayName": "Operations",
+          "description": "Responsible for deploying and managing software, with a focus on high availability and performance. Teams with operations responsibilities needs to understand the impact, priority, and team responsible for addressing problems detected by Dynatrace.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "infrastructure": {
+          "displayName": "Infrastructure",
+          "description": "Responsible for the administration, management, and support of the IT infrastructure including physical servers, virtualization, and cloud. Teams with infrastructure responsibility are responsible for addressing hardware issues, resource limits, and operating system vulnerabilities.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "lineOfBusiness": {
+          "displayName": "Line of Business",
+          "description": "Responsible for ensuring that applications in development align with business needs and meet the usability requirements of users, stakeholders, customers, and external partners. Teams with line of business responsibility are responsible for understanding the customer experience and how it affects business goals.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    },
+    "JiraConnection": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Jira Connection",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "project": {
+          "displayName": "Project",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "defaultAssignee": {
+          "displayName": "Default Assignee",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "ContactDetails": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Contact details",
+      "summaryPattern": "{integrationType}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "integrationType": {
+          "displayName": "Integration type",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/IntegrationType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "EMAIL"
+        },
+        "email": {
+          "displayName": "Email",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "subType": "email",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "PATTERN",
+              "customMessage": "Email address is not valid",
+              "pattern": "^[\\.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*?[a-zA-Z0-9])?)*$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "integrationType",
+            "expectedValue": "EMAIL"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "msTeams": {
+          "displayName": "Team",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "integrationType",
+            "expectedValue": "MS_TEAMS"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "jira": {
+          "displayName": "Jira",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/JiraConnection"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "integrationType",
+            "expectedValue": "JIRA"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "slackChannel": {
+          "displayName": "Channel",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "integrationType",
+            "expectedValue": "SLACK"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "url": {
+          "displayName": "URL",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "subType": "uri",
+          "nullable": true,
+          "constraints": [
+            {
+              "type": "PATTERN",
+              "customMessage": "Not a valid URI",
+              "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "IN",
+            "property": "integrationType",
+            "expectedValues": [
+              "SLACK",
+              "JIRA",
+              "MS_TEAMS"
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "SupplementaryIdentifier": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "SupplementaryIdentifier",
+      "summaryPattern": "{supplementaryIdentifier}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "supplementaryIdentifier": {
+          "displayName": "Supplementary Identifier",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 100,
+              "minLength": 1
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "Supplementary identifier field can not contain special characters or blank spaces and it must start and end with an alphanumeric character.",
+              "customValidatorId": "team-identifier-validator",
+              "skipAsyncValidation": false
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "name": {
+      "displayName": "Team name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "description": {
+      "displayName": "Description",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "identifier": {
+      "displayName": "Team identifier",
+      "description": "The team identifier is used to reference the team from any entity in Dynatrace. If you are using Kubernetes labels, keep in mind the 63 character limit that they enforce.",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "Team identifier field can not contain special characters or blank spaces and it must start and end with an alphanumeric character.",
+          "customValidatorId": "team-identifier-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "NEVER",
+      "default": "team_identifier"
+    },
+    "supplementaryIdentifiers": {
+      "displayName": "Supplementary identifiers",
+      "description": "The supplementary team identifiers can be optionally used in addition to the main team identifier to reference this team from any entity in Dynatrace. Up to 3 supplementary identifiers are supported.",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/SupplementaryIdentifier"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "Supplementary identifier must be unique.",
+          "uniqueProperties": [
+            "supplementaryIdentifier"
+          ]
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add supplementary identifier"
+      },
+      "minObjects": 0,
+      "maxObjects": 3,
+      "modificationPolicy": "DEFAULT"
+    },
+    "responsibilities": {
+      "displayName": "Responsibilities",
+      "description": "Turn on all responsibility assignments that apply to this team.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/Responsibilities"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "contactDetails": {
+      "displayName": "Contact details",
+      "description": "Define options for messaging integration or other means of contacting this team.",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/ContactDetails"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add contact information"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "links": {
+      "displayName": "Links",
+      "description": "Include links to online resources where information relevant to this team’s responsibilities can be found.",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/Link"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add link"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "additionalInformation": {
+      "displayName": "Additional information",
+      "description": "Define key/value pairs that further describe this team — for example, cost center, solution type, or business unit assignments.",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/AdditionalInformation"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add additional info"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "externalId": {
+      "displayName": "External ID",
+      "description": "This field should only be used for the automation purpose when importing team information.",
+      "documentation": "",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "NEVER"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "The team identifier cannot be part of the supplementary identifiers.",
+      "customValidatorId": "identifier-supIdentifier-validator",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "There cannot be 2 teams with the same identifier.",
+      "uniqueProperties": [
+        "identifier"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "addItemButton": "Add team"
+  }
+}

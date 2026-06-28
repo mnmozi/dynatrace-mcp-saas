@@ -1,1 +1,41 @@
-{"dynatrace":"1","schemaId":"builtin:host.monitoring.advanced","displayName":"Advanced Settings","description":"You can switch off the injection of the ProcessAgent and of CodeModules.","documentation":"","schemaGroups":["group:host-monitoring"],"version":"0.0.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST"],"enums":{},"types":{},"properties":{"processAgentInjection":{"displayName":"ProcessAgent injection","description":"Disabling this setting disables many deep process visibility features, for example: tracing, profiling, technology-specific metrics (e.g. heap usage), JMX/PMI metrics collection, runtime vulnerability analytics, live debugging, etc. For Fullstack or Infrastructure modes, we only recommend disabling this setting for troubleshooting purposes.\n\n Disabling automatic injection via [oneagentctl](https://dt-url.net/oneagentctl) takes precedence over this setting being enabled and cannot be changed from the Dynatrace web UI.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"codeModuleInjection":{"displayName":"CodeModule injection","description":"Inject CodeModules in Discovery mode.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:host.monitoring.advanced",
+  "displayName": "Advanced Settings",
+  "description": "You can switch off the injection of the ProcessAgent and of CodeModules.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:host-monitoring"
+  ],
+  "version": "0.0.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "processAgentInjection": {
+      "displayName": "ProcessAgent injection",
+      "description": "Disabling this setting disables many deep process visibility features, for example: tracing, profiling, technology-specific metrics (e.g. heap usage), JMX/PMI metrics collection, runtime vulnerability analytics, live debugging, etc. For Fullstack or Infrastructure modes, we only recommend disabling this setting for troubleshooting purposes.\n\n Disabling automatic injection via [oneagentctl](https://dt-url.net/oneagentctl) takes precedence over this setting being enabled and cannot be changed from the Dynatrace web UI.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "codeModuleInjection": {
+      "displayName": "CodeModule injection",
+      "description": "Inject CodeModules in Discovery mode.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  }
+}

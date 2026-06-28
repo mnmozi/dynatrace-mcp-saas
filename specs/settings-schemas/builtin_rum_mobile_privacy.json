@@ -1,1 +1,32 @@
-{"dynatrace":"1","schemaId":"builtin:rum.mobile.privacy","displayName":"Privacy settings","description":"Enable user opt-in mode to allow your users to decide what types of data they are willing to share. For details, see [Opt-in mode](https://dt-url.net/9602z8z)","documentation":"","schemaGroups":["group:rum-general","group:privacy-settings"],"version":"1.1.8","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["MOBILE_APPLICATION"],"enums":{},"types":{},"properties":{"optInModeEnabled":{"displayName":"Enable user opt-in mode","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.mobile.privacy",
+  "displayName": "Privacy settings",
+  "description": "Enable user opt-in mode to allow your users to decide what types of data they are willing to share. For details, see [Opt-in mode](https://dt-url.net/9602z8z)",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-general",
+    "group:privacy-settings"
+  ],
+  "version": "1.1.8",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "MOBILE_APPLICATION"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "optInModeEnabled": {
+      "displayName": "Enable user opt-in mode",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}

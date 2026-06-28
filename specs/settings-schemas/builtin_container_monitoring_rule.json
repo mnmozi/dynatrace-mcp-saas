@@ -1,1 +1,296 @@
-{"dynatrace":"1","schemaId":"builtin:container.monitoring-rule","displayName":"Container monitoring rules","description":"Within container environments, OneAgent automatically injects code modules into containerized processes to provide out of the box full-stack visibility into applications running within containers. Dynatrace provides complete control over automatic injection of code modules into the container technologies.","documentation":"\n\nIn Kubernetes, container monitoring rules are evaluated only in case of `classicFullStack` injection mode. The rules are ignored in case of `cloudNativeFullStack` or `applicationMonitoring`.\n\nPlease use the annotation-based configuration option as described [here](https://dt-url.net/k8sdtoconfig).","schemaGroups":["group:processes-and-containers.containers","group:processes-and-containers"],"version":"0.0.2","multiObject":true,"ordered":true,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"ContainerItem":{"displayName":"ContainerItem","description":"","documentation":"","items":[{"value":"CONTAINER_NAME","displayName":"Container name"},{"value":"IMAGE_NAME","displayName":"Docker stripped image name"},{"value":"KUBERNETES_NAMESPACE","displayName":"Kubernetes namespace"},{"value":"KUBERNETES_CONTAINERNAME","displayName":"Kubernetes container name"},{"value":"KUBERNETES_BASEPODNAME","displayName":"Kubernetes base pod name"},{"value":"KUBERNETES_FULLPODNAME","displayName":"Kubernetes full pod name"},{"value":"KUBERNETES_PODUID","displayName":"Kubernetes pod UID"}],"type":"enum"},"ConditionOperator":{"displayName":"ConditionOperator","description":"","documentation":"","items":[{"value":"STARTS","displayName":"begins with"},{"value":"NOT_STARTS","displayName":"does not begin with"},{"value":"ENDS","displayName":"end with"},{"value":"NOT_ENDS","displayName":"does not end with"},{"value":"CONTAINS","displayName":"contains"},{"value":"NOT_CONTAINS","displayName":"does not contain"},{"value":"EQUALS","displayName":"equals"},{"value":"NOT_EQUALS","displayName":"does not equal"},{"value":"EXISTS","displayName":"exists"},{"value":"NOT_EXISTS","displayName":"does not exist"}],"type":"enum"},"MonitoringMode":{"displayName":"MonitoringMode","description":"","documentation":"","items":[{"value":"MONITORING_OFF","displayName":"Do not monitor"},{"value":"MONITORING_ON","displayName":"Monitor"}],"type":"enum"}},"types":{"FlagDefaultTrue":{"version":"0","versionInfo":"","displayName":"FlagDefaultTrue","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}},"type":"object"},"ContainerCondition":{"version":"0","versionInfo":"","displayName":"ContainerCondition","summaryPattern":"","description":"","documentation":"","properties":{"property":{"displayName":"Container property","description":"","documentation":"","type":{"$ref":"#/enums/ContainerItem"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"CONTAINER_NAME"},"operator":{"displayName":"Condition operator","description":"","documentation":"","type":{"$ref":"#/enums/ConditionOperator"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"STARTS"},"value":{"displayName":"Condition value","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Colon, comma and semicolon are not allowed","pattern":"^[^;:,]*$"},{"type":"LENGTH","maxLength":1000,"minLength":1}],"precondition":{"type":"NOT","precondition":{"type":"IN","property":"operator","expectedValues":["EXISTS","NOT_EXISTS"]}},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"mode":{"displayName":"Mode","description":"","documentation":"","type":{"$ref":"#/enums/MonitoringMode"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"MONITORING_OFF"},"property":{"displayName":"Container property","description":"","documentation":"","type":{"$ref":"#/enums/ContainerItem"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"CONTAINER_NAME"},"operator":{"displayName":"Condition operator","description":"","documentation":"","type":{"$ref":"#/enums/ConditionOperator"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"STARTS"},"value":{"displayName":"Condition value","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Colon, comma and semicolon are not allowed","pattern":"^[^;:,]*$"},{"type":"LENGTH","maxLength":1000,"minLength":1}],"precondition":{"type":"NOT","precondition":{"type":"IN","property":"operator","expectedValues":["EXISTS","NOT_EXISTS"]}},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"metadata":{"minAgentVersion":"1.171"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:container.monitoring-rule",
+  "displayName": "Container monitoring rules",
+  "description": "Within container environments, OneAgent automatically injects code modules into containerized processes to provide out of the box full-stack visibility into applications running within containers. Dynatrace provides complete control over automatic injection of code modules into the container technologies.",
+  "documentation": "\n\nIn Kubernetes, container monitoring rules are evaluated only in case of `classicFullStack` injection mode. The rules are ignored in case of `cloudNativeFullStack` or `applicationMonitoring`.\n\nPlease use the annotation-based configuration option as described [here](https://dt-url.net/k8sdtoconfig).",
+  "schemaGroups": [
+    "group:processes-and-containers.containers",
+    "group:processes-and-containers"
+  ],
+  "version": "0.0.2",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "ContainerItem": {
+      "displayName": "ContainerItem",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "CONTAINER_NAME",
+          "displayName": "Container name"
+        },
+        {
+          "value": "IMAGE_NAME",
+          "displayName": "Docker stripped image name"
+        },
+        {
+          "value": "KUBERNETES_NAMESPACE",
+          "displayName": "Kubernetes namespace"
+        },
+        {
+          "value": "KUBERNETES_CONTAINERNAME",
+          "displayName": "Kubernetes container name"
+        },
+        {
+          "value": "KUBERNETES_BASEPODNAME",
+          "displayName": "Kubernetes base pod name"
+        },
+        {
+          "value": "KUBERNETES_FULLPODNAME",
+          "displayName": "Kubernetes full pod name"
+        },
+        {
+          "value": "KUBERNETES_PODUID",
+          "displayName": "Kubernetes pod UID"
+        }
+      ],
+      "type": "enum"
+    },
+    "ConditionOperator": {
+      "displayName": "ConditionOperator",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "STARTS",
+          "displayName": "begins with"
+        },
+        {
+          "value": "NOT_STARTS",
+          "displayName": "does not begin with"
+        },
+        {
+          "value": "ENDS",
+          "displayName": "end with"
+        },
+        {
+          "value": "NOT_ENDS",
+          "displayName": "does not end with"
+        },
+        {
+          "value": "CONTAINS",
+          "displayName": "contains"
+        },
+        {
+          "value": "NOT_CONTAINS",
+          "displayName": "does not contain"
+        },
+        {
+          "value": "EQUALS",
+          "displayName": "equals"
+        },
+        {
+          "value": "NOT_EQUALS",
+          "displayName": "does not equal"
+        },
+        {
+          "value": "EXISTS",
+          "displayName": "exists"
+        },
+        {
+          "value": "NOT_EXISTS",
+          "displayName": "does not exist"
+        }
+      ],
+      "type": "enum"
+    },
+    "MonitoringMode": {
+      "displayName": "MonitoringMode",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "MONITORING_OFF",
+          "displayName": "Do not monitor"
+        },
+        {
+          "value": "MONITORING_ON",
+          "displayName": "Monitor"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "FlagDefaultTrue": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "FlagDefaultTrue",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Enabled",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        }
+      },
+      "type": "object"
+    },
+    "ContainerCondition": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "ContainerCondition",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "property": {
+          "displayName": "Container property",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/ContainerItem"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "CONTAINER_NAME"
+        },
+        "operator": {
+          "displayName": "Condition operator",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/ConditionOperator"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "STARTS"
+        },
+        "value": {
+          "displayName": "Condition value",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "PATTERN",
+              "customMessage": "Colon, comma and semicolon are not allowed",
+              "pattern": "^[^;:,]*$"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 1000,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "NOT",
+            "precondition": {
+              "type": "IN",
+              "property": "operator",
+              "expectedValues": [
+                "EXISTS",
+                "NOT_EXISTS"
+              ]
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "mode": {
+      "displayName": "Mode",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/MonitoringMode"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "MONITORING_OFF"
+    },
+    "property": {
+      "displayName": "Container property",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/ContainerItem"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "CONTAINER_NAME"
+    },
+    "operator": {
+      "displayName": "Condition operator",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/ConditionOperator"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "STARTS"
+    },
+    "value": {
+      "displayName": "Condition value",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "PATTERN",
+          "customMessage": "Colon, comma and semicolon are not allowed",
+          "pattern": "^[^;:,]*$"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "NOT",
+        "precondition": {
+          "type": "IN",
+          "property": "operator",
+          "expectedValues": [
+            "EXISTS",
+            "NOT_EXISTS"
+          ]
+        }
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "metadata": {
+    "minAgentVersion": "1.171"
+  }
+}

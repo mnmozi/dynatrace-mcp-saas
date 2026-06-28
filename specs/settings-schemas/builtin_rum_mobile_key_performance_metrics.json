@@ -1,1 +1,99 @@
-{"dynatrace":"1","schemaId":"builtin:rum.mobile.key-performance-metrics","displayName":"Apdex configuration","description":"[Set the user-satisfaction performance thresholds](https://dt-url.net/4l023z2) (**Satisfactory**, **Tolerable**, and **Frustrating**) for the **User action duration** metric to refine the Apdex calculations for this app.","documentation":"","schemaGroups":["group:rum-general"],"version":"1.1.6","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["DEVICE_APPLICATION_METHOD","MOBILE_APPLICATION","CUSTOM_APPLICATION"],"enums":{},"types":{"Thresholds":{"version":"0","versionInfo":"","displayName":"Thresholds","summaryPattern":"","description":"","documentation":"","properties":{"tolerableThresholdSeconds":{"displayName":"Tolerable performance [sec]","description":"If the action duration is below this value, the Apdex is considered to be **Satisfactory**.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":240.0,"minimum":0.1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3.0},"frustratingThresholdSeconds":{"displayName":"Frustrating performance [sec]","description":"If the action duration is above this value, the Apdex is considered to be **Frustrating**.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":240.0,"minimum":0.1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":12.0}},"constraints":[{"type":"GREATER_THAN_OR_EQUAL","properties":["frustratingThresholdSeconds","tolerableThresholdSeconds"]}],"type":"object"}},"properties":{"thresholds":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Thresholds"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"frustratingIfReportedOrWebRequestError":{"displayName":"Consider reported errors / web request errors in Apdex calculations","description":"Treat user actions with reported errors or web request errors as erroneous and rate their performance as Frustrating. Turn off this setting if errors should not affect the Apdex rate.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.mobile.key-performance-metrics",
+  "displayName": "Apdex configuration",
+  "description": "[Set the user-satisfaction performance thresholds](https://dt-url.net/4l023z2) (**Satisfactory**, **Tolerable**, and **Frustrating**) for the **User action duration** metric to refine the Apdex calculations for this app.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-general"
+  ],
+  "version": "1.1.6",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "DEVICE_APPLICATION_METHOD",
+    "MOBILE_APPLICATION",
+    "CUSTOM_APPLICATION"
+  ],
+  "enums": {},
+  "types": {
+    "Thresholds": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Thresholds",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "tolerableThresholdSeconds": {
+          "displayName": "Tolerable performance [sec]",
+          "description": "If the action duration is below this value, the Apdex is considered to be **Satisfactory**.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 240,
+              "minimum": 0.1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "frustratingThresholdSeconds": {
+          "displayName": "Frustrating performance [sec]",
+          "description": "If the action duration is above this value, the Apdex is considered to be **Frustrating**.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 240,
+              "minimum": 0.1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 12
+        }
+      },
+      "constraints": [
+        {
+          "type": "GREATER_THAN_OR_EQUAL",
+          "properties": [
+            "frustratingThresholdSeconds",
+            "tolerableThresholdSeconds"
+          ]
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "thresholds": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/Thresholds"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "frustratingIfReportedOrWebRequestError": {
+      "displayName": "Consider reported errors / web request errors in Apdex calculations",
+      "description": "Treat user actions with reported errors or web request errors as erroneous and rate their performance as Frustrating. Turn off this setting if errors should not affect the Apdex rate.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}

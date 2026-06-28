@@ -1,1 +1,130 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.http.performance-thresholds","displayName":"Performance thresholds","description":"Dynatrace generates a new problem if this synthetic monitor exceeds any of the performance thresholds below in 3 of the 5 most recent executions at a given location, unless there is an open maintenance window for the synthetic monitor. Multiple locations with 3 such violations can be included in a problem. The problem is closed if no performance threshold is violated in the 5 most recent executions at each of the previously affected locations.","documentation":"","version":"1.6.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HTTP_CHECK"],"enums":{},"types":{"ThresholdEntry":{"version":"0","versionInfo":"","displayName":"Performance thresholds","summaryPattern":"{event} with a threshold of {threshold} s","description":"","documentation":"","properties":{"event":{"displayName":"Request","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"synthetic_event_datasource","filterProperties":[],"resetValue":"NEVER","validate":false,"fullContext":false,"useApiSearch":false},"nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Please use a format of TYPE-ID","pattern":"^[A-Z][A-Z0-9_]*-[0-9A-F]{16}$"},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"ID must identify the synthetic monitor or a synthetic event of the monitor.","customValidatorId":"step-of-test-validator","skipAsyncValidation":false},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"threshold":{"displayName":"Threshold (in seconds)","description":"","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":10.0}},"type":"object"}},"properties":{"enabled":{"displayName":"Generate a problem and send an alert on performance threshold violations","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"thresholds":{"displayName":"Performance thresholds","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/ThresholdEntry"}},"nullable":false,"constraints":[{"type":"UNIQUE","customMessage":"A threshold for the specified request already exists.","uniqueProperties":["event"]}],"metadata":{"addItemButton":"Add threshold"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"synthetic-monitor-count-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.http.performance-thresholds",
+  "displayName": "Performance thresholds",
+  "description": "Dynatrace generates a new problem if this synthetic monitor exceeds any of the performance thresholds below in 3 of the 5 most recent executions at a given location, unless there is an open maintenance window for the synthetic monitor. Multiple locations with 3 such violations can be included in a problem. The problem is closed if no performance threshold is violated in the 5 most recent executions at each of the previously affected locations.",
+  "documentation": "",
+  "version": "1.6.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HTTP_CHECK"
+  ],
+  "enums": {},
+  "types": {
+    "ThresholdEntry": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Performance thresholds",
+      "summaryPattern": "{event} with a threshold of {threshold} s",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "event": {
+          "displayName": "Request",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "subType": "datasource",
+          "datasource": {
+            "identifier": "synthetic_event_datasource",
+            "filterProperties": [],
+            "resetValue": "NEVER",
+            "validate": false,
+            "fullContext": false,
+            "useApiSearch": false
+          },
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "PATTERN",
+              "customMessage": "Please use a format of TYPE-ID",
+              "pattern": "^[A-Z][A-Z0-9_]*-[0-9A-F]{16}$"
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customMessage": "ID must identify the synthetic monitor or a synthetic event of the monitor.",
+              "customValidatorId": "step-of-test-validator",
+              "skipAsyncValidation": false
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "threshold": {
+          "displayName": "Threshold (in seconds)",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Generate a problem and send an alert on performance threshold violations",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "thresholds": {
+      "displayName": "Performance thresholds",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/ThresholdEntry"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "A threshold for the specified request already exists.",
+          "uniqueProperties": [
+            "event"
+          ]
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add threshold"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "synthetic-monitor-count-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

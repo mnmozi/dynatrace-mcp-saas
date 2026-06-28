@@ -1,1 +1,115 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.pagerduty:connection","displayName":"PagerDuty Connections","description":"Credentials for the PagerDuty App","documentation":"","version":"1.0.1","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"name":{"displayName":"Connection name","description":"The name of the PagerDuty connection","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Name has to be between 1 and 50 characters long","maxLength":50,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"url":{"displayName":"PagerDuty API URL","description":"URL of the PagerDuty API endpoint","documentation":"","type":"text","subType":"url","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Name has to be between 1 and 100 characters long","maxLength":100,"minLength":1},{"type":"NO_WHITESPACE","customMessage":"URL cannot contain whitespaces"},{"type":"PATTERN","customMessage":"Not a valid URL","pattern":"^https://.*$"},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","forceSecretResubmission":true,"default":"https://api.pagerduty.com"},"token":{"displayName":"API token","description":"Token for the PagerDuty API endpoint","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Token has to be between 1 and 100 characters long","maxLength":100,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"SECRET_RESUBMISSION","customMessage":"For security reasons please re-enter the API token before saving the configuration.","checkAllProperties":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"A connection with the same name already exists. Please provide a different name.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"appName":"PagerDuty"},"ownerBasedAccessControl":true}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.pagerduty:connection",
+  "displayName": "PagerDuty Connections",
+  "description": "Credentials for the PagerDuty App",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Connection name",
+      "description": "The name of the PagerDuty connection",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Name has to be between 1 and 50 characters long",
+          "maxLength": 50,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "url": {
+      "displayName": "PagerDuty API URL",
+      "description": "URL of the PagerDuty API endpoint",
+      "documentation": "",
+      "type": "text",
+      "subType": "url",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Name has to be between 1 and 100 characters long",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        {
+          "type": "NO_WHITESPACE",
+          "customMessage": "URL cannot contain whitespaces"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid URL",
+          "pattern": "^https://.*$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid URI",
+          "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid http(s) URL",
+          "pattern": "^https?://.*$"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "forceSecretResubmission": true,
+      "default": "https://api.pagerduty.com"
+    },
+    "token": {
+      "displayName": "API token",
+      "description": "Token for the PagerDuty API endpoint",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Token has to be between 1 and 100 characters long",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "SECRET_RESUBMISSION",
+      "customMessage": "For security reasons please re-enter the API token before saving the configuration.",
+      "checkAllProperties": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "A connection with the same name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "appName": "PagerDuty"
+  },
+  "ownerBasedAccessControl": true
+}

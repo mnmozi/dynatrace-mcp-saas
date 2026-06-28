@@ -1,1 +1,44 @@
-{"dynatrace":"1","schemaId":"builtin:enhanced-endpoints-for-sdv1","displayName":"Enhanced endpoints for SDv1","description":"Enabling enhanced endpoint visibility for Service Detection v1 (SDv1) services will make the new Services app automatically display all endpoints of a service, not just key requests (available only in Phase 3). Please check the [documentation](https://dt-url.net/request-attribute-naming-rules) for details.\n\nWith this feature, you’ll gain:\n\n* A complete list of all endpoints for SDv1 services.\n* Improved visibility to quickly identify and resolve issues.\n\nWithout enabling this feature, the Endpoints section in the new Services app will remain empty or only show key requests.\n\n**Breaking change**: Enabling this feature will modify endpoint detection rules for WebRequestServices and for some endpoint names with placeholders, potentially impacting existing API metric queries, dashboards, and configured alerts.\nThis action can be reverted.\n\n**Note**: SDv2 services already provide this visibility by default.","documentation":"","schemaGroups":["group:service-detection"],"version":"3.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["CLOUD_APPLICATION_NAMESPACE","KUBERNETES_CLUSTER","HOST_GROUP","environment"],"enums":{},"types":{},"properties":{"enabled":{"displayName":"Enable enhanced endpoints for SDv1.","description":"We recommend to have this setting enabled.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"resolveRequestAttributes":{"displayName":"Resolve Request attributes in Request naming rules for SDv1 endpoints, when enhanced endpoints for SDv1 is enabled.","description":"We recommend to have this setting enabled. Expand {RequestAttribute:_} in SDv1 endpoint names so you can see separate endpoints per attribute value. Turn off only if a request attribute causes an excessive number of endpoints.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:enhanced-endpoints-for-sdv1",
+  "displayName": "Enhanced endpoints for SDv1",
+  "description": "Enabling enhanced endpoint visibility for Service Detection v1 (SDv1) services will make the new Services app automatically display all endpoints of a service, not just key requests (available only in Phase 3). Please check the [documentation](https://dt-url.net/request-attribute-naming-rules) for details.\n\nWith this feature, you’ll gain:\n\n* A complete list of all endpoints for SDv1 services.\n* Improved visibility to quickly identify and resolve issues.\n\nWithout enabling this feature, the Endpoints section in the new Services app will remain empty or only show key requests.\n\n**Breaking change**: Enabling this feature will modify endpoint detection rules for WebRequestServices and for some endpoint names with placeholders, potentially impacting existing API metric queries, dashboards, and configured alerts.\nThis action can be reverted.\n\n**Note**: SDv2 services already provide this visibility by default.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:service-detection"
+  ],
+  "version": "3.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "CLOUD_APPLICATION_NAMESPACE",
+    "KUBERNETES_CLUSTER",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enable enhanced endpoints for SDv1.",
+      "description": "We recommend to have this setting enabled.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "resolveRequestAttributes": {
+      "displayName": "Resolve Request attributes in Request naming rules for SDv1 endpoints, when enhanced endpoints for SDv1 is enabled.",
+      "description": "We recommend to have this setting enabled. Expand {RequestAttribute:_} in SDv1 endpoint names so you can see separate endpoints per attribute value. Turn off only if a request attribute causes an excessive number of endpoints.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  }
+}

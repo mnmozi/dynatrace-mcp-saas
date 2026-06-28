@@ -1,1 +1,851 @@
-{"dynatrace":"1","schemaId":"builtin:anomaly-detection.services","displayName":"Anomaly detection for services","description":"Dynatrace automatically detects service related performance anomalies such as response time degradations and failure rate increases.","documentation":" Use these settings to configure detection sensitivity, set alert thresholds, or disable alerting for certain services. Read more about [Automated multi-dimensional baselining](https://dt-url.net/5r5p0pnz/ \"Visit Dynatrace support center\").\n\nTo avoid false-positive problem notifications, automated anomaly detection is only available for applications and services that have run for at least 20% of a week (7 days).","schemaGroups":["group:anomaly-detection"],"version":"0.0.19","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["SERVICE_METHOD","SERVICE","HOST_GROUP","environment"],"enums":{"sensitivity":{"displayName":"Sensitivity","description":"","documentation":"","items":[{"value":"low","displayName":"Low"},{"value":"medium","displayName":"Medium"},{"value":"high","displayName":"High"}],"type":"enum"},"detectionMode":{"displayName":"Detection mode","description":"","documentation":"","items":[{"value":"auto","displayName":"Automatic"},{"value":"fixed","displayName":"Using fixed thresholds"}],"type":"enum"}},"types":{"loadSpikes":{"version":"0.0.1","versionInfo":"","displayName":"Service load spikes","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect service load spikes","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"loadSpikePercent":{"displayName":"Alert if the observed load is more than this percentage of the expected value","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":100.0}],"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":200.0},"minutesAbnormalState":{"displayName":"Time span","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"metadata":{"suffix":"minute(s)"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1}},"type":"object"},"loadDrops":{"version":"0","versionInfo":"","displayName":"Service load drops","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect service load drops","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"loadDropPercent":{"displayName":"Alert if the observed load is less than this percentage of the expected value","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":0.0}],"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":50.0},"minutesAbnormalState":{"displayName":"Time span","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"metadata":{"suffix":"minute(s)"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1}},"type":"object"},"overAlertingProtection":{"version":"0","versionInfo":"","displayName":"overAlertingProtection","summaryPattern":"","description":"","documentation":"","properties":{"requestsPerMinute":{"displayName":"Only alert if there are at least","description":"","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":0.0}],"metadata":{"suffix":"requests per minute"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10.0},"minutesAbnormalState":{"displayName":"Only alert if the abnormal state remains for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minute(s)"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1}},"type":"object"},"failureRateFixed":{"version":"0","versionInfo":"","displayName":"failureRateFixed","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"Threshold","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":0.0},"overAlertingProtection":{"displayName":"Avoid over-alerting","description":"","documentation":"","type":{"$ref":"#/types/overAlertingProtection"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"sensitivity":{"displayName":"Sensitivity","description":"","documentation":"","type":{"$ref":"#/enums/sensitivity"},"nullable":false,"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"low"}},"type":"object"},"failureRateAuto":{"version":"0","versionInfo":"","displayName":"failureRateAuto","summaryPattern":"","description":"","documentation":"","properties":{"absoluteIncrease":{"displayName":"Absolute threshold","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":0.0},"relativeIncrease":{"displayName":"Relative threshold","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":50.0},"overAlertingProtection":{"displayName":"Avoid over-alerting","description":"","documentation":"","type":{"$ref":"#/types/overAlertingProtection"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"failureRate":{"version":"0","versionInfo":"","displayName":"Failure rate","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect increases in failure rate","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"detectionMode":{"displayName":"Detection mode for increases in failure rate","description":"","documentation":"","type":{"$ref":"#/enums/detectionMode"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"auto"},"autoDetection":{"displayName":"","description":"Alert if the percentage of failing service calls increases by **both** the absolute and relative thresholds:","documentation":"","type":{"$ref":"#/types/failureRateAuto"},"nullable":false,"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"enabled","expectedValue":true},{"type":"EQUALS","property":"detectionMode","expectedValue":"auto"}]},"maxObjects":1,"modificationPolicy":"DEFAULT"},"fixedDetection":{"displayName":"","description":"Alert if a given failure rate is exceeded during any 5-minute-period","documentation":"","type":{"$ref":"#/types/failureRateFixed"},"nullable":false,"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"enabled","expectedValue":true},{"type":"EQUALS","property":"detectionMode","expectedValue":"fixed"}]},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"responseTimeAutoAll":{"version":"0","versionInfo":"","displayName":"responseTimeAutoAll","summaryPattern":"","description":"","documentation":"","properties":{"degradationMilliseconds":{"displayName":"Absolute threshold","description":"","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":100000.0,"minimum":0.0}],"metadata":{"suffix":"ms"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":100.0},"degradationPercent":{"displayName":"Relative threshold","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":50.0}},"type":"object"},"responseTimeAutoSlowest":{"version":"0","versionInfo":"","displayName":"responseTimeAutoSlowest","summaryPattern":"","description":"","documentation":"","properties":{"slowestDegradationMilliseconds":{"displayName":"Absolute threshold","description":"","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":100000.0,"minimum":0.0}],"metadata":{"suffix":"ms"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1000.0},"slowestDegradationPercent":{"displayName":"Relative threshold","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":1000.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":100.0}},"type":"object"},"responseTimeAuto":{"version":"0","versionInfo":"","displayName":"responseTimeAuto","summaryPattern":"","description":"","documentation":"","properties":{"responseTimeAll":{"displayName":"All requests","description":"Alert if the median response time of all requests degrades beyond **both** the absolute and relative thresholds:","documentation":"","type":{"$ref":"#/types/responseTimeAutoAll"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"responseTimeSlowest":{"displayName":"Slowest 10%","description":"Alert if the response time of the slowest 10% of requests degrades beyond **both** the absolute and relative thresholds:","documentation":"","type":{"$ref":"#/types/responseTimeAutoSlowest"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"overAlertingProtection":{"displayName":"Avoid over-alerting","description":"","documentation":"","type":{"$ref":"#/types/overAlertingProtection"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"responseTimeFixedAll":{"version":"0","versionInfo":"","displayName":"responseTimeFixedAll","summaryPattern":"","description":"","documentation":"","properties":{"degradationMilliseconds":{"displayName":"Alert if the response time degrades beyond this many ms within an observation period of 5 minutes","description":"","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":100000.0,"minimum":0.0}],"metadata":{"suffix":"ms"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":100.0}},"type":"object"},"responseTimeFixedSlowest":{"version":"0","versionInfo":"","displayName":"responseTimeFixedSlowest","summaryPattern":"","description":"","documentation":"","properties":{"slowestDegradationMilliseconds":{"displayName":"Alert if the response time of the slowest 10% degrades beyond this many ms within an observation period of 5 minutes","description":"","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":100000.0,"minimum":0.0}],"metadata":{"suffix":"ms"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":1000.0}},"type":"object"},"responseTimeFixed":{"version":"0","versionInfo":"","displayName":"responseTimeFixed","summaryPattern":"","description":"","documentation":"","properties":{"responseTimeAll":{"displayName":"All requests","description":"Alert if the median response time of all requests degrades beyond this threshold:","documentation":"","type":{"$ref":"#/types/responseTimeFixedAll"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"responseTimeSlowest":{"displayName":"Slowest 10%","description":"Alert if the response time of the slowest 10% of requests degrades beyond this threshold:","documentation":"","type":{"$ref":"#/types/responseTimeFixedSlowest"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"overAlertingProtection":{"displayName":"Avoid over-alerting","description":"","documentation":"","type":{"$ref":"#/types/overAlertingProtection"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"sensitivity":{"displayName":"Sensitivity","description":"","documentation":"","type":{"$ref":"#/enums/sensitivity"},"nullable":false,"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"low"}},"type":"object"},"responseTime":{"version":"0","versionInfo":"","displayName":"Response time","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect response time degradations","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"detectionMode":{"displayName":"Detection mode for response time degradations","description":"","documentation":"","type":{"$ref":"#/enums/detectionMode"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"auto"},"autoDetection":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/responseTimeAuto"},"nullable":false,"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"enabled","expectedValue":true},{"type":"EQUALS","property":"detectionMode","expectedValue":"auto"}]},"maxObjects":1,"modificationPolicy":"DEFAULT"},"fixedDetection":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/responseTimeFixed"},"nullable":false,"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"enabled","expectedValue":true},{"type":"EQUALS","property":"detectionMode","expectedValue":"fixed"}]},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"responseTime":{"displayName":"Response time","description":"","documentation":"","type":{"$ref":"#/types/responseTime"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"failureRate":{"displayName":"Failure rate","description":"","documentation":"","type":{"$ref":"#/types/failureRate"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"loadDrops":{"displayName":"Service load drops","description":"Alert if the observed load is lower than the expected load by a specified margin for a specified amount of time:","documentation":"Dynatrace learns your typical service load over an observation period of one week.","type":{"$ref":"#/types/loadDrops"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"loadSpikes":{"displayName":"Service load spikes","description":"Alert if the observed load exceeds the expected load by a specified margin for a specified amount of time:","documentation":"Dynatrace learns your typical service load over an observation period of one week.","type":{"$ref":"#/types/loadSpikes"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:anomaly-detection.services",
+  "displayName": "Anomaly detection for services",
+  "description": "Dynatrace automatically detects service related performance anomalies such as response time degradations and failure rate increases.",
+  "documentation": " Use these settings to configure detection sensitivity, set alert thresholds, or disable alerting for certain services. Read more about [Automated multi-dimensional baselining](https://dt-url.net/5r5p0pnz/ \"Visit Dynatrace support center\").\n\nTo avoid false-positive problem notifications, automated anomaly detection is only available for applications and services that have run for at least 20% of a week (7 days).",
+  "schemaGroups": [
+    "group:anomaly-detection"
+  ],
+  "version": "0.0.19",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "SERVICE_METHOD",
+    "SERVICE",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "sensitivity": {
+      "displayName": "Sensitivity",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "low",
+          "displayName": "Low"
+        },
+        {
+          "value": "medium",
+          "displayName": "Medium"
+        },
+        {
+          "value": "high",
+          "displayName": "High"
+        }
+      ],
+      "type": "enum"
+    },
+    "detectionMode": {
+      "displayName": "Detection mode",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "auto",
+          "displayName": "Automatic"
+        },
+        {
+          "value": "fixed",
+          "displayName": "Using fixed thresholds"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "loadSpikes": {
+      "version": "0.0.1",
+      "versionInfo": "",
+      "displayName": "Service load spikes",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect service load spikes",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "loadSpikePercent": {
+          "displayName": "Alert if the observed load is more than this percentage of the expected value",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 100
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 200
+        },
+        "minutesAbnormalState": {
+          "displayName": "Time span",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "metadata": {
+            "suffix": "minute(s)"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        }
+      },
+      "type": "object"
+    },
+    "loadDrops": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Service load drops",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect service load drops",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "loadDropPercent": {
+          "displayName": "Alert if the observed load is less than this percentage of the expected value",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 0
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 50
+        },
+        "minutesAbnormalState": {
+          "displayName": "Time span",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "metadata": {
+            "suffix": "minute(s)"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        }
+      },
+      "type": "object"
+    },
+    "overAlertingProtection": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "overAlertingProtection",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "requestsPerMinute": {
+          "displayName": "Only alert if there are at least",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 0
+            }
+          ],
+          "metadata": {
+            "suffix": "requests per minute"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "minutesAbnormalState": {
+          "displayName": "Only alert if the abnormal state remains for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minute(s)"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        }
+      },
+      "type": "object"
+    },
+    "failureRateFixed": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "failureRateFixed",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "Threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "overAlertingProtection": {
+          "displayName": "Avoid over-alerting",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/overAlertingProtection"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "sensitivity": {
+          "displayName": "Sensitivity",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/sensitivity"
+          },
+          "nullable": false,
+          "metadata": {
+            "sortItems": "disabled"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "low"
+        }
+      },
+      "type": "object"
+    },
+    "failureRateAuto": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "failureRateAuto",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "absoluteIncrease": {
+          "displayName": "Absolute threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "relativeIncrease": {
+          "displayName": "Relative threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 50
+        },
+        "overAlertingProtection": {
+          "displayName": "Avoid over-alerting",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/overAlertingProtection"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "failureRate": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Failure rate",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect increases in failure rate",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "detectionMode": {
+          "displayName": "Detection mode for increases in failure rate",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/detectionMode"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "auto"
+        },
+        "autoDetection": {
+          "displayName": "",
+          "description": "Alert if the percentage of failing service calls increases by **both** the absolute and relative thresholds:",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/failureRateAuto"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "AND",
+            "preconditions": [
+              {
+                "type": "EQUALS",
+                "property": "enabled",
+                "expectedValue": true
+              },
+              {
+                "type": "EQUALS",
+                "property": "detectionMode",
+                "expectedValue": "auto"
+              }
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "fixedDetection": {
+          "displayName": "",
+          "description": "Alert if a given failure rate is exceeded during any 5-minute-period",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/failureRateFixed"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "AND",
+            "preconditions": [
+              {
+                "type": "EQUALS",
+                "property": "enabled",
+                "expectedValue": true
+              },
+              {
+                "type": "EQUALS",
+                "property": "detectionMode",
+                "expectedValue": "fixed"
+              }
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "responseTimeAutoAll": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "responseTimeAutoAll",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "degradationMilliseconds": {
+          "displayName": "Absolute threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100000,
+              "minimum": 0
+            }
+          ],
+          "metadata": {
+            "suffix": "ms"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 100
+        },
+        "degradationPercent": {
+          "displayName": "Relative threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 50
+        }
+      },
+      "type": "object"
+    },
+    "responseTimeAutoSlowest": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "responseTimeAutoSlowest",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "slowestDegradationMilliseconds": {
+          "displayName": "Absolute threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100000,
+              "minimum": 0
+            }
+          ],
+          "metadata": {
+            "suffix": "ms"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1000
+        },
+        "slowestDegradationPercent": {
+          "displayName": "Relative threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 100
+        }
+      },
+      "type": "object"
+    },
+    "responseTimeAuto": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "responseTimeAuto",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "responseTimeAll": {
+          "displayName": "All requests",
+          "description": "Alert if the median response time of all requests degrades beyond **both** the absolute and relative thresholds:",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/responseTimeAutoAll"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "responseTimeSlowest": {
+          "displayName": "Slowest 10%",
+          "description": "Alert if the response time of the slowest 10% of requests degrades beyond **both** the absolute and relative thresholds:",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/responseTimeAutoSlowest"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "overAlertingProtection": {
+          "displayName": "Avoid over-alerting",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/overAlertingProtection"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "responseTimeFixedAll": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "responseTimeFixedAll",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "degradationMilliseconds": {
+          "displayName": "Alert if the response time degrades beyond this many ms within an observation period of 5 minutes",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100000,
+              "minimum": 0
+            }
+          ],
+          "metadata": {
+            "suffix": "ms"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 100
+        }
+      },
+      "type": "object"
+    },
+    "responseTimeFixedSlowest": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "responseTimeFixedSlowest",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "slowestDegradationMilliseconds": {
+          "displayName": "Alert if the response time of the slowest 10% degrades beyond this many ms within an observation period of 5 minutes",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100000,
+              "minimum": 0
+            }
+          ],
+          "metadata": {
+            "suffix": "ms"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1000
+        }
+      },
+      "type": "object"
+    },
+    "responseTimeFixed": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "responseTimeFixed",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "responseTimeAll": {
+          "displayName": "All requests",
+          "description": "Alert if the median response time of all requests degrades beyond this threshold:",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/responseTimeFixedAll"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "responseTimeSlowest": {
+          "displayName": "Slowest 10%",
+          "description": "Alert if the response time of the slowest 10% of requests degrades beyond this threshold:",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/responseTimeFixedSlowest"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "overAlertingProtection": {
+          "displayName": "Avoid over-alerting",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/overAlertingProtection"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "sensitivity": {
+          "displayName": "Sensitivity",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/sensitivity"
+          },
+          "nullable": false,
+          "metadata": {
+            "sortItems": "disabled"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "low"
+        }
+      },
+      "type": "object"
+    },
+    "responseTime": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Response time",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect response time degradations",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "detectionMode": {
+          "displayName": "Detection mode for response time degradations",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/detectionMode"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "auto"
+        },
+        "autoDetection": {
+          "displayName": "",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/responseTimeAuto"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "AND",
+            "preconditions": [
+              {
+                "type": "EQUALS",
+                "property": "enabled",
+                "expectedValue": true
+              },
+              {
+                "type": "EQUALS",
+                "property": "detectionMode",
+                "expectedValue": "auto"
+              }
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        },
+        "fixedDetection": {
+          "displayName": "",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/responseTimeFixed"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "AND",
+            "preconditions": [
+              {
+                "type": "EQUALS",
+                "property": "enabled",
+                "expectedValue": true
+              },
+              {
+                "type": "EQUALS",
+                "property": "detectionMode",
+                "expectedValue": "fixed"
+              }
+            ]
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "responseTime": {
+      "displayName": "Response time",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/responseTime"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "failureRate": {
+      "displayName": "Failure rate",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/failureRate"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "loadDrops": {
+      "displayName": "Service load drops",
+      "description": "Alert if the observed load is lower than the expected load by a specified margin for a specified amount of time:",
+      "documentation": "Dynatrace learns your typical service load over an observation period of one week.",
+      "type": {
+        "$ref": "#/types/loadDrops"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "loadSpikes": {
+      "displayName": "Service load spikes",
+      "description": "Alert if the observed load exceeds the expected load by a specified margin for a specified amount of time:",
+      "documentation": "Dynatrace learns your typical service load over an observation period of one week.",
+      "type": {
+        "$ref": "#/types/loadSpikes"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

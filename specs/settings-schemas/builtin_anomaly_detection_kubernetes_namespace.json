@@ -1,1 +1,688 @@
-{"dynatrace":"1","schemaId":"builtin:anomaly-detection.kubernetes.namespace","displayName":"Kubernetes namespace anomaly detection","description":"Dynatrace automatically detects a wide range of common Kubernetes-related issues. Use these settings to configure alerts relevant to your Kubernetes namespace. Changing thresholds resets the observation period. Additional information can be found on our [documentation page](https://dt-url.net/wq02okj#namespace).","documentation":"","schemaGroups":["group:anomaly-detection.kubernetes","group:anomaly-detection"],"version":"1.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["CLOUD_APPLICATION_NAMESPACE","KUBERNETES_CLUSTER","environment"],"enums":{},"types":{"CpuRequestsQuotaSaturationConfig":{"version":"0","versionInfo":"","displayName":"CpuRequestsQuotaSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"amount of requested namespace CPU is above","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of quota for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"CpuRequestsQuotaSaturation":{"version":"0","versionInfo":"","displayName":"CpuRequestsQuotaSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect namespace CPU-request quota saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/CpuRequestsQuotaSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"MemoryRequestsQuotaSaturationConfig":{"version":"0","versionInfo":"","displayName":"MemoryRequestsQuotaSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"amount of requested namespace memory is above","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of quota for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"MemoryRequestsQuotaSaturation":{"version":"0","versionInfo":"","displayName":"MemoryRequestsQuotaSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect namespace memory-request quota saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/MemoryRequestsQuotaSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"CpuLimitsQuotaSaturationConfig":{"version":"0","versionInfo":"","displayName":"CpuLimitsQuotaSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"amount of utilized namespace CPU is above","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of quota for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"CpuLimitsQuotaSaturation":{"version":"0","versionInfo":"","displayName":"CpuLimitsQuotaSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect namespace CPU-limit quota saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/CpuLimitsQuotaSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"MemoryLimitsQuotaSaturationConfig":{"version":"0","versionInfo":"","displayName":"MemoryLimitsQuotaSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"amount of utilized namespace memory is above","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of quota for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"MemoryLimitsQuotaSaturation":{"version":"0","versionInfo":"","displayName":"MemoryLimitsQuotaSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect namespace memory-limit quota saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/MemoryLimitsQuotaSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"PodsQuotaSaturationConfig":{"version":"0","versionInfo":"","displayName":"PodsQuotaSaturationConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"number of utilized namespace pods is above","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":90},"samplePeriodInMinutes":{"displayName":"of quota for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":10},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":15}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"PodsQuotaSaturation":{"version":"0","versionInfo":"","displayName":"PodsQuotaSaturation","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect namespace pod quota saturation","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/PodsQuotaSaturationConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"cpuRequestsQuotaSaturation":{"displayName":"","description":"","documentation":"Alerts if almost no CPU-request quota left in namespace","type":{"$ref":"#/types/CpuRequestsQuotaSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"cpuLimitsQuotaSaturation":{"displayName":"","description":"","documentation":"Alerts if almost no CPU-limit quota left in namespace","type":{"$ref":"#/types/CpuLimitsQuotaSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"memoryRequestsQuotaSaturation":{"displayName":"","description":"","documentation":"Alerts if almost no memory-request quota left in namespace","type":{"$ref":"#/types/MemoryRequestsQuotaSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"memoryLimitsQuotaSaturation":{"displayName":"","description":"","documentation":"Alerts if almost no memory-limit quota left in namespace","type":{"$ref":"#/types/MemoryLimitsQuotaSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"podsQuotaSaturation":{"displayName":"","description":"","documentation":"Alerts if almost no pod quota left in namespace","type":{"$ref":"#/types/PodsQuotaSaturation"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"metadata":{"minActiveGateVersion":"1.253"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:anomaly-detection.kubernetes.namespace",
+  "displayName": "Kubernetes namespace anomaly detection",
+  "description": "Dynatrace automatically detects a wide range of common Kubernetes-related issues. Use these settings to configure alerts relevant to your Kubernetes namespace. Changing thresholds resets the observation period. Additional information can be found on our [documentation page](https://dt-url.net/wq02okj#namespace).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:anomaly-detection.kubernetes",
+    "group:anomaly-detection"
+  ],
+  "version": "1.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "CLOUD_APPLICATION_NAMESPACE",
+    "KUBERNETES_CLUSTER",
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "CpuRequestsQuotaSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "CpuRequestsQuotaSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "amount of requested namespace CPU is above",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of quota for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "CpuRequestsQuotaSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "CpuRequestsQuotaSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect namespace CPU-request quota saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/CpuRequestsQuotaSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "MemoryRequestsQuotaSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MemoryRequestsQuotaSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "amount of requested namespace memory is above",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of quota for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "MemoryRequestsQuotaSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MemoryRequestsQuotaSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect namespace memory-request quota saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/MemoryRequestsQuotaSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "CpuLimitsQuotaSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "CpuLimitsQuotaSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "amount of utilized namespace CPU is above",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of quota for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "CpuLimitsQuotaSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "CpuLimitsQuotaSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect namespace CPU-limit quota saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/CpuLimitsQuotaSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "MemoryLimitsQuotaSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MemoryLimitsQuotaSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "amount of utilized namespace memory is above",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of quota for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "MemoryLimitsQuotaSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "MemoryLimitsQuotaSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect namespace memory-limit quota saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/MemoryLimitsQuotaSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "PodsQuotaSaturationConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "PodsQuotaSaturationConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "number of utilized namespace pods is above",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 90
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "of quota for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 15
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "PodsQuotaSaturation": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "PodsQuotaSaturation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect namespace pod quota saturation",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/PodsQuotaSaturationConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "cpuRequestsQuotaSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts if almost no CPU-request quota left in namespace",
+      "type": {
+        "$ref": "#/types/CpuRequestsQuotaSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "cpuLimitsQuotaSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts if almost no CPU-limit quota left in namespace",
+      "type": {
+        "$ref": "#/types/CpuLimitsQuotaSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "memoryRequestsQuotaSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts if almost no memory-request quota left in namespace",
+      "type": {
+        "$ref": "#/types/MemoryRequestsQuotaSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "memoryLimitsQuotaSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts if almost no memory-limit quota left in namespace",
+      "type": {
+        "$ref": "#/types/MemoryLimitsQuotaSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "podsQuotaSaturation": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts if almost no pod quota left in namespace",
+      "type": {
+        "$ref": "#/types/PodsQuotaSaturation"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "metadata": {
+    "minActiveGateVersion": "1.253"
+  }
+}

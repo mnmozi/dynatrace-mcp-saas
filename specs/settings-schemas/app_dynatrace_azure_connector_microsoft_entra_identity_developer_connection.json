@@ -1,1 +1,134 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.azure.connector:microsoft-entra-identity-developer-connection","displayName":"Microsoft Entra ID","description":"Authentication settings for Microsoft Entra ID.","documentation":"","version":"0.2.2","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"name":{"displayName":"Connection name","description":"The name of the Microsoft Entra ID connection","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":"Microsoft Entra ID Connection"},"description":{"displayName":"Description","description":"","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":250,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"},"directoryId":{"displayName":"Directory (tenant) ID","description":"Directory (tenant) ID of Microsoft Entra ID","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","maxLength":200,"minLength":1},{"type":"PATTERN","customMessage":"Not a valid Directory (tenant) ID","pattern":"^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"applicationId":{"displayName":"Application (client) ID","description":"Application (client) ID of your app registered in Microsoft Azure App registrations","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","maxLength":200,"minLength":1},{"type":"PATTERN","customMessage":"Not a valid Application (client) ID","pattern":"^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clientSecret":{"displayName":"Client secret","description":"Client secret of your app registered in Microsoft Azure App registrations","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"SECRET_RESUBMISSION","customMessage":"For security reasons please re-enter the token to update the setting.","checkAllProperties":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"A connection with the same name already exists. Please provide a different name.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"appName":"Microsoft Entra ID"},"ownerBasedAccessControl":true}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.azure.connector:microsoft-entra-identity-developer-connection",
+  "displayName": "Microsoft Entra ID",
+  "description": "Authentication settings for Microsoft Entra ID.",
+  "documentation": "",
+  "version": "0.2.2",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Connection name",
+      "description": "The name of the Microsoft Entra ID connection",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "Microsoft Entra ID Connection"
+    },
+    "description": {
+      "displayName": "Description",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 250,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "directoryId": {
+      "displayName": "Directory (tenant) ID",
+      "description": "Directory (tenant) ID of Microsoft Entra ID",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid Directory (tenant) ID",
+          "pattern": "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "applicationId": {
+      "displayName": "Application (client) ID",
+      "description": "Application (client) ID of your app registered in Microsoft Azure App registrations",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid Application (client) ID",
+          "pattern": "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "clientSecret": {
+      "displayName": "Client secret",
+      "description": "Client secret of your app registered in Microsoft Azure App registrations",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "SECRET_RESUBMISSION",
+      "customMessage": "For security reasons please re-enter the token to update the setting.",
+      "checkAllProperties": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "A connection with the same name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "appName": "Microsoft Entra ID"
+  },
+  "ownerBasedAccessControl": true
+}

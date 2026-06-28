@@ -1,1 +1,66 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.custom-rum-javascript-version","displayName":"Custom RUM JavaScript version","description":"Define a custom RUM JavaScript version to be added to the pool of versions for web applications to choose from.","documentation":"","schemaGroups":["group:web-and-mobile-monitoring.web-applications","group:web-and-mobile-monitoring"],"version":"1.1.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"customJavaScriptVersion":{"displayName":"Choose custom version","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"customJavaScriptVersionDatasource","filterProperties":[],"resetValue":"NEVER","validate":true,"fullContext":false,"useApiSearch":false},"nullable":true,"constraints":[{"type":"PATTERN","customMessage":"Invalid JavaScript version","pattern":"^[0-9]{17}$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Please choose a valid JavaScript version","customValidatorId":"customVersionNotNullValidator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"RUM JavaScript version not supported for the New Real User Monitoring Experience","customValidatorId":"rumCustomJavaScriptVersionRumOnGrailValidator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.custom-rum-javascript-version",
+  "displayName": "Custom RUM JavaScript version",
+  "description": "Define a custom RUM JavaScript version to be added to the pool of versions for web applications to choose from.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:web-and-mobile-monitoring.web-applications",
+    "group:web-and-mobile-monitoring"
+  ],
+  "version": "1.1.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "customJavaScriptVersion": {
+      "displayName": "Choose custom version",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "subType": "datasource",
+      "datasource": {
+        "identifier": "customJavaScriptVersionDatasource",
+        "filterProperties": [],
+        "resetValue": "NEVER",
+        "validate": true,
+        "fullContext": false,
+        "useApiSearch": false
+      },
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "PATTERN",
+          "customMessage": "Invalid JavaScript version",
+          "pattern": "^[0-9]{17}$"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "Please choose a valid JavaScript version",
+      "customValidatorId": "customVersionNotNullValidator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "RUM JavaScript version not supported for the New Real User Monitoring Experience",
+      "customValidatorId": "rumCustomJavaScriptVersionRumOnGrailValidator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

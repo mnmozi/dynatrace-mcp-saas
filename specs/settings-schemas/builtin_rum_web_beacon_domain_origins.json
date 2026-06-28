@@ -1,1 +1,87 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.beacon-domain-origins","displayName":"Beacon origins for CORS","description":"Specify the RUM beacon origins that must be accepted by OneAgent and ActiveGate. Dynatrace tries to match each of your defined rules against the `Origin` request header of your incoming beacons and copies the origin from the matched header to the `Access-Control-Allow-Origin` response header. Beacon origins that aren't part of the defined rule set will be rejected and the beacon response will return HTTP 403. If your rule set is empty, beacon origins will be accepted from any domain. Note that when you enable the first rule, applications that don't match the rule no longer collect RUM data.","documentation":"","schemaGroups":["group:web-and-mobile-monitoring.web-applications","group:web-and-mobile-monitoring"],"version":"1.0.4","multiObject":true,"ordered":false,"maxObjects":20,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"OriginMatcherType":{"displayName":"OriginMatcherType","description":"","documentation":"","items":[{"value":"EQUALS","displayName":"equals"},{"value":"STARTS_WITH","displayName":"starts with"},{"value":"ENDS_WITH","displayName":"ends with"},{"value":"CONTAINS","displayName":"contains"}],"type":"enum"}},"types":{},"properties":{"matcher":{"displayName":"Matcher","description":"","documentation":"","type":{"$ref":"#/enums/OriginMatcherType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"CONTAINS"},"pattern":{"displayName":"Pattern","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":253,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"schemaConstraints":[{"type":"UNIQUE","uniqueProperties":["matcher","pattern"],"flattenCollections":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.beacon-domain-origins",
+  "displayName": "Beacon origins for CORS",
+  "description": "Specify the RUM beacon origins that must be accepted by OneAgent and ActiveGate. Dynatrace tries to match each of your defined rules against the `Origin` request header of your incoming beacons and copies the origin from the matched header to the `Access-Control-Allow-Origin` response header. Beacon origins that aren't part of the defined rule set will be rejected and the beacon response will return HTTP 403. If your rule set is empty, beacon origins will be accepted from any domain. Note that when you enable the first rule, applications that don't match the rule no longer collect RUM data.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:web-and-mobile-monitoring.web-applications",
+    "group:web-and-mobile-monitoring"
+  ],
+  "version": "1.0.4",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 20,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "OriginMatcherType": {
+      "displayName": "OriginMatcherType",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "EQUALS",
+          "displayName": "equals"
+        },
+        {
+          "value": "STARTS_WITH",
+          "displayName": "starts with"
+        },
+        {
+          "value": "ENDS_WITH",
+          "displayName": "ends with"
+        },
+        {
+          "value": "CONTAINS",
+          "displayName": "contains"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "matcher": {
+      "displayName": "Matcher",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/OriginMatcherType"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "CONTAINS"
+    },
+    "pattern": {
+      "displayName": "Pattern",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 253,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "uniqueProperties": [
+        "matcher",
+        "pattern"
+      ],
+      "flattenCollections": false
+    }
+  ]
+}

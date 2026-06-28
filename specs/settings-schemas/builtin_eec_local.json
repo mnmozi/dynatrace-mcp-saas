@@ -1,1 +1,103 @@
-{"dynatrace":"1","schemaId":"builtin:eec.local","displayName":"Extension Execution Controller","description":"Extension Execution Controller configuration for OneAgent deployment","documentation":"","schemaGroups":["group:preferences"],"version":"0.0.5","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","HOST_GROUP","environment"],"enums":{"performanceProfile":{"displayName":"Performance profile","description":"","documentation":"","items":[{"value":"DEFAULT","displayName":"Default","description":"Conservative settings"},{"value":"HIGH","displayName":"High limits","description":"High performance profile"}],"type":"enum"}},"types":{},"properties":{"enabled":{"displayName":"Enable Extension Execution Controller","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ingestActive":{"displayName":"Enable local HTTP Metric, Log and Event Ingest API","description":"","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"statsdActive":{"displayName":"Enable Dynatrace StatsD","description":"This is applicable only to non-containerized Linux and Windows hosts","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"performanceProfile":{"displayName":"Performance profile","description":"Select performance profile for Extension Execution Controller [Documentation](https://www.dynatrace.com/support/help/shortlink/extensions-concepts#resource-consumption \"More about performance profiles\")","documentation":"","type":{"$ref":"#/enums/performanceProfile"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"metadata":{"sortItems":"disabled","minAgentVersion":"1.243"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:eec.local",
+  "displayName": "Extension Execution Controller",
+  "description": "Extension Execution Controller configuration for OneAgent deployment",
+  "documentation": "",
+  "schemaGroups": [
+    "group:preferences"
+  ],
+  "version": "0.0.5",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "performanceProfile": {
+      "displayName": "Performance profile",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "DEFAULT",
+          "displayName": "Default",
+          "description": "Conservative settings"
+        },
+        {
+          "value": "HIGH",
+          "displayName": "High limits",
+          "description": "High performance profile"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enable Extension Execution Controller",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ingestActive": {
+      "displayName": "Enable local HTTP Metric, Log and Event Ingest API",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "statsdActive": {
+      "displayName": "Enable Dynatrace StatsD",
+      "description": "This is applicable only to non-containerized Linux and Windows hosts",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "performanceProfile": {
+      "displayName": "Performance profile",
+      "description": "Select performance profile for Extension Execution Controller [Documentation](https://www.dynatrace.com/support/help/shortlink/extensions-concepts#resource-consumption \"More about performance profiles\")",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/performanceProfile"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "metadata": {
+        "sortItems": "disabled",
+        "minAgentVersion": "1.243"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "DEFAULT"
+    }
+  }
+}

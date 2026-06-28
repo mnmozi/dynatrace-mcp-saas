@@ -1,1 +1,199 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.key-performance-metric-xhr-actions","displayName":"Apdex configuration for XHR actions","description":"Select a key performance metric and set the Tolerating and Frustrated performance thresholds to [refine the Apdex calculations](https://dt-url.net/apdex-thresholds) for this application.","documentation":"","schemaGroups":["group:rum-kpm-settings","group:rum-settings"],"version":"1.1.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION_METHOD","APPLICATION"],"enums":{"XhrKpm":{"displayName":"XhrKpm","description":"","documentation":"","items":[{"value":"USER_ACTION_DURATION","displayName":"User action duration"},{"value":"VISUALLY_COMPLETE","displayName":"Visually complete"},{"value":"RESPONSE_END","displayName":"Response end"},{"value":"RESPONSE_START","displayName":"Time to first byte"}],"type":"enum"}},"types":{"FallbackThresholds":{"version":"0","versionInfo":"","displayName":"FallbackThresholds","summaryPattern":"","description":"","documentation":"","properties":{"toleratedFallbackThresholdSeconds":{"displayName":"Tolerating threshold [sec]","description":"If **User action duration** is below this value, the action is assigned to the Satisfied performance zone.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":60.0,"minimum":0.1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3.0},"frustratingFallbackThresholdSeconds":{"displayName":"Frustrated threshold [sec]","description":"If **User action duration** is above this value, the action is assigned to the Frustrated performance zone.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":240.0,"minimum":0.1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":12.0}},"constraints":[{"type":"GREATER_THAN_OR_EQUAL","properties":["frustratingFallbackThresholdSeconds","toleratedFallbackThresholdSeconds"]}],"type":"object"},"Thresholds":{"version":"0","versionInfo":"","displayName":"Thresholds","summaryPattern":"","description":"","documentation":"","properties":{"toleratedThresholdSeconds":{"displayName":"Tolerating threshold","description":"If the key performance metric is below this value, the action is assigned to the Satisfied performance zone.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":60.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3.0},"frustratingThresholdSeconds":{"displayName":"Frustrated threshold","description":"If the key performance metric is above this value, the action is assigned to the Frustrated performance zone.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":240.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":12.0}},"constraints":[{"type":"GREATER_THAN_OR_EQUAL","properties":["frustratingThresholdSeconds","toleratedThresholdSeconds"]}],"type":"object"}},"properties":{"kpm":{"displayName":"Key performance metric","description":"","documentation":"","type":{"$ref":"#/enums/XhrKpm"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"VISUALLY_COMPLETE"},"thresholds":{"displayName":"Key performance metric thresholds","description":"Set the Tolerating and Frustrated performance thresholds for this action type.","documentation":"","type":{"$ref":"#/types/Thresholds"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"fallbackThresholds":{"displayName":"Fallback metric thresholds","description":"If the selected key performance metric is not detected, the **User action duration** metric is used instead.","documentation":"","type":{"$ref":"#/types/FallbackThresholds"},"nullable":false,"precondition":{"type":"NOT","precondition":{"type":"EQUALS","property":"kpm","expectedValue":"USER_ACTION_DURATION"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.key-performance-metric-xhr-actions",
+  "displayName": "Apdex configuration for XHR actions",
+  "description": "Select a key performance metric and set the Tolerating and Frustrated performance thresholds to [refine the Apdex calculations](https://dt-url.net/apdex-thresholds) for this application.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-kpm-settings",
+    "group:rum-settings"
+  ],
+  "version": "1.1.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION_METHOD",
+    "APPLICATION"
+  ],
+  "enums": {
+    "XhrKpm": {
+      "displayName": "XhrKpm",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "USER_ACTION_DURATION",
+          "displayName": "User action duration"
+        },
+        {
+          "value": "VISUALLY_COMPLETE",
+          "displayName": "Visually complete"
+        },
+        {
+          "value": "RESPONSE_END",
+          "displayName": "Response end"
+        },
+        {
+          "value": "RESPONSE_START",
+          "displayName": "Time to first byte"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "FallbackThresholds": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "FallbackThresholds",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "toleratedFallbackThresholdSeconds": {
+          "displayName": "Tolerating threshold [sec]",
+          "description": "If **User action duration** is below this value, the action is assigned to the Satisfied performance zone.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 0.1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "frustratingFallbackThresholdSeconds": {
+          "displayName": "Frustrated threshold [sec]",
+          "description": "If **User action duration** is above this value, the action is assigned to the Frustrated performance zone.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 240,
+              "minimum": 0.1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 12
+        }
+      },
+      "constraints": [
+        {
+          "type": "GREATER_THAN_OR_EQUAL",
+          "properties": [
+            "frustratingFallbackThresholdSeconds",
+            "toleratedFallbackThresholdSeconds"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "Thresholds": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Thresholds",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "toleratedThresholdSeconds": {
+          "displayName": "Tolerating threshold",
+          "description": "If the key performance metric is below this value, the action is assigned to the Satisfied performance zone.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "frustratingThresholdSeconds": {
+          "displayName": "Frustrated threshold",
+          "description": "If the key performance metric is above this value, the action is assigned to the Frustrated performance zone.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 240,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 12
+        }
+      },
+      "constraints": [
+        {
+          "type": "GREATER_THAN_OR_EQUAL",
+          "properties": [
+            "frustratingThresholdSeconds",
+            "toleratedThresholdSeconds"
+          ]
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "kpm": {
+      "displayName": "Key performance metric",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/XhrKpm"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "VISUALLY_COMPLETE"
+    },
+    "thresholds": {
+      "displayName": "Key performance metric thresholds",
+      "description": "Set the Tolerating and Frustrated performance thresholds for this action type.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/Thresholds"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "fallbackThresholds": {
+      "displayName": "Fallback metric thresholds",
+      "description": "If the selected key performance metric is not detected, the **User action duration** metric is used instead.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/FallbackThresholds"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "NOT",
+        "precondition": {
+          "type": "EQUALS",
+          "property": "kpm",
+          "expectedValue": "USER_ACTION_DURATION"
+        }
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

@@ -1,1 +1,61 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.browser.name","displayName":"Monitor name","description":"Define the display name of your browser monitor","documentation":"","schemaGroups":["group:synthetic.browser"],"version":"1.0.3","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["SYNTHETIC_TEST"],"enums":{},"types":{},"properties":{"name":{"displayName":"Monitor name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"description":{"displayName":"Monitor description","description":"","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":1000,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"synthetic-monitor-count-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.browser.name",
+  "displayName": "Monitor name",
+  "description": "Define the display name of your browser monitor",
+  "documentation": "",
+  "schemaGroups": [
+    "group:synthetic.browser"
+  ],
+  "version": "1.0.3",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "SYNTHETIC_TEST"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Monitor name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "description": {
+      "displayName": "Monitor description",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "synthetic-monitor-count-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

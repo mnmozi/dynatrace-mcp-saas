@@ -1,1 +1,89 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.key-performance-metric-custom-actions","displayName":"Apdex configuration for custom actions","description":"Set the Tolerating and Frustrated performance thresholds to [refine the Apdex calculations](https://dt-url.net/apdex-thresholds) for this application.\n\nThe key performance metric for custom actions is always **User action duration**.","documentation":"","schemaGroups":["group:rum-kpm-settings","group:rum-settings"],"version":"1.1.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION_METHOD","APPLICATION"],"enums":{},"types":{"Thresholds":{"version":"0","versionInfo":"","displayName":"Thresholds","summaryPattern":"","description":"","documentation":"","properties":{"toleratedThresholdSeconds":{"displayName":"Tolerating threshold [sec]","description":"If **User action duration** is below this value, the action is assigned to the Satisfied performance zone.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":60.0,"minimum":0.1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3.0},"frustratingThresholdSeconds":{"displayName":"Frustrated threshold [sec]","description":"If **User action duration** is above this value, the action is assigned to the Frustrated performance zone.","documentation":"","type":"float","nullable":false,"constraints":[{"type":"RANGE","maximum":240.0,"minimum":0.1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":12.0}},"constraints":[{"type":"GREATER_THAN_OR_EQUAL","properties":["frustratingThresholdSeconds","toleratedThresholdSeconds"]}],"type":"object"}},"properties":{"thresholds":{"displayName":"User action duration thresholds","description":"","documentation":"","type":{"$ref":"#/types/Thresholds"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.key-performance-metric-custom-actions",
+  "displayName": "Apdex configuration for custom actions",
+  "description": "Set the Tolerating and Frustrated performance thresholds to [refine the Apdex calculations](https://dt-url.net/apdex-thresholds) for this application.\n\nThe key performance metric for custom actions is always **User action duration**.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-kpm-settings",
+    "group:rum-settings"
+  ],
+  "version": "1.1.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION_METHOD",
+    "APPLICATION"
+  ],
+  "enums": {},
+  "types": {
+    "Thresholds": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Thresholds",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "toleratedThresholdSeconds": {
+          "displayName": "Tolerating threshold [sec]",
+          "description": "If **User action duration** is below this value, the action is assigned to the Satisfied performance zone.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 0.1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "frustratingThresholdSeconds": {
+          "displayName": "Frustrated threshold [sec]",
+          "description": "If **User action duration** is above this value, the action is assigned to the Frustrated performance zone.",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 240,
+              "minimum": 0.1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 12
+        }
+      },
+      "constraints": [
+        {
+          "type": "GREATER_THAN_OR_EQUAL",
+          "properties": [
+            "frustratingThresholdSeconds",
+            "toleratedThresholdSeconds"
+          ]
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "thresholds": {
+      "displayName": "User action duration thresholds",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/Thresholds"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

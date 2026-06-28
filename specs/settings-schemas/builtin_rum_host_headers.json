@@ -1,1 +1,52 @@
-{"dynatrace":"1","schemaId":"builtin:rum.host-headers","displayName":"Identify host names","description":"Specify HTTP request headers OneAgent can use to identify your application's host names, whenever Dynatrace can’t automatically identify them. Provided headers are processed sequentially, with the ones at the top of the list taking priority. Learn why it's important and when we can't identify them. \n\nDynatrace uses host names as part of the URL that is matched against your application detection rules, which control when OneAgent injects the RUM JavaScript tag. For instance, when your web server operates behind a firewall using a different host name your application detection rule won’t match and OneAgent won’t inject RUM into your application.","documentation":"","schemaGroups":["group:web-and-mobile-monitoring.web-applications","group:web-and-mobile-monitoring"],"version":"1.0.3","multiObject":true,"ordered":true,"maxObjects":10,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"headerName":{"displayName":"HTTP header format","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":50,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"schemaConstraints":[{"type":"UNIQUE","uniqueProperties":["headerName"],"flattenCollections":false}],"metadata":{"addItemButton":"Add HTTP header"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.host-headers",
+  "displayName": "Identify host names",
+  "description": "Specify HTTP request headers OneAgent can use to identify your application's host names, whenever Dynatrace can’t automatically identify them. Provided headers are processed sequentially, with the ones at the top of the list taking priority. Learn why it's important and when we can't identify them. \n\nDynatrace uses host names as part of the URL that is matched against your application detection rules, which control when OneAgent injects the RUM JavaScript tag. For instance, when your web server operates behind a firewall using a different host name your application detection rule won’t match and OneAgent won’t inject RUM into your application.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:web-and-mobile-monitoring.web-applications",
+    "group:web-and-mobile-monitoring"
+  ],
+  "version": "1.0.3",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 10,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "headerName": {
+      "displayName": "HTTP header format",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 50,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "uniqueProperties": [
+        "headerName"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "addItemButton": "Add HTTP header"
+  }
+}

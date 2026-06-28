@@ -1,0 +1,107 @@
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:attribute-masking",
+  "displayName": "Attribute data masking",
+  "description": "Configure the visibility of stored attribute values to to meet your privacy requirements. Users with **View sensitive request data** permissions will always see the values. For further details on Dynatrace's privacy settings, visit the [Data privacy and security](https://dt-url.net/bo210srx) documentation.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:service-monitoring",
+    "group:service-monitoring.spans"
+  ],
+  "version": "0.0.4",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 1000,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "MaskingType": {
+      "displayName": "MaskingType",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "MASK_ONLY_CONFIDENTIAL_DATA",
+          "displayName": "Mask only confidential data"
+        },
+        {
+          "value": "MASK_ENTIRE_VALUE",
+          "displayName": "Mask entire value"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "If this is true, the masking of the specified key is applied.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "key": {
+      "displayName": "Attribute key",
+      "description": "Key of the attribute",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY"
+        },
+        {
+          "type": "TRIMMED"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "prohibit-always-captured-attributes-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "masking": {
+      "displayName": "Masking",
+      "description": "Set a masking strategy to conceal its value from users",
+      "documentation": "Choose **Mask entire value** to hide the whole value of this attribute from everyone who does not have 'View sensitive request data' permission. These attributes can't be used to define other configurations.  \nChoose **Mask only confidential data** to apply automatic masking strategies to your data. These strategies include, for example, credit card numbers, IBAN, IPs, email-addresses, etc. It may not be possible to recognize all sensitive data so please always make sure to verify that sensitive data is actually masked. If sensitive data is not recognized, please use **Mask entire value** instead. Users with 'View sensitive request data' permission will be able to see the entire value, others only the non-sensitive parts. These attributes can't be used to define other configurations.",
+      "type": {
+        "$ref": "#/enums/MaskingType"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "MASK_ENTIRE_VALUE"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "attribute-masking-list-confidential-consistency-validator",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "Attribute keys must be unique.",
+      "uniqueProperties": [
+        "key"
+      ],
+      "flattenCollections": false
+    }
+  ]
+}

@@ -1,1 +1,31 @@
-{"dynatrace":"1","schemaId":"builtin:alerting.connectivity-alerts","displayName":"Connectivity alerts","description":"Enable or disable TCP connectivity problems for processes of this process group.","documentation":"","version":"1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["PROCESS_GROUP"],"enums":{},"types":{},"properties":{"connectivityAlerts":{"displayName":"TCP connectivity problems","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}},"metadata":{"minAgentVersion":"1.193"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:alerting.connectivity-alerts",
+  "displayName": "Connectivity alerts",
+  "description": "Enable or disable TCP connectivity problems for processes of this process group.",
+  "documentation": "",
+  "version": "1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "PROCESS_GROUP"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "connectivityAlerts": {
+      "displayName": "TCP connectivity problems",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  },
+  "metadata": {
+    "minAgentVersion": "1.193"
+  }
+}

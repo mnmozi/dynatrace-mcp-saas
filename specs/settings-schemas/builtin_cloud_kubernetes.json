@@ -1,1 +1,282 @@
-{"dynatrace":"1","schemaId":"builtin:cloud.kubernetes","displayName":"Connection settings","description":"Connect to Kubernetes or OpenShift for enhanced observability. Learn more about Kubernetes or OpenShift in our documentation.","documentation":"","version":"3.1.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["KUBERNETES_CLUSTER"],"enums":{},"types":{"FlagDefaultTrue":{"version":"0","versionInfo":"","displayName":"FlagDefaultTrue","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Monitoring Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}},"type":"object"}},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"label":{"displayName":"Name","description":"Renaming the cluster breaks configurations that are based on its name (e.g., management zones, and alerting).","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK","customMessage":"Name must not be empty."},{"type":"TRIMMED","customMessage":"No leading or trailing whitespaces are allowed."},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clusterIdEnabled":{"displayName":"Connect containerized ActiveGate to local Kubernetes API endpoint","description":"For more information on local Kubernetes API monitoring, see the [documentation](https://dt-url.net/6q62uep).","documentation":"Enable this toggle when the ActiveGate is deployed to the same Kubernetes clusters you want to monitor. Disable it if you want to monitor a different Kubernetes cluster.","type":"boolean","nullable":false,"metadata":{"minActiveGateVersion":"1.229"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"clusterId":{"displayName":"Kubernetes cluster ID","description":"","documentation":"Unique ID of the cluster, the containerized ActiveGate is deployed to. Defaults to the UUID of the kube-system namespace. The cluster ID of containerized ActiveGates is shown on the Deployment status screen.","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK","customMessage":"Please enter the external Kubernetes cluster ID."},{"type":"PATTERN","customMessage":"This ID is invalid, it must match this pattern: \"[a-zA-Z0-9]+([-][a-zA-Z0-9]+)*\" (example: '550e8400-e29b-11d4-a716-446655440000')","pattern":"^[a-zA-Z0-9]+?([\\-][a-zA-Z0-9]+?)*$"},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This Kubernetes cluster ID is already being used.","customValidatorId":"kubernetes-unique-cluster-id","skipAsyncValidation":false},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"clusterIdEnabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"endpointUrl":{"displayName":"Kubernetes API URL Target","description":"Get the API URL for [Kubernetes](https://dt-url.net/kz23snj \"Kubernetes\") or [OpenShift](https://dt-url.net/d623xgw \"OpenShift\").","documentation":"","type":"text","subType":"url","nullable":false,"constraints":[{"type":"NOT_BLANK","customMessage":"Kubernetes API URL Target must not be empty."},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Kubernetes API URL Target is not allowed. Ensure the URL is correctly formatted and does not target private or internal network addresses.","customValidatorId":"kubernetes-valid-endpoint-url","skipAsyncValidation":false},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"clusterIdEnabled","expectedValue":false},"maxObjects":1,"modificationPolicy":"DEFAULT","forceSecretResubmission":true,"default":""},"authToken":{"displayName":"Kubernetes Bearer Token","description":"Create a bearer token for [Kubernetes](https://dt-url.net/og43szq \"Kubernetes\") or [OpenShift](https://dt-url.net/7l43xtp \"OpenShift\").","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"NOT_BLANK","customMessage":"Please enter the bearer token of your endpoint."},{"type":"LENGTH","maxLength":2000,"minLength":1}],"precondition":{"type":"EQUALS","property":"clusterIdEnabled","expectedValue":false},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"activeGateGroup":{"displayName":"ActiveGate Group","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"activeGateGroup","filterProperties":[],"resetValue":"NEVER","validate":false,"fullContext":false,"useApiSearch":false},"nullable":true,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"EQUALS","property":"clusterIdEnabled","expectedValue":false},"metadata":{"useCombobox":"enabled"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"certificateCheckEnabled":{"displayName":"Require valid certificates for communication with API server (recommended)","description":"","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"clusterIdEnabled","expectedValue":false},"metadata":{"minActiveGateVersion":"1.187"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"hostnameVerificationEnabled":{"displayName":"Verify hostname in certificate against Kubernetes API URL","description":"","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"clusterIdEnabled","expectedValue":false},"metadata":{"minActiveGateVersion":"1.209"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}},"constraints":[{"type":"SECRET_RESUBMISSION","customMessage":"For security reasons, please re-enter all secret token(s) before saving the settings.","checkAllProperties":false}],"schemaConstraints":[{"type":"MULTI_SCOPE_CUSTOM_VALIDATOR_REF","customMessage":"Maximum number of monitored Kubernetes clusters reached. Please disable monitoring of some clusters.","customValidatorId":"kubernetes-max-scopes","skipAsyncValidation":false}],"metadata":{"reloadUiContext":"enabled"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:cloud.kubernetes",
+  "displayName": "Connection settings",
+  "description": "Connect to Kubernetes or OpenShift for enhanced observability. Learn more about Kubernetes or OpenShift in our documentation.",
+  "documentation": "",
+  "version": "3.1.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "KUBERNETES_CLUSTER"
+  ],
+  "enums": {},
+  "types": {
+    "FlagDefaultTrue": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "FlagDefaultTrue",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Monitoring Enabled",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "label": {
+      "displayName": "Name",
+      "description": "Renaming the cluster breaks configurations that are based on its name (e.g., management zones, and alerting).",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK",
+          "customMessage": "Name must not be empty."
+        },
+        {
+          "type": "TRIMMED",
+          "customMessage": "No leading or trailing whitespaces are allowed."
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "clusterIdEnabled": {
+      "displayName": "Connect containerized ActiveGate to local Kubernetes API endpoint",
+      "description": "For more information on local Kubernetes API monitoring, see the [documentation](https://dt-url.net/6q62uep).",
+      "documentation": "Enable this toggle when the ActiveGate is deployed to the same Kubernetes clusters you want to monitor. Disable it if you want to monitor a different Kubernetes cluster.",
+      "type": "boolean",
+      "nullable": false,
+      "metadata": {
+        "minActiveGateVersion": "1.229"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "clusterId": {
+      "displayName": "Kubernetes cluster ID",
+      "description": "",
+      "documentation": "Unique ID of the cluster, the containerized ActiveGate is deployed to. Defaults to the UUID of the kube-system namespace. The cluster ID of containerized ActiveGates is shown on the Deployment status screen.",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK",
+          "customMessage": "Please enter the external Kubernetes cluster ID."
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "This ID is invalid, it must match this pattern: \"[a-zA-Z0-9]+([-][a-zA-Z0-9]+)*\" (example: '550e8400-e29b-11d4-a716-446655440000')",
+          "pattern": "^[a-zA-Z0-9]+?([\\-][a-zA-Z0-9]+?)*$"
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "This Kubernetes cluster ID is already being used.",
+          "customValidatorId": "kubernetes-unique-cluster-id",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "clusterIdEnabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "endpointUrl": {
+      "displayName": "Kubernetes API URL Target",
+      "description": "Get the API URL for [Kubernetes](https://dt-url.net/kz23snj \"Kubernetes\") or [OpenShift](https://dt-url.net/d623xgw \"OpenShift\").",
+      "documentation": "",
+      "type": "text",
+      "subType": "url",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK",
+          "customMessage": "Kubernetes API URL Target must not be empty."
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "Kubernetes API URL Target is not allowed. Ensure the URL is correctly formatted and does not target private or internal network addresses.",
+          "customValidatorId": "kubernetes-valid-endpoint-url",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid URI",
+          "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid http(s) URL",
+          "pattern": "^https?://.*$"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "clusterIdEnabled",
+        "expectedValue": false
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "forceSecretResubmission": true,
+      "default": ""
+    },
+    "authToken": {
+      "displayName": "Kubernetes Bearer Token",
+      "description": "Create a bearer token for [Kubernetes](https://dt-url.net/og43szq \"Kubernetes\") or [OpenShift](https://dt-url.net/7l43xtp \"OpenShift\").",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK",
+          "customMessage": "Please enter the bearer token of your endpoint."
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 2000,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "clusterIdEnabled",
+        "expectedValue": false
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "activeGateGroup": {
+      "displayName": "ActiveGate Group",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "subType": "datasource",
+      "datasource": {
+        "identifier": "activeGateGroup",
+        "filterProperties": [],
+        "resetValue": "NEVER",
+        "validate": false,
+        "fullContext": false,
+        "useApiSearch": false
+      },
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "clusterIdEnabled",
+        "expectedValue": false
+      },
+      "metadata": {
+        "useCombobox": "enabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "certificateCheckEnabled": {
+      "displayName": "Require valid certificates for communication with API server (recommended)",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "clusterIdEnabled",
+        "expectedValue": false
+      },
+      "metadata": {
+        "minActiveGateVersion": "1.187"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "hostnameVerificationEnabled": {
+      "displayName": "Verify hostname in certificate against Kubernetes API URL",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "clusterIdEnabled",
+        "expectedValue": false
+      },
+      "metadata": {
+        "minActiveGateVersion": "1.209"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  },
+  "constraints": [
+    {
+      "type": "SECRET_RESUBMISSION",
+      "customMessage": "For security reasons, please re-enter all secret token(s) before saving the settings.",
+      "checkAllProperties": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "MULTI_SCOPE_CUSTOM_VALIDATOR_REF",
+      "customMessage": "Maximum number of monitored Kubernetes clusters reached. Please disable monitoring of some clusters.",
+      "customValidatorId": "kubernetes-max-scopes",
+      "skipAsyncValidation": false
+    }
+  ],
+  "metadata": {
+    "reloadUiContext": "enabled"
+  }
+}

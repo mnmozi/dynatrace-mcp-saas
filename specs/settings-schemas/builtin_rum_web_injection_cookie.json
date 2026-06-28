@@ -1,1 +1,90 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.injection.cookie","displayName":"Cookie","description":"Dynatrace RUM uses cookies to correlate user actions with backend performance metrics. You can change the cookie settings here. Learn more about RUM cookies in our [documentation](https://dt-url.net/wmq1pti).","documentation":"","schemaGroups":["group:rum-injection"],"version":"1.0.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION"],"enums":{"SameSiteCookieAttribute":{"displayName":"SameSite cookie attribute","description":"Define if your cookie should be restricted to a first-party or same-site context. Learn more about [SameSite cookies and available values](https://dt-url.net/yds1p8u).","documentation":"","items":[{"value":"NOTSET","displayName":"Not set"},{"value":"NONE","displayName":"None"},{"value":"LAX","displayName":"Lax"},{"value":"STRICT","displayName":"Strict"}],"type":"enum"}},"types":{},"properties":{"useSecureCookieAttribute":{"displayName":"Use the Secure cookie attribute for cookies set by Dynatrace","description":"","documentation":"If your application is only accessible via SSL, you can add the Secure attribute to all cookies set by Dynatrace. This setting prevents the display of warnings from PCI-compliance security scanners. Be aware that with this setting enabled Dynatrace correlation of user actions with server-side web requests is only possible over SSL connections.","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"sameSiteCookieAttribute":{"displayName":"SameSite cookie attribute","description":"Define if your cookie should be restricted to a first-party or same-site context. Learn more about [SameSite cookies and available values](https://dt-url.net/yds1p8u).","documentation":"","type":{"$ref":"#/enums/SameSiteCookieAttribute"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"NOTSET"},"cookiePlacementDomain":{"displayName":"Domain to be used for cookie placement","description":"Specify an alternative domain for cookies set by Dynatrace. Keep in mind that your browser may not allow placement of cookies on certain domains (for example, top-level domains). Before typing a domain name here, confirm that the domain will accept cookies from your browser. For details, see the list of [forbidden top-level domains](https://dt-url.net/9n6b0pfz).","documentation":"","type":"text","nullable":true,"constraints":[{"type":"LENGTH","maxLength":150,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Please enter a valid domain.","customValidatorId":"rumInjectionCookieDomainValidator","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.injection.cookie",
+  "displayName": "Cookie",
+  "description": "Dynatrace RUM uses cookies to correlate user actions with backend performance metrics. You can change the cookie settings here. Learn more about RUM cookies in our [documentation](https://dt-url.net/wmq1pti).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-injection"
+  ],
+  "version": "1.0.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION"
+  ],
+  "enums": {
+    "SameSiteCookieAttribute": {
+      "displayName": "SameSite cookie attribute",
+      "description": "Define if your cookie should be restricted to a first-party or same-site context. Learn more about [SameSite cookies and available values](https://dt-url.net/yds1p8u).",
+      "documentation": "",
+      "items": [
+        {
+          "value": "NOTSET",
+          "displayName": "Not set"
+        },
+        {
+          "value": "NONE",
+          "displayName": "None"
+        },
+        {
+          "value": "LAX",
+          "displayName": "Lax"
+        },
+        {
+          "value": "STRICT",
+          "displayName": "Strict"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "useSecureCookieAttribute": {
+      "displayName": "Use the Secure cookie attribute for cookies set by Dynatrace",
+      "description": "",
+      "documentation": "If your application is only accessible via SSL, you can add the Secure attribute to all cookies set by Dynatrace. This setting prevents the display of warnings from PCI-compliance security scanners. Be aware that with this setting enabled Dynatrace correlation of user actions with server-side web requests is only possible over SSL connections.",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "sameSiteCookieAttribute": {
+      "displayName": "SameSite cookie attribute",
+      "description": "Define if your cookie should be restricted to a first-party or same-site context. Learn more about [SameSite cookies and available values](https://dt-url.net/yds1p8u).",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/SameSiteCookieAttribute"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "NOTSET"
+    },
+    "cookiePlacementDomain": {
+      "displayName": "Domain to be used for cookie placement",
+      "description": "Specify an alternative domain for cookies set by Dynatrace. Keep in mind that your browser may not allow placement of cookies on certain domains (for example, top-level domains). Before typing a domain name here, confirm that the domain will accept cookies from your browser. For details, see the list of [forbidden top-level domains](https://dt-url.net/9n6b0pfz).",
+      "documentation": "",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 150,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "Please enter a valid domain.",
+          "customValidatorId": "rumInjectionCookieDomainValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

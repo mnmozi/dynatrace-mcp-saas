@@ -1,1 +1,59 @@
-{"dynatrace":"1","schemaId":"builtin:monitored-technologies.php","displayName":"PHP","description":"By default, PHP monitoring is enabled on all hosts. If you want to disable PHP monitoring on selected hosts, disable it on these hosts via their settings.\n\nIf you want to enable PHP monitoring only on selected hosts, disable global PHP monitoring and enable it on these hosts via their settings.","documentation":"","version":"0.0.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","environment"],"enums":{},"types":{},"properties":{"enabled":{"displayName":"Monitor PHP","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"enabledFastCGI":{"displayName":"Enable FastCGI PHP processes launched by Apache HTTP Server","description":"Requires PHP monitoring enabled and from Dynatrace OneAgent version 1.191 it's ignored and permanently enabled","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"enablePhpCliServerInstrumentation":{"displayName":"Monitor PHP CLI web server","description":"Requires enabled PHP monitoring and Dynatrace OneAgent version 1.261 or later","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:monitored-technologies.php",
+  "displayName": "PHP",
+  "description": "By default, PHP monitoring is enabled on all hosts. If you want to disable PHP monitoring on selected hosts, disable it on these hosts via their settings.\n\nIf you want to enable PHP monitoring only on selected hosts, disable global PHP monitoring and enable it on these hosts via their settings.",
+  "documentation": "",
+  "version": "0.0.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Monitor PHP",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "enabledFastCGI": {
+      "displayName": "Enable FastCGI PHP processes launched by Apache HTTP Server",
+      "description": "Requires PHP monitoring enabled and from Dynatrace OneAgent version 1.191 it's ignored and permanently enabled",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "enablePhpCliServerInstrumentation": {
+      "displayName": "Monitor PHP CLI web server",
+      "description": "Requires enabled PHP monitoring and Dynatrace OneAgent version 1.261 or later",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  }
+}

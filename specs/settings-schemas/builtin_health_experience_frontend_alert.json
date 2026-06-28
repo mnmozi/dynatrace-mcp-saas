@@ -1,1 +1,574 @@
-{"dynatrace":"1","schemaId":"builtin:health-experience.frontend-alert","displayName":"Frontend health alerts","description":"Settings schema for frontend health alerts","documentation":"","version":"1.3.4","multiObject":true,"ordered":false,"maxObjects":300,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"AnalyzerType":{"displayName":"AnalyzerType","description":"","documentation":"","items":[{"value":"AutoAdaptive","displayName":"Auto Adaptive"},{"value":"SeasonalBaseline","displayName":"Seasonal Baseline"},{"value":"StaticThreshold","displayName":"Static Threshold"}],"type":"enum"},"AlertKey":{"displayName":"AlertKey","description":"","documentation":"","items":[{"value":"errorRateRequestErrors","displayName":"Error Rate - Request Errors"},{"value":"errorRateExceptions","displayName":"Error Rate - Exceptions"},{"value":"webVitalsLcp","displayName":"Web Vitals - LCP"},{"value":"webVitalsInp","displayName":"Web Vitals - INP"},{"value":"webVitalsCls","displayName":"Web Vitals - CLS"},{"value":"mobileCrash","displayName":"Mobile Crash"},{"value":"mobileAppStartDuration","displayName":"Mobile App Start Duration"},{"value":"userActionDuration","displayName":"User Action Duration"},{"value":"trafficDrop","displayName":"Traffic Drop"},{"value":"trafficSpike","displayName":"Traffic Spike"},{"value":"mobileAnr","displayName":"Mobile ANR"}],"type":"enum"}},"types":{"AutoAdaptiveAnalyzerInput":{"version":"0","versionInfo":"","displayName":"AutoAdaptiveAnalyzerInput","summaryPattern":"","description":"","documentation":"","properties":{"numberOfSignalFluctuations":{"displayName":"Number of signal fluctuations","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":10,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":1},"violatingSamples":{"displayName":"Violating samples","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"slidingWindow":{"displayName":"Sliding window","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5},"dealertingSamples":{"displayName":"Dealerting samples","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","properties":["dealertingSamples","slidingWindow"]},{"type":"LESS_THAN_OR_EQUAL","properties":["violatingSamples","slidingWindow"]}],"type":"object"},"SeasonalBaselineAnalyzerInput":{"version":"0","versionInfo":"","displayName":"SeasonalBaselineAnalyzerInput","summaryPattern":"","description":"","documentation":"","properties":{"tolerance":{"displayName":"Tolerance","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":10,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":4},"violatingSamples":{"displayName":"Violating samples","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"slidingWindow":{"displayName":"Sliding window","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5},"dealertingSamples":{"displayName":"Dealerting samples","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","properties":["dealertingSamples","slidingWindow"]},{"type":"LESS_THAN_OR_EQUAL","properties":["violatingSamples","slidingWindow"]}],"type":"object"},"StaticThresholdAnalyzerInput":{"version":"0","versionInfo":"","displayName":"StaticThresholdAnalyzerInput","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"Threshold","description":"","documentation":"","type":"float","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":0.0},"violatingSamples":{"displayName":"Violating samples","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"slidingWindow":{"displayName":"Sliding window","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5},"dealertingSamples":{"displayName":"Dealerting samples","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","properties":["dealertingSamples","slidingWindow"]},{"type":"LESS_THAN_OR_EQUAL","properties":["violatingSamples","slidingWindow"]}],"type":"object"}},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"title":{"displayName":"Name of the frontend alert","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":2}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"frontends":{"displayName":"Array of Frontends to configure the alert for","description":"","documentation":"","type":"list","items":{"displayName":"Frontend","description":"","documentation":"","type":"text","constraints":[{"type":"PATTERN","pattern":"^(MOBILE_)?APPLICATION\\-[A-F0-9]{16}$"},{"type":"LENGTH","maxLength":500,"minLength":1}]},"nullable":false,"minObjects":1,"maxObjects":100,"modificationPolicy":"DEFAULT"},"alertKey":{"displayName":"Alert Key","description":"","documentation":"","type":{"$ref":"#/enums/AlertKey"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"errorRateRequestErrors"},"analyzerType":{"displayName":"Analyzer Type","description":"","documentation":"","type":{"$ref":"#/enums/AnalyzerType"},"nullable":true,"maxObjects":1,"modificationPolicy":"DEFAULT"},"autoAdaptiveAnalyzerInput":{"displayName":"autoAdaptiveAnalyzerInput","description":"","documentation":"","type":{"$ref":"#/types/AutoAdaptiveAnalyzerInput"},"nullable":false,"precondition":{"type":"OR","preconditions":[{"type":"EQUALS","property":"analyzerType","expectedValue":"AutoAdaptive"},{"type":"AND","preconditions":[{"type":"NULL","property":"analyzerType"},{"type":"IN","property":"alertKey","expectedValues":["webVitalsLcp","webVitalsInp","webVitalsCls","mobileAppStartDuration","userActionDuration"]}]}]},"maxObjects":1,"modificationPolicy":"DEFAULT"},"seasonalBaselineAnalyzerInput":{"displayName":"seasonalBaselineAnalyzerInput","description":"","documentation":"","type":{"$ref":"#/types/SeasonalBaselineAnalyzerInput"},"nullable":false,"precondition":{"type":"OR","preconditions":[{"type":"EQUALS","property":"analyzerType","expectedValue":"SeasonalBaseline"},{"type":"AND","preconditions":[{"type":"NULL","property":"analyzerType"},{"type":"IN","property":"alertKey","expectedValues":["errorRateRequestErrors","errorRateExceptions","mobileCrash","mobileAnr","trafficDrop","trafficSpike"]}]}]},"maxObjects":1,"modificationPolicy":"DEFAULT"},"staticThresholdAnalyzerInput":{"displayName":"staticThresholdAnalyzerInput","description":"","documentation":"","type":{"$ref":"#/types/StaticThresholdAnalyzerInput"},"nullable":false,"precondition":{"type":"EQUALS","property":"analyzerType","expectedValue":"StaticThreshold"},"maxObjects":1,"modificationPolicy":"DEFAULT"},"actor":{"displayName":"Actor","description":"The user for which the alert gets executed","documentation":"","type":"text","nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"actor-validator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"actor-permission-validator","skipAsyncValidation":false},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:health-experience.frontend-alert",
+  "displayName": "Frontend health alerts",
+  "description": "Settings schema for frontend health alerts",
+  "documentation": "",
+  "version": "1.3.4",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 300,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "AnalyzerType": {
+      "displayName": "AnalyzerType",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "AutoAdaptive",
+          "displayName": "Auto Adaptive"
+        },
+        {
+          "value": "SeasonalBaseline",
+          "displayName": "Seasonal Baseline"
+        },
+        {
+          "value": "StaticThreshold",
+          "displayName": "Static Threshold"
+        }
+      ],
+      "type": "enum"
+    },
+    "AlertKey": {
+      "displayName": "AlertKey",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "errorRateRequestErrors",
+          "displayName": "Error Rate - Request Errors"
+        },
+        {
+          "value": "errorRateExceptions",
+          "displayName": "Error Rate - Exceptions"
+        },
+        {
+          "value": "webVitalsLcp",
+          "displayName": "Web Vitals - LCP"
+        },
+        {
+          "value": "webVitalsInp",
+          "displayName": "Web Vitals - INP"
+        },
+        {
+          "value": "webVitalsCls",
+          "displayName": "Web Vitals - CLS"
+        },
+        {
+          "value": "mobileCrash",
+          "displayName": "Mobile Crash"
+        },
+        {
+          "value": "mobileAppStartDuration",
+          "displayName": "Mobile App Start Duration"
+        },
+        {
+          "value": "userActionDuration",
+          "displayName": "User Action Duration"
+        },
+        {
+          "value": "trafficDrop",
+          "displayName": "Traffic Drop"
+        },
+        {
+          "value": "trafficSpike",
+          "displayName": "Traffic Spike"
+        },
+        {
+          "value": "mobileAnr",
+          "displayName": "Mobile ANR"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "AutoAdaptiveAnalyzerInput": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "AutoAdaptiveAnalyzerInput",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "numberOfSignalFluctuations": {
+          "displayName": "Number of signal fluctuations",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 10,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        },
+        "violatingSamples": {
+          "displayName": "Violating samples",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "slidingWindow": {
+          "displayName": "Sliding window",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        },
+        "dealertingSamples": {
+          "displayName": "Dealerting samples",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "properties": [
+            "dealertingSamples",
+            "slidingWindow"
+          ]
+        },
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "properties": [
+            "violatingSamples",
+            "slidingWindow"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "SeasonalBaselineAnalyzerInput": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "SeasonalBaselineAnalyzerInput",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "tolerance": {
+          "displayName": "Tolerance",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 10,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 4
+        },
+        "violatingSamples": {
+          "displayName": "Violating samples",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "slidingWindow": {
+          "displayName": "Sliding window",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        },
+        "dealertingSamples": {
+          "displayName": "Dealerting samples",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "properties": [
+            "dealertingSamples",
+            "slidingWindow"
+          ]
+        },
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "properties": [
+            "violatingSamples",
+            "slidingWindow"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "StaticThresholdAnalyzerInput": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "StaticThresholdAnalyzerInput",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "Threshold",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "violatingSamples": {
+          "displayName": "Violating samples",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "slidingWindow": {
+          "displayName": "Sliding window",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        },
+        "dealertingSamples": {
+          "displayName": "Dealerting samples",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "properties": [
+            "dealertingSamples",
+            "slidingWindow"
+          ]
+        },
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "properties": [
+            "violatingSamples",
+            "slidingWindow"
+          ]
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "title": {
+      "displayName": "Name of the frontend alert",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 2
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "frontends": {
+      "displayName": "Array of Frontends to configure the alert for",
+      "description": "",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "Frontend",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "PATTERN",
+            "pattern": "^(MOBILE_)?APPLICATION\\-[A-F0-9]{16}$"
+          },
+          {
+            "type": "LENGTH",
+            "maxLength": 500,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "minObjects": 1,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    },
+    "alertKey": {
+      "displayName": "Alert Key",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/AlertKey"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "errorRateRequestErrors"
+    },
+    "analyzerType": {
+      "displayName": "Analyzer Type",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/AnalyzerType"
+      },
+      "nullable": true,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "autoAdaptiveAnalyzerInput": {
+      "displayName": "autoAdaptiveAnalyzerInput",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/AutoAdaptiveAnalyzerInput"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "OR",
+        "preconditions": [
+          {
+            "type": "EQUALS",
+            "property": "analyzerType",
+            "expectedValue": "AutoAdaptive"
+          },
+          {
+            "type": "AND",
+            "preconditions": [
+              {
+                "type": "NULL",
+                "property": "analyzerType"
+              },
+              {
+                "type": "IN",
+                "property": "alertKey",
+                "expectedValues": [
+                  "webVitalsLcp",
+                  "webVitalsInp",
+                  "webVitalsCls",
+                  "mobileAppStartDuration",
+                  "userActionDuration"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "seasonalBaselineAnalyzerInput": {
+      "displayName": "seasonalBaselineAnalyzerInput",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/SeasonalBaselineAnalyzerInput"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "OR",
+        "preconditions": [
+          {
+            "type": "EQUALS",
+            "property": "analyzerType",
+            "expectedValue": "SeasonalBaseline"
+          },
+          {
+            "type": "AND",
+            "preconditions": [
+              {
+                "type": "NULL",
+                "property": "analyzerType"
+              },
+              {
+                "type": "IN",
+                "property": "alertKey",
+                "expectedValues": [
+                  "errorRateRequestErrors",
+                  "errorRateExceptions",
+                  "mobileCrash",
+                  "mobileAnr",
+                  "trafficDrop",
+                  "trafficSpike"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "staticThresholdAnalyzerInput": {
+      "displayName": "staticThresholdAnalyzerInput",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/StaticThresholdAnalyzerInput"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "analyzerType",
+        "expectedValue": "StaticThreshold"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "actor": {
+      "displayName": "Actor",
+      "description": "The user for which the alert gets executed",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "actor-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "actor-permission-validator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  }
+}

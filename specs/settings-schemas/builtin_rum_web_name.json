@@ -1,1 +1,41 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.name","displayName":"Application name","description":"This name is used to refer to your application throughout this Dynatrace environment. Be sure that your application has a meaningful name.","documentation":"","schemaGroups":["group:rum-settings"],"version":"1.0.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION"],"enums":{},"types":{},"properties":{"applicationName":{"displayName":"Update application name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":255,"minLength":1},{"type":"TRIMMED"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.name",
+  "displayName": "Application name",
+  "description": "This name is used to refer to your application throughout this Dynatrace environment. Be sure that your application has a meaningful name.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-settings"
+  ],
+  "version": "1.0.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "applicationName": {
+      "displayName": "Update application name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        {
+          "type": "TRIMMED"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  }
+}

@@ -1,1 +1,77 @@
-{"dynatrace":"1","schemaId":"builtin:logmonitoring.log-agent-feature-flags","displayName":"Log module feature flags","description":"Unlock new features of the Log module in Dynatrace.\n\nFor more details, check our [documentation](https://dt-url.net/ib22wr3).","documentation":"","schemaGroups":["group:log-monitoring","group:log-monitoring.ingest-and-processing"],"version":"1.0.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","KUBERNETES_CLUSTER","HOST_GROUP","environment"],"enums":{},"types":{},"properties":{"NewContainerLogDetector":{"displayName":"Collect all container logs","description":"Enable OneAgent to collect all container logs in Kubernetes environments. \nThis setting enables:\n* Detection and collection of logs from short-lived containers and processes in Kubernetes.\n* Detection and collection of logs from any processes in containers in Kubernetes. Up until now only processes detected by OneAgent are covered with the Log module.\n* Log events decoration according to semantic dictionary.\n **Note:** The matcher \"Deployment name\" in the log sources configuration will be ignored and needs to be replaced with \"Workload name\", requires **Dynatrace Operator 1.4.2+**.\n\n For more details, check our [documentation](https://dt-url.net/jn02ey0).","documentation":"","type":"boolean","nullable":false,"metadata":{"minAgentVersion":"1.309"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"JournaldLogDetector":{"displayName":"Collect Journald logs","description":"Enable OneAgent to collect logs from Journald on Linux systems. \nThis setting enables:\n* Detection and to have logs ingested matching ingest rule is required.","documentation":"","type":"boolean","nullable":false,"metadata":{"minAgentVersion":"1.307"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"UserAndEventData":{"displayName":"Support for structured data in Windows Event Logs","description":"Enable OneAgent to collect data from Event Logs in the User Data and Event Data sections.","documentation":"","type":"boolean","nullable":false,"metadata":{"minAgentVersion":"1.317"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"PlainIISConfigurationDetector":{"displayName":"Add IIS Application Pool context to Logs","description":"Enable OneAgent to assign logs to the appropriate IIS application pools when an unambiguous IIS configuration is detected.","documentation":"","type":"boolean","nullable":false,"metadata":{"minAgentVersion":"1.331"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:logmonitoring.log-agent-feature-flags",
+  "displayName": "Log module feature flags",
+  "description": "Unlock new features of the Log module in Dynatrace.\n\nFor more details, check our [documentation](https://dt-url.net/ib22wr3).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:log-monitoring",
+    "group:log-monitoring.ingest-and-processing"
+  ],
+  "version": "1.0.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "KUBERNETES_CLUSTER",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "NewContainerLogDetector": {
+      "displayName": "Collect all container logs",
+      "description": "Enable OneAgent to collect all container logs in Kubernetes environments. \nThis setting enables:\n* Detection and collection of logs from short-lived containers and processes in Kubernetes.\n* Detection and collection of logs from any processes in containers in Kubernetes. Up until now only processes detected by OneAgent are covered with the Log module.\n* Log events decoration according to semantic dictionary.\n **Note:** The matcher \"Deployment name\" in the log sources configuration will be ignored and needs to be replaced with \"Workload name\", requires **Dynatrace Operator 1.4.2+**.\n\n For more details, check our [documentation](https://dt-url.net/jn02ey0).",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "metadata": {
+        "minAgentVersion": "1.309"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "JournaldLogDetector": {
+      "displayName": "Collect Journald logs",
+      "description": "Enable OneAgent to collect logs from Journald on Linux systems. \nThis setting enables:\n* Detection and to have logs ingested matching ingest rule is required.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "metadata": {
+        "minAgentVersion": "1.307"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "UserAndEventData": {
+      "displayName": "Support for structured data in Windows Event Logs",
+      "description": "Enable OneAgent to collect data from Event Logs in the User Data and Event Data sections.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "metadata": {
+        "minAgentVersion": "1.317"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "PlainIISConfigurationDetector": {
+      "displayName": "Add IIS Application Pool context to Logs",
+      "description": "Enable OneAgent to assign logs to the appropriate IIS application pools when an unambiguous IIS configuration is detected.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "metadata": {
+        "minAgentVersion": "1.331"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  }
+}

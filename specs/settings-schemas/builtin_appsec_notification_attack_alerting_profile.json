@@ -1,1 +1,102 @@
-{"dynatrace":"1","schemaId":"builtin:appsec.notification-attack-alerting-profile","displayName":"Attack alerting profiles","description":"Attack alerting profiles enable you to set up alert-filtering rules that are based on the state of detected attacks. This allows you to control which conditions result in security notifications and which don't.","documentation":"","schemaGroups":["group:alerting.appsec","group:alerting"],"version":"0.0.4","multiObject":true,"ordered":false,"maxObjects":10,"maturity":"EARLY_ADOPTER","allowedScopes":["environment"],"enums":{"AttackMitigation":{"displayName":"AttackMitigation","description":"","documentation":"","items":[{"value":"NONE_BLOCKING_DISABLED","displayName":"Exploited"},{"value":"BLOCKED_WITH_EXCEPTION","displayName":"Blocked"},{"value":"NONE_ALLOWLISTED","displayName":"Allowlisted"}],"type":"enum"}},"types":{},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"name":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"enabledAttackMitigations":{"displayName":"Attack State","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/enums/AttackMitigation"}},"nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"attack-candidate-number-of-attack-states-validator","skipAsyncValidation":false}],"metadata":{"addItemButton":"Add attack state"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"metadata":{"addItemButton":"Add alerting profile"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:appsec.notification-attack-alerting-profile",
+  "displayName": "Attack alerting profiles",
+  "description": "Attack alerting profiles enable you to set up alert-filtering rules that are based on the state of detected attacks. This allows you to control which conditions result in security notifications and which don't.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:alerting.appsec",
+    "group:alerting"
+  ],
+  "version": "0.0.4",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 10,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "AttackMitigation": {
+      "displayName": "AttackMitigation",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "NONE_BLOCKING_DISABLED",
+          "displayName": "Exploited"
+        },
+        {
+          "value": "BLOCKED_WITH_EXCEPTION",
+          "displayName": "Blocked"
+        },
+        {
+          "value": "NONE_ALLOWLISTED",
+          "displayName": "Allowlisted"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "name": {
+      "displayName": "Name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "enabledAttackMitigations": {
+      "displayName": "Attack State",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/enums/AttackMitigation"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "attack-candidate-number-of-attack-states-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add attack state"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "metadata": {
+    "addItemButton": "Add alerting profile"
+  }
+}

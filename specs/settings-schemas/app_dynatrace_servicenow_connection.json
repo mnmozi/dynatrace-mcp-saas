@@ -1,1 +1,239 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.servicenow:connection","displayName":"ServiceNow Connections","description":"Connections allow you to integrate into ServiceNow.","documentation":"","version":"2.1","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"Type":{"displayName":"Type","description":"","documentation":"","items":[{"value":"basic","displayName":"Basic Authentication"},{"value":"client-credentials","displayName":"OAuth Client Credentials"}],"type":"enum"}},"types":{},"properties":{"name":{"displayName":"Connection name","description":"A unique and clearly identifiable connection name to your ServiceNow instance.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","customMessage":"Name has to be between 1 and 100 characters long","maxLength":100,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"url":{"displayName":"ServiceNow instance URL","description":"URL of the ServiceNow instance.","documentation":"","type":"text","subType":"url","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"NO_WHITESPACE","customMessage":"URL cannot contain whitespaces"},{"type":"PATTERN","customMessage":"The ServiceNow URL must be secure (https://) and must not contain a trailing slash.","pattern":"^https://.*[^/]$"},{"type":"PATTERN","customMessage":"Not a valid URI","pattern":"^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"},{"type":"PATTERN","customMessage":"Not a valid http(s) URL","pattern":"^https?://.*$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","forceSecretResubmission":true,"default":""},"type":{"displayName":"Type","description":"Type of authentication method that should be used.","documentation":"","type":{"$ref":"#/enums/Type"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"basic"},"user":{"displayName":"User","description":"Username or Email address.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"IN","property":"type","expectedValues":["basic"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"password":{"displayName":"Password","description":"Password of the ServiceNow user.","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"IN","property":"type","expectedValues":["basic"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clientId":{"displayName":"Client ID","description":"Client ID of the ServiceNow OAuth server","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"IN","property":"type","expectedValues":["client-credentials"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clientSecret":{"displayName":"Client Secret","description":"Client secret of the ServiceNow OAuth server","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"NOT_BLANK"},{"type":"LENGTH","maxLength":500,"minLength":1}],"precondition":{"type":"IN","property":"type","expectedValues":["client-credentials"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"SECRET_RESUBMISSION","customMessage":"The ServiceNow URL has changed. Please re-enter your credentials.","checkAllProperties":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"A connection with the same name already exists. Please provide a different name.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"appName":"ServiceNow"},"ownerBasedAccessControl":true}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.servicenow:connection",
+  "displayName": "ServiceNow Connections",
+  "description": "Connections allow you to integrate into ServiceNow.",
+  "documentation": "",
+  "version": "2.1",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "Type": {
+      "displayName": "Type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "basic",
+          "displayName": "Basic Authentication"
+        },
+        {
+          "value": "client-credentials",
+          "displayName": "OAuth Client Credentials"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Connection name",
+      "description": "A unique and clearly identifiable connection name to your ServiceNow instance.",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "customMessage": "Name has to be between 1 and 100 characters long",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "url": {
+      "displayName": "ServiceNow instance URL",
+      "description": "URL of the ServiceNow instance.",
+      "documentation": "",
+      "type": "text",
+      "subType": "url",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "NO_WHITESPACE",
+          "customMessage": "URL cannot contain whitespaces"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "The ServiceNow URL must be secure (https://) and must not contain a trailing slash.",
+          "pattern": "^https://.*[^/]$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid URI",
+          "pattern": "^(([^\\s:/?#]+?):){1}((//)?([^\\s/?#]+?)){1}([^\\s?#]*?)(\\?([^\\s#]*?))?(#([^\\s]*?))?$"
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Not a valid http(s) URL",
+          "pattern": "^https?://.*$"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "forceSecretResubmission": true,
+      "default": ""
+    },
+    "type": {
+      "displayName": "Type",
+      "description": "Type of authentication method that should be used.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/Type"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "basic"
+    },
+    "user": {
+      "displayName": "User",
+      "description": "Username or Email address.",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "type",
+        "expectedValues": [
+          "basic"
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "password": {
+      "displayName": "Password",
+      "description": "Password of the ServiceNow user.",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "type",
+        "expectedValues": [
+          "basic"
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "clientId": {
+      "displayName": "Client ID",
+      "description": "Client ID of the ServiceNow OAuth server",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "type",
+        "expectedValues": [
+          "client-credentials"
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "clientSecret": {
+      "displayName": "Client Secret",
+      "description": "Client secret of the ServiceNow OAuth server",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "type",
+        "expectedValues": [
+          "client-credentials"
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "SECRET_RESUBMISSION",
+      "customMessage": "The ServiceNow URL has changed. Please re-enter your credentials.",
+      "checkAllProperties": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "A connection with the same name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "appName": "ServiceNow"
+  },
+  "ownerBasedAccessControl": true
+}

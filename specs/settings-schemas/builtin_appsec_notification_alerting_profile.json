@@ -1,1 +1,160 @@
-{"dynatrace":"1","schemaId":"builtin:appsec.notification-alerting-profile","displayName":"Vulnerability alerting profiles","description":"Vulnerability alerting profiles enable you to set up alert-filtering rules that are based on the risk level of detected vulnerabilities. This allows you to control which conditions result in security notifications and which don't.","documentation":"","schemaGroups":["group:alerting.appsec","group:alerting"],"version":"0.1.4","multiObject":true,"ordered":false,"maxObjects":200,"maturity":"EARLY_ADOPTER","allowedScopes":["environment"],"enums":{"TriggerEvent":{"displayName":"TriggerEvent","description":"","documentation":"","items":[{"value":"SECURITY_PROBLEM_OPENED","displayName":"Vulnerability (re)opened"},{"value":"NEW_MANAGEMENT_ZONE_AFFECTED","displayName":"New management zone affected"}],"type":"enum"},"RiskLevel":{"displayName":"RiskLevel","description":"","documentation":"","items":[{"value":"CRITICAL","displayName":"Critical"},{"value":"HIGH","displayName":"High"},{"value":"MEDIUM","displayName":"Medium"},{"value":"LOW","displayName":"Low"}],"type":"enum"}},"types":{},"properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"name":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"enabledTriggerEvents":{"displayName":"Alert for the following events:","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/enums/TriggerEvent"}},"nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"security-problem-number-of-trigger-events-validator","skipAsyncValidation":false}],"metadata":{"featureFlag":"com.compuware.EnableCaspNotificationsTriggerEvent.feature","maturity":"EARLY_ADOPTER"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT","default":["SECURITY_PROBLEM_OPENED"]},"enabledRiskLevels":{"displayName":"Risk Levels","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/enums/RiskLevel"}},"nullable":false,"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"security-problem-number-of-risk-levels-validator","skipAsyncValidation":false}],"metadata":{"addItemButton":"Add risk level"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT","default":["LOW","MEDIUM","HIGH","CRITICAL"]}},"metadata":{"addItemButton":"Add alerting profile"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:appsec.notification-alerting-profile",
+  "displayName": "Vulnerability alerting profiles",
+  "description": "Vulnerability alerting profiles enable you to set up alert-filtering rules that are based on the risk level of detected vulnerabilities. This allows you to control which conditions result in security notifications and which don't.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:alerting.appsec",
+    "group:alerting"
+  ],
+  "version": "0.1.4",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 200,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "TriggerEvent": {
+      "displayName": "TriggerEvent",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "SECURITY_PROBLEM_OPENED",
+          "displayName": "Vulnerability (re)opened"
+        },
+        {
+          "value": "NEW_MANAGEMENT_ZONE_AFFECTED",
+          "displayName": "New management zone affected"
+        }
+      ],
+      "type": "enum"
+    },
+    "RiskLevel": {
+      "displayName": "RiskLevel",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "CRITICAL",
+          "displayName": "Critical"
+        },
+        {
+          "value": "HIGH",
+          "displayName": "High"
+        },
+        {
+          "value": "MEDIUM",
+          "displayName": "Medium"
+        },
+        {
+          "value": "LOW",
+          "displayName": "Low"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "name": {
+      "displayName": "Name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "enabledTriggerEvents": {
+      "displayName": "Alert for the following events:",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/enums/TriggerEvent"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "security-problem-number-of-trigger-events-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "metadata": {
+        "featureFlag": "com.compuware.EnableCaspNotificationsTriggerEvent.feature",
+        "maturity": "EARLY_ADOPTER"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT",
+      "default": [
+        "SECURITY_PROBLEM_OPENED"
+      ]
+    },
+    "enabledRiskLevels": {
+      "displayName": "Risk Levels",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/enums/RiskLevel"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "security-problem-number-of-risk-levels-validator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add risk level"
+      },
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT",
+      "default": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    }
+  },
+  "metadata": {
+    "addItemButton": "Add alerting profile"
+  }
+}

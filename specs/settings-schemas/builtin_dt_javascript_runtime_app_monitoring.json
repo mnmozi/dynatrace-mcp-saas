@@ -1,1 +1,256 @@
-{"dynatrace":"1","schemaId":"builtin:dt-javascript-runtime.app-monitoring","displayName":"App Monitoring","description":"Set up the monitoring parameters for your custom Dynatrace applications. These parameters will establish the default behavior for logging and tracing within this environment.\n\n[Discover more about App functions and their monitoring.](https://dt-url.net/dz23v17).","documentation":"","schemaGroups":["group:dt-javascript-runtime","group:preferences"],"version":"2.4.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"DefaultLogLevel":{"displayName":"Default log level","description":"Default log level for custom apps. OFF means that no logging will happen.","documentation":"","items":[{"value":"off","displayName":"OFF","description":"Turn off logging in custom apps."},{"value":"debug","displayName":"DEBUG","description":"Enable debug logs in custom apps."},{"value":"info","displayName":"INFO","description":"Enable info logs in custom apps."},{"value":"warn","displayName":"WARN","description":"Enable warning logs in custom apps."},{"value":"error","displayName":"ERROR","description":"Enable error logs in custom apps."}],"type":"enum"},"overrideDefaultLogLevel":{"displayName":"App specific log level","description":"","documentation":"","items":[{"value":"useDefault","displayName":"Use default","description":"Use default log level"},{"value":"off","displayName":"OFF","description":"Turn off logging in custom apps."},{"value":"debug","displayName":"DEBUG","description":"Enable debug logs in custom apps."},{"value":"info","displayName":"INFO","description":"Enable info logs in custom apps."},{"value":"warn","displayName":"WARN","description":"Enable warning logs in custom apps."},{"value":"error","displayName":"ERROR","description":"Enable error logs in custom apps."}],"type":"enum"},"defaultServerlessTraces":{"displayName":"App function traces","description":"","documentation":"","items":[{"value":"off","displayName":"OFF","description":"Turn off traces in custom apps."},{"value":"on","displayName":"ON","description":"Enable traces in custom apps."}],"type":"enum"},"overrideServerlessTraces":{"displayName":"App function traces","description":"","documentation":"","items":[{"value":"off","displayName":"OFF","description":"Turn off traces in custom apps."},{"value":"on","displayName":"ON","description":"Enable traces in custom apps."},{"value":"useDefault","displayName":"Use default","description":"Use default value for traces"}],"type":"enum"}},"types":{"appMonitoring":{"version":"0","versionInfo":"","displayName":"appMonitoring","summaryPattern":"{appId}","description":"","documentation":"","properties":{"appId":{"displayName":"App ID","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":50,"minLength":1},{"type":"NO_WHITESPACE"},{"type":"PATTERN","customMessage":"App ID must not start with 'dynatrace.'","pattern":"^(?!dynatrace\\.).*$"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"customLogLevel":{"displayName":"App specific log level","description":"","documentation":"","type":{"$ref":"#/enums/overrideDefaultLogLevel"},"nullable":false,"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"useDefault"},"customTraceLevel":{"displayName":"App specific function traces","description":"","documentation":"","type":{"$ref":"#/enums/overrideServerlessTraces"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"useDefault"}},"type":"object"}},"properties":{"defaultLogLevel":{"displayName":"Default log level","description":"","documentation":"","type":{"$ref":"#/enums/DefaultLogLevel"},"nullable":false,"metadata":{"sortItems":"disabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"info"},"defaultTraceLevel":{"displayName":"App function traces","description":"","documentation":"","type":{"$ref":"#/enums/defaultServerlessTraces"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"on"},"appMonitoring":{"displayName":"","description":"You can override the default monitoring setting for each app separately","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/appMonitoring"}},"nullable":false,"constraints":[{"type":"UNIQUE","customMessage":"App override already exists!","uniqueProperties":["appId"]}],"metadata":{"addItemButton":"Add override"},"minObjects":0,"maxObjects":50,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:dt-javascript-runtime.app-monitoring",
+  "displayName": "App Monitoring",
+  "description": "Set up the monitoring parameters for your custom Dynatrace applications. These parameters will establish the default behavior for logging and tracing within this environment.\n\n[Discover more about App functions and their monitoring.](https://dt-url.net/dz23v17).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:dt-javascript-runtime",
+    "group:preferences"
+  ],
+  "version": "2.4.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "DefaultLogLevel": {
+      "displayName": "Default log level",
+      "description": "Default log level for custom apps. OFF means that no logging will happen.",
+      "documentation": "",
+      "items": [
+        {
+          "value": "off",
+          "displayName": "OFF",
+          "description": "Turn off logging in custom apps."
+        },
+        {
+          "value": "debug",
+          "displayName": "DEBUG",
+          "description": "Enable debug logs in custom apps."
+        },
+        {
+          "value": "info",
+          "displayName": "INFO",
+          "description": "Enable info logs in custom apps."
+        },
+        {
+          "value": "warn",
+          "displayName": "WARN",
+          "description": "Enable warning logs in custom apps."
+        },
+        {
+          "value": "error",
+          "displayName": "ERROR",
+          "description": "Enable error logs in custom apps."
+        }
+      ],
+      "type": "enum"
+    },
+    "overrideDefaultLogLevel": {
+      "displayName": "App specific log level",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "useDefault",
+          "displayName": "Use default",
+          "description": "Use default log level"
+        },
+        {
+          "value": "off",
+          "displayName": "OFF",
+          "description": "Turn off logging in custom apps."
+        },
+        {
+          "value": "debug",
+          "displayName": "DEBUG",
+          "description": "Enable debug logs in custom apps."
+        },
+        {
+          "value": "info",
+          "displayName": "INFO",
+          "description": "Enable info logs in custom apps."
+        },
+        {
+          "value": "warn",
+          "displayName": "WARN",
+          "description": "Enable warning logs in custom apps."
+        },
+        {
+          "value": "error",
+          "displayName": "ERROR",
+          "description": "Enable error logs in custom apps."
+        }
+      ],
+      "type": "enum"
+    },
+    "defaultServerlessTraces": {
+      "displayName": "App function traces",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "off",
+          "displayName": "OFF",
+          "description": "Turn off traces in custom apps."
+        },
+        {
+          "value": "on",
+          "displayName": "ON",
+          "description": "Enable traces in custom apps."
+        }
+      ],
+      "type": "enum"
+    },
+    "overrideServerlessTraces": {
+      "displayName": "App function traces",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "off",
+          "displayName": "OFF",
+          "description": "Turn off traces in custom apps."
+        },
+        {
+          "value": "on",
+          "displayName": "ON",
+          "description": "Enable traces in custom apps."
+        },
+        {
+          "value": "useDefault",
+          "displayName": "Use default",
+          "description": "Use default value for traces"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "appMonitoring": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "appMonitoring",
+      "summaryPattern": "{appId}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "appId": {
+          "displayName": "App ID",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 50,
+              "minLength": 1
+            },
+            {
+              "type": "NO_WHITESPACE"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "App ID must not start with 'dynatrace.'",
+              "pattern": "^(?!dynatrace\\.).*$"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "customLogLevel": {
+          "displayName": "App specific log level",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/overrideDefaultLogLevel"
+          },
+          "nullable": false,
+          "metadata": {
+            "sortItems": "disabled"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "useDefault"
+        },
+        "customTraceLevel": {
+          "displayName": "App specific function traces",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/overrideServerlessTraces"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "useDefault"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "defaultLogLevel": {
+      "displayName": "Default log level",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/DefaultLogLevel"
+      },
+      "nullable": false,
+      "metadata": {
+        "sortItems": "disabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "info"
+    },
+    "defaultTraceLevel": {
+      "displayName": "App function traces",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/defaultServerlessTraces"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "on"
+    },
+    "appMonitoring": {
+      "displayName": "",
+      "description": "You can override the default monitoring setting for each app separately",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/appMonitoring"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "App override already exists!",
+          "uniqueProperties": [
+            "appId"
+          ]
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add override"
+      },
+      "minObjects": 0,
+      "maxObjects": 50,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

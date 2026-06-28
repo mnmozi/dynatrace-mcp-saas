@@ -1,1 +1,114 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.github.connector:connection","displayName":"GitHub Connections","description":"GitHub authentication details","documentation":"","version":"1.0.1","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{"Type":{"displayName":"Type","description":"","documentation":"","items":[{"value":"pat","displayName":"Personal Access Token (PAT for GitHub and GitHub Enterprise Cloud)"}],"type":"enum"}},"types":{},"properties":{"name":{"displayName":"Connection name","description":"The name of the GitHub connection","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Name has to be between 1 and 50 characters long.","maxLength":50,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"type":{"displayName":"Type","description":"Type of authentication method that should be used","documentation":"","type":{"$ref":"#/enums/Type"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","forceSecretResubmission":true,"default":"pat"},"token":{"displayName":"Token","description":"Token for the selected authentication type","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","customMessage":"Tokens have to be between 1 and 255 characters long.","maxLength":255,"minLength":1},{"type":"PATTERN","customMessage":"Token character set is limited to [A-Za-z0-9_].","pattern":"^[A-Za-z0-9_]*$"}],"precondition":{"type":"IN","property":"type","expectedValues":["pat"]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"SECRET_RESUBMISSION","customMessage":"For security reasons please re-enter token to save the new configuration.","checkAllProperties":false}],"schemaConstraints":[{"type":"UNIQUE","customMessage":"A connection with the same name already exists. Please provide a different name.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"appName":"GitHub"},"ownerBasedAccessControl":true}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.github.connector:connection",
+  "displayName": "GitHub Connections",
+  "description": "GitHub authentication details",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {
+    "Type": {
+      "displayName": "Type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "pat",
+          "displayName": "Personal Access Token (PAT for GitHub and GitHub Enterprise Cloud)"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Connection name",
+      "description": "The name of the GitHub connection",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Name has to be between 1 and 50 characters long.",
+          "maxLength": 50,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "type": {
+      "displayName": "Type",
+      "description": "Type of authentication method that should be used",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/Type"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "forceSecretResubmission": true,
+      "default": "pat"
+    },
+    "token": {
+      "displayName": "Token",
+      "description": "Token for the selected authentication type",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Tokens have to be between 1 and 255 characters long.",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "Token character set is limited to [A-Za-z0-9_].",
+          "pattern": "^[A-Za-z0-9_]*$"
+        }
+      ],
+      "precondition": {
+        "type": "IN",
+        "property": "type",
+        "expectedValues": [
+          "pat"
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "SECRET_RESUBMISSION",
+      "customMessage": "For security reasons please re-enter token to save the new configuration.",
+      "checkAllProperties": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "A connection with the same name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "appName": "GitHub"
+  },
+  "ownerBasedAccessControl": true
+}

@@ -1,1 +1,36 @@
-{"dynatrace":"1","schemaId":"builtin:kubernetes.security-posture-management","displayName":"Security Posture Management: Kubernetes","description":"[Kubernetes Security Posture Management (KSPM)](https://dt-url.net/b303utv) helps you assess and ensure the security and compliance of a Kubernetes environment by adhering to security best practices and regulatory standards. \n\nNote: You can [enable Kubernetes Security Posture Management](https://dt-url.net/o003ue9) per environment or cluster.","documentation":"","schemaGroups":["group:appsec.security-posture-management","group:appsec"],"version":"1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["KUBERNETES_CLUSTER","environment"],"enums":{},"types":{},"properties":{"configurationDatasetPipelineEnabled":{"displayName":"Enable Security Posture Management","description":"Follow the [installation instructions](https://dt-url.net/4x23ut5) to deploy the Security Posture Management components.","documentation":"","type":"boolean","nullable":false,"metadata":{"minActiveGateVersion":"1.321"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:kubernetes.security-posture-management",
+  "displayName": "Security Posture Management: Kubernetes",
+  "description": "[Kubernetes Security Posture Management (KSPM)](https://dt-url.net/b303utv) helps you assess and ensure the security and compliance of a Kubernetes environment by adhering to security best practices and regulatory standards. \n\nNote: You can [enable Kubernetes Security Posture Management](https://dt-url.net/o003ue9) per environment or cluster.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:appsec.security-posture-management",
+    "group:appsec"
+  ],
+  "version": "1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "KUBERNETES_CLUSTER",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "configurationDatasetPipelineEnabled": {
+      "displayName": "Enable Security Posture Management",
+      "description": "Follow the [installation instructions](https://dt-url.net/4x23ut5) to deploy the Security Posture Management components.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "metadata": {
+        "minActiveGateVersion": "1.321"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  }
+}

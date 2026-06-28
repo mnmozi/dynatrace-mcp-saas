@@ -1,1 +1,49 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.rum-javascript-file-name","displayName":"RUM monitoring code filename","description":"Define a custom filename prefix that should be used instead of the default prefix in the RUM monitoring code filename, which is ruxitagentjs or ruxitagent, see [Configure the Real User Monitoring code source](https://dt-url.net/wc03z4k) for details.\n\n **Note:** Be aware that you may experience a temporary reduction in collected RUM data after changing the RUM monitoring code filename prefix. Therefore, this setting should not be changed frequently.","documentation":"","schemaGroups":["group:web-and-mobile-monitoring.web-applications","group:web-and-mobile-monitoring"],"version":"1.1.6","multiObject":false,"maxObjects":1,"maturity":"EARLY_ADOPTER","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"filename":{"displayName":"Custom filename prefix","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":50},{"type":"PATTERN","customMessage":"A filename prefix can include only lowercase alphanumeric characters from the Latin alphabet, without any diacritical marks like umlauts (e.g., 'ö').","pattern":"^[0-9a-z]*$"},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Filename prefix must not contain `ruxitagent`.","customValidatorId":"rumJavascriptFilenameValidator","skipAsyncValidation":false}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.rum-javascript-file-name",
+  "displayName": "RUM monitoring code filename",
+  "description": "Define a custom filename prefix that should be used instead of the default prefix in the RUM monitoring code filename, which is ruxitagentjs or ruxitagent, see [Configure the Real User Monitoring code source](https://dt-url.net/wc03z4k) for details.\n\n **Note:** Be aware that you may experience a temporary reduction in collected RUM data after changing the RUM monitoring code filename prefix. Therefore, this setting should not be changed frequently.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:web-and-mobile-monitoring.web-applications",
+    "group:web-and-mobile-monitoring"
+  ],
+  "version": "1.1.6",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "filename": {
+      "displayName": "Custom filename prefix",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 50
+        },
+        {
+          "type": "PATTERN",
+          "customMessage": "A filename prefix can include only lowercase alphanumeric characters from the Latin alphabet, without any diacritical marks like umlauts (e.g., 'ö').",
+          "pattern": "^[0-9a-z]*$"
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customMessage": "Filename prefix must not contain `ruxitagent`.",
+          "customValidatorId": "rumJavascriptFilenameValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  }
+}

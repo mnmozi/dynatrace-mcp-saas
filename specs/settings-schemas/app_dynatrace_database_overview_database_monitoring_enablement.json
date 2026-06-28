@@ -1,1 +1,31 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.database.overview:database-monitoring-enablement","displayName":"New database monitoring","description":"Enable database monitoring for this environment.","documentation":"","version":"0.0.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"enableDatabaseMonitoring":{"displayName":"Enable Database Monitoring","description":"Enables database monitoring. Once enabled, this setting cannot be disabled.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"metadata":{"appName":"Databases"}}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.database.overview:database-monitoring-enablement",
+  "displayName": "New database monitoring",
+  "description": "Enable database monitoring for this environment.",
+  "documentation": "",
+  "version": "0.0.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enableDatabaseMonitoring": {
+      "displayName": "Enable Database Monitoring",
+      "description": "Enables database monitoring. Once enabled, this setting cannot be disabled.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  },
+  "metadata": {
+    "appName": "Databases"
+  }
+}

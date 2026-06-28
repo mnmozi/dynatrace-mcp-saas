@@ -1,1 +1,294 @@
-{"dynatrace":"1","schemaId":"builtin:anomaly-detection.kubernetes.pvc","displayName":"Kubernetes persistent volume claim anomaly detection","description":"Dynatrace automatically detects a wide range of common Kubernetes-related issues. Use these settings to configure alerts relevant to your Kubernetes persistent volume claims. Changing thresholds resets the observation period. Additional information can be found on our [documentation page](https://dt-url.net/wq02okj#persistent-volume-claims).","documentation":"","schemaGroups":["group:anomaly-detection.kubernetes","group:anomaly-detection"],"version":"1.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["CLOUD_APPLICATION_NAMESPACE","KUBERNETES_CLUSTER","environment"],"enums":{},"types":{"LowDiskSpaceCriticalConfig":{"version":"0","versionInfo":"","displayName":"LowDiskSpaceCriticalConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"the available disk space is below","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":1000000,"minimum":1}],"metadata":{"suffix":"MiB"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":100},"samplePeriodInMinutes":{"displayName":"for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"LowDiskSpaceCritical":{"version":"0","versionInfo":"","displayName":"LowDiskSpaceCritical","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect low disk space (MiB)","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/LowDiskSpaceCriticalConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"},"LowDiskSpaceCriticalPercentageConfig":{"version":"0","versionInfo":"","displayName":"LowDiskSpaceCriticalPercentageConfig","summaryPattern":"","description":"","documentation":"","properties":{"threshold":{"displayName":"the available disk space is below","description":"","documentation":"","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"samplePeriodInMinutes":{"displayName":"for at least","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":3},"observationPeriodInMinutes":{"displayName":"within the last","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":60,"minimum":1}],"metadata":{"suffix":"minutes"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":5}},"constraints":[{"type":"LESS_THAN_OR_EQUAL","customMessage":"Required sample period must not be longer than the observation period","properties":["samplePeriodInMinutes","observationPeriodInMinutes"]}],"type":"object"},"LowDiskSpaceCriticalPercentage":{"version":"0","versionInfo":"","displayName":"LowDiskSpaceCriticalPercentage","summaryPattern":"","description":"","documentation":"","properties":{"enabled":{"displayName":"Detect low disk space (%)","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"configuration":{"displayName":"","description":"Alert if","documentation":"","type":{"$ref":"#/types/LowDiskSpaceCriticalPercentageConfig"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"uiCustomization":{"expandable":{"displayName":"Configure"}},"maxObjects":1,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"lowDiskSpaceCritical":{"displayName":"","description":"","documentation":"Alerts on low disk space in megabytes for a persistent volume claim.","type":{"$ref":"#/types/LowDiskSpaceCritical"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"lowDiskSpaceCriticalPercentage":{"displayName":"","description":"","documentation":"Alerts on low disk space in % for a persistent volume claim.","type":{"$ref":"#/types/LowDiskSpaceCriticalPercentage"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"}},"metadata":{"minActiveGateVersion":"1.261"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:anomaly-detection.kubernetes.pvc",
+  "displayName": "Kubernetes persistent volume claim anomaly detection",
+  "description": "Dynatrace automatically detects a wide range of common Kubernetes-related issues. Use these settings to configure alerts relevant to your Kubernetes persistent volume claims. Changing thresholds resets the observation period. Additional information can be found on our [documentation page](https://dt-url.net/wq02okj#persistent-volume-claims).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:anomaly-detection.kubernetes",
+    "group:anomaly-detection"
+  ],
+  "version": "1.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "CLOUD_APPLICATION_NAMESPACE",
+    "KUBERNETES_CLUSTER",
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "LowDiskSpaceCriticalConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "LowDiskSpaceCriticalConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "the available disk space is below",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 1000000,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "MiB"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 100
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "LowDiskSpaceCritical": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "LowDiskSpaceCritical",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect low disk space (MiB)",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/LowDiskSpaceCriticalConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "LowDiskSpaceCriticalPercentageConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "LowDiskSpaceCriticalPercentageConfig",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "threshold": {
+          "displayName": "the available disk space is below",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "samplePeriodInMinutes": {
+          "displayName": "for at least",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 3
+        },
+        "observationPeriodInMinutes": {
+          "displayName": "within the last",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 60,
+              "minimum": 1
+            }
+          ],
+          "metadata": {
+            "suffix": "minutes"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 5
+        }
+      },
+      "constraints": [
+        {
+          "type": "LESS_THAN_OR_EQUAL",
+          "customMessage": "Required sample period must not be longer than the observation period",
+          "properties": [
+            "samplePeriodInMinutes",
+            "observationPeriodInMinutes"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "LowDiskSpaceCriticalPercentage": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "LowDiskSpaceCriticalPercentage",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Detect low disk space (%)",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        },
+        "configuration": {
+          "displayName": "",
+          "description": "Alert if",
+          "documentation": "",
+          "type": {
+            "$ref": "#/types/LowDiskSpaceCriticalPercentageConfig"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          "uiCustomization": {
+            "expandable": {
+              "displayName": "Configure"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "lowDiskSpaceCritical": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts on low disk space in megabytes for a persistent volume claim.",
+      "type": {
+        "$ref": "#/types/LowDiskSpaceCritical"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "lowDiskSpaceCriticalPercentage": {
+      "displayName": "",
+      "description": "",
+      "documentation": "Alerts on low disk space in % for a persistent volume claim.",
+      "type": {
+        "$ref": "#/types/LowDiskSpaceCriticalPercentage"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "metadata": {
+    "minActiveGateVersion": "1.261"
+  }
+}

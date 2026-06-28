@@ -1,1 +1,462 @@
-{"dynatrace":"1","schemaId":"builtin:sessionreplay.web.privacy-preferences","displayName":"Session replay data privacy","description":"[Configure Session Replay](https://dt-url.net/2i3t0pju) to restrict data capture and protect your end users' data privacy.","documentation":"","schemaGroups":["group:preferences","group:rum-settings","group:privacy-settings"],"version":"1.0.8","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION","environment"],"enums":{"MaskingPreset":{"displayName":"MaskingPreset","description":"","documentation":"","items":[{"value":"MASK_ALL","displayName":"Mask all","description":"Mask all texts, user input, and images. Results in a wireframe-like replay experience that allows you to understand how your end users navigate through your application, without the risk of exposing their personal data. The following data is masked:\n- Input fields and UI control labels\n- List boxes and other UI controls\n- Form data and controls\n- Images, except background images, or images set by the CSS\n- Paragraphs, labels, and other text blocks\n- Text found in hyperlinks\n- Attribute values"},{"value":"MASK_USER_INPUT","displayName":"Mask user input","description":"Mask all data that is provided through user input. Results in an accurate visual representation of the end user’s journey through your application while keeping your users’ input and choices masked. The following data is masked:\n- Input fields\n- List boxes and other UI controls\n- Form data and controls"},{"value":"ALLOW_LIST","displayName":"Allow list","description":"Based on the **Mask all** option, this option allows you to specify web elements or attributes that should not be masked."},{"value":"BLOCK_LIST","displayName":"Block list","description":"This option allows you to specify web elements or attributes that should be masked. Any web element or attribute not in this list will be captured. When you initially select this masking option, you get rules that reflect the **Mask all** option."}],"type":"enum"},"MaskingTargetType":{"displayName":"MaskingTargetType","description":"","documentation":"","items":[{"value":"ELEMENT","displayName":"Element","description":"Content masking can be applied to webpages where personal data is displayed. When content masking is applied to parent elements, all child elements are masked by default."},{"value":"ATTRIBUTE","displayName":"Attribute","description":"Attribute masking can be applied to web applications that store data within attributes, typically data-NAME attributes in HTML5. When you define attributes, their values are masked while recording but not removed."}],"type":"enum"}},"types":{"AllowListRule":{"version":"0","versionInfo":"","displayName":"AllowListRule","summaryPattern":"{target} {cssExpression}{attributeExpression}","description":"","documentation":"","properties":{"target":{"displayName":"Target","description":"Choose the masking rule target type","documentation":"","type":{"$ref":"#/enums/MaskingTargetType"},"nullable":false,"metadata":{"placeholder":"regex"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ELEMENT"},"cssExpression":{"displayName":"CSS selector to identify the content element","description":"Content masking can be applied to webpages where personal data is displayed. When content masking is applied to parent elements, all child elements are masked by default.","documentation":"","type":"text","subType":"cssSelector","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"precondition":{"type":"EQUALS","property":"target","expectedValue":"ELEMENT"},"metadata":{"placeholder":"input.classname"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"attributeExpression":{"displayName":"Attribute name (expression)","description":"Attribute masking can be applied to web applications that store data within attributes, typically data-NAME attributes in HTML5. When you define attributes, their values are masked while recording but not removed.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"precondition":{"type":"EQUALS","property":"target","expectedValue":"ATTRIBUTE"},"metadata":{"placeholder":"regex"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"BlockListRule":{"version":"0","versionInfo":"","displayName":"BlockListRule","summaryPattern":"{target} {cssExpression}{attributeExpression}","description":"","documentation":"","properties":{"target":{"displayName":"Target","description":"Choose the masking rule target type","documentation":"","type":{"$ref":"#/enums/MaskingTargetType"},"nullable":false,"metadata":{"placeholder":"regex"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ELEMENT"},"cssExpression":{"displayName":"CSS selector to identify the content element","description":"Content masking can be applied to webpages where personal data is displayed. When content masking is applied to parent elements, all child elements are masked by default.","documentation":"","type":"text","subType":"cssSelector","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"precondition":{"type":"EQUALS","property":"target","expectedValue":"ELEMENT"},"metadata":{"placeholder":"input.classname"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"attributeExpression":{"displayName":"Attribute name (expression)","description":"Attribute masking can be applied to web applications that store data within attributes, typically data-NAME attributes in HTML5. When you define attributes, their values are masked while recording but not removed.","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":100,"minLength":1}],"precondition":{"type":"EQUALS","property":"target","expectedValue":"ATTRIBUTE"},"metadata":{"placeholder":"regex"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"hideUserInteraction":{"displayName":"Hide user interaction","description":"Hide user interactions with these elements, including clicks that expand elements, highlighting that results from hovering a cursor over an option, and selection of specific form options.","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"target","expectedValue":"ELEMENT"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"type":"object"},"MaskingPresetConfig":{"version":"0","versionInfo":"","displayName":"Content masking preferences","summaryPattern":"","description":"To protect your end users' privacy, select or customize [predefined masking options](https://dt-url.net/sr-masking-preset-options) that suit your content recording and playback requirements.  \nThe recording masking settings are applied at record time to all webpages that your users navigate to. The playback masking settings are applied when replaying recorded sessions, including those that were recorded before your masking settings were applied.  \nNote: When you set the recording masking settings to a more restrictive option, the same option is also enabled for playback masking settings, which affects all past recorded sessions as well.","documentation":"","properties":{"recordingMaskingPreset":{"displayName":"Recording masking settings","description":"Recording masking settings are applied at record time. When you set these settings to a more restrictive option, the same option is also enabled for the playback masking settings.","documentation":"","type":{"$ref":"#/enums/MaskingPreset"},"subType":"radio","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"MASK_USER_INPUT"},"recordingMaskingAllowListRules":{"displayName":"Allow list rules","description":"The elements are defined by the CSS selector or attribute name.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/AllowListRule"}},"nullable":false,"precondition":{"type":"EQUALS","property":"recordingMaskingPreset","expectedValue":"ALLOW_LIST"},"metadata":{"addItemButton":"Add allow list rule"},"minObjects":0,"maxObjects":150,"modificationPolicy":"DEFAULT"},"recordingMaskingBlockListRules":{"displayName":"Block list rules","description":"The elements are defined by the CSS selector or attribute name.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/BlockListRule"}},"nullable":false,"precondition":{"type":"EQUALS","property":"recordingMaskingPreset","expectedValue":"BLOCK_LIST"},"metadata":{"addItemButton":"Add block list rule"},"minObjects":0,"maxObjects":150,"modificationPolicy":"DEFAULT"},"playbackMaskingPreset":{"displayName":"Playback masking settings","description":"Playback masking settings are applied during playback of recorded sessions, including playback of sessions that were recorded before these settings were applied.","documentation":"","type":{"$ref":"#/enums/MaskingPreset"},"subType":"radio","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"MASK_USER_INPUT"},"playbackMaskingAllowListRules":{"displayName":"Allow list rules","description":"The elements are defined by the CSS selector or attribute name.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/AllowListRule"}},"nullable":false,"precondition":{"type":"EQUALS","property":"playbackMaskingPreset","expectedValue":"ALLOW_LIST"},"metadata":{"addItemButton":"Add allow list rule"},"minObjects":0,"maxObjects":150,"modificationPolicy":"DEFAULT"},"playbackMaskingBlockListRules":{"displayName":"Block list rules","description":"The elements are defined by the CSS selector or attribute name.","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/BlockListRule"}},"nullable":false,"precondition":{"type":"EQUALS","property":"playbackMaskingPreset","expectedValue":"BLOCK_LIST"},"metadata":{"addItemButton":"Add block list rule"},"minObjects":0,"maxObjects":150,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"enableOptInMode":{"displayName":"Enable opt-in mode for Session Replay","description":"When [Session Replay opt-in mode](https://dt-url.net/sr-opt-in-mode) is turned on, Session Replay is deactivated until explicitly activated via an API call.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false},"urlExclusionPatternList":{"displayName":"URL exclusion","description":"Exclude webpages or views from Session Replay recording by adding [URL exclusion rules](https://dt-url.net/sr-url-exclusion)","documentation":"","type":"set","items":{"displayName":"Rule","description":"","documentation":"","type":"text","subType":"regex","constraints":[{"type":"REGEX","disallowDangerousRegex":false},{"type":"LENGTH","maxLength":50,"minLength":1},{"type":"REGEX","disallowDangerousRegex":false}]},"nullable":false,"metadata":{"addItemButton":"Add exclusion rule"},"minObjects":0,"maxObjects":20,"modificationPolicy":"DEFAULT"},"maskingPresets":{"displayName":"Content masking preferences","description":"To protect your end users' privacy, select or customize [predefined masking options](https://dt-url.net/sr-masking-preset-options) that suit your content recording and playback requirements.","documentation":"","type":{"$ref":"#/types/MaskingPresetConfig"},"nullable":false,"uiCustomization":{"tabs":{"groups":[{"description":"Recording masking settings are applied at record time. When you set these settings to a more restrictive option, the same option is also enabled for the playback masking settings.","displayName":"Recording masking settings","properties":["recordingMaskingPreset","recordingMaskingAllowListRules","recordingMaskingBlockListRules"]},{"description":"Playback masking settings are applied during playback of recorded sessions, including playback of sessions that were recorded before these settings were applied.","displayName":"Playback masking settings","properties":["playbackMaskingPreset","playbackMaskingAllowListRules","playbackMaskingBlockListRules"]}]}},"maxObjects":1,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:sessionreplay.web.privacy-preferences",
+  "displayName": "Session replay data privacy",
+  "description": "[Configure Session Replay](https://dt-url.net/2i3t0pju) to restrict data capture and protect your end users' data privacy.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:preferences",
+    "group:rum-settings",
+    "group:privacy-settings"
+  ],
+  "version": "1.0.8",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION",
+    "environment"
+  ],
+  "enums": {
+    "MaskingPreset": {
+      "displayName": "MaskingPreset",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "MASK_ALL",
+          "displayName": "Mask all",
+          "description": "Mask all texts, user input, and images. Results in a wireframe-like replay experience that allows you to understand how your end users navigate through your application, without the risk of exposing their personal data. The following data is masked:\n- Input fields and UI control labels\n- List boxes and other UI controls\n- Form data and controls\n- Images, except background images, or images set by the CSS\n- Paragraphs, labels, and other text blocks\n- Text found in hyperlinks\n- Attribute values"
+        },
+        {
+          "value": "MASK_USER_INPUT",
+          "displayName": "Mask user input",
+          "description": "Mask all data that is provided through user input. Results in an accurate visual representation of the end user’s journey through your application while keeping your users’ input and choices masked. The following data is masked:\n- Input fields\n- List boxes and other UI controls\n- Form data and controls"
+        },
+        {
+          "value": "ALLOW_LIST",
+          "displayName": "Allow list",
+          "description": "Based on the **Mask all** option, this option allows you to specify web elements or attributes that should not be masked."
+        },
+        {
+          "value": "BLOCK_LIST",
+          "displayName": "Block list",
+          "description": "This option allows you to specify web elements or attributes that should be masked. Any web element or attribute not in this list will be captured. When you initially select this masking option, you get rules that reflect the **Mask all** option."
+        }
+      ],
+      "type": "enum"
+    },
+    "MaskingTargetType": {
+      "displayName": "MaskingTargetType",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "ELEMENT",
+          "displayName": "Element",
+          "description": "Content masking can be applied to webpages where personal data is displayed. When content masking is applied to parent elements, all child elements are masked by default."
+        },
+        {
+          "value": "ATTRIBUTE",
+          "displayName": "Attribute",
+          "description": "Attribute masking can be applied to web applications that store data within attributes, typically data-NAME attributes in HTML5. When you define attributes, their values are masked while recording but not removed."
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "AllowListRule": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "AllowListRule",
+      "summaryPattern": "{target} {cssExpression}{attributeExpression}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "target": {
+          "displayName": "Target",
+          "description": "Choose the masking rule target type",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/MaskingTargetType"
+          },
+          "nullable": false,
+          "metadata": {
+            "placeholder": "regex"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "ELEMENT"
+        },
+        "cssExpression": {
+          "displayName": "CSS selector to identify the content element",
+          "description": "Content masking can be applied to webpages where personal data is displayed. When content masking is applied to parent elements, all child elements are masked by default.",
+          "documentation": "",
+          "type": "text",
+          "subType": "cssSelector",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 100,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "target",
+            "expectedValue": "ELEMENT"
+          },
+          "metadata": {
+            "placeholder": "input.classname"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "attributeExpression": {
+          "displayName": "Attribute name (expression)",
+          "description": "Attribute masking can be applied to web applications that store data within attributes, typically data-NAME attributes in HTML5. When you define attributes, their values are masked while recording but not removed.",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 100,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "target",
+            "expectedValue": "ATTRIBUTE"
+          },
+          "metadata": {
+            "placeholder": "regex"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "BlockListRule": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "BlockListRule",
+      "summaryPattern": "{target} {cssExpression}{attributeExpression}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "target": {
+          "displayName": "Target",
+          "description": "Choose the masking rule target type",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/MaskingTargetType"
+          },
+          "nullable": false,
+          "metadata": {
+            "placeholder": "regex"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "ELEMENT"
+        },
+        "cssExpression": {
+          "displayName": "CSS selector to identify the content element",
+          "description": "Content masking can be applied to webpages where personal data is displayed. When content masking is applied to parent elements, all child elements are masked by default.",
+          "documentation": "",
+          "type": "text",
+          "subType": "cssSelector",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 100,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "target",
+            "expectedValue": "ELEMENT"
+          },
+          "metadata": {
+            "placeholder": "input.classname"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "attributeExpression": {
+          "displayName": "Attribute name (expression)",
+          "description": "Attribute masking can be applied to web applications that store data within attributes, typically data-NAME attributes in HTML5. When you define attributes, their values are masked while recording but not removed.",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 100,
+              "minLength": 1
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "target",
+            "expectedValue": "ATTRIBUTE"
+          },
+          "metadata": {
+            "placeholder": "regex"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "hideUserInteraction": {
+          "displayName": "Hide user interaction",
+          "description": "Hide user interactions with these elements, including clicks that expand elements, highlighting that results from hovering a cursor over an option, and selection of specific form options.",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "target",
+            "expectedValue": "ELEMENT"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    },
+    "MaskingPresetConfig": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Content masking preferences",
+      "summaryPattern": "",
+      "description": "To protect your end users' privacy, select or customize [predefined masking options](https://dt-url.net/sr-masking-preset-options) that suit your content recording and playback requirements.  \nThe recording masking settings are applied at record time to all webpages that your users navigate to. The playback masking settings are applied when replaying recorded sessions, including those that were recorded before your masking settings were applied.  \nNote: When you set the recording masking settings to a more restrictive option, the same option is also enabled for playback masking settings, which affects all past recorded sessions as well.",
+      "documentation": "",
+      "properties": {
+        "recordingMaskingPreset": {
+          "displayName": "Recording masking settings",
+          "description": "Recording masking settings are applied at record time. When you set these settings to a more restrictive option, the same option is also enabled for the playback masking settings.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/MaskingPreset"
+          },
+          "subType": "radio",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "MASK_USER_INPUT"
+        },
+        "recordingMaskingAllowListRules": {
+          "displayName": "Allow list rules",
+          "description": "The elements are defined by the CSS selector or attribute name.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/AllowListRule"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "recordingMaskingPreset",
+            "expectedValue": "ALLOW_LIST"
+          },
+          "metadata": {
+            "addItemButton": "Add allow list rule"
+          },
+          "minObjects": 0,
+          "maxObjects": 150,
+          "modificationPolicy": "DEFAULT"
+        },
+        "recordingMaskingBlockListRules": {
+          "displayName": "Block list rules",
+          "description": "The elements are defined by the CSS selector or attribute name.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/BlockListRule"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "recordingMaskingPreset",
+            "expectedValue": "BLOCK_LIST"
+          },
+          "metadata": {
+            "addItemButton": "Add block list rule"
+          },
+          "minObjects": 0,
+          "maxObjects": 150,
+          "modificationPolicy": "DEFAULT"
+        },
+        "playbackMaskingPreset": {
+          "displayName": "Playback masking settings",
+          "description": "Playback masking settings are applied during playback of recorded sessions, including playback of sessions that were recorded before these settings were applied.",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/MaskingPreset"
+          },
+          "subType": "radio",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "MASK_USER_INPUT"
+        },
+        "playbackMaskingAllowListRules": {
+          "displayName": "Allow list rules",
+          "description": "The elements are defined by the CSS selector or attribute name.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/AllowListRule"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "playbackMaskingPreset",
+            "expectedValue": "ALLOW_LIST"
+          },
+          "metadata": {
+            "addItemButton": "Add allow list rule"
+          },
+          "minObjects": 0,
+          "maxObjects": 150,
+          "modificationPolicy": "DEFAULT"
+        },
+        "playbackMaskingBlockListRules": {
+          "displayName": "Block list rules",
+          "description": "The elements are defined by the CSS selector or attribute name.",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "",
+            "description": "",
+            "documentation": "",
+            "type": {
+              "$ref": "#/types/BlockListRule"
+            }
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "EQUALS",
+            "property": "playbackMaskingPreset",
+            "expectedValue": "BLOCK_LIST"
+          },
+          "metadata": {
+            "addItemButton": "Add block list rule"
+          },
+          "minObjects": 0,
+          "maxObjects": 150,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enableOptInMode": {
+      "displayName": "Enable opt-in mode for Session Replay",
+      "description": "When [Session Replay opt-in mode](https://dt-url.net/sr-opt-in-mode) is turned on, Session Replay is deactivated until explicitly activated via an API call.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "urlExclusionPatternList": {
+      "displayName": "URL exclusion",
+      "description": "Exclude webpages or views from Session Replay recording by adding [URL exclusion rules](https://dt-url.net/sr-url-exclusion)",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "Rule",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "subType": "regex",
+        "constraints": [
+          {
+            "type": "REGEX",
+            "disallowDangerousRegex": false
+          },
+          {
+            "type": "LENGTH",
+            "maxLength": 50,
+            "minLength": 1
+          },
+          {
+            "type": "REGEX",
+            "disallowDangerousRegex": false
+          }
+        ]
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add exclusion rule"
+      },
+      "minObjects": 0,
+      "maxObjects": 20,
+      "modificationPolicy": "DEFAULT"
+    },
+    "maskingPresets": {
+      "displayName": "Content masking preferences",
+      "description": "To protect your end users' privacy, select or customize [predefined masking options](https://dt-url.net/sr-masking-preset-options) that suit your content recording and playback requirements.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/MaskingPresetConfig"
+      },
+      "nullable": false,
+      "uiCustomization": {
+        "tabs": {
+          "groups": [
+            {
+              "description": "Recording masking settings are applied at record time. When you set these settings to a more restrictive option, the same option is also enabled for the playback masking settings.",
+              "displayName": "Recording masking settings",
+              "properties": [
+                "recordingMaskingPreset",
+                "recordingMaskingAllowListRules",
+                "recordingMaskingBlockListRules"
+              ]
+            },
+            {
+              "description": "Playback masking settings are applied during playback of recorded sessions, including playback of sessions that were recorded before these settings were applied.",
+              "displayName": "Playback masking settings",
+              "properties": [
+                "playbackMaskingPreset",
+                "playbackMaskingAllowListRules",
+                "playbackMaskingBlockListRules"
+              ]
+            }
+          ]
+        }
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

@@ -1,1 +1,242 @@
-{"dynatrace":"1","schemaId":"builtin:rum.web.browser-exclusion","displayName":"Exclude/Include browsers from monitoring","description":"If you want to exclude certain outdated browser types from your list of monitored browsers, create [browser exclusion](https://dt-url.net/0e2z0pp0) rules for the browsers that are to be excluded.","documentation":"","schemaGroups":["group:capturing","group:capturing.exclusions"],"version":"1.1.3","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["APPLICATION"],"enums":{"Browser":{"displayName":"Browser","description":"","documentation":"","items":[{"value":"ANDROID_WEBKIT","displayName":"Android Webkit"},{"value":"CHROME","displayName":"Chrome"},{"value":"CHROME_HEADLESS","displayName":"Headless Chrome"},{"value":"FIREFOX","displayName":"Firefox"},{"value":"INTERNET_EXPLORER","displayName":"Internet Explorer"},{"value":"OPERA","displayName":"Opera"},{"value":"SAFARI","displayName":"Safari"},{"value":"EDGE","displayName":"Edge"},{"value":"BOTS_AND_SPIDERS","displayName":"Bots & Spiders"}],"type":"enum"},"VersionComparator":{"displayName":"VersionComparator","description":"","documentation":"","items":[{"value":"GREATER_OR_EQUAL","displayName":"≥"},{"value":"EQUALS","displayName":"="},{"value":"LESS_OR_EQUAL","displayName":"≤"}],"type":"enum"},"Platform":{"displayName":"Platform","description":"","documentation":"","items":[{"value":"ALL","displayName":"all"},{"value":"MOBILE","displayName":"mobile"},{"value":"DESKTOP","displayName":"desktop"}],"type":"enum"}},"types":{"BrowserExclusionListObject":{"version":"0","versionInfo":"","displayName":"","summaryPattern":"{browserName} version {versionComparator} {version} for {platform} platforms","description":"","documentation":"","properties":{"browserName":{"displayName":"Browser","description":"","documentation":"","type":{"$ref":"#/enums/Browser"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ANDROID_WEBKIT"},"versionComparator":{"displayName":"Browser version comparator","description":"","documentation":"","type":{"$ref":"#/enums/VersionComparator"},"nullable":false,"precondition":{"type":"NOT","precondition":{"type":"EQUALS","property":"browserName","expectedValue":"BOTS_AND_SPIDERS"}},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"GREATER_OR_EQUAL"},"version":{"displayName":"Version","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","customMessage":"Version number must be between 0 and 99999.","maximum":99999,"minimum":0}],"precondition":{"type":"NOT","precondition":{"type":"EQUALS","property":"browserName","expectedValue":"BOTS_AND_SPIDERS"}},"maxObjects":1,"modificationPolicy":"DEFAULT","default":0},"platform":{"displayName":"Platform","description":"","documentation":"","type":{"$ref":"#/enums/Platform"},"nullable":false,"precondition":{"type":"NOT","precondition":{"type":"EQUALS","property":"browserName","expectedValue":"BOTS_AND_SPIDERS"}},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"ALL"}},"type":"object"}},"properties":{"browserExclusionList":{"displayName":"Browser exclusion list","description":"","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/BrowserExclusionListObject"}},"nullable":false,"metadata":{"addItemButton":"Add a browser exclusion rule"},"minObjects":0,"maxObjects":20,"modificationPolicy":"DEFAULT"},"browserExclusionInclude":{"displayName":"These are the only browsers that should be monitored","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"Browser list must have at least one entry.","customValidatorId":"RumBrowserExclusionSchemaValidator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customMessage":"The number of browser exclusions across all applications exceeds the tenant-wide limit.","customValidatorId":"RumBrowserExclusionTenantWideLimitsValidator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.web.browser-exclusion",
+  "displayName": "Exclude/Include browsers from monitoring",
+  "description": "If you want to exclude certain outdated browser types from your list of monitored browsers, create [browser exclusion](https://dt-url.net/0e2z0pp0) rules for the browsers that are to be excluded.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:capturing",
+    "group:capturing.exclusions"
+  ],
+  "version": "1.1.3",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "APPLICATION"
+  ],
+  "enums": {
+    "Browser": {
+      "displayName": "Browser",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "ANDROID_WEBKIT",
+          "displayName": "Android Webkit"
+        },
+        {
+          "value": "CHROME",
+          "displayName": "Chrome"
+        },
+        {
+          "value": "CHROME_HEADLESS",
+          "displayName": "Headless Chrome"
+        },
+        {
+          "value": "FIREFOX",
+          "displayName": "Firefox"
+        },
+        {
+          "value": "INTERNET_EXPLORER",
+          "displayName": "Internet Explorer"
+        },
+        {
+          "value": "OPERA",
+          "displayName": "Opera"
+        },
+        {
+          "value": "SAFARI",
+          "displayName": "Safari"
+        },
+        {
+          "value": "EDGE",
+          "displayName": "Edge"
+        },
+        {
+          "value": "BOTS_AND_SPIDERS",
+          "displayName": "Bots & Spiders"
+        }
+      ],
+      "type": "enum"
+    },
+    "VersionComparator": {
+      "displayName": "VersionComparator",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "GREATER_OR_EQUAL",
+          "displayName": "≥"
+        },
+        {
+          "value": "EQUALS",
+          "displayName": "="
+        },
+        {
+          "value": "LESS_OR_EQUAL",
+          "displayName": "≤"
+        }
+      ],
+      "type": "enum"
+    },
+    "Platform": {
+      "displayName": "Platform",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "ALL",
+          "displayName": "all"
+        },
+        {
+          "value": "MOBILE",
+          "displayName": "mobile"
+        },
+        {
+          "value": "DESKTOP",
+          "displayName": "desktop"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "BrowserExclusionListObject": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "",
+      "summaryPattern": "{browserName} version {versionComparator} {version} for {platform} platforms",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "browserName": {
+          "displayName": "Browser",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/Browser"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "ANDROID_WEBKIT"
+        },
+        "versionComparator": {
+          "displayName": "Browser version comparator",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/VersionComparator"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "NOT",
+            "precondition": {
+              "type": "EQUALS",
+              "property": "browserName",
+              "expectedValue": "BOTS_AND_SPIDERS"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "GREATER_OR_EQUAL"
+        },
+        "version": {
+          "displayName": "Version",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "customMessage": "Version number must be between 0 and 99999.",
+              "maximum": 99999,
+              "minimum": 0
+            }
+          ],
+          "precondition": {
+            "type": "NOT",
+            "precondition": {
+              "type": "EQUALS",
+              "property": "browserName",
+              "expectedValue": "BOTS_AND_SPIDERS"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 0
+        },
+        "platform": {
+          "displayName": "Platform",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/Platform"
+          },
+          "nullable": false,
+          "precondition": {
+            "type": "NOT",
+            "precondition": {
+              "type": "EQUALS",
+              "property": "browserName",
+              "expectedValue": "BOTS_AND_SPIDERS"
+            }
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "ALL"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "browserExclusionList": {
+      "displayName": "Browser exclusion list",
+      "description": "",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/BrowserExclusionListObject"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add a browser exclusion rule"
+      },
+      "minObjects": 0,
+      "maxObjects": 20,
+      "modificationPolicy": "DEFAULT"
+    },
+    "browserExclusionInclude": {
+      "displayName": "These are the only browsers that should be monitored",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "Browser list must have at least one entry.",
+      "customValidatorId": "RumBrowserExclusionSchemaValidator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "The number of browser exclusions across all applications exceeds the tenant-wide limit.",
+      "customValidatorId": "RumBrowserExclusionTenantWideLimitsValidator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

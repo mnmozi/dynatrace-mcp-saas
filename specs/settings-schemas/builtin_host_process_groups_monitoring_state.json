@@ -1,1 +1,99 @@
-{"dynatrace":"1","schemaId":"builtin:host.process-groups.monitoring-state","displayName":"Process group monitoring","description":"Enable or disable monitoring for certain process groups on this host","documentation":"","version":"1.0.1","multiObject":true,"ordered":false,"maxObjects":1000,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST"],"enums":{"ProcessGroupMonitoringMode":{"displayName":"Monitoring mode","description":"","documentation":"","items":[{"value":"MONITORING_OFF","displayName":"Do not monitor"},{"value":"MONITORING_ON","displayName":"Monitor"},{"value":"DEFAULT","displayName":"Default"}],"type":"enum"}},"types":{},"properties":{"ProcessGroup":{"displayName":"Process group","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"pgsOfHost","filterProperties":[],"resetValue":"NEVER","validate":false,"fullContext":false,"useApiSearch":true},"nullable":false,"constraints":[{"type":"PATTERN","customMessage":"Please provide a valid processgroup ID.","pattern":"^PROCESS_GROUP-[0-9A-F]{16}$"},{"type":"LENGTH","maxLength":500,"minLength":1}],"metadata":{"useCombobox":"enabled"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"MonitoringState":{"displayName":"Monitoring state","description":"","documentation":"","type":{"$ref":"#/enums/ProcessGroupMonitoringMode"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"MONITORING_ON"}},"schemaConstraints":[{"type":"UNIQUE","customMessage":"Only one entry per process group possible","uniqueProperties":["ProcessGroup"],"flattenCollections":false}],"metadata":{"addItemButton":"Add process group"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:host.process-groups.monitoring-state",
+  "displayName": "Process group monitoring",
+  "description": "Enable or disable monitoring for certain process groups on this host",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 1000,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST"
+  ],
+  "enums": {
+    "ProcessGroupMonitoringMode": {
+      "displayName": "Monitoring mode",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "MONITORING_OFF",
+          "displayName": "Do not monitor"
+        },
+        {
+          "value": "MONITORING_ON",
+          "displayName": "Monitor"
+        },
+        {
+          "value": "DEFAULT",
+          "displayName": "Default"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "ProcessGroup": {
+      "displayName": "Process group",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "subType": "datasource",
+      "datasource": {
+        "identifier": "pgsOfHost",
+        "filterProperties": [],
+        "resetValue": "NEVER",
+        "validate": false,
+        "fullContext": false,
+        "useApiSearch": true
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "PATTERN",
+          "customMessage": "Please provide a valid processgroup ID.",
+          "pattern": "^PROCESS_GROUP-[0-9A-F]{16}$"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "metadata": {
+        "useCombobox": "enabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "MonitoringState": {
+      "displayName": "Monitoring state",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/ProcessGroupMonitoringMode"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "MONITORING_ON"
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "Only one entry per process group possible",
+      "uniqueProperties": [
+        "ProcessGroup"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "addItemButton": "Add process group"
+  }
+}

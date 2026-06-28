@@ -1,1 +1,407 @@
-{"dynatrace":"1","schemaId":"builtin:logmonitoring.sensitive-data-masking-settings","displayName":"Sensitive data masking","description":"Create rules to mask any information you consider to be sensitive. Masking is done on OneAgent, and no personal data is sent or stored on Dynatrace server.","documentation":"","schemaGroups":["group:log-monitoring","group:log-monitoring.ingest-and-processing"],"version":"1.0.19","multiObject":true,"ordered":true,"maxObjects":512,"maturity":"OPT_IN_GENERAL_AVAILABILITY","allowedScopes":["HOST","KUBERNETES_CLUSTER","HOST_GROUP","environment"],"enums":{"MatcherType":{"displayName":"Matcher type","description":"","documentation":"","items":[{"value":"dt.entity.process_group","displayName":"Process group","icon":"process"},{"value":"log.source","displayName":"Log source","icon":"logfile"},{"value":"log.source.origin","displayName":"Log source origin","icon":"agent"},{"value":"host.tag","displayName":"Host tag","icon":"filter"},{"value":"k8s.container.name","displayName":"Kubernetes container name","icon":"kubernetes-container-services"},{"value":"k8s.namespace.name","displayName":"Kubernetes namespace name","icon":"kubernetes-ns"},{"value":"k8s.deployment.name","displayName":"Kubernetes deployment name","icon":"kubernetes-deploy"},{"value":"k8s.pod.annotation","displayName":"Kubernetes pod annotation","icon":"filter"},{"value":"k8s.pod.label","displayName":"Kubernetes pod label","icon":"filter"},{"value":"k8s.workload.name","displayName":"Kubernetes workload name","icon":"filter"},{"value":"k8s.workload.kind","displayName":"Kubernetes workload kind","icon":"filter"},{"value":"container.name","displayName":"Docker container name","icon":"container"},{"value":"dt.entity.container_group","displayName":"DT entity container group ID","icon":"container-registries"},{"value":"process.technology","displayName":"Process technology","icon":"services"}],"type":"enum"},"Operator":{"displayName":"Operator","description":"","documentation":"","items":[{"value":"MATCHES","displayName":"matches"}],"type":"enum"},"MaskingType":{"displayName":"Masking type","description":"","documentation":"","items":[{"value":"STRING","displayName":"replace with string"},{"value":"SHA1","displayName":"SHA-1"},{"value":"SHA256","displayName":"SHA-256"}],"type":"enum"}},"types":{"Masking":{"version":"0","versionInfo":"","displayName":"Masking rule","summaryPattern":"","description":"","documentation":"","properties":{"expression":{"displayName":"Search expression","description":"","documentation":"Maximum one capture group is allowed. If none was given, the whole expression will be treated as a capture group.","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":2048},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringRegexValidator","skipAsyncValidation":false}],"metadata":{"uiDefaultValue":"","placeholder":"Regular expression"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"type":{"displayName":"Masking type","description":"","documentation":"","type":{"$ref":"#/enums/MaskingType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"STRING"},"replacement":{"displayName":"Replacement","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":1024},{"type":"PATTERN","customMessage":"Field may contain only alphanumeric characters and following signs: -_#*?[]<>()","pattern":"^[a-zA-Z0-9-_#\\*\\?\\[\\]<>()]*$"}],"precondition":{"type":"EQUALS","property":"type","expectedValue":"STRING"},"metadata":{"uiDefaultValue":"","placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"Matcher":{"version":"0","versionInfo":"","displayName":"Matcher","summaryPattern":"{attribute} {operator} any of [{values}]","description":"","documentation":"","properties":{"attribute":{"displayName":"Attribute","description":"","documentation":"","type":{"$ref":"#/enums/MatcherType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"log.source"},"operator":{"displayName":"Operator","description":"","documentation":"","type":{"$ref":"#/enums/Operator"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"MATCHES"},"values":{"displayName":"","description":"","documentation":"","type":"set","items":{"displayName":"Values","description":"","documentation":"","type":"text","subType":"datasource","datasource":{"identifier":"logmonitoring.log-storage-settings.datasource","filterProperties":["../attribute"],"resetValue":"ALWAYS","validate":true,"fullContext":true,"useApiSearch":true},"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":128,"minLength":1}]},"nullable":false,"metadata":{"uiDefaultValue":"","placeholder":"Required","addItemButton":"Add value"},"minObjects":1,"maxObjects":128,"modificationPolicy":"DEFAULT"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringHostTagValueValidator","skipAsyncValidation":false},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringK8sInternalMatcherValueValidator","skipAsyncValidation":false}],"type":"object"}},"properties":{"enabled":{"displayName":"Active","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"ALWAYS","default":true},"config-item-title":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":1024},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"logMonitoringSensitiveDataMaskingRuleNameValidator","skipAsyncValidation":false}],"metadata":{"placeholder":"Required"},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"masking":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Masking"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT"},"matchers":{"displayName":"","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/Matcher"}},"nullable":false,"metadata":{"addItemButton":"Add matcher"},"minObjects":0,"maxObjects":16,"modificationPolicy":"DEFAULT"}},"schemaConstraints":[{"type":"UNIQUE","uniqueProperties":["config-item-title"],"flattenCollections":false}],"metadata":{"minAgentVersion":"1.243","addItemButton":"Add rule"},"uiCustomization":{"table":{"columns":[{"id":"maskingType","displayName":"Masking type","propertyRef":"masking/type"}],"emptyState":{"text":"**Create your first rule**\n\nAdd the first rule to configure sensitive data masking"}}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:logmonitoring.sensitive-data-masking-settings",
+  "displayName": "Sensitive data masking",
+  "description": "Create rules to mask any information you consider to be sensitive. Masking is done on OneAgent, and no personal data is sent or stored on Dynatrace server.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:log-monitoring",
+    "group:log-monitoring.ingest-and-processing"
+  ],
+  "version": "1.0.19",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 512,
+  "maturity": "OPT_IN_GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "KUBERNETES_CLUSTER",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "MatcherType": {
+      "displayName": "Matcher type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "dt.entity.process_group",
+          "displayName": "Process group",
+          "icon": "process"
+        },
+        {
+          "value": "log.source",
+          "displayName": "Log source",
+          "icon": "logfile"
+        },
+        {
+          "value": "log.source.origin",
+          "displayName": "Log source origin",
+          "icon": "agent"
+        },
+        {
+          "value": "host.tag",
+          "displayName": "Host tag",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.container.name",
+          "displayName": "Kubernetes container name",
+          "icon": "kubernetes-container-services"
+        },
+        {
+          "value": "k8s.namespace.name",
+          "displayName": "Kubernetes namespace name",
+          "icon": "kubernetes-ns"
+        },
+        {
+          "value": "k8s.deployment.name",
+          "displayName": "Kubernetes deployment name",
+          "icon": "kubernetes-deploy"
+        },
+        {
+          "value": "k8s.pod.annotation",
+          "displayName": "Kubernetes pod annotation",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.pod.label",
+          "displayName": "Kubernetes pod label",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.workload.name",
+          "displayName": "Kubernetes workload name",
+          "icon": "filter"
+        },
+        {
+          "value": "k8s.workload.kind",
+          "displayName": "Kubernetes workload kind",
+          "icon": "filter"
+        },
+        {
+          "value": "container.name",
+          "displayName": "Docker container name",
+          "icon": "container"
+        },
+        {
+          "value": "dt.entity.container_group",
+          "displayName": "DT entity container group ID",
+          "icon": "container-registries"
+        },
+        {
+          "value": "process.technology",
+          "displayName": "Process technology",
+          "icon": "services"
+        }
+      ],
+      "type": "enum"
+    },
+    "Operator": {
+      "displayName": "Operator",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "MATCHES",
+          "displayName": "matches"
+        }
+      ],
+      "type": "enum"
+    },
+    "MaskingType": {
+      "displayName": "Masking type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "STRING",
+          "displayName": "replace with string"
+        },
+        {
+          "value": "SHA1",
+          "displayName": "SHA-1"
+        },
+        {
+          "value": "SHA256",
+          "displayName": "SHA-256"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "Masking": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Masking rule",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "expression": {
+          "displayName": "Search expression",
+          "description": "",
+          "documentation": "Maximum one capture group is allowed. If none was given, the whole expression will be treated as a capture group.",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 2048
+            },
+            {
+              "type": "CUSTOM_VALIDATOR_REF",
+              "customValidatorId": "logMonitoringRegexValidator",
+              "skipAsyncValidation": false
+            }
+          ],
+          "metadata": {
+            "uiDefaultValue": "",
+            "placeholder": "Regular expression"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "type": {
+          "displayName": "Masking type",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/MaskingType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "STRING"
+        },
+        "replacement": {
+          "displayName": "Replacement",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 1024
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Field may contain only alphanumeric characters and following signs: -_#*?[]<>()",
+              "pattern": "^[a-zA-Z0-9-_#\\*\\?\\[\\]<>()]*$"
+            }
+          ],
+          "precondition": {
+            "type": "EQUALS",
+            "property": "type",
+            "expectedValue": "STRING"
+          },
+          "metadata": {
+            "uiDefaultValue": "",
+            "placeholder": "Required"
+          },
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "Matcher": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Matcher",
+      "summaryPattern": "{attribute} {operator} any of [{values}]",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "attribute": {
+          "displayName": "Attribute",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/MatcherType"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "log.source"
+        },
+        "operator": {
+          "displayName": "Operator",
+          "description": "",
+          "documentation": "",
+          "type": {
+            "$ref": "#/enums/Operator"
+          },
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "MATCHES"
+        },
+        "values": {
+          "displayName": "",
+          "description": "",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "Values",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "subType": "datasource",
+            "datasource": {
+              "identifier": "logmonitoring.log-storage-settings.datasource",
+              "filterProperties": [
+                "../attribute"
+              ],
+              "resetValue": "ALWAYS",
+              "validate": true,
+              "fullContext": true,
+              "useApiSearch": true
+            },
+            "constraints": [
+              {
+                "type": "NOT_EMPTY"
+              },
+              {
+                "type": "LENGTH",
+                "maxLength": 128,
+                "minLength": 1
+              }
+            ]
+          },
+          "nullable": false,
+          "metadata": {
+            "uiDefaultValue": "",
+            "placeholder": "Required",
+            "addItemButton": "Add value"
+          },
+          "minObjects": 1,
+          "maxObjects": 128,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "constraints": [
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "logMonitoringHostTagValueValidator",
+          "skipAsyncValidation": false
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "logMonitoringK8sInternalMatcherValueValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Active",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "ALWAYS",
+      "default": true
+    },
+    "config-item-title": {
+      "displayName": "Name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 1024
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "logMonitoringSensitiveDataMaskingRuleNameValidator",
+          "skipAsyncValidation": false
+        }
+      ],
+      "metadata": {
+        "placeholder": "Required"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "masking": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/Masking"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "matchers": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/Matcher"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add matcher"
+      },
+      "minObjects": 0,
+      "maxObjects": 16,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "uniqueProperties": [
+        "config-item-title"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "minAgentVersion": "1.243",
+    "addItemButton": "Add rule"
+  },
+  "uiCustomization": {
+    "table": {
+      "columns": [
+        {
+          "id": "maskingType",
+          "displayName": "Masking type",
+          "propertyRef": "masking/type"
+        }
+      ],
+      "emptyState": {
+        "text": "**Create your first rule**\n\nAdd the first rule to configure sensitive data masking"
+      }
+    }
+  }
+}

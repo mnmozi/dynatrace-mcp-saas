@@ -1,1 +1,416 @@
-{"dynatrace":"1","schemaId":"builtin:ibmmq.queue-managers","displayName":"IBM MQ queue managers","description":"Dynatrace needs to know the IBM MQ definition of your alias queues, remote queues, and cluster queues for the end-to-end tracing. Without this information, Dynatrace can still trace all requests but producer and consumer services would not be stitched together.","documentation":"","schemaGroups":["group:mainframe"],"version":"1","multiObject":true,"ordered":false,"maxObjects":500,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{"AliasQueue":{"version":"0","versionInfo":"","displayName":"AliasQueue","summaryPattern":"{aliasQueue} / {baseQueue}","description":"Alias queue","documentation":"","properties":{"aliasQueue":{"displayName":"Alias queue name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":"name"},"baseQueue":{"displayName":"Base queue name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":"name"},"clusterVisibility":{"displayName":"Cluster visibility","description":"Name of the cluster(s) this alias should be visible in","documentation":"","type":"set","items":{"displayName":"Cluster name","description":"","documentation":"","type":"text","constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"Add cluster name"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"}},"type":"object"},"RemoteQueue":{"version":"0","versionInfo":"","displayName":"Remote queue","summaryPattern":"{localQueue} / {remoteQueue} / {remoteQueueManager}","description":"","documentation":"","properties":{"localQueue":{"displayName":"Local queue name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"remoteQueue":{"displayName":"Remote queue name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"remoteQueueManager":{"displayName":"Remote queue manager name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clusterVisibility":{"displayName":"Cluster visibility","description":"Name of the cluster(s) this local definition of the remote queue should be visible in","documentation":"","type":"set","items":{"displayName":"Cluster name","description":"","documentation":"","type":"text","constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"Add cluster name"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"}},"type":"object"},"LocalQueue":{"version":"0","versionInfo":"","displayName":"LocalQueue","summaryPattern":"{localQueue}","description":"","documentation":"","properties":{"localQueue":{"displayName":"Local queue","description":"Local queue","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"},"ClusterQueue":{"version":"0","versionInfo":"","displayName":"ClusterQueue","summaryPattern":"{localQueue}","description":"","documentation":"","properties":{"localQueue":{"displayName":"Local queue name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clusterVisibility":{"displayName":"Cluster visibilities","description":"Name of the cluster(s) this local queue should be visible in","documentation":"","type":"set","items":{"displayName":"Cluster name","description":"","documentation":"","type":"text","constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"Add cluster visibility"},"minObjects":0,"maxObjects":100,"modificationPolicy":"DEFAULT"}},"type":"object"}},"properties":{"name":{"displayName":"Queue manager name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"clusters":{"displayName":"Clusters","description":"Name of the cluster(s) this queue manager is part of","documentation":"","type":"set","items":{"displayName":"Cluster name","description":"","documentation":"","type":"text","constraints":[{"type":"NOT_EMPTY"},{"type":"LENGTH","maxLength":200,"minLength":1}]},"nullable":false,"metadata":{"addItemButton":"Add cluster"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"},"aliasQueues":{"displayName":"Alias queues","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/AliasQueue"}},"nullable":false,"metadata":{"addItemButton":"Add alias queue"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"},"remoteQueues":{"displayName":"Remote queues","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/RemoteQueue"}},"nullable":false,"metadata":{"addItemButton":"Add remote queue"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"},"clusterQueues":{"displayName":"Cluster queues","description":"","documentation":"","type":"set","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/ClusterQueue"}},"nullable":false,"metadata":{"addItemButton":"Add cluster queue"},"minObjects":0,"maxObjects":10000,"modificationPolicy":"DEFAULT"}},"schemaConstraints":[{"type":"UNIQUE","customMessage":"Queue manager name must be unique.","uniqueProperties":["name"],"flattenCollections":false}],"metadata":{"addItemButton":"Add queue manager"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:ibmmq.queue-managers",
+  "displayName": "IBM MQ queue managers",
+  "description": "Dynatrace needs to know the IBM MQ definition of your alias queues, remote queues, and cluster queues for the end-to-end tracing. Without this information, Dynatrace can still trace all requests but producer and consumer services would not be stitched together.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:mainframe"
+  ],
+  "version": "1",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 500,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "AliasQueue": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "AliasQueue",
+      "summaryPattern": "{aliasQueue} / {baseQueue}",
+      "description": "Alias queue",
+      "documentation": "",
+      "properties": {
+        "aliasQueue": {
+          "displayName": "Alias queue name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "name"
+        },
+        "baseQueue": {
+          "displayName": "Base queue name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": "name"
+        },
+        "clusterVisibility": {
+          "displayName": "Cluster visibility",
+          "description": "Name of the cluster(s) this alias should be visible in",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "Cluster name",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "constraints": [
+              {
+                "type": "NOT_EMPTY"
+              },
+              {
+                "type": "LENGTH",
+                "maxLength": 200,
+                "minLength": 1
+              }
+            ]
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add cluster name"
+          },
+          "minObjects": 0,
+          "maxObjects": 10000,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "RemoteQueue": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Remote queue",
+      "summaryPattern": "{localQueue} / {remoteQueue} / {remoteQueueManager}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "localQueue": {
+          "displayName": "Local queue name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "remoteQueue": {
+          "displayName": "Remote queue name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "remoteQueueManager": {
+          "displayName": "Remote queue manager name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "clusterVisibility": {
+          "displayName": "Cluster visibility",
+          "description": "Name of the cluster(s) this local definition of the remote queue should be visible in",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "Cluster name",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "constraints": [
+              {
+                "type": "NOT_EMPTY"
+              },
+              {
+                "type": "LENGTH",
+                "maxLength": 200,
+                "minLength": 1
+              }
+            ]
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add cluster name"
+          },
+          "minObjects": 0,
+          "maxObjects": 10000,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    },
+    "LocalQueue": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "LocalQueue",
+      "summaryPattern": "{localQueue}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "localQueue": {
+          "displayName": "Local queue",
+          "description": "Local queue",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_EMPTY"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 200,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    },
+    "ClusterQueue": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "ClusterQueue",
+      "summaryPattern": "{localQueue}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "localQueue": {
+          "displayName": "Local queue name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "clusterVisibility": {
+          "displayName": "Cluster visibilities",
+          "description": "Name of the cluster(s) this local queue should be visible in",
+          "documentation": "",
+          "type": "set",
+          "items": {
+            "displayName": "Cluster name",
+            "description": "",
+            "documentation": "",
+            "type": "text",
+            "constraints": [
+              {
+                "type": "NOT_EMPTY"
+              },
+              {
+                "type": "LENGTH",
+                "maxLength": 200,
+                "minLength": 1
+              }
+            ]
+          },
+          "nullable": false,
+          "metadata": {
+            "addItemButton": "Add cluster visibility"
+          },
+          "minObjects": 0,
+          "maxObjects": 100,
+          "modificationPolicy": "DEFAULT"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "name": {
+      "displayName": "Queue manager name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_EMPTY"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 200,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "clusters": {
+      "displayName": "Clusters",
+      "description": "Name of the cluster(s) this queue manager is part of",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "Cluster name",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "NOT_EMPTY"
+          },
+          {
+            "type": "LENGTH",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add cluster"
+      },
+      "minObjects": 0,
+      "maxObjects": 10000,
+      "modificationPolicy": "DEFAULT"
+    },
+    "aliasQueues": {
+      "displayName": "Alias queues",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/AliasQueue"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add alias queue"
+      },
+      "minObjects": 0,
+      "maxObjects": 10000,
+      "modificationPolicy": "DEFAULT"
+    },
+    "remoteQueues": {
+      "displayName": "Remote queues",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/RemoteQueue"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add remote queue"
+      },
+      "minObjects": 0,
+      "maxObjects": 10000,
+      "modificationPolicy": "DEFAULT"
+    },
+    "clusterQueues": {
+      "displayName": "Cluster queues",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/ClusterQueue"
+        }
+      },
+      "nullable": false,
+      "metadata": {
+        "addItemButton": "Add cluster queue"
+      },
+      "minObjects": 0,
+      "maxObjects": 10000,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "Queue manager name must be unique.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "addItemButton": "Add queue manager"
+  }
+}

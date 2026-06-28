@@ -1,6 +1,6 @@
 {
   "source": "live",
-  "count": 305,
+  "count": 321,
   "schemas": {
     "app:dynatrace.azure.connector:microsoft-entra-identity-developer-connection": {
       "version": "0.2.2",
@@ -15,7 +15,7 @@
       "displayName": "Class Variables Collection"
     },
     "app:dynatrace.devobs.debugger:git.on.prem": {
-      "version": "0.4",
+      "version": "0.5",
       "displayName": "Git On-Premise Servers"
     },
     "app:dynatrace.discovery.coverage:discovery.findings.default.rules.schema": {
@@ -67,7 +67,7 @@
       "displayName": "PagerDuty Connections"
     },
     "app:dynatrace.quickstart:dynatrace.quickstart.token-config": {
-      "version": "1",
+      "version": "1.1",
       "displayName": "QuickStart Token Configuration"
     },
     "app:dynatrace.redhat.ansible:automation-controller.connection": {
@@ -101,6 +101,10 @@
     "builtin:alerting.connectivity-alerts": {
       "version": "1",
       "displayName": "Connectivity alerts"
+    },
+    "builtin:anomaly-detection.databases": {
+      "version": "0.0.18",
+      "displayName": "Anomaly detection for databases"
     },
     "builtin:anomaly-detection.holiday-aware-baseline": {
       "version": "1.0.2",
@@ -187,7 +191,7 @@
       "displayName": "Security notifications"
     },
     "builtin:appsec.runtime-vulnerability-detection": {
-      "version": "3.12.1",
+      "version": "3.13",
       "displayName": "Vulnerability Analytics: General settings"
     },
     "builtin:appsec.third-party-vulnerability-kubernetes-label-rule-settings": {
@@ -197,6 +201,22 @@
     "builtin:appsec.third-party-vulnerability-rule-settings": {
       "version": "1",
       "displayName": "Vulnerability Analytics: Monitoring rules for third-party vulnerabilities"
+    },
+    "builtin:attribute-allow-list": {
+      "version": "0.0.19",
+      "displayName": "Allowed attributes"
+    },
+    "builtin:attribute-block-list": {
+      "version": "0.0.2",
+      "displayName": "Blocked attributes"
+    },
+    "builtin:attribute-masking": {
+      "version": "0.0.4",
+      "displayName": "Attribute data masking"
+    },
+    "builtin:attributes-preferences": {
+      "version": "0.0.4",
+      "displayName": "Preferences"
     },
     "builtin:automation.approval": {
       "version": "0.4",
@@ -243,7 +263,7 @@
       "displayName": "Anomaly detectors"
     },
     "builtin:deployment.activegate.updates": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "displayName": "ActiveGate updates"
     },
     "builtin:deployment.management.update-windows": {
@@ -351,11 +371,11 @@
       "displayName": "Global trace ingest rate control"
     },
     "builtin:health-experience.cloud-alert": {
-      "version": "1.5.1",
+      "version": "1.21",
       "displayName": "Cloud health alerts settings"
     },
     "builtin:health-experience.frontend-alert": {
-      "version": "1.3",
+      "version": "1.3.4",
       "displayName": "Frontend health alerts"
     },
     "builtin:host.monitoring": {
@@ -417,6 +437,10 @@
     "builtin:infrastructure.disk.edge.anomaly-detectors": {
       "version": "0.1",
       "displayName": "Anomaly detection for infrastructure: Disk Edge"
+    },
+    "builtin:kubernetes.generic.metadata.enrichment": {
+      "version": "1.5",
+      "displayName": "Kubernetes Telemetry Enrichment"
     },
     "builtin:kubernetes.security-posture-management": {
       "version": "1",
@@ -522,6 +546,14 @@
       "version": "0.0.2",
       "displayName": "IBM Integration Bus | IBM App Connect Enterprise"
     },
+    "builtin:monitoredentities.generic.relation": {
+      "version": "1.2",
+      "displayName": "Generic relationships"
+    },
+    "builtin:monitoredentities.generic.type": {
+      "version": "1.5",
+      "displayName": "Generic types"
+    },
     "builtin:nettracer.traffic": {
       "version": "1.0.2",
       "displayName": "NetTracer traffic"
@@ -547,283 +579,303 @@
       "displayName": "OneAgent side masking"
     },
     "builtin:openpipeline.application.snapshots.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (application.snapshots)"
     },
     "builtin:openpipeline.application.snapshots.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (application.snapshots)"
     },
     "builtin:openpipeline.application.snapshots.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (application.snapshots)"
     },
     "builtin:openpipeline.application.snapshots.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (application.snapshots)"
     },
     "builtin:openpipeline.application.snapshots.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (application.snapshots)"
     },
     "builtin:openpipeline.bizevents.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (bizevents)"
     },
     "builtin:openpipeline.bizevents.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (bizevents)"
     },
     "builtin:openpipeline.bizevents.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (bizevents)"
     },
     "builtin:openpipeline.bizevents.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (bizevents)"
     },
     "builtin:openpipeline.bizevents.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (bizevents)"
     },
     "builtin:openpipeline.davis.events.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (davis.events)"
     },
     "builtin:openpipeline.davis.events.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (davis.events)"
     },
     "builtin:openpipeline.davis.events.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (davis.events)"
     },
     "builtin:openpipeline.davis.events.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (davis.events)"
     },
     "builtin:openpipeline.davis.events.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (davis.events)"
     },
     "builtin:openpipeline.davis.problems.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (davis.problems)"
     },
     "builtin:openpipeline.davis.problems.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (davis.problems)"
     },
     "builtin:openpipeline.davis.problems.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (davis.problems)"
     },
     "builtin:openpipeline.davis.problems.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (davis.problems)"
     },
     "builtin:openpipeline.davis.problems.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (davis.problems)"
     },
     "builtin:openpipeline.events.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (events)"
     },
     "builtin:openpipeline.events.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (events)"
     },
     "builtin:openpipeline.events.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (events)"
     },
     "builtin:openpipeline.events.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (events)"
     },
     "builtin:openpipeline.events.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (events)"
     },
     "builtin:openpipeline.events.sdlc.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (events.sdlc)"
     },
     "builtin:openpipeline.events.sdlc.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (events.sdlc)"
     },
     "builtin:openpipeline.events.sdlc.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (events.sdlc)"
     },
     "builtin:openpipeline.events.sdlc.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (events.sdlc)"
     },
     "builtin:openpipeline.events.sdlc.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (events.sdlc)"
     },
     "builtin:openpipeline.events.security.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (events.security)"
     },
     "builtin:openpipeline.events.security.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (events.security)"
     },
     "builtin:openpipeline.events.security.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (events.security)"
     },
     "builtin:openpipeline.events.security.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (events.security)"
     },
     "builtin:openpipeline.events.security.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (events.security)"
     },
     "builtin:openpipeline.logs.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (logs)"
     },
     "builtin:openpipeline.logs.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (logs)"
     },
     "builtin:openpipeline.logs.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (logs)"
     },
     "builtin:openpipeline.logs.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (logs)"
     },
     "builtin:openpipeline.logs.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (logs)"
     },
     "builtin:openpipeline.metrics.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (metrics)"
     },
     "builtin:openpipeline.metrics.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (metrics)"
     },
     "builtin:openpipeline.metrics.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (metrics)"
     },
     "builtin:openpipeline.metrics.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (metrics)"
     },
     "builtin:openpipeline.metrics.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (metrics)"
     },
     "builtin:openpipeline.security.events.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (security.events)"
     },
     "builtin:openpipeline.security.events.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (security.events)"
     },
     "builtin:openpipeline.security.events.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (security.events)"
     },
     "builtin:openpipeline.security.events.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (security.events)"
     },
     "builtin:openpipeline.security.events.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (security.events)"
     },
+    "builtin:openpipeline.smartscape.events.data-forwarding": {
+      "version": "1.69",
+      "displayName": "Data forwarding configuration (smartscape.events)"
+    },
+    "builtin:openpipeline.smartscape.events.ingest-sources": {
+      "version": "1.69",
+      "displayName": "Ingest sources configuration (smartscape.events)"
+    },
+    "builtin:openpipeline.smartscape.events.pipeline-groups": {
+      "version": "1.69",
+      "displayName": "Pipeline Groups configuration (smartscape.events)"
+    },
+    "builtin:openpipeline.smartscape.events.pipelines": {
+      "version": "1.69",
+      "displayName": "Ingest pipelines configuration (smartscape.events)"
+    },
+    "builtin:openpipeline.smartscape.events.routing": {
+      "version": "1.69",
+      "displayName": "Ingest routing configuration (smartscape.events)"
+    },
     "builtin:openpipeline.spans.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (spans)"
     },
     "builtin:openpipeline.spans.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (spans)"
     },
     "builtin:openpipeline.spans.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (spans)"
     },
     "builtin:openpipeline.spans.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (spans)"
     },
     "builtin:openpipeline.spans.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (spans)"
     },
     "builtin:openpipeline.system.events.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (system.events)"
     },
     "builtin:openpipeline.system.events.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (system.events)"
     },
     "builtin:openpipeline.system.events.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (system.events)"
     },
     "builtin:openpipeline.system.events.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (system.events)"
     },
     "builtin:openpipeline.system.events.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (system.events)"
     },
     "builtin:openpipeline.user.events.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (user.events)"
     },
     "builtin:openpipeline.user.events.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (user.events)"
     },
     "builtin:openpipeline.user.events.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (user.events)"
     },
     "builtin:openpipeline.user.events.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (user.events)"
     },
     "builtin:openpipeline.user.events.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (user.events)"
     },
     "builtin:openpipeline.usersessions.data-forwarding": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Data forwarding configuration (usersessions)"
     },
     "builtin:openpipeline.usersessions.ingest-sources": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest sources configuration (usersessions)"
     },
     "builtin:openpipeline.usersessions.pipeline-groups": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Pipeline Groups configuration (usersessions)"
     },
     "builtin:openpipeline.usersessions.pipelines": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest pipelines configuration (usersessions)"
     },
     "builtin:openpipeline.usersessions.routing": {
-      "version": "1.65",
+      "version": "1.69",
       "displayName": "Ingest routing configuration (usersessions)"
     },
     "builtin:opentelemetry-metrics": {
@@ -875,7 +927,7 @@
       "displayName": "Process instance snapshots"
     },
     "builtin:process.built-in-process-monitoring-rule": {
-      "version": "0.4.7",
+      "version": "0.4.8",
       "displayName": "Built-in process monitoring rules"
     },
     "builtin:process.custom-process-monitoring-rule": {
@@ -927,7 +979,7 @@
       "displayName": "Enablement and cost control"
     },
     "builtin:rum.mobile.frontend-backend-linking": {
-      "version": "0.0.1",
+      "version": "1",
       "displayName": "Frontend-backend linking"
     },
     "builtin:rum.mobile.key-performance-metrics": {
@@ -1011,7 +1063,7 @@
       "displayName": "Enablement and cost control"
     },
     "builtin:rum.web.frontend-backend-linking": {
-      "version": "0.0.1",
+      "version": "1",
       "displayName": "Frontend-backend linking"
     },
     "builtin:rum.web.injection.cookie": {
@@ -1070,6 +1122,14 @@
       "version": "0.8.2",
       "displayName": "Service Detection v2 for OneAgent"
     },
+    "builtin:service-detection.external-web-request": {
+      "version": "2.1.14",
+      "displayName": "Service detection rules for External Web Requests"
+    },
+    "builtin:service-detection.external-web-service": {
+      "version": "2.1.10",
+      "displayName": "Service detection rules for External Web Services"
+    },
     "builtin:service-detection.full-web-request": {
       "version": "2.1.15",
       "displayName": "Service detection rules for Full Web Requests"
@@ -1079,7 +1139,7 @@
       "displayName": "Service detection rules for Full Web Services"
     },
     "builtin:service-splitting-rules": {
-      "version": "0.0.15",
+      "version": "0.0.16",
       "displayName": "Service splitting"
     },
     "builtin:sessionreplay.cookie": {
@@ -1197,6 +1257,10 @@
     "builtin:synthetic.synthetic-availability-settings": {
       "version": "1.0.1",
       "displayName": "Synthetic availability"
+    },
+    "builtin:tokens.token-settings": {
+      "version": "2.0.2",
+      "displayName": "Access tokens"
     },
     "builtin:trace.ingest.control": {
       "version": "0.1.3",

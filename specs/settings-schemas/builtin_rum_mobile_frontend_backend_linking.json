@@ -1,1 +1,28 @@
-{"dynatrace":"1","schemaId":"builtin:rum.mobile.frontend-backend-linking","displayName":"Frontend-backend linking","description":"Configure frontend-backend linking via [W3C trace context](https://dt-url.net/t0039ye).","documentation":"","version":"1","multiObject":false,"maxObjects":1,"maturity":"EARLY_ADOPTER","allowedScopes":["MOBILE_APPLICATION"],"enums":{},"types":{},"properties":{"enabled":{"displayName":"Enable frontend-backend linking via W3C trace context","description":"When enabled, OneAgent for Mobile includes the W3C trace context in request headers.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.mobile.frontend-backend-linking",
+  "displayName": "Frontend-backend linking",
+  "description": "Configure frontend-backend linking via [W3C trace context](https://dt-url.net/t0039ye).",
+  "documentation": "",
+  "version": "1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "MOBILE_APPLICATION"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Enable frontend-backend linking via W3C trace context",
+      "description": "When enabled, OneAgent for Mobile includes the W3C trace context in request headers.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:tokens.token-settings",
+  "displayName": "Access tokens",
+  "description": "Configure Dynatrace API access token and personal access token generation. For details about tokens and authentication go to [Dynatrace API authentication documentation](https://dt-url.net/8543sda).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:integration.token-management",
+    "group:integration"
+  ],
+  "version": "2.0.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "newDynatraceTokenFormatEnabled": {
+      "displayName": "Create Dynatrace API tokens in the new format",
+      "description": "Check out this [blog post](https://dt-url.net/ho02y5r) to find out more about the new Dynatrace API token format.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "patEnabled": {
+      "displayName": "Enable personal access tokens",
+      "description": "Allow users of this environment to generate personal access tokens based on user permissions. \n Note that existing personal access tokens will become unusable while this setting is disabled.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  }
+}

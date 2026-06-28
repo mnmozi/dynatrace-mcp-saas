@@ -1,1 +1,47 @@
-{"dynatrace":"1","schemaId":"builtin:monitored-technologies.go","displayName":"Go","description":"By default, Go monitoring is enabled on all hosts. If you want to disable Go monitoring on selected hosts, disable it on these hosts via their settings.\n\nIf you want to enable Go monitoring only on selected hosts, disable global Go monitoring and enable it on these hosts via their settings.","documentation":"","version":"0.0.3","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","environment"],"enums":{},"types":{},"properties":{"enabled":{"displayName":"Monitor Go","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"enabledGoStaticMonitoring":{"displayName":"Enable Go static application monitoring","description":"Learn more about the [known limitations for Go static monitoring](https://www.dynatrace.com/support/help/technology-support/application-software/go/support/go-known-limitations#limitations)","documentation":"","type":"boolean","nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"metadata":{"minAgentVersion":"1.157"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:monitored-technologies.go",
+  "displayName": "Go",
+  "description": "By default, Go monitoring is enabled on all hosts. If you want to disable Go monitoring on selected hosts, disable it on these hosts via their settings.\n\nIf you want to enable Go monitoring only on selected hosts, disable global Go monitoring and enable it on these hosts via their settings.",
+  "documentation": "",
+  "version": "0.0.3",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Monitor Go",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "enabledGoStaticMonitoring": {
+      "displayName": "Enable Go static application monitoring",
+      "description": "Learn more about the [known limitations for Go static monitoring](https://www.dynatrace.com/support/help/technology-support/application-software/go/support/go-known-limitations#limitations)",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  },
+  "metadata": {
+    "minAgentVersion": "1.157"
+  }
+}

@@ -1,1 +1,103 @@
-{"dynatrace":"1","schemaId":"builtin:ownership.config","displayName":"Configure ownership","description":"Configure keys for ownership metadata and tags. [See documentation](https://dt-url.net/ownership-custom-keys)","documentation":"","schemaGroups":["group:ownership"],"version":"1.0.4","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{"OwnershipIdentifier":{"version":"0","versionInfo":"","displayName":"OwnershipIdentifier","summaryPattern":"{key}","description":"","documentation":"","properties":{"enabled":{"displayName":"Enabled","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"key":{"displayName":"Key for ownership metadata and tags","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":63,"minLength":1},{"type":"TRIMMED"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"ownershipIdentifiers":{"displayName":"Keys for ownership metadata and tags","description":"Tags and metadata are key-value pairs. Define keys for tags and metadata that are considered for ownership. If a tag or any metadata starts with a key defined below, the value of the tag or metadata is considered a team identifier.","documentation":"","type":"list","items":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/types/OwnershipIdentifier"}},"nullable":false,"constraints":[{"type":"UNIQUE","customMessage":"There is already an ownership-identifier with this key.","uniqueProperties":["key"]}],"metadata":{"addItemButton":"Add key"},"uiCustomization":{"table":{"columns":[{"displayName":"Key","builtinColumnRef":"summary"}]}},"minObjects":1,"maxObjects":5,"modificationPolicy":"DEFAULT"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:ownership.config",
+  "displayName": "Configure ownership",
+  "description": "Configure keys for ownership metadata and tags. [See documentation](https://dt-url.net/ownership-custom-keys)",
+  "documentation": "",
+  "schemaGroups": [
+    "group:ownership"
+  ],
+  "version": "1.0.4",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "OwnershipIdentifier": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "OwnershipIdentifier",
+      "summaryPattern": "{key}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "enabled": {
+          "displayName": "Enabled",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": true
+        },
+        "key": {
+          "displayName": "Key for ownership metadata and tags",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 63,
+              "minLength": 1
+            },
+            {
+              "type": "TRIMMED"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "ownershipIdentifiers": {
+      "displayName": "Keys for ownership metadata and tags",
+      "description": "Tags and metadata are key-value pairs. Define keys for tags and metadata that are considered for ownership. If a tag or any metadata starts with a key defined below, the value of the tag or metadata is considered a team identifier.",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/OwnershipIdentifier"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "There is already an ownership-identifier with this key.",
+          "uniqueProperties": [
+            "key"
+          ]
+        }
+      ],
+      "metadata": {
+        "addItemButton": "Add key"
+      },
+      "uiCustomization": {
+        "table": {
+          "columns": [
+            {
+              "displayName": "Key",
+              "builtinColumnRef": "summary"
+            }
+          ]
+        }
+      },
+      "minObjects": 1,
+      "maxObjects": 5,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

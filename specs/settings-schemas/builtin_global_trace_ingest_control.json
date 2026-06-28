@@ -1,1 +1,40 @@
-{"dynatrace":"1","schemaId":"builtin:global.trace.ingest.control","displayName":"Global trace ingest rate control","description":"Use this setting to control how much of your total licensed Full-Stack trace volume is allocated to [Adaptive Traffic Management](https://dt-url.net/jk036gk) (ATM) as usable adaptive trace volume. This includes any additionally configured [extended trace volume](https://dt-url.net/nf233j7). \n\nThis self-service capability lets you reduce your usable Full-Stack trace volume when it’s not needed. \n\nFor instance, you might request extended ingest for major events – say, five times your included trace volume – and then, once the event is over, **reduce the** [usable adaptive trace volume](https://dt-url.net/p7436hg) **percentage** to 30% to reduce [extended trace ingest](https://dt-url.net/nf233j7) coming from the OneAgent. \n\nYou might also ingest OpenTelemetry traces that originate from a Full-Stack monitored host or application. These traces benefit from the [Full-Stack included trace volume](https://dt-url.net/2m636ur), but cannot be adaptively sampled by Adaptive Traffic Management as OpenTelemetry traces are usually rate-limited (e.g., 500 per minute) or sampled at fixed rates (e.g., 50%). Therefore, they can exceed the included trace volume. \n\nReducing the [usable adaptive trace volume](https://dt-url.net/p7436hg) to, e.g., 50% will free up half of the available volume for OpenTelemetry trace data, reducing the amount of traces charged as [Traces - Ingest & Process](https://dt-url.net/8d036w2), making this also an efficient cost-control mechanism.  \n\nFor more details about this new control, see [Adaptive Traffic Management with Dynatrace Platform Subscription IDPS](https://dt-url.net/t5836j8). For more details about how to configure new settings, see [Settings API](https://dt-url.net/hqe3610). ","documentation":"","schemaGroups":["group:service-monitoring","group:preferences"],"version":"0.0.3","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"usableAdaptiveTraceVolumePercentage":{"displayName":"Usable adaptive trace volume percentage","description":"The default setting of 100% allows ATM to distribute all usable adaptive volume to the agents. Setting 50% limits distribution to half of the usable adaptive volume. The minimum configurable percentage is 1%.  ","documentation":"A value of 80% means that 80% of the usable adaptive volume is distributed to the agents, while the remaining 20% is not used for adaptive sampling and could be reserved for, e.g., fixed-rate sampling.","type":"integer","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":100}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:global.trace.ingest.control",
+  "displayName": "Global trace ingest rate control",
+  "description": "Use this setting to control how much of your total licensed Full-Stack trace volume is allocated to [Adaptive Traffic Management](https://dt-url.net/jk036gk) (ATM) as usable adaptive trace volume. This includes any additionally configured [extended trace volume](https://dt-url.net/nf233j7). \n\nThis self-service capability lets you reduce your usable Full-Stack trace volume when it’s not needed. \n\nFor instance, you might request extended ingest for major events – say, five times your included trace volume – and then, once the event is over, **reduce the** [usable adaptive trace volume](https://dt-url.net/p7436hg) **percentage** to 30% to reduce [extended trace ingest](https://dt-url.net/nf233j7) coming from the OneAgent. \n\nYou might also ingest OpenTelemetry traces that originate from a Full-Stack monitored host or application. These traces benefit from the [Full-Stack included trace volume](https://dt-url.net/2m636ur), but cannot be adaptively sampled by Adaptive Traffic Management as OpenTelemetry traces are usually rate-limited (e.g., 500 per minute) or sampled at fixed rates (e.g., 50%). Therefore, they can exceed the included trace volume. \n\nReducing the [usable adaptive trace volume](https://dt-url.net/p7436hg) to, e.g., 50% will free up half of the available volume for OpenTelemetry trace data, reducing the amount of traces charged as [Traces - Ingest & Process](https://dt-url.net/8d036w2), making this also an efficient cost-control mechanism.  \n\nFor more details about this new control, see [Adaptive Traffic Management with Dynatrace Platform Subscription IDPS](https://dt-url.net/t5836j8). For more details about how to configure new settings, see [Settings API](https://dt-url.net/hqe3610). ",
+  "documentation": "",
+  "schemaGroups": [
+    "group:service-monitoring",
+    "group:preferences"
+  ],
+  "version": "0.0.3",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "usableAdaptiveTraceVolumePercentage": {
+      "displayName": "Usable adaptive trace volume percentage",
+      "description": "The default setting of 100% allows ATM to distribute all usable adaptive volume to the agents. Setting 50% limits distribution to half of the usable adaptive volume. The minimum configurable percentage is 1%.  ",
+      "documentation": "A value of 80% means that 80% of the usable adaptive volume is distributed to the agents, while the remaining 20% is not used for adaptive sampling and could be reserved for, e.g., fixed-rate sampling.",
+      "type": "integer",
+      "subType": "percentage",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "RANGE",
+          "maximum": 100,
+          "minimum": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": 100
+    }
+  }
+}

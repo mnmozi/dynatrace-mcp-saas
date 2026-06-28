@@ -1,1 +1,346 @@
-{"dynatrace":"1","schemaId":"builtin:network-connection-monitoring","displayName":"Network connection monitoring","description":"OneAgent automatically monitors the critical network traffic on your hosts. These settings can be overridden at a host group and host level.","documentation":"","schemaGroups":["group:network-and-discovery"],"version":"0.0.13","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["HOST","HOST_GROUP","environment"],"enums":{"reportedConnections":{"displayName":"Reported connections","description":"","documentation":"","items":[{"value":"all","displayName":"All"},{"value":"auto","displayName":"Critical connections"},{"value":"custom","displayName":"Custom"}],"type":"enum"},"ipFilterMode":{"displayName":"IP Filter mode","description":"","documentation":"","items":[{"value":"all","displayName":"All"},{"value":"private","displayName":"Private traffic only"},{"value":"public","displayName":"Public traffic only"},{"value":"inclusion","displayName":"Custom inclusion"},{"value":"exclusion","displayName":"Custom exclusion"}],"type":"enum"}},"types":{"aggregationParams":{"version":"0","versionInfo":"","displayName":"Aggregation","summaryPattern":"","description":"","documentation":"","properties":{"interval":{"displayName":"Aggregation interval [min.]","description":"Aggregate similar connections records across an interval. Allowed range: 1-10 min.","documentation":"Aggregate similar connection records across an interval. For example, 20 connections from the same source process to the same destination IP and port, would be aggregated into one log with count=20. 1 minute is the default and recommended.","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":10,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":1},"rateLimit":{"displayName":"Rate limit","description":"Rate limit for connections reported per host per minute. Default 100.","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":4294967295,"minimum":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":100}},"type":"object"},"reportedConnectionsThresholds":{"version":"0","versionInfo":"","displayName":"reported connections thresholds","summaryPattern":"","description":"","documentation":"","properties":{"bytesThreshold":{"displayName":"Bytes threshold [bytes]","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":4294967295,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":10000},"connectivityThreshold":{"displayName":"Connectivity threshold [%]","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":30.0},"retransmissionsThreshold":{"displayName":"Retransmissions threshold [%]","description":"","documentation":"","type":"float","subType":"percentage","nullable":false,"constraints":[{"type":"RANGE","maximum":100.0,"minimum":0.0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":30.0},"rttThreshold":{"displayName":"RTT (round trip time) threshold [ms]","description":"","documentation":"","type":"integer","nullable":false,"constraints":[{"type":"RANGE","maximum":10000,"minimum":0}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":1000}},"type":"object"}},"properties":{"enabled":{"displayName":"Enable OneAgent network connection monitoring","description":"When disabled, OneAgent will not collect network data about critical traffic. Enabled by default. Consumes Events powered by Grail licensing. Requires OneAgent version 1.337+","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"ipFilterMode":{"displayName":"IP Filter","description":"","documentation":"Choose which IP addresses will be included in network connection monitoring. Available options: all, public traffic only (all globally routable addresses), private traffic only (addresses within IPv4 or IPv6 Private Address Ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fd00::/8), custom exclusion, or custom inclusion","type":{"$ref":"#/enums/ipFilterMode"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"all"},"IPaddresses":{"displayName":"IP addresses:","description":"Use comma separated CIDR notation, e.g. 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16","documentation":"IP addresses to include or exclude","type":"text","subType":"multiline","nullable":false,"constraints":[{"type":"LENGTH","maxLength":5000,"minLength":1},{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"ipFilterRule","skipAsyncValidation":false}],"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"enabled","expectedValue":true},{"type":"OR","preconditions":[{"type":"EQUALS","property":"ipFilterMode","expectedValue":"inclusion"},{"type":"EQUALS","property":"ipFilterMode","expectedValue":"exclusion"}]}]},"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"reportedConnections":{"displayName":"Reported connections","description":"Defines which connections should be reported. Defaults to Critical connections, which reports only connection refused for new connections and connection reset for existing. Optionally, log all connections or set custom thresholds.","documentation":"","type":{"$ref":"#/enums/reportedConnections"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"auto"},"reportedConnectionsThresholds":{"displayName":"Reported connections thresholds","description":"If any of the thresholds are exceeded, then connection is reported.","documentation":"","type":{"$ref":"#/types/reportedConnectionsThresholds"},"nullable":false,"precondition":{"type":"AND","preconditions":[{"type":"EQUALS","property":"enabled","expectedValue":true},{"type":"EQUALS","property":"reportedConnections","expectedValue":"custom"}]},"maxObjects":1,"modificationPolicy":"DEFAULT"},"aggregation":{"displayName":"Aggregation","description":"","documentation":"","type":{"$ref":"#/types/aggregationParams"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT"},"enabledClassic":{"displayName":"Enable classic OneAgent process connection monitoring","description":"Classic OneAgent process connection monitoring is not compatible with Grail and will be removed at a later time. These metrics are only used on the Process Connections screen within Classic Host Networking. Defaults to off.","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":false}},"metadata":{"minAgentVersion":"1.337"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:network-connection-monitoring",
+  "displayName": "Network connection monitoring",
+  "description": "OneAgent automatically monitors the critical network traffic on your hosts. These settings can be overridden at a host group and host level.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:network-and-discovery"
+  ],
+  "version": "0.0.13",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "HOST",
+    "HOST_GROUP",
+    "environment"
+  ],
+  "enums": {
+    "reportedConnections": {
+      "displayName": "Reported connections",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "all",
+          "displayName": "All"
+        },
+        {
+          "value": "auto",
+          "displayName": "Critical connections"
+        },
+        {
+          "value": "custom",
+          "displayName": "Custom"
+        }
+      ],
+      "type": "enum"
+    },
+    "ipFilterMode": {
+      "displayName": "IP Filter mode",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "all",
+          "displayName": "All"
+        },
+        {
+          "value": "private",
+          "displayName": "Private traffic only"
+        },
+        {
+          "value": "public",
+          "displayName": "Public traffic only"
+        },
+        {
+          "value": "inclusion",
+          "displayName": "Custom inclusion"
+        },
+        {
+          "value": "exclusion",
+          "displayName": "Custom exclusion"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "aggregationParams": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "Aggregation",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "interval": {
+          "displayName": "Aggregation interval [min.]",
+          "description": "Aggregate similar connections records across an interval. Allowed range: 1-10 min.",
+          "documentation": "Aggregate similar connection records across an interval. For example, 20 connections from the same source process to the same destination IP and port, would be aggregated into one log with count=20. 1 minute is the default and recommended.",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 10,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1
+        },
+        "rateLimit": {
+          "displayName": "Rate limit",
+          "description": "Rate limit for connections reported per host per minute. Default 100.",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 4294967295,
+              "minimum": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 100
+        }
+      },
+      "type": "object"
+    },
+    "reportedConnectionsThresholds": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "reported connections thresholds",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "bytesThreshold": {
+          "displayName": "Bytes threshold [bytes]",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 4294967295,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 10000
+        },
+        "connectivityThreshold": {
+          "displayName": "Connectivity threshold [%]",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 30
+        },
+        "retransmissionsThreshold": {
+          "displayName": "Retransmissions threshold [%]",
+          "description": "",
+          "documentation": "",
+          "type": "float",
+          "subType": "percentage",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 100,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 30
+        },
+        "rttThreshold": {
+          "displayName": "RTT (round trip time) threshold [ms]",
+          "description": "",
+          "documentation": "",
+          "type": "integer",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "RANGE",
+              "maximum": 10000,
+              "minimum": 0
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": 1000
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "enabled": {
+      "displayName": "Enable OneAgent network connection monitoring",
+      "description": "When disabled, OneAgent will not collect network data about critical traffic. Enabled by default. Consumes Events powered by Grail licensing. Requires OneAgent version 1.337+",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "ipFilterMode": {
+      "displayName": "IP Filter",
+      "description": "",
+      "documentation": "Choose which IP addresses will be included in network connection monitoring. Available options: all, public traffic only (all globally routable addresses), private traffic only (addresses within IPv4 or IPv6 Private Address Ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fd00::/8), custom exclusion, or custom inclusion",
+      "type": {
+        "$ref": "#/enums/ipFilterMode"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "all"
+    },
+    "IPaddresses": {
+      "displayName": "IP addresses:",
+      "description": "Use comma separated CIDR notation, e.g. 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+      "documentation": "IP addresses to include or exclude",
+      "type": "text",
+      "subType": "multiline",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 5000,
+          "minLength": 1
+        },
+        {
+          "type": "CUSTOM_VALIDATOR_REF",
+          "customValidatorId": "ipFilterRule",
+          "skipAsyncValidation": false
+        }
+      ],
+      "precondition": {
+        "type": "AND",
+        "preconditions": [
+          {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          {
+            "type": "OR",
+            "preconditions": [
+              {
+                "type": "EQUALS",
+                "property": "ipFilterMode",
+                "expectedValue": "inclusion"
+              },
+              {
+                "type": "EQUALS",
+                "property": "ipFilterMode",
+                "expectedValue": "exclusion"
+              }
+            ]
+          }
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "reportedConnections": {
+      "displayName": "Reported connections",
+      "description": "Defines which connections should be reported. Defaults to Critical connections, which reports only connection refused for new connections and connection reset for existing. Optionally, log all connections or set custom thresholds.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/reportedConnections"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "auto"
+    },
+    "reportedConnectionsThresholds": {
+      "displayName": "Reported connections thresholds",
+      "description": "If any of the thresholds are exceeded, then connection is reported.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/reportedConnectionsThresholds"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "AND",
+        "preconditions": [
+          {
+            "type": "EQUALS",
+            "property": "enabled",
+            "expectedValue": true
+          },
+          {
+            "type": "EQUALS",
+            "property": "reportedConnections",
+            "expectedValue": "custom"
+          }
+        ]
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "aggregation": {
+      "displayName": "Aggregation",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/types/aggregationParams"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "enabledClassic": {
+      "displayName": "Enable classic OneAgent process connection monitoring",
+      "description": "Classic OneAgent process connection monitoring is not compatible with Grail and will be removed at a later time. These metrics are only used on the Process Connections screen within Classic Host Networking. Defaults to off.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    }
+  },
+  "metadata": {
+    "minAgentVersion": "1.337"
+  }
+}

@@ -1,1 +1,135 @@
-{"dynatrace":"1","schemaId":"app:dynatrace.quickstart:dynatrace.quickstart.token-config","displayName":"QuickStart Token Configuration","description":"Stores platform token configuration for the QuickStart app, scoped per user.","documentation":"","version":"1.1","multiObject":true,"ordered":false,"maxObjects":100,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment"],"enums":{},"types":{},"properties":{"serviceUserUuid":{"displayName":"Service User UUID","description":"UUID of the dedicated service user","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"serviceUserGroupUuid":{"displayName":"Service User Group UUID","description":"Group UUID of the service user","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"accessToken":{"displayName":"Access Token","description":"Platform access token (masked in browser reads, plaintext via serverless)","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"accessTokenId":{"displayName":"Access Token ID","description":"Platform token ID for the access token","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"platformToken":{"displayName":"Platform Token","description":"Platform token (masked in browser reads, plaintext via serverless)","documentation":"","type":"secret","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"platformTokenId":{"displayName":"Platform Token ID","description":"Platform token ID for the platform token","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"platformTokenVersion":{"displayName":"Platform Token Version","description":"Integer version of the scope set used to create the platform token","documentation":"","type":"integer","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":0}},"metadata":{"appName":"QuickStart"},"ownerBasedAccessControl":true}
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.quickstart:dynatrace.quickstart.token-config",
+  "displayName": "QuickStart Token Configuration",
+  "description": "Stores platform token configuration for the QuickStart app, scoped per user.",
+  "documentation": "",
+  "version": "1.1",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "serviceUserUuid": {
+      "displayName": "Service User UUID",
+      "description": "UUID of the dedicated service user",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "serviceUserGroupUuid": {
+      "displayName": "Service User Group UUID",
+      "description": "Group UUID of the service user",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "accessToken": {
+      "displayName": "Access Token",
+      "description": "Platform access token (masked in browser reads, plaintext via serverless)",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "accessTokenId": {
+      "displayName": "Access Token ID",
+      "description": "Platform token ID for the access token",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "platformToken": {
+      "displayName": "Platform Token",
+      "description": "Platform token (masked in browser reads, plaintext via serverless)",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "platformTokenId": {
+      "displayName": "Platform Token ID",
+      "description": "Platform token ID for the platform token",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "platformTokenVersion": {
+      "displayName": "Platform Token Version",
+      "description": "Integer version of the scope set used to create the platform token",
+      "documentation": "",
+      "type": "integer",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": 0
+    }
+  },
+  "metadata": {
+    "appName": "QuickStart"
+  },
+  "ownerBasedAccessControl": true
+}

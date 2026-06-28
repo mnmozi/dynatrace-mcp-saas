@@ -1,1 +1,45 @@
-{"dynatrace":"1","schemaId":"builtin:synthetic.multiprotocol.name","displayName":"Monitor name","description":"Define the display name of your network availability monitor","documentation":"","schemaGroups":["group:synthetic.multiprotocol"],"version":"1.1.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["MULTIPROTOCOL_MONITOR"],"enums":{},"types":{},"properties":{"name":{"displayName":"Monitor name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customValidatorId":"synthetic-monitor-count-validator","skipAsyncValidation":false}]}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.multiprotocol.name",
+  "displayName": "Monitor name",
+  "description": "Define the display name of your network availability monitor",
+  "documentation": "",
+  "schemaGroups": [
+    "group:synthetic.multiprotocol"
+  ],
+  "version": "1.1.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "MULTIPROTOCOL_MONITOR"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Monitor name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "synthetic-monitor-count-validator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

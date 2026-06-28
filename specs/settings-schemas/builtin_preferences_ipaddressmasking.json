@@ -1,1 +1,71 @@
-{"dynatrace":"1","schemaId":"builtin:preferences.ipaddressmasking","displayName":"Anonymize End-User IP Addresses","description":"Control what data Dynatrace is capturing. Dynatrace can capture IP addresses and GPS coordinates of end users to determine the location from which they access your application. IP Address Masking truncates IP addresses captured from your end users' web browsers and the data captured by OneAgent for effective de-identification.","documentation":"\n\nTo learn more, visit [Mask IPs and GPS coordinates](https://dt-url.net/mask-end-users-ip-addresses). For further details on Dynatrace's privacy settings, visit [Data privacy and security](https://dt-url.net/zn03sq4) documentation.","schemaGroups":["group:rum-general","group:preferences","group:rum-settings","group:privacy-settings"],"version":"1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["MOBILE_APPLICATION","CUSTOM_APPLICATION","APPLICATION","environment"],"enums":{"IpAddressMaskingOption":{"displayName":"IpAddressMaskingOption","description":"","documentation":"","items":[{"value":"all","displayName":"Mask all IP addresses"},{"value":"public","displayName":"Mask only public IP addresses"}],"type":"enum"}},"types":{},"properties":{"enabled":{"displayName":"Mask end-user IP addresses and GPS coordinates","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true},"type":{"displayName":"","description":"","documentation":"","type":{"$ref":"#/enums/IpAddressMaskingOption"},"nullable":false,"precondition":{"type":"EQUALS","property":"enabled","expectedValue":true},"maxObjects":1,"modificationPolicy":"DEFAULT","default":"all"}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:preferences.ipaddressmasking",
+  "displayName": "Anonymize End-User IP Addresses",
+  "description": "Control what data Dynatrace is capturing. Dynatrace can capture IP addresses and GPS coordinates of end users to determine the location from which they access your application. IP Address Masking truncates IP addresses captured from your end users' web browsers and the data captured by OneAgent for effective de-identification.",
+  "documentation": "\n\nTo learn more, visit [Mask IPs and GPS coordinates](https://dt-url.net/mask-end-users-ip-addresses). For further details on Dynatrace's privacy settings, visit [Data privacy and security](https://dt-url.net/zn03sq4) documentation.",
+  "schemaGroups": [
+    "group:rum-general",
+    "group:preferences",
+    "group:rum-settings",
+    "group:privacy-settings"
+  ],
+  "version": "1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "MOBILE_APPLICATION",
+    "CUSTOM_APPLICATION",
+    "APPLICATION",
+    "environment"
+  ],
+  "enums": {
+    "IpAddressMaskingOption": {
+      "displayName": "IpAddressMaskingOption",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "all",
+          "displayName": "Mask all IP addresses"
+        },
+        {
+          "value": "public",
+          "displayName": "Mask only public IP addresses"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {},
+  "properties": {
+    "enabled": {
+      "displayName": "Mask end-user IP addresses and GPS coordinates",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    },
+    "type": {
+      "displayName": "",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/IpAddressMaskingOption"
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "enabled",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "all"
+    }
+  }
+}

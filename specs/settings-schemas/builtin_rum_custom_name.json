@@ -1,1 +1,140 @@
-{"dynatrace":"1","schemaId":"builtin:rum.custom.name","displayName":"Application name and type","description":"This name is used to refer to your custom application throughout this Dynatrace environment. Be sure that your application has a meaningful name.\nTo use a different icon to represent your application, change the application type.","documentation":"","schemaGroups":["group:rum-general"],"version":"1.2","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["CUSTOM_APPLICATION"],"enums":{"ApplicationType":{"displayName":"Application type","description":"","documentation":"","items":[{"value":"iot","displayName":"Internet of Things","icon":"iot"},{"value":"embedded-pc","displayName":"Embedded Device","icon":"embedded-pc"},{"value":"ufo","displayName":"UFO","icon":"ufo"},{"value":"desktop","displayName":"Desktop","icon":"desktop"},{"value":"echo","displayName":"Amazon Echo","icon":"amazon-echo"},{"value":"hololens","displayName":"Microsoft Hololens","icon":"microsoft-hololens"}],"type":"enum"}},"types":{"ApplicationName":{"version":"0","versionInfo":"","displayName":"ApplicationName","summaryPattern":"","description":"","documentation":"","properties":{"name":{"displayName":"Name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":500,"minLength":1}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""}},"type":"object"}},"properties":{"applicationName":{"displayName":"Update application name","description":"","documentation":"","type":"text","nullable":false,"constraints":[{"type":"LENGTH","maxLength":255,"minLength":1},{"type":"TRIMMED"}],"maxObjects":1,"modificationPolicy":"DEFAULT","default":""},"applicationType":{"displayName":"Update application type","description":"","documentation":"","type":{"$ref":"#/enums/ApplicationType"},"nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":"desktop"}},"constraints":[{"type":"CUSTOM_VALIDATOR_REF","customMessage":"This scope does not identify a valid application.","customValidatorId":"valid-application-scope","skipAsyncValidation":false}],"schemaConstraints":[{"type":"MULTI_SCOPE_CUSTOM_VALIDATOR_REF","customMessage":"This name is already taken","customValidatorId":"name-unique-case-insensitive","skipAsyncValidation":false}],"metadata":{"reloadUiContext":"enabled"}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.custom.name",
+  "displayName": "Application name and type",
+  "description": "This name is used to refer to your custom application throughout this Dynatrace environment. Be sure that your application has a meaningful name.\nTo use a different icon to represent your application, change the application type.",
+  "documentation": "",
+  "schemaGroups": [
+    "group:rum-general"
+  ],
+  "version": "1.2",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "CUSTOM_APPLICATION"
+  ],
+  "enums": {
+    "ApplicationType": {
+      "displayName": "Application type",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "iot",
+          "displayName": "Internet of Things",
+          "icon": "iot"
+        },
+        {
+          "value": "embedded-pc",
+          "displayName": "Embedded Device",
+          "icon": "embedded-pc"
+        },
+        {
+          "value": "ufo",
+          "displayName": "UFO",
+          "icon": "ufo"
+        },
+        {
+          "value": "desktop",
+          "displayName": "Desktop",
+          "icon": "desktop"
+        },
+        {
+          "value": "echo",
+          "displayName": "Amazon Echo",
+          "icon": "amazon-echo"
+        },
+        {
+          "value": "hololens",
+          "displayName": "Microsoft Hololens",
+          "icon": "microsoft-hololens"
+        }
+      ],
+      "type": "enum"
+    }
+  },
+  "types": {
+    "ApplicationName": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "ApplicationName",
+      "summaryPattern": "",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "name": {
+          "displayName": "Name",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "applicationName": {
+      "displayName": "Update application name",
+      "description": "",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        {
+          "type": "TRIMMED"
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "applicationType": {
+      "displayName": "Update application type",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/ApplicationType"
+      },
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "desktop"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "This scope does not identify a valid application.",
+      "customValidatorId": "valid-application-scope",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "MULTI_SCOPE_CUSTOM_VALIDATOR_REF",
+      "customMessage": "This name is already taken",
+      "customValidatorId": "name-unique-case-insensitive",
+      "skipAsyncValidation": false
+    }
+  ],
+  "metadata": {
+    "reloadUiContext": "enabled"
+  }
+}

@@ -1,1 +1,32 @@
-{"dynatrace":"1","schemaId":"builtin:eula-settings","displayName":"Terms of use","description":"Display end user terms (recommended for customers that purchased via a reseller).\n\nSee our [Third party licenses](/ui/third-party-licenses).","documentation":"","schemaGroups":["group:preferences"],"version":"1.0.1","multiObject":false,"maxObjects":1,"maturity":"GENERAL_AVAILABILITY","allowedScopes":["environment","environment-default"],"enums":{},"types":{},"properties":{"enableEula":{"displayName":"Display end user terms to new users logging in to the environment","description":"","documentation":"","type":"boolean","nullable":false,"maxObjects":1,"modificationPolicy":"DEFAULT","default":true}}}
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:eula-settings",
+  "displayName": "Terms of use",
+  "description": "Display end user terms (recommended for customers that purchased via a reseller).\n\nSee our [Third party licenses](/ui/third-party-licenses).",
+  "documentation": "",
+  "schemaGroups": [
+    "group:preferences"
+  ],
+  "version": "1.0.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment",
+    "environment-default"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "enableEula": {
+      "displayName": "Display end user terms to new users logging in to the environment",
+      "description": "",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  }
+}
