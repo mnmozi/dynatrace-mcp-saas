@@ -175,6 +175,21 @@ async function downloadSettingsManifest(client: DynatraceClient): Promise<Record
   await mkdir(SETTINGS_DIR, { recursive: true });
   await writeFile(`${SETTINGS_DIR}manifest.json`, JSON.stringify(manifest, null, 2), "utf-8");
 
+  // Snapshot each schema's FULL definition (offline grounding for create/update bodies +
+  // enables the structural deep-diff in check_settings_schema_drift). Tokens redacted.
+  let schemaOk = 0;
+  for (const id of Object.keys(schemas)) {
+    try {
+      const full = await client.classic.get<unknown>(`/api/v2/settings/schemas/${encodeURIComponent(id)}`);
+      const safe = id.replace(/[^a-zA-Z0-9]/g, "_");
+      await writeFile(`${SETTINGS_DIR}${safe}.json`, redactTokens(JSON.stringify(full, null, 2)), "utf-8");
+      schemaOk++;
+    } catch {
+      // Skip schemas that can't be fetched; the manifest still records their version.
+    }
+  }
+  console.error(`  Snapshotted ${schemaOk}/${Object.keys(schemas).length} full settings schemas`);
+
   const versions: Record<string, string | undefined> = {};
   for (const [id, info] of Object.entries(schemas)) {
     versions[id] = info.version;
