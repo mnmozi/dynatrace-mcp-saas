@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.0
+- Data-extraction tools: get_bizevent_capture_rules (summarize bizevent HTTP capture rules) and describe_log_fields (discover JSON log fields)
+
 ## 0.9.0
 - dashboard_reference + list_dashboard_topics tools serving vendored Dynatrace dashboard/notebook authoring skills (tile types, visualizations, examples)
 

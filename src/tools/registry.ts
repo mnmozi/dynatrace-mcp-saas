@@ -30,6 +30,7 @@ import { registerIngestTools } from "./ingest.js";
 import { registerAuditTools } from "./audit.js";
 import { registerFeatureManagementTools } from "./feature-management.js";
 import { registerIamTools } from "./iam.js";
+import { registerExtractionTools } from "./extraction.js";
 
 export interface ToolDeps { client: DynatraceClient; config: Config }
 
@@ -63,4 +64,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerAuditTools(server, deps);
   registerFeatureManagementTools(server, deps);
   registerIamTools(server, deps);
+  registerExtractionTools(server, deps);
 }
