@@ -1,6 +1,6 @@
 openapi: "3.0.4"
 info:
-  version: "0.1.42"
+  version: "0.1.52"
   title: "Feature Management API"
   x-service-category: "Feature Management"
   x-summary: "Provide functionality for Feature Management."
@@ -26,13 +26,14 @@ tags:
 paths:
   /projects:
     get:
-      summary: "List all projects"
+      summary: "List all projects. The list can be server side sorted for lastModifiedAt"
       operationId: "listProjects"
       tags:
       - "Projects"
       parameters:
       - $ref: "#/components/parameters/pageParam"
       - $ref: "#/components/parameters/pageSizeParam"
+      - $ref: "#/components/parameters/sort"
       security:
       - ssoAuth:
         - "feature-management:projects:read"
@@ -218,7 +219,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
       description: "**Required scope:** feature-management:context-attributes:write"
     get:
-      summary: "List all context attributes"
+      summary: "List all context attributes. Can be server side sorted by lastModifiedAt\
+        \ and server side filtered for type and createdBy."
       operationId: "listContextAttributes"
       tags:
       - "Context Attribute"
@@ -230,6 +232,9 @@ paths:
       - $ref: "#/components/parameters/pageParam"
       - $ref: "#/components/parameters/pageSizeParam"
       - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/sort"
+      - $ref: "#/components/parameters/filter"
+      - $ref: "#/components/parameters/addFieldsParam"
       responses:
         "200":
           description: "A paged array of context attributes"
@@ -261,6 +266,7 @@ paths:
       parameters:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/contextAttributeKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParam"
       responses:
         "200":
           description: "The context attribute"
@@ -680,7 +686,8 @@ paths:
       description: "**Required scope:** feature-management:sdk-keys:delete"
   /projects/{project-key}/features:
     get:
-      summary: "List all features"
+      summary: "List all features. Can be server side sorted by lastModifiedAt and\
+        \ status, and filtered by status, type, and createdBy."
       operationId: "listFeatures"
       tags:
       - "Features"
@@ -1162,6 +1169,9 @@ paths:
         "5XX":
           $ref: "#/components/responses/InternalServerError"
       description: "**Required scope:** feature-management:features:delete"
+x-patterns:
+  standard-key: "^[a-z][a-z0-9-_]{0,254}[a-z0-9]$"
+  context-attribute-key: "^[a-z$][a-z0-9-_$]{0,254}[a-z0-9]$"
 components:
   parameters:
     pageParam:
@@ -1182,7 +1192,7 @@ components:
       description: "An expression to sort the results."
       schema:
         type: "string"
-      example: "status,-lastModifiedAt"
+      example: "-lastModifiedAt"
     pageSizeParam:
       name: "page-size"
       in: "query"
@@ -1230,35 +1240,46 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/ContextAttributeKey"
+    addFieldsParam:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+      style: "form"
+      explode: true
   schemas:
     ResourceName:
       type: "string"
-      description: "A resource name following the pattern: 3-256 characters total."
-      pattern: "^.{3,256}$"
+      description: "A resource name following the pattern: 2-256 characters total."
+      pattern: "^.{2,256}$"
       example: "My Resource Name"
     ProjectKey:
       type: "string"
       format: "project-key"
       description: "The key of a project, unique within a tenant."
-      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      pattern: "standard-key-pattern"
       example: "my-project"
     FeatureKey:
       type: "string"
       format: "feature-key"
       description: "The key of a feature, unique within a project."
-      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      pattern: "standard-key-pattern"
       example: "my-feature"
     FlagKey:
       type: "string"
       format: "flag-key"
       description: "The key of a flag, unique within a feature."
-      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      pattern: "standard-key-pattern"
       example: "my-flag"
     ReleaseStageKey:
       type: "string"
       format: "release-stage-key"
       description: "The key of a release stage, unique within a project."
-      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      pattern: "standard-key-pattern"
       example: "my-release-stage"
     SdkKey:
       type: "string"
@@ -1279,22 +1300,21 @@ components:
       type: "string"
       format: "context-attribute-key"
       description: "The key of a context attribute, unique within a project."
-      pattern: "^[a-z$][a-z0-9-_$]{1,254}[a-z0-9]$"
+      pattern: "context-attribute-key-pattern"
       example: "my-context-attribute"
     ContextAttributeContextKey:
       type: "string"
       format: "context-key"
       description: "The context key of a context attribute, used to reference the\
-        \ attribute from code. Unlike `key`, it's not restricted to kebab-case characters\
-        \ and digits, allowing the characters commonly used in code identifiers (letters,\
-        \ digits, '.', '_' and '-').\n"
-      pattern: "^[A-Za-z0-9_][A-Za-z0-9._-]{0,255}$"
+        \ attribute from code. Must be between 1 and 256 characters with no leading\
+        \ or trailing whitespace.\n"
+      pattern: "^(?!\\s)(?!.*\\s$).{1,256}$"
       example: "my.Context_Attribute-1"
     VariantKey:
       type: "string"
       format: "variant-key"
       description: "The key of a variant, unique within a feature."
-      pattern: "^[a-z][a-z0-9-_]{1,254}[a-z0-9]$"
+      pattern: "standard-key-pattern"
       example: "my-variant"
     Description:
       type: "string"
@@ -1435,6 +1455,10 @@ components:
           $ref: "#/components/schemas/ResourceContext"
         version:
           $ref: "#/components/schemas/OptimisticLockingVersion"
+        usageCount:
+          type: "integer"
+          description: "The number of targeting rules that reference this context\
+            \ attribute. Only present when add-fields=usages.count is requested."
     ContextAttributeList:
       type: "object"
       required:
@@ -1520,10 +1544,8 @@ components:
           $ref: "#/components/schemas/Description"
         type:
           $ref: "#/components/schemas/FeatureType"
-        flags:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/FlagCreate"
+        flag:
+          $ref: "#/components/schemas/InitialFlagCreate"
         variants:
           type: "array"
           items:
@@ -1663,6 +1685,18 @@ components:
           type: "array"
           items:
             type: "string"
+        type:
+          $ref: "#/components/schemas/FlagType"
+        variants:
+          $ref: "#/components/schemas/FlagVariants"
+    InitialFlagCreate:
+      type: "object"
+      required:
+      - "key"
+      - "type"
+      properties:
+        key:
+          $ref: "#/components/schemas/FlagKey"
         type:
           $ref: "#/components/schemas/FlagType"
         variants:
@@ -1904,9 +1938,229 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/SDKKeyDetails"
+    VariantDistribution:
+      type: "object"
+      description: "The distribution of a specific variant to serve."
+      required:
+      - "variantKey"
+      - "percentage"
+      properties:
+        variantKey:
+          $ref: "#/components/schemas/VariantKey"
+        percentage:
+          type: "number"
+          description: "The percentage of users to serve this variant to. The total\
+            \ percentage across all variants in a distribution must equal 100."
+    StringOperators:
+      type: "string"
+      enum:
+      - "IS"
+      - "IS_NOT"
+      - "CONTAINS"
+      - "DOES_NOT_CONTAIN"
+      - "STARTS_WITH"
+      - "ENDS_WITH"
+      - "EXISTS"
+      - "DOES_NOT_EXIST"
+    NumberOperators:
+      type: "string"
+      enum:
+      - "IS"
+      - "IS_NOT"
+      - "GREATER_THAN"
+      - "GREATER_THAN_OR_EQUAL"
+      - "LESS_THAN"
+      - "LESS_THAN_OR_EQUAL"
+      - "EXISTS"
+      - "DOES_NOT_EXIST"
+    BooleanOperators:
+      type: "string"
+      enum:
+      - "IS"
+      - "IS_NOT"
+      - "EXISTS"
+      - "DOES_NOT_EXIST"
+    DateTimeOperators:
+      type: "string"
+      description: "Operators for date-time context attributes. `BETWEEN` matches\
+        \ when the attribute is within the range given by exactly two values [from,\
+        \ to].\n"
+      enum:
+      - "BEFORE"
+      - "AFTER"
+      - "BETWEEN"
+      - "EXISTS"
+      - "DOES_NOT_EXIST"
+    SemverOperators:
+      type: "string"
+      description: "Operators for semantic-version context attributes. `MATCHES_MAJOR`\
+        \ (`^`) matches versions compatible within the same major version; `MATCHES_MINOR`\
+        \ (`~`) matches versions compatible within the same minor version.\n"
+      enum:
+      - "IS"
+      - "IS_NOT"
+      - "GREATER_THAN"
+      - "GREATER_THAN_OR_EQUAL"
+      - "LESS_THAN"
+      - "LESS_THAN_OR_EQUAL"
+      - "MATCHES_MAJOR"
+      - "MATCHES_MINOR"
+      - "EXISTS"
+      - "DOES_NOT_EXIST"
+    TargetingCondition:
+      type: "object"
+      description: "Base schema for all targeting condition rule types."
+      required:
+      - "valueType"
+      properties:
+        valueType:
+          type: "string"
+      discriminator:
+        propertyName: "valueType"
+        mapping:
+          STRING: "#/components/schemas/StringTargetingRule"
+          NUMBER: "#/components/schemas/NumberTargetingRule"
+          BOOLEAN: "#/components/schemas/BooleanTargetingRule"
+          DATE_TIME: "#/components/schemas/DateTimeTargetingRule"
+          SEM_VER: "#/components/schemas/SemverTargetingRule"
+    StringTargetingRule:
+      allOf:
+      - $ref: "#/components/schemas/TargetingCondition"
+      - type: "object"
+        description: "A targeting rule for string context attributes."
+        required:
+        - "contextKey"
+        - "operator"
+        - "values"
+        properties:
+          contextKey:
+            type: "string"
+          operator:
+            $ref: "#/components/schemas/StringOperators"
+          values:
+            type: "array"
+            maxItems: 5000
+            items:
+              type: "string"
+    NumberTargetingRule:
+      allOf:
+      - $ref: "#/components/schemas/TargetingCondition"
+      - type: "object"
+        description: "A targeting rule for numeric context attributes."
+        required:
+        - "contextKey"
+        - "operator"
+        - "values"
+        properties:
+          contextKey:
+            type: "string"
+          operator:
+            $ref: "#/components/schemas/NumberOperators"
+          values:
+            type: "array"
+            maxItems: 5000
+            items:
+              type: "number"
+    BooleanTargetingRule:
+      allOf:
+      - $ref: "#/components/schemas/TargetingCondition"
+      - type: "object"
+        description: "A targeting rule for boolean context attributes."
+        required:
+        - "contextKey"
+        - "operator"
+        - "values"
+        properties:
+          contextKey:
+            type: "string"
+          operator:
+            $ref: "#/components/schemas/BooleanOperators"
+          values:
+            type: "array"
+            maxItems: 5000
+            items:
+              type: "boolean"
+    DateTimeTargetingRule:
+      allOf:
+      - $ref: "#/components/schemas/TargetingCondition"
+      - type: "object"
+        description: "A targeting rule for date-time context attributes. Values are\
+          \ epoch seconds (Unix timestamps). `BETWEEN` requires exactly two values\
+          \ [from, to].\n"
+        required:
+        - "contextKey"
+        - "operator"
+        - "values"
+        properties:
+          contextKey:
+            type: "string"
+          operator:
+            $ref: "#/components/schemas/DateTimeOperators"
+          values:
+            type: "array"
+            maxItems: 5000
+            items:
+              type: "string"
+              format: "int64"
+              description: "Epoch seconds (Unix timestamp)."
+              example: "1770326383"
+    SemverTargetingRule:
+      allOf:
+      - $ref: "#/components/schemas/TargetingCondition"
+      - type: "object"
+        description: "A targeting rule for semantic-version context attributes."
+        required:
+        - "contextKey"
+        - "operator"
+        - "values"
+        properties:
+          contextKey:
+            type: "string"
+          operator:
+            $ref: "#/components/schemas/SemverOperators"
+          values:
+            type: "array"
+            maxItems: 5000
+            items:
+              type: "string"
+              description: "A semantic version string (SemVer 2.0.0). The operator\
+                \ (e.g. MATCHES_MAJOR, MATCHES_MINOR) is carried separately, so the\
+                \ value itself is a plain version without a range prefix."
+              pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\\
+                d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\\
+                +([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+              example: "1.2.3"
+    TargetingRule:
+      type: "object"
+      description: "A generic targeting rule."
+      properties:
+        id:
+          type: "string"
+          description: "Service generated unique identifier for the targeting rule."
+        name:
+          type: "string"
+          description: "Optional human-readable name for the targeting rule."
+        serve:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/VariantDistribution"
+        conditions:
+          type: "array"
+          items:
+            oneOf:
+            - $ref: "#/components/schemas/BooleanTargetingRule"
+            - $ref: "#/components/schemas/DateTimeTargetingRule"
+            - $ref: "#/components/schemas/NumberTargetingRule"
+            - $ref: "#/components/schemas/SemverTargetingRule"
+            - $ref: "#/components/schemas/StringTargetingRule"
     Targeting:
       type: "object"
       description: "Targeting conditions for a feature flag."
+      properties:
+        rules:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TargetingRule"
     FeatureReleaseStageTargetingUpdate:
       type: "object"
       description: "Request body for updating feature release stage targeting."
@@ -2060,6 +2314,10 @@ components:
           type: "array"
           items:
             type: "string"
+        flagdValidationErrors:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FlagdValidationError"
     ConstraintViolation:
       type: "object"
       required:
@@ -2069,6 +2327,37 @@ components:
           type: "string"
         path:
           type: "string"
+    FlagdValidationError:
+      type: "object"
+      required:
+      - "path"
+      - "errorCode"
+      properties:
+        path:
+          type: "string"
+        message:
+          type: "string"
+        errorCode:
+          $ref: "#/components/schemas/FlagdValidationErrorCodes"
+    FlagdValidationErrorCodes:
+      type: "string"
+      enum:
+      - "CONDITIONS_MUST_BE_ARRAY"
+      - "RULES_MUST_BE_ARRAY"
+      - "INVALID_PERCENTAGE_SUM"
+      - "INVALID_SERVE"
+      - "UNKNOWN_VARIANT_KEY"
+      - "UNKNOWN_CONTEXT_ATTRIBUTE_KEY"
+      - "UNKNOWN_OPERATOR"
+      - "CONDITION_MISSING_CONTEXT_KEY"
+      - "CONTEXT_ATTRIBUTE_TYPE_MISMATCH"
+      - "MISSING_OPERATOR"
+      - "MISSING_VALUES"
+      - "INVALID_VALUES_ELEMENT_TYPE"
+      - "TOO_MANY_VALUES"
+      - "INVALID_VALUE_COUNT"
+      - "JSON_PARSE_ERROR"
+      - "JSON_SCHEMA_VIOLATION"
   responses:
     BadRequestError:
       description: "Bad Request"

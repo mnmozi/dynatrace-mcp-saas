@@ -3390,3 +3390,7 @@ components:
       description: "The value can be either an OAuth2 access token or a platform token.</br>\
         \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
         \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."
+tags:
+- name: "Discovery"
+- name: "Extensions"
+- name: "Schemas"

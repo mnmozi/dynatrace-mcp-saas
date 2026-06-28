@@ -2,8 +2,11 @@ openapi: "3.0.1"
 info:
   description: "Documentation of the Dynatrace Record Deletion API for Grail.\nTo\
     \ read about use cases and examples, see\n[Dynatrace Documentation](https://dt-url.net/y603qnv)"
-  title: "Grail - Storage Record Deletion"
-  version: "1.0.1"
+  title: "Grail Storage Record Deletion API"
+  version: "1.1.0"
+  x-service-category: "grail"
+  x-summary: "Allows deletion of records from Grail, designed primarily for sensitive\
+    \ data removal. Leverages DQL to select records to be deleted."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/record/v1"
   x-api-gateway-url: "/platform/storage/record/v1"
@@ -267,6 +270,7 @@ components:
       properties:
         locale:
           type: "string"
+          nullable: true
         query:
           type: "string"
           minLength: 1
@@ -274,6 +278,7 @@ components:
           $ref: "#/components/schemas/TimeFrame"
         timezone:
           type: "string"
+          nullable: true
       required:
       - "query"
     DeletedRecordsProcess:
@@ -436,8 +441,10 @@ components:
       properties:
         message:
           type: "string"
+          nullable: true
         progress:
           type: "string"
+          nullable: true
         status:
           type: "string"
           enum:
@@ -447,6 +454,7 @@ components:
           - "unknown"
     TimeFrame:
       type: "object"
+      nullable: true
       properties:
         end:
           type: "string"

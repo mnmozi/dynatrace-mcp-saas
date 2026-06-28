@@ -3,7 +3,7 @@ info:
   title: "Platform Management"
   description: "<h1>Overview</h1> Basic read-only information about the currently\
     \ logged-in environment"
-  version: "1.7.2"
+  version: "1.7.3"
   x-summary: "Provides read-only access to environment information, license details,\
     \ settings, and effective permission resolution for the current platform environment."
   x-service-category: "Platform Management"
@@ -190,6 +190,7 @@ paths:
       - ssoBearerAuth: []
       operationId: "resolveEffectivePermissions"
       requestBody:
+        required: true
         content:
           application/json:
             schema:

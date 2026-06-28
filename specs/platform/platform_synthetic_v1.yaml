@@ -15,6 +15,9 @@ servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/synthetic/v1"
   x-api-gateway-url: "/platform/synthetic/v1"
 tags:
+- description: "Read and update the set of synthetic-related parameters defined for\
+    \ the whole tenant"
+  name: "Synthetic - Configuration"
 - description: "Create, read, update and delete synthetic locations"
   name: "Synthetic - Locations"
 - description: "Create, read, update and delete synthetic monitors. Currently browser\
@@ -25,6 +28,74 @@ tags:
 - description: "Trigger and view information about on-demand synthetic monitor executions"
   name: "Synthetic - On-demand monitor executions"
 paths:
+  /configuration:
+    get:
+      operationId: "getConfiguration"
+      responses:
+        "200":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/SyntheticConfigDto"
+          description: "Success"
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseEnvelope"
+          description: "Client side error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseEnvelope"
+          description: "Server side error."
+      security:
+      - ssoAuth:
+        - "synthetic:environment-configuration:read"
+      - ssoBearerAuth: []
+      summary: "Gets the set of synthetic-related parameters defined for the whole\
+        \ tenant (affects all monitors and all private locations). | maturity=EARLY_ADOPTER"
+      tags:
+      - "Synthetic - Configuration"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** synthetic:environment-configuration:read"
+    put:
+      operationId: "updateConfiguration"
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              $ref: "#/components/schemas/SyntheticConfigDto"
+        description: "The new set of synthetic-related parameters to apply to the\
+          \ whole tenant."
+        required: true
+      responses:
+        "204":
+          description: "Success. The set of synthetic-related parameters has been\
+            \ updated. The response doesn't have a body."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseEnvelope"
+          description: "Client side error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseEnvelope"
+          description: "Server side error."
+      security:
+      - ssoAuth:
+        - "synthetic:environment-configuration:write"
+      - ssoBearerAuth: []
+      summary: "Updates the set of synthetic-related parameters defined for the whole\
+        \ tenant (affects all monitors and all private locations). | maturity=EARLY_ADOPTER"
+      tags:
+      - "Synthetic - Configuration"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** synthetic:environment-configuration:write"
   /executions/batch:
     post:
       operationId: "executeOnDemand"
@@ -533,7 +604,8 @@ paths:
           \ If a key-only tag has a colon (`:`) in it, you must escape the colon with\
           \ a backslash(`\\`). Otherwise, the tag will be parsed as a `key:value tag`.\
           \ All tag values are case-sensitive.\n* Monitor enablement: `enabled(true)`.\n\
-          \nTo set several criteria, separate them with a comma (`,`).\n"
+          * Security context: `securityContext(value1, value2)`\n\nTo set several\
+          \ criteria, separate them with a comma (`,`).\n"
         in: "query"
         name: "monitor-selector"
         schema:
@@ -2879,6 +2951,7 @@ components:
           enum:
           - "MULTI_PROTOCOL"
           - "BROWSER"
+          - "HTTP"
       required:
       - "configuration"
       - "entityId"
@@ -2927,6 +3000,26 @@ components:
       required:
       - "name"
       - "type"
+    SyntheticConfigDto:
+      type: "object"
+      description: "A DTO for synthetic configuration."
+      properties:
+        bmMonitorTimeout:
+          type: "integer"
+          format: "int64"
+          description: "bmMonitorTimeout - browser monitor execution timeout (ms)"
+          maximum: 900000
+          minimum: 60000
+        bmStepTimeout:
+          type: "integer"
+          format: "int64"
+          description: "bmStepTimeout - browser monitor single step execution timeout\
+            \ (ms)"
+          maximum: 180000
+          minimum: 10000
+      required:
+      - "bmMonitorTimeout"
+      - "bmStepTimeout"
     SyntheticLocation:
       type: "object"
       description: "Configuration of a synthetic location. \n\n **countryCode**, **regionCode**,\
@@ -3236,10 +3329,10 @@ components:
           minimum: 0.0
         type:
           type: "string"
-          description: "Type of performance threshold."
+          description: "Type of performance threshold"
           enum:
-          - "MONITOR"
           - "STEP"
+          - "MONITOR"
         violatingSamples:
           type: "integer"
           format: "int32"
@@ -3284,14 +3377,13 @@ components:
       type: "object"
       description: "Basic monitor data."
       example:
-        enabled: "true"
+        enabled: "True"
         entityId: "MULTIPROTOCOL_MONITOR-63653CB579F573D1"
         name: "My network availability monitor"
         type: "MULTI_PROTOCOL"
       properties:
         enabled:
           type: "boolean"
-          default: true
           description: "If true, the monitor is enabled."
         entityId:
           type: "string"
@@ -3301,15 +3393,11 @@ components:
           description: "The name of the monitor."
         type:
           type: "string"
+          description: "The type of the monitor."
           enum:
+          - "MULTI_PROTOCOL"
           - "BROWSER"
           - "HTTP"
-          - "MULTI_PROTOCOL"
-          - "THIRD_PARTY"
-      required:
-      - "entityId"
-      - "name"
-      - "type"
     SyntheticMultiProtocolMonitorRequest:
       type: "object"
       description: "Network availability monitor."
@@ -3577,6 +3665,7 @@ components:
           enum:
           - "MULTI_PROTOCOL"
           - "BROWSER"
+          - "HTTP"
       required:
       - "entityId"
       - "steps"
@@ -4323,6 +4412,10 @@ components:
       flows:
         clientCredentials:
           scopes:
+            synthetic:environment-configuration:read: "Defines access boundaries to\
+              \ read set of synthetic related parameters defined for whole tenant"
+            synthetic:environment-configuration:write: "Defines access boundaries\
+              \ to update set of synthetic related parameters defined for whole tenant"
             synthetic:locations:read: "Defines access boundaries for reading synthetic\
               \ locations"
             synthetic:locations:write: "Defines access boundaries for creating locations"

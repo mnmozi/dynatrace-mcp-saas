@@ -13,28 +13,12 @@
   ],
   "tags": [
     {
-      "description": "View the cluster config of the Dynatrace server",
-      "name": "Cluster config"
-    },
-    {
       "description": "Remove sensitive user data from your sessions",
       "name": "Anonymization"
     },
     {
-      "description": "Obtain user sessions data",
-      "name": "RUM - User sessions"
-    },
-    {
-      "description": "Manage synthetic monitors. Deprecated since version 1.340.x. Please use the Synthetic - Monitors APIv2 instead.",
-      "name": "Synthetic - Monitors"
-    },
-    {
-      "description": "Manage synthetic locations and nodes",
-      "name": "Synthetic - Locations, nodes, and configuration"
-    },
-    {
-      "description": "Push third-party synthetic data to Dynatrace",
-      "name": "Synthetic - Third party"
+      "description": "View the cluster config of the Dynatrace server",
+      "name": "Cluster config"
     },
     {
       "description": "View the time of the Dynatrace server",
@@ -49,8 +33,24 @@
       "name": "OneAgent on a host"
     },
     {
+      "description": "Obtain user sessions data",
+      "name": "RUM - User sessions"
+    },
+    {
+      "description": "Manage synthetic locations and nodes",
+      "name": "Synthetic - Locations, nodes, and configuration"
+    },
+    {
+      "description": "Push third-party synthetic data to Dynatrace",
+      "name": "Synthetic - Third party"
+    },
+    {
       "description": "Download the RUM JavaScript tag. Use the newer [RUM manual insertion tags API](index.jsp?urls.primaryName=Environment%20API%20v2#/RUM%20manual%20insertion%20tags) instead of the deprecated endpoints.",
       "name": "RUM - JavaScript tag management"
+    },
+    {
+      "description": "Manage synthetic monitors. Deprecated since version 1.340.x. Please use the Synthetic - Monitors APIv2 instead.",
+      "name": "Synthetic - Monitors"
     }
   ],
   "paths": {
@@ -632,6 +632,127 @@
           }
         ],
         "summary": "Gets the list of available OneAgent versions for BOSH release tarballs",
+        "tags": [
+          "Deployment"
+        ],
+        "x-token-scopes": [
+          "InstallerDownload"
+        ]
+      }
+    },
+    "/deployment/image/agent/{agentImageType}/latest": {
+      "get": {
+        "description": "Returns the latest available Agent image while considering target and minimal agent version",
+        "operationId": "getLatestAgentImage",
+        "parameters": [
+          {
+            "description": "Agent Type",
+            "in": "path",
+            "name": "agentImageType",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "oneAgent",
+                "codeModules"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageDto"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "404": {
+            "description": "No Agent image found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "Api-Token": []
+          }
+        ],
+        "summary": "Gets the latest available Agent image",
+        "tags": [
+          "Deployment"
+        ],
+        "x-token-scopes": [
+          "InstallerDownload"
+        ]
+      }
+    },
+    "/deployment/image/gateway/latest": {
+      "get": {
+        "description": "Returns the latest available ActiveGate image",
+        "operationId": "getLatestActiveGateImage",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageDto"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "404": {
+            "description": "No ActiveGate image found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "Api-Token": []
+          }
+        ],
+        "summary": "Gets the latest available ActiveGate image",
         "tags": [
           "Deployment"
         ],
@@ -6997,6 +7118,23 @@
           "script",
           "tags",
           "type"
+        ]
+      },
+      "ImageDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Image location"
+          },
+          "tag": {
+            "type": "string",
+            "description": "Image tag",
+            "nullable": true
+          }
+        },
+        "required": [
+          "source"
         ]
       },
       "KeyPerformanceMetrics": {

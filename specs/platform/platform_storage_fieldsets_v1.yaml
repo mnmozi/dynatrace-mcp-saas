@@ -1,8 +1,11 @@
 openapi: "3.0.1"
 info:
   description: "Fieldset management for Grail."
-  title: "Grail Storage Fieldsets"
-  version: "1.0.1"
+  title: "Grail Fieldsets API"
+  version: "1.1.0"
+  x-service-category: "grail"
+  x-summary: "Manages fieldset definitions used to control field-level access and\
+    \ exposure in Grail query workflows."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/fieldsets/v1"
   x-api-gateway-url: "/platform/storage/fieldsets/v1"
@@ -18,6 +21,7 @@ paths:
         required: false
         schema:
           type: "boolean"
+          nullable: true
       responses:
         "200":
           content:
@@ -515,6 +519,7 @@ components:
           items:
             type: "string"
             description: "List of the buckets on which fieldset is applicable."
+          nullable: true
         created:
           type: "string"
           description: "Timestamp in ISO-8601 indicating when the field record was\
@@ -528,6 +533,7 @@ components:
           type: "string"
           description: "Description of the fieldset."
           example: "Fieldset of sensitive fields"
+          nullable: true
         enabled:
           type: "boolean"
           description: "Indicates if the fieldset is enabled."
@@ -565,6 +571,7 @@ components:
           items:
             type: "string"
             description: "List of the tables on which fieldset is applicable."
+          nullable: true
         uid:
           type: "string"
           description: "Unique identifier of the fieldset."
@@ -613,6 +620,7 @@ components:
             pattern: "^(\\*|[a-z]([a-z0-9_-]*\\*?))$"
           maxItems: 100
           minItems: 0
+          nullable: true
           uniqueItems: true
         description:
           type: "string"
@@ -620,11 +628,13 @@ components:
           example: "Fieldset of sensitive fields"
           maxLength: 512
           minLength: 0
+          nullable: true
         enabled:
           type: "boolean"
           default: true
           description: "Description of the fieldset."
           example: true
+          nullable: true
         fields:
           type: "array"
           description: "List of the fields."
@@ -660,6 +670,7 @@ components:
             description: "List of the tables on which fieldset is applicable."
           maxItems: 30
           minItems: 0
+          nullable: true
           uniqueItems: true
       required:
       - "fields"
@@ -679,6 +690,7 @@ components:
             pattern: "^(\\*|[a-z]([a-z0-9_-]*\\*?))$"
           maxItems: 100
           minItems: 0
+          nullable: true
           uniqueItems: true
         description:
           type: "string"
@@ -686,11 +698,13 @@ components:
           example: "Fieldset of sensitive fields"
           maxLength: 512
           minLength: 0
+          nullable: true
         enabled:
           type: "boolean"
           default: true
           description: "Description of the fieldset."
           example: true
+          nullable: true
         fields:
           type: "array"
           description: "List of the fields."
@@ -719,6 +733,7 @@ components:
             description: "List of the tables on which fieldset is applicable."
           maxItems: 30
           minItems: 0
+          nullable: true
           uniqueItems: true
       required:
       - "fields"

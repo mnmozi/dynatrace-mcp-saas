@@ -2,7 +2,10 @@ openapi: "3.0.1"
 info:
   description: "Connection Validation for Data Forwarding."
   title: "Data Forwarding Validation"
-  version: "1.0.0"
+  version: "1.2.0"
+  x-service-category: "grail"
+  x-summary: "Validates data forwarding connection configurations before pipeline\
+    \ activation."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/data-forwarding-validation-api/v1"
   x-api-gateway-url: "/platform/data-forwarding-validation-api/v1"
@@ -80,6 +83,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
           description: "Forbidden: Access to the resource was denied."
+        "4XX":
+          content:
+            application/json:
+              examples:
+                Client-side Error:
+                  description: "Client-side Error"
+                  value:
+                    error:
+                      message: "Client-side error."
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client-side error."
         "500":
           content:
             application/json:
@@ -107,6 +123,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
           description: "Service Unavailable: Cloud service connection issue."
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server-side Error:
+                  description: "Server-side Error"
+                  value:
+                    error:
+                      message: "Server-side error."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server-side error."
       security:
       - OAuth2:
         - "openpipeline:data-forwarding:validate"
@@ -117,6 +146,68 @@ paths:
       description: "**Required scope:** openpipeline:data-forwarding:validate"
 components:
   schemas:
+    AwsConnectionRequest:
+      type: "object"
+      description: "AWS connection data."
+      properties:
+        bucketName:
+          type: "string"
+          description: "AWS S3 bucket name."
+        connectionId:
+          type: "string"
+          description: "Unique cloud service connection identifier."
+      required:
+      - "bucketName"
+      - "connectionId"
+    AwsForwardingValidationRequest:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ForwardingValidationRequest"
+      - type: "object"
+        properties:
+          awsConnection:
+            $ref: "#/components/schemas/AwsConnectionRequest"
+          cloudVendorType:
+            type: "string"
+            description: "Name of cloud service provider."
+            enum:
+            - "aws"
+            - "azure"
+            - "gcp"
+      required:
+      - "awsConnection"
+      - "cloudVendorType"
+    AzureConnectionRequest:
+      type: "object"
+      description: "Azure connection data."
+      properties:
+        connectionId:
+          type: "string"
+          description: "Unique cloud service connection identifier."
+        containerUrl:
+          type: "string"
+          description: "URL of Azure container."
+      required:
+      - "connectionId"
+      - "containerUrl"
+    AzureForwardingValidationRequest:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ForwardingValidationRequest"
+      - type: "object"
+        properties:
+          azureConnection:
+            $ref: "#/components/schemas/AzureConnectionRequest"
+          cloudVendorType:
+            type: "string"
+            description: "Name of cloud service provider."
+            enum:
+            - "aws"
+            - "azure"
+            - "gcp"
+      required:
+      - "azureConnection"
+      - "cloudVendorType"
     ErrorEnvelope:
       type: "object"
       properties:
@@ -137,45 +228,58 @@ components:
         retryAfterSeconds:
           type: "integer"
           format: "int32"
+          nullable: true
       required:
       - "code"
       - "message"
     ErrorResponseDetails:
       type: "object"
+      nullable: true
       properties:
         arguments:
           type: "array"
           items:
             type: "string"
+          nullable: true
         constraintViolations:
           type: "array"
           items:
             $ref: "#/components/schemas/ErrorResponseDetailsConstraintViolationsInner"
+          nullable: true
         errorMessage:
           type: "string"
+          nullable: true
         errorMessageFormat:
           type: "string"
+          nullable: true
         errorMessageFormatSpecifierTypes:
           type: "array"
           items:
             type: "string"
+          nullable: true
         errorType:
           type: "string"
+          nullable: true
         exceptionType:
           type: "string"
+          nullable: true
         missingPermissions:
           type: "array"
           items:
             type: "string"
+          nullable: true
         missingScopes:
           type: "array"
           items:
             type: "string"
+          nullable: true
         queryId:
           type: "string"
           format: "uuid"
+          nullable: true
         queryString:
           type: "string"
+          nullable: true
         syntaxErrorPosition:
           $ref: "#/components/schemas/TokenPosition"
     ErrorResponseDetailsConstraintViolationsInner:
@@ -185,13 +289,19 @@ components:
           type: "string"
         parameterDescriptor:
           type: "string"
+          nullable: true
         parameterLocation:
           type: "string"
+          nullable: true
       required:
       - "message"
     ForwardingValidationRequest:
       type: "object"
       discriminator:
+        mapping:
+          aws: "#/components/schemas/AwsForwardingValidationRequest"
+          azure: "#/components/schemas/AzureForwardingValidationRequest"
+          gcp: "#/components/schemas/GcpForwardingValidationRequest"
         propertyName: "cloudVendorType"
       properties:
         cloudVendorType:
@@ -210,8 +320,40 @@ components:
           type: "string"
           description: "Information about the operation."
           example: "File created and deleted."
+          nullable: true
       required:
       - "code"
+    GcpConnectionRequest:
+      type: "object"
+      description: "GCP connection data."
+      properties:
+        bucketName:
+          type: "string"
+          description: "GCP Cloud Storage bucket name."
+        connectionId:
+          type: "string"
+          description: "Unique cloud service connection identifier."
+      required:
+      - "bucketName"
+      - "connectionId"
+    GcpForwardingValidationRequest:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ForwardingValidationRequest"
+      - type: "object"
+        properties:
+          cloudVendorType:
+            type: "string"
+            description: "Name of cloud service provider."
+            enum:
+            - "aws"
+            - "azure"
+            - "gcp"
+          gcpConnection:
+            $ref: "#/components/schemas/GcpConnectionRequest"
+      required:
+      - "cloudVendorType"
+      - "gcpConnection"
     PositionInfo:
       type: "object"
       properties:
@@ -230,6 +372,7 @@ components:
       - "line"
     TokenPosition:
       type: "object"
+      nullable: true
       properties:
         end:
           $ref: "#/components/schemas/PositionInfo"

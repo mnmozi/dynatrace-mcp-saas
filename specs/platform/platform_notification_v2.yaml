@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: "Notification v2"
-  version: "1.4181.0"
+  version: "1.4284.1"
   description: "Manage resource/event notifications with the Notification Service\
     \ API."
   x-service-category: "Notification"
@@ -529,8 +529,17 @@ components:
           nullable: true
         onProblemClose:
           default: false
-          description: "Trigger on Davis event open only or also on close."
+          deprecated: true
+          description: "Trigger on Davis event open only or also on close. Deprecated\
+            \ — use triggerOn instead."
           type: "boolean"
+        triggerOn:
+          description: "Event state to trigger on. \"open\" (active only), \"open-and-close\"\
+            \ (both phases), or \"close\" (closure only). When unset, falls back to\
+            \ onProblemClose for backward compatibility."
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/TriggerOn"
         names:
           items:
             $ref: "#/components/schemas/DavisEventName"
@@ -590,7 +599,7 @@ components:
           names:
           - match: "equals"
             name: "CUSTOM_ALERT"
-          onProblemClose: false
+          triggerOn: "open"
       properties:
         type:
           $ref: "#/components/schemas/DavisEventTriggerConfigType"
@@ -644,8 +653,17 @@ components:
           nullable: true
         onProblemClose:
           default: false
-          description: "Trigger on Davis problem open only or also on close."
+          deprecated: true
+          description: "Trigger on Davis problem open only or also on close. Deprecated\
+            \ — use triggerOn instead."
           type: "boolean"
+        triggerOn:
+          description: "Problem state to trigger on. \"open\" (active only), \"open-and-close\"\
+            \ (both phases), or \"close\" (closure only). When unset, falls back to\
+            \ onProblemClose for backward compatibility."
+          nullable: true
+          anyOf:
+          - $ref: "#/components/schemas/TriggerOn"
         categories:
           $ref: "#/components/schemas/DavisProblemCategories"
         customFilter:
@@ -709,8 +727,8 @@ components:
             environment:
             - "production"
           entityTagsMatch: "all"
-          onProblemClose: false
           severityThreshold: 3
+          triggerOn: "open"
           triggerOnUpdateFields:
           - "event.severity"
           - "smartscape.affected_entities"
@@ -1088,6 +1106,12 @@ components:
       required:
       - "notificationType"
       - "resourceId"
+    TriggerOn:
+      enum:
+      - "open"
+      - "open-and-close"
+      - "close"
+      type: "string"
     TriggerOnUpdateFields:
       enum:
       - "dt.davis.affected_users_count"

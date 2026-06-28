@@ -2,8 +2,11 @@ openapi: "3.0.1"
 info:
   description: "Filter-Segment Management for Grail.\n\nSlice, dice and contextualize\
     \ your data to make it easier to find, understand and work with.\n"
-  title: "Grail Storage Filter-Segments"
-  version: "1.2.0"
+  title: "Grail Filter Segments API"
+  version: "1.3.0"
+  x-service-category: "grail"
+  x-summary: "Defines and manages filter segments used to constrain query scope by\
+    \ applying custom data filters."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/filter-segments/v1"
   x-api-gateway-url: "/platform/storage/filter-segments/v1"
@@ -27,6 +30,7 @@ paths:
             - "VARIABLES"
             - "EXTERNALID"
             - "RESOURCECONTEXT"
+          nullable: true
       responses:
         "200":
           content:
@@ -418,6 +422,7 @@ paths:
             - "VARIABLES"
             - "EXTERNALID"
             - "RESOURCECONTEXT"
+          nullable: true
       responses:
         "200":
           content:
@@ -758,6 +763,7 @@ paths:
             - "EXTERNALID"
             - "RESOURCECONTEXT"
             - "OWNER"
+          nullable: true
       responses:
         "200":
           content:
@@ -852,19 +858,23 @@ components:
             - "WRITE"
             - "DELETE"
             - "SHARE"
+          nullable: true
         description:
           type: "string"
           description: "Description of the filter-segment."
           example: "only includes data of the dev environment"
+          nullable: true
         externalId:
           type: "string"
           description: "Optional unique identifier of the filter-segment. Used for\
             \ Dynatrace Configuration as Code"
+          nullable: true
         includes:
           type: "array"
           description: "List of includes of the filter-segment."
           items:
             $ref: "#/components/schemas/Include"
+          nullable: true
         isPublic:
           type: "boolean"
           description: "Indicates if the filter-segment is publicly accessible within\
@@ -874,6 +884,7 @@ components:
           type: "boolean"
           description: "Indicates if the segment is ready-made."
           example: false
+          nullable: true
         name:
           type: "string"
           description: "Name of the filter-segment."
@@ -970,14 +981,17 @@ components:
             - "WRITE"
             - "DELETE"
             - "SHARE"
+          nullable: true
         description:
           type: "string"
           description: "Description of the filter-segment."
           example: "only includes data of the dev environment"
+          nullable: true
         externalId:
           type: "string"
           description: "Optional unique identifier of the filter-segment. Used for\
             \ Dynatrace Configuration as Code"
+          nullable: true
         isPublic:
           type: "boolean"
           description: "Indicates if the filter-segment is publicly accessible within\
@@ -987,6 +1001,7 @@ components:
           type: "boolean"
           description: "Indicates if the segment is ready-made."
           example: false
+          nullable: true
         name:
           type: "string"
           description: "Name of the filter-segment."
@@ -1083,6 +1098,7 @@ components:
     FilterSegmentVariables:
       type: "object"
       description: "Variables of the filter-segment."
+      nullable: true
       properties:
         type:
           type: "string"
@@ -1119,6 +1135,7 @@ components:
             description: "[Experimental] The tables that the entity-filter will be\
               \ applied to."
             example: "[\"logs\",\"events\"]"
+          nullable: true
         dataObject:
           type: "string"
           description: "The data object that the filter will be applied to. Use '_all_data_object'\
@@ -1178,10 +1195,12 @@ components:
             - "WRITE"
             - "DELETE"
             - "SHARE"
+          nullable: true
         externalId:
           type: "string"
           description: "Optional unique identifier of the filter-segment. Used for\
             \ Dynatrace Configuration as Code"
+          nullable: true
         isPublic:
           type: "boolean"
           description: "Indicates if the filter-segment is publicly accessible within\
@@ -1191,6 +1210,7 @@ components:
           type: "boolean"
           description: "Indicates if the segment is ready-made."
           example: false
+          nullable: true
         name:
           type: "string"
           description: "Name of the filter-segment."
@@ -1199,6 +1219,7 @@ components:
           type: "string"
           description: "Defines the owner of the filter-segment."
           example: "john.doe"
+          nullable: true
         uid:
           type: "string"
           description: "Unique identifier of the filter-segment."
@@ -1247,12 +1268,14 @@ components:
           example: "only includes data of the dev environment"
           maxLength: 200
           minLength: 0
+          nullable: true
         externalId:
           type: "string"
           description: "Optional unique identifier of the filter-segment. Used for\
             \ Dynatrace Configuration as Code"
           maxLength: 100
           minLength: 0
+          nullable: true
         includes:
           type: "array"
           description: "List of includes of the filter-segment."
@@ -1260,6 +1283,7 @@ components:
             $ref: "#/components/schemas/NewInclude"
           maxItems: 20
           minItems: 0
+          nullable: true
         isPublic:
           type: "boolean"
           description: "Indicates if the filter-segment is publicly accessible within\
@@ -1292,6 +1316,7 @@ components:
             description: "[Experimental] The tables that the entity-filter will be\
               \ applied to."
             example: "[\"logs\",\"events\"]"
+          nullable: true
         dataObject:
           type: "string"
           description: "The data object that the filter will be applied to. Use '_all_data_object'\
@@ -1314,6 +1339,7 @@ components:
       type: "object"
       description: "[Experimental] The relationship of an include which has to be\
         \ be specified when the data object is an entity view."
+      nullable: true
       properties:
         name:
           type: "string"
@@ -1346,12 +1372,14 @@ components:
           example: "only includes data of the dev environment"
           maxLength: 200
           minLength: 0
+          nullable: true
         externalId:
           type: "string"
           description: "Optional unique identifier of the filter-segment. Used for\
             \ Dynatrace Configuration as Code"
           maxLength: 100
           minLength: 0
+          nullable: true
         includes:
           type: "array"
           description: "List of includes of the filter-segment."
@@ -1359,17 +1387,20 @@ components:
             $ref: "#/components/schemas/NewInclude"
           maxItems: 20
           minItems: 0
+          nullable: true
         isPublic:
           type: "boolean"
           description: "Indicates if the filter-segment is publicly accessible within\
             \ the tenant."
           example: false
+          nullable: true
         name:
           type: "string"
           description: "Name of the filter-segment."
           example: "dev_environment"
           maxLength: 100
           minLength: 0
+          nullable: true
         variables:
           $ref: "#/components/schemas/FilterSegmentVariables"
     ProxyErrorInfo:
@@ -1392,6 +1423,7 @@ components:
       type: "object"
       description: "[Experimental] The relationship of an include which has to be\
         \ be specified when the data object is an entity view."
+      nullable: true
       properties:
         name:
           type: "string"
@@ -1424,12 +1456,14 @@ components:
           example: "only includes data of the dev environment"
           maxLength: 200
           minLength: 0
+          nullable: true
         externalId:
           type: "string"
           description: "Optional unique identifier of the filter-segment. Used for\
             \ Dynatrace Configuration as Code"
           maxLength: 100
           minLength: 0
+          nullable: true
         includes:
           type: "array"
           description: "List of includes of the filter-segment."
@@ -1437,6 +1471,7 @@ components:
             $ref: "#/components/schemas/NewInclude"
           maxItems: 20
           minItems: 0
+          nullable: true
         isPublic:
           type: "boolean"
           description: "Indicates if the filter-segment is publicly accessible within\

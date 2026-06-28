@@ -1,0 +1,1115 @@
+openapi: "3.0.1"
+info:
+  description: "External Datastore Management for Grail."
+  title: "Grail External Datastore Management"
+  version: "1.0.0"
+  x-service-category: "grail"
+  x-summary: "Defines and manages external datastores used to query data from external\
+    \ sources."
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/external-datastores/v1"
+  x-api-gateway-url: "/platform/storage/external-datastores/v1"
+tags:
+- description: "External Datastore Management for Grail."
+  name: "Grail External Datastore Management"
+paths:
+  /external-datastore-definitions:
+    get:
+      description: "Returns all external datastore definitions.\n\nRequired permission:\
+        \ `storage:external-datastore-definitions:read`\n"
+      operationId: "getAllExternalDatastores"
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Successful Result:
+                  description: "Successful Result"
+                  value:
+                    externalDatastores:
+                    - type: "s3://"
+                      name: "my-s3-store"
+                      displayName: "My S3 Store"
+                      bucketName: "my-s3-bucket"
+                      region: "us-east-2"
+                      connectionId: "my-connection-id"
+                      version: 1
+              schema:
+                $ref: "#/components/schemas/ExternalDatastoreDtos"
+          description: "Successfully retrieved all external datastore definitions."
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: "Unauthorized"
+                  value:
+                    error:
+                      message: "Invalid authorization parameters"
+                      code: 401
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  description: "Forbidden"
+                  value:
+                    error:
+                      message: "Required permissions not met"
+                      code: 403
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Missing permissions"
+        "4XX":
+          content:
+            application/json:
+              examples:
+                Client Error:
+                  description: "Client Error"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: "Server Error"
+                  value:
+                    error:
+                      message: "A server error occurred. Please try again later."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Get all external datastore definitions"
+      tags:
+      - "Grail External Datastore Management"
+    post:
+      description: "Create a new external datastore definition.\n\nThe **name** field\
+        \ uniquely identifies the datastore and **cannot be changed** after creation.\n\
+        \nRequired permission: `storage:external-datastore-definitions:write`\n\n\
+        ## Allowed JSON values\n\n* **type** the type of the external datastore. Currently\
+        \ the only allowed value is `s3://`.\n\n* **name** unique identifier of the\
+        \ external datastore.\n  * must match the pattern `([a-z])([a-z0-9])([a-z0-9_-])+`\n\
+        \  * maximum length is **100** characters\n\n* **displayName** optional human-readable\
+        \ label for the datastore (up to **200** characters).\n\n* **bucketName**\
+        \ the name of the S3 bucket (up to **1000** characters).\n\n* **region** the\
+        \ AWS region the S3 bucket resides in (up to **1000** characters).\n\n* **connectionId**\
+        \ optional reference to the connection settings object (up to **1000** characters).\n"
+      operationId: "createExternalDatastore"
+      requestBody:
+        content:
+          application/json:
+            examples:
+              S3 External Datastore:
+                description: "S3 External Datastore"
+                value:
+                  type: "s3://"
+                  name: "my-s3-store"
+                  displayName: "My S3 Store"
+                  bucketName: "my-s3-bucket"
+                  region: "us-east-2"
+                  connectionId: "my-connection-id"
+            schema:
+              oneOf:
+              - $ref: "#/components/schemas/CreateExternalDatastoreS3Dto"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              examples:
+                Successful Result:
+                  description: "Successful Result"
+                  value:
+                    type: "s3://"
+                    name: "my-s3-store"
+                    displayName: "My S3 Store"
+                    bucketName: "my-s3-bucket"
+                    region: "us-east-2"
+                    connectionId: "my-connection-id"
+                    version: 1
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/ExternalDatastoreS3Dto"
+          description: "Successfully created external datastore definition."
+        "400":
+          content:
+            application/json:
+              examples:
+                Invalid Request:
+                  description: "Invalid Request"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      details:
+                        constraintViolations:
+                        - message: "must not be blank"
+                          parameterDescriptor: "name"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Invalid request."
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: "Unauthorized"
+                  value:
+                    error:
+                      message: "Invalid authorization parameters"
+                      code: 401
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  description: "Forbidden"
+                  value:
+                    error:
+                      message: "Required permissions not met"
+                      code: 403
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Missing permissions"
+        "409":
+          content:
+            application/json:
+              examples:
+                Already Exists:
+                  description: "Already Exists"
+                  value:
+                    error:
+                      message: "External datastore 'my-s3-store' already exists."
+                      code: 409
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "External datastore already exists."
+        "4XX":
+          content:
+            application/json:
+              examples:
+                Client Error:
+                  description: "Client Error"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: "Server Error"
+                  value:
+                    error:
+                      message: "A server error occurred. Please try again later."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Create a new external datastore definition"
+      tags:
+      - "Grail External Datastore Management"
+  /external-datastore-definitions/{storeName}:
+    delete:
+      description: "Delete an existing external datastore definition.\n\nRequired\
+        \ permission: `storage:external-datastore-definitions:delete`\n"
+      operationId: "deleteExternalDatastore"
+      parameters:
+      - description: "Name of the external datastore."
+        in: "path"
+        name: "storeName"
+        required: true
+        schema:
+          type: "string"
+          minLength: 1
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Successful Result:
+                  description: "Successful Result"
+                  value:
+                    type: "s3://"
+                    name: "my-s3-store"
+                    displayName: "My S3 Store"
+                    bucketName: "my-s3-bucket"
+                    region: "us-east-2"
+                    connectionId: "my-connection-id"
+                    version: 1
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/ExternalDatastoreS3Dto"
+          description: "Successfully deleted external datastore definition."
+        "400":
+          content:
+            application/json:
+              examples:
+                Missing Store Name:
+                  description: "Missing Store Name"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      details:
+                        constraintViolations:
+                        - message: "must not be blank"
+                          parameterDescriptor: "storeName"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad Request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: "Unauthorized"
+                  value:
+                    error:
+                      message: "Invalid authorization parameters"
+                      code: 401
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  description: "Forbidden"
+                  value:
+                    error:
+                      message: "Required permissions not met"
+                      code: 403
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: "Not Found"
+                  value:
+                    error:
+                      message: "External datastore 'my-s3-store' not found."
+                      code: 404
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "External datastore with provided name was not found."
+        "4XX":
+          content:
+            application/json:
+              examples:
+                Client Error:
+                  description: "Client Error"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: "Server Error"
+                  value:
+                    error:
+                      message: "A server error occurred. Please try again later."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Delete an external datastore definition"
+      tags:
+      - "Grail External Datastore Management"
+    get:
+      description: "Returns an external datastore definition by name.\n\nRequired\
+        \ permission: `storage:external-datastore-definitions:read`\n"
+      operationId: "getExternalDatastore"
+      parameters:
+      - description: "Name of the external datastore."
+        in: "path"
+        name: "storeName"
+        required: true
+        schema:
+          type: "string"
+          minLength: 1
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Successful Result:
+                  description: "Successful Result"
+                  value:
+                    type: "s3://"
+                    name: "my-s3-store"
+                    displayName: "My S3 Store"
+                    bucketName: "my-s3-bucket"
+                    region: "us-east-2"
+                    connectionId: "my-connection-id"
+                    version: 1
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/ExternalDatastoreS3Dto"
+          description: "Successfully retrieved external datastore definition."
+        "400":
+          content:
+            application/json:
+              examples:
+                Missing Store Name:
+                  description: "Missing Store Name"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      details:
+                        constraintViolations:
+                        - message: "must not be blank"
+                          parameterDescriptor: "storeName"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad Request"
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: "Unauthorized"
+                  value:
+                    error:
+                      message: "Invalid authorization parameters"
+                      code: 401
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  description: "Forbidden"
+                  value:
+                    error:
+                      message: "Required permissions not met"
+                      code: 403
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                External Datastore Not Found:
+                  description: "External Datastore Not Found"
+                  value:
+                    error:
+                      message: "External datastore 'my-s3-store' not found."
+                      code: 404
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "External datastore with provided name was not found."
+        "4XX":
+          content:
+            application/json:
+              examples:
+                Client Error:
+                  description: "Client Error"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: "Server Error"
+                  value:
+                    error:
+                      message: "A server error occurred. Please try again later."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Get an external datastore definition by name"
+      tags:
+      - "Grail External Datastore Management"
+    patch:
+      description: "Partially update an existing external datastore definition.\n\n\
+        Only the provided fields will be updated. The **name** field cannot be changed\
+        \ after creation.\n\nThe following fields can be updated:\n* **displayName**\
+        \ human-readable label (up to **200** characters)\n* **bucketName** the S3\
+        \ bucket name (up to **1000** characters)\n* **region** the AWS region (up\
+        \ to **1000** characters)\n* **connectionId** reference to the connection\
+        \ settings object (up to **1000** characters)\n\nUses optimistic locking -\
+        \ pass the current version via the `optimistic-locking-version` query \nparameter.\n\
+        \nRequired permission: `storage:external-datastore-definitions:write`\n"
+      operationId: "partialUpdateExternalDatastore"
+      parameters:
+      - description: "Name of the external datastore."
+        in: "path"
+        name: "storeName"
+        required: true
+        schema:
+          type: "string"
+          minLength: 1
+      - description: "Version for optimistic locking. Must match the current stored\
+          \ version."
+        in: "query"
+        name: "optimistic-locking-version"
+        required: true
+        schema:
+          type: "integer"
+          format: "int32"
+          exclusiveMinimum: true
+          minimum: 0
+      requestBody:
+        content:
+          application/json:
+            examples:
+              S3 External Datastore:
+                description: "S3 External Datastore"
+                value:
+                  type: "s3://"
+                  displayName: "My Updated S3 Store"
+                  bucketName: "my-updated-s3-bucket"
+            schema:
+              oneOf:
+              - $ref: "#/components/schemas/PartialUpdateExternalDatastoreS3Dto"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Successful Result:
+                  description: "Successful Result"
+                  value:
+                    type: "s3://"
+                    name: "my-s3-store"
+                    displayName: "My Updated S3 Store"
+                    bucketName: "my-updated-s3-bucket"
+                    region: "us-east-2"
+                    connectionId: "my-connection-id"
+                    version: 2
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/ExternalDatastoreS3Dto"
+          description: "Successfully updated external datastore definition."
+        "400":
+          content:
+            application/json:
+              examples:
+                Invalid Request:
+                  description: "Invalid Request"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      details:
+                        constraintViolations:
+                        - message: "size must be between 0 and 200"
+                          parameterDescriptor: "displayName"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Invalid request."
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: "Unauthorized"
+                  value:
+                    error:
+                      message: "Invalid authorization parameters"
+                      code: 401
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  description: "Forbidden"
+                  value:
+                    error:
+                      message: "Required permissions not met"
+                      code: 403
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: "Not Found"
+                  value:
+                    error:
+                      message: "External datastore 'my-s3-store' not found."
+                      code: 404
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "External datastore with provided name was not found."
+        "409":
+          content:
+            application/json:
+              examples:
+                Version Conflict:
+                  description: "Version Conflict"
+                  value:
+                    error:
+                      message: "Optimistic locking failed. Seems like the affected\
+                        \ object has been modified by another operation in the meantime."
+                      code: 409
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Optimistic locking version mismatch."
+        "4XX":
+          content:
+            application/json:
+              examples:
+                Client Error:
+                  description: "Client Error"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: "Server Error"
+                  value:
+                    error:
+                      message: "A server error occurred. Please try again later."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Partially update an external datastore definition"
+      tags:
+      - "Grail External Datastore Management"
+    put:
+      description: "Fully update an existing external datastore definition.\n\nAll\
+        \ fields must be provided. The **name** field cannot be changed after creation.\n\
+        \nThe following fields can be updated:\n* **displayName** human-readable label\
+        \ (up to **200** characters)\n* **bucketName** the S3 bucket name (up to **1000**\
+        \ characters)\n* **region** the AWS region (up to **1000** characters)\n*\
+        \ **connectionId** reference to the connection settings object (up to **1000**\
+        \ characters)\n\nUses optimistic locking - pass the current version via the\
+        \ `optimistic-locking-version` query parameter.\n\nRequired permission: `storage:external-datastore-definitions:write`\n"
+      operationId: "updateExternalDatastore"
+      parameters:
+      - description: "Name of the external datastore."
+        in: "path"
+        name: "storeName"
+        required: true
+        schema:
+          type: "string"
+          minLength: 1
+      - description: "Version for optimistic locking. Must match the current stored\
+          \ version."
+        in: "query"
+        name: "optimistic-locking-version"
+        required: true
+        schema:
+          type: "integer"
+          format: "int32"
+          exclusiveMinimum: true
+          minimum: 0
+      requestBody:
+        content:
+          application/json:
+            examples:
+              S3 External Datastore:
+                description: "S3 External Datastore"
+                value:
+                  type: "s3://"
+                  name: "my-s3-store"
+                  displayName: "My S3 Store"
+                  bucketName: "my-s3-bucket"
+                  region: "us-east-2"
+                  connectionId: "my-connection-id"
+                  version: 1
+            schema:
+              oneOf:
+              - $ref: "#/components/schemas/UpdateExternalDatastoreS3Dto"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Successful Result:
+                  description: "Successful Result"
+                  value:
+                    type: "s3://"
+                    name: "my-s3-store"
+                    displayName: "My S3 Store"
+                    bucketName: "my-s3-bucket"
+                    region: "us-east-2"
+                    connectionId: "my-connection-id"
+                    version: 2
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/ExternalDatastoreS3Dto"
+          description: "Successfully updated external datastore definition."
+        "400":
+          content:
+            application/json:
+              examples:
+                Invalid Request:
+                  description: "Invalid Request"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      details:
+                        constraintViolations:
+                        - message: "must not be blank"
+                          parameterDescriptor: "bucketName"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Invalid request."
+        "401":
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: "Unauthorized"
+                  value:
+                    error:
+                      message: "Invalid authorization parameters"
+                      code: 401
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Unauthorized"
+        "403":
+          content:
+            application/json:
+              examples:
+                Forbidden:
+                  description: "Forbidden"
+                  value:
+                    error:
+                      message: "Required permissions not met"
+                      code: 403
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Missing permissions"
+        "404":
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: "Not Found"
+                  value:
+                    error:
+                      message: "External datastore 'my-s3-store' not found."
+                      code: 404
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "External datastore with provided name was not found."
+        "409":
+          content:
+            application/json:
+              examples:
+                Version Conflict:
+                  description: "Version Conflict"
+                  value:
+                    error:
+                      message: "Optimistic locking failed. Seems like the affected\
+                        \ object has been modified by another operation in the meantime."
+                      code: 409
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Optimistic locking version mismatch."
+        "4XX":
+          content:
+            application/json:
+              examples:
+                Client Error:
+                  description: "Client Error"
+                  value:
+                    error:
+                      message: "Constraint Violations"
+                      code: 400
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client Error"
+        "5XX":
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: "Server Error"
+                  value:
+                    error:
+                      message: "A server error occurred. Please try again later."
+                      code: 500
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server Error."
+      security:
+      - ApiToken: []
+      - ssoBearerAuth: []
+      summary: "Update an external datastore definition"
+      tags:
+      - "Grail External Datastore Management"
+components:
+  schemas:
+    CreateExternalDatastoreDto:
+      type: "object"
+      discriminator:
+        mapping:
+          s3://: "#/components/schemas/CreateExternalDatastoreS3Dto"
+        propertyName: "type"
+      properties:
+        type:
+          type: "string"
+          description: "Type of the external datastore."
+          enum:
+          - "s3://"
+          example: "s3://"
+          minLength: 1
+      required:
+      - "type"
+    CreateExternalDatastoreS3Dto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/CreateExternalDatastoreDto"
+      - type: "object"
+        properties:
+          bucketName:
+            type: "string"
+            description: "The S3 bucket name."
+            example: "my-s3-bucket"
+            maxLength: 1000
+            minLength: 0
+          connectionId:
+            type: "string"
+            description: "References the connection settings object."
+            example: "my-connection-id"
+            maxLength: 1000
+            minLength: 0
+            nullable: true
+          displayName:
+            type: "string"
+            description: "Descriptive name of the external datastore."
+            example: "My S3 Store"
+            maxLength: 200
+            minLength: 0
+            nullable: true
+          name:
+            type: "string"
+            description: "Unique Name of the external datastore. Cannot be changed\
+              \ after creation."
+            example: "my-s3-store"
+            maxLength: 100
+            minLength: 0
+            pattern: "([a-z])([a-z0-9])([a-z0-9_-])+"
+          region:
+            type: "string"
+            description: "The AWS region the S3 bucket resides in."
+            example: "us-east-2"
+            maxLength: 1000
+            minLength: 0
+      required:
+      - "bucketName"
+      - "name"
+      - "region"
+      - "type"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorResponse"
+    ErrorResponse:
+      type: "object"
+      description: "The response for error state"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "Error code, which normally matches the HTTP error code."
+        details:
+          $ref: "#/components/schemas/ErrorResponseDetails"
+        message:
+          type: "string"
+          description: "A short, clear error message without details"
+      required:
+      - "code"
+      - "message"
+    ErrorResponseDetails:
+      type: "object"
+      description: "Detailed information about the error."
+      properties:
+        constraintViolations:
+          type: "array"
+          description: "Information about an input parameter that violated some validation\
+            \ rule of the service API."
+          items:
+            $ref: "#/components/schemas/ErrorResponseDetailsConstraintViolations"
+        errorMessage:
+          type: "string"
+          description: "Complete error message."
+        missingPermissions:
+          type: "array"
+          description: "List of missing IAM permissions necessary to successfully\
+            \ execute the request."
+          items:
+            type: "string"
+            description: "List of missing IAM permissions necessary to successfully\
+              \ execute the request."
+        missingScopes:
+          type: "array"
+          description: "List of missing IAM scopes necessary to successfully execute\
+            \ the request."
+          items:
+            type: "string"
+            description: "List of missing IAM scopes necessary to successfully execute\
+              \ the request."
+    ErrorResponseDetailsConstraintViolations:
+      type: "object"
+      description: "Information about an input parameter that violated some validation\
+        \ rule of the service API."
+      properties:
+        message:
+          type: "string"
+          description: "Message describing the error."
+        parameterDescriptor:
+          type: "string"
+          description: "Describes the violating parameter."
+      required:
+      - "message"
+    ExternalDatastoreDtos:
+      type: "object"
+      properties:
+        externalDatastores:
+          type: "array"
+          items:
+            oneOf:
+            - $ref: "#/components/schemas/ExternalDatastoreS3Dto"
+    ExternalDatastoreS3Dto:
+      type: "object"
+      properties:
+        bucketName:
+          type: "string"
+          description: "The S3 bucket name."
+          example: "my-s3-bucket"
+        connectionId:
+          type: "string"
+          description: "References the connection settings object."
+          example: "my-connection-id"
+          nullable: true
+        displayName:
+          type: "string"
+          description: "Descriptive name of the external datastore."
+          example: "My S3 Store"
+          nullable: true
+        name:
+          type: "string"
+          description: "Unique Name of the external datastore. Cannot be changed after\
+            \ creation."
+          example: "my-s3-store"
+        region:
+          type: "string"
+          description: "The AWS region the S3 bucket resides in."
+          example: "us-east-2"
+        type:
+          type: "string"
+          description: "Type of the external datastore."
+          example: "s3://"
+        version:
+          type: "integer"
+          format: "int32"
+          description: "Used for optimistic locking."
+          example: 1
+    PartialUpdateExternalDatastoreDto:
+      type: "object"
+      discriminator:
+        mapping:
+          s3://: "#/components/schemas/PartialUpdateExternalDatastoreS3Dto"
+        propertyName: "type"
+      properties:
+        type:
+          type: "string"
+          description: "Type of the external datastore."
+          enum:
+          - "s3://"
+          example: "s3://"
+          minLength: 1
+      required:
+      - "type"
+    PartialUpdateExternalDatastoreS3Dto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/PartialUpdateExternalDatastoreDto"
+      - type: "object"
+        properties:
+          bucketName:
+            type: "string"
+            description: "The S3 bucket name."
+            example: "my-s3-bucket"
+            maxLength: 1000
+            minLength: 0
+            nullable: true
+          connectionId:
+            type: "string"
+            description: "References the connection settings object."
+            example: "my-connection-id"
+            maxLength: 1000
+            minLength: 0
+            nullable: true
+          displayName:
+            type: "string"
+            description: "Descriptive name of the external datastore."
+            example: "My S3 Store"
+            maxLength: 200
+            minLength: 0
+            nullable: true
+          region:
+            type: "string"
+            description: "The AWS region the S3 bucket resides in."
+            example: "us-east-2"
+            maxLength: 1000
+            minLength: 0
+            nullable: true
+      required:
+      - "type"
+    UpdateExternalDatastoreDto:
+      type: "object"
+      discriminator:
+        mapping:
+          s3://: "#/components/schemas/UpdateExternalDatastoreS3Dto"
+        propertyName: "type"
+      properties:
+        type:
+          type: "string"
+          description: "Type of the external datastore."
+          enum:
+          - "s3://"
+          example: "s3://"
+          minLength: 1
+        version:
+          type: "integer"
+          format: "int32"
+          description: "Optimistic locking version. Update requests define with this\
+            \ on which version the data updated is based on. This must match with\
+            \ the version stored, otherwise the update will fail due to concurrent\
+            \ modification."
+          example: 1
+      required:
+      - "type"
+      - "version"
+    UpdateExternalDatastoreS3Dto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/UpdateExternalDatastoreDto"
+      - type: "object"
+        properties:
+          bucketName:
+            type: "string"
+            description: "The S3 bucket name."
+            example: "my-s3-bucket"
+            maxLength: 1000
+            minLength: 0
+          connectionId:
+            type: "string"
+            description: "References the connection settings object."
+            example: "my-connection-id"
+            maxLength: 1000
+            minLength: 0
+            nullable: true
+          displayName:
+            type: "string"
+            description: "Descriptive name of the external datastore."
+            example: "My S3 Store"
+            maxLength: 200
+            minLength: 0
+            nullable: true
+          name:
+            type: "string"
+            description: "Unique Name of the external datastore. Cannot be changed\
+              \ after creation."
+            example: "my-s3-store"
+            maxLength: 100
+            minLength: 0
+            pattern: "([a-z])([a-z0-9])([a-z0-9_-])+"
+          region:
+            type: "string"
+            description: "The AWS region the S3 bucket resides in."
+            example: "us-east-2"
+            maxLength: 1000
+            minLength: 0
+      required:
+      - "bucketName"
+      - "name"
+      - "region"
+      - "type"
+      - "version"
+  securitySchemes:
+    OAuth2:
+      flows:
+        clientCredentials:
+          scopes:
+            storage:external-datastore-definitions:delete: "delete external datastore\
+              \ definitions"
+            storage:external-datastore-definitions:read: "read external datastore\
+              \ definitions"
+            storage:external-datastore-definitions:write: "create and update external\
+              \ datastore definitions"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

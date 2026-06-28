@@ -26,8 +26,11 @@ info:
     \ can't be edited or changed at a later time.**\n\n\n* Display name. You can use\
     \ this field to describe your bucket.\n\n* Retention period in days between 1\
     \ day - 3657 days (10 years)."
-  title: "Grail - Storage Management"
-  version: "1.0.1"
+  title: "Grail Storage Management API"
+  version: "1.1.0"
+  x-service-category: "grail"
+  x-summary: "Manages Grail bucket definitions including creation, configuration,\
+    \ and lifecycle administration."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/management/v1"
   x-api-gateway-url: "/platform/storage/management/v1"
@@ -957,6 +960,7 @@ components:
           - "live"
           - "historic"
           example: "live"
+          nullable: true
         bucketName:
           type: "string"
           description: "The unique identifier of the bucket within the tenant."
@@ -969,23 +973,27 @@ components:
             \ unique naming or valid characters."
           example: "Logs (35 days)"
           maxLength: 200
+          nullable: true
         estimatedUncompressedBytes:
           type: "integer"
           format: "int64"
           description: "Estimated uncompressed size of the bucket in bytes."
           example: 24544
+          nullable: true
         estimatedUncompressedBytesOnDemand:
           type: "integer"
           format: "int64"
           description: "Estimated uncompressed size of on-demand data in the bucket\
             \ in bytes."
           example: 24546
+          nullable: true
         estimatedUncompressedBytesQueryIncluded:
           type: "integer"
           format: "int64"
           description: "Estimated uncompressed size of query-included data in the\
             \ bucket in bytes."
           example: 24545
+          nullable: true
         includedQueryLimitDays:
           type: "integer"
           format: "int32"
@@ -1006,11 +1014,13 @@ components:
           - "PT15M"
           - "PT1H"
           example: "PT1M"
+          nullable: true
         records:
           type: "integer"
           format: "int64"
           description: "Amount of records in the bucket."
           example: 24544
+          nullable: true
         retentionDays:
           type: "integer"
           format: "int32"
@@ -1069,6 +1079,7 @@ components:
           enum:
           - "live"
           - "historic"
+          nullable: true
         bucketName:
           type: "string"
           description: "The unique identifier of the bucket within the tenant."
@@ -1080,6 +1091,7 @@ components:
           description: "Descriptive name of the bucket.\nNo restriction regarding\
             \ unique naming or valid characters."
           maxLength: 200
+          nullable: true
         includedQueryLimitDays:
           type: "integer"
           format: "int32"
@@ -1087,6 +1099,7 @@ components:
             \ in the pricing model."
           example: 10
           minimum: 0
+          nullable: true
         includedQueryLimitDaysOrDefault:
           type: "integer"
           format: "int32"
@@ -1099,12 +1112,14 @@ components:
           - "PT5M"
           - "PT15M"
           - "PT1H"
+          nullable: true
         retentionDays:
           type: "integer"
           format: "int32"
           description: "The retention period in days of the data in the bucket."
           maximum: 3657
           minimum: 1
+          nullable: true
         retentionDaysOrDefault:
           type: "integer"
           format: "int32"
@@ -1246,6 +1261,7 @@ components:
           description: "Descriptive name of the bucket.\nNo restriction regarding\
             \ unique naming or valid characters."
           maxLength: 200
+          nullable: true
         includedQueryLimitDays:
           type: "integer"
           format: "int32"
@@ -1253,6 +1269,7 @@ components:
             \ in the pricing model."
           example: 10
           minimum: 0
+          nullable: true
         retentionDays:
           type: "integer"
           format: "int32"
@@ -1261,6 +1278,7 @@ components:
             \ the retention period could result in data deletion!"
           maximum: 3657
           minimum: 1
+          nullable: true
     ProxyErrorInfo:
       type: "object"
       allOf:
@@ -1298,6 +1316,7 @@ components:
           - "live"
           - "historic"
           example: "live"
+          nullable: true
           readOnly: true
         bucketName:
           type: "string"
@@ -1311,6 +1330,7 @@ components:
           description: "Descriptive name of the bucket.\nNo restriction regarding\
             \ unique naming or valid characters."
           maxLength: 200
+          nullable: true
         includedQueryLimitDays:
           type: "integer"
           format: "int32"
@@ -1318,6 +1338,7 @@ components:
             \ in the pricing model."
           example: 10
           minimum: 0
+          nullable: true
         includedQueryLimitDaysOrDefault:
           type: "integer"
           format: "int32"
@@ -1330,6 +1351,7 @@ components:
           - "PT5M"
           - "PT15M"
           - "PT1H"
+          nullable: true
           readOnly: true
         retentionDays:
           type: "integer"
@@ -1339,6 +1361,7 @@ components:
             \ the retention period could result in data deletion!"
           maximum: 3657
           minimum: 1
+          nullable: true
         retentionDaysOrDefault:
           type: "integer"
           format: "int32"
@@ -1363,6 +1386,7 @@ components:
             \ on which version the data updated is based on. This must match with\
             \ the version stored, otherwise the update will fail due to concurrent\
             \ modification."
+          nullable: true
           readOnly: true
         versionOrDefault:
           type: "integer"

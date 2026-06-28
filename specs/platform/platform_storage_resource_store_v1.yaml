@@ -2,8 +2,10 @@ openapi: "3.0.1"
 info:
   description: "Documentation of the Dynatrace Resource Store API for Grail.\nTo read\
     \ about use cases and examples, see\n[Dynatrace Documentation](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail)"
-  title: "Grail - Resource Store"
-  version: "1.0.1"
+  title: "Grail Resource Store API"
+  version: "1.1.0"
+  x-service-category: "grail"
+  x-summary: "Allows managing files in the Grail Resource Store, such as lookup data."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/resource-store/v1"
   x-api-gateway-url: "/platform/storage/resource-store/v1"

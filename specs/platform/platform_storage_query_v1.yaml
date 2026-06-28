@@ -1,8 +1,11 @@
 openapi: "3.0.1"
 info:
   description: "Exposes an API to fetch records stored in Grail"
-  title: "DQL Query"
-  version: "1.20.0"
+  title: "Grail DQL Query API"
+  version: "1.23.0"
+  x-service-category: "grail"
+  x-summary: "Executes DQL queries and returns query results with consistent execution,\
+    \ validation, and response semantics."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/storage/query/v1"
   x-api-gateway-url: "/platform/storage/query/v1"
@@ -432,6 +435,8 @@ paths:
           $ref: "#/components/responses/TenantNotFound"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
         "415":
           $ref: "#/components/responses/UnsupportedMediaType"
         "500":
@@ -776,6 +781,8 @@ paths:
           $ref: "#/components/responses/MethodNotAllowed"
         "409":
           $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
         "415":
           $ref: "#/components/responses/UnsupportedMediaType"
         "429":
@@ -1055,6 +1062,8 @@ paths:
           $ref: "#/components/responses/InsufficientPermission"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
         "415":
           $ref: "#/components/responses/UnsupportedMediaType"
         "500":
@@ -1285,6 +1294,8 @@ paths:
           $ref: "#/components/responses/InsufficientPermission"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
         "415":
           $ref: "#/components/responses/UnsupportedMediaType"
         "500":
@@ -1442,6 +1453,20 @@ components:
             $ref: "#/components/schemas/ErrorEnvelope"
       description: "Method not allowed. The HTTP method is not supported for this\
         \ endpoint."
+    PayloadTooLarge:
+      content:
+        application/json:
+          examples:
+            Payload Too Large:
+              description: "The request body exceeds the maximum allowed size."
+              value:
+                error:
+                  code: 413
+                  message: "Request body exceeds the maximum allowed size."
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+      description: "Payload Too Large - The request body exceeds the maximum allowed\
+        \ size."
     QueryGone:
       content:
         application/json:
@@ -2137,6 +2162,12 @@ components:
           type: "integer"
           format: "int64"
           description: "The time it took to execute the query."
+        flags:
+          type: "array"
+          description: "Flags indicating specific properties of the query execution,\
+            \ such as CLASSIC_ENTITY_MIGRATION_ADVISED."
+          items:
+            type: "string"
         locale:
           type: "string"
           description: "Effective locale for the query."
