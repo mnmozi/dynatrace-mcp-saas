@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.13.0
+- update_openpipeline_configuration auto-verifies every DQL processor + matcher via the online verify endpoints before applying (returns problems, no write on failure); new dryRun flag
+
 ## 0.12.0
 - Settings writes auto-validate via the online validateOnly endpoint before persisting (returns constraintViolations, no write on failure); new dryRun flag on create/update_settings_object
 

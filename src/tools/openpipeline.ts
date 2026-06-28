@@ -15,6 +15,87 @@ import {
 
 const BASE = "/platform/openpipeline/v1";
 
+// ── Deep-walk helpers ────────────────────────────────────────────────────────
+
+interface DqlItem {
+  kind: "dql";
+  location: string;
+  script: string;
+}
+
+interface MatcherItem {
+  kind: "matcher";
+  location: string;
+  value: string;
+}
+
+type CollectedItem = DqlItem | MatcherItem;
+
+/**
+ * Recursively walks `node` and collects:
+ *  - DQL processors: any object with `type === "dql"`, capturing `dqlScript ?? script`
+ *  - Matchers: any property literally named `matcher` whose value is a non-empty string
+ */
+function collectVerifyItems(node: unknown, path: string, out: CollectedItem[]): void {
+  if (node === null || typeof node !== "object") return;
+
+  if (Array.isArray(node)) {
+    node.forEach((item, i) => collectVerifyItems(item, `${path}[${i}]`, out));
+    return;
+  }
+
+  const obj = node as Record<string, unknown>;
+
+  // Check for DQL processor (type === "dql")
+  if (obj["type"] === "dql") {
+    const script = (typeof obj["dqlScript"] === "string" && obj["dqlScript"])
+      ? obj["dqlScript"]
+      : (typeof obj["script"] === "string" && obj["script"])
+        ? obj["script"]
+        : null;
+    if (script) {
+      out.push({ kind: "dql", location: path, script });
+    }
+  }
+
+  // Walk all properties, collecting string-valued `matcher` properties
+  for (const key of Object.keys(obj)) {
+    if (key === "matcher") {
+      if (typeof obj[key] === "string" && (obj[key] as string).length > 0) {
+        out.push({ kind: "matcher", location: `${path}.matcher`, value: obj[key] as string });
+      }
+      // Still recurse into matcher if it's an object (unlikely but defensive)
+      if (typeof obj[key] === "object") {
+        collectVerifyItems(obj[key], `${path}.matcher`, out);
+      }
+    } else {
+      collectVerifyItems(obj[key], `${path}.${key}`, out);
+    }
+  }
+}
+
+interface VerifyResult {
+  kind: "dql" | "matcher";
+  location: string;
+  valid: boolean;
+  errors?: string[];
+}
+
+interface RawVerifyResponse {
+  valid?: boolean;
+  notifications?: Array<{ severity?: string; message?: string }>;
+}
+
+function interpretVerifyResponse(raw: RawVerifyResponse): { valid: boolean; errors: string[] } {
+  // Primary signal: `valid` boolean
+  const valid = raw.valid !== false &&
+    !(raw.notifications ?? []).some((n) => n.severity === "ERROR");
+  const errors = (raw.notifications ?? [])
+    .filter((n) => n.severity === "ERROR")
+    .map((n) => n.message ?? "Unknown error");
+  return { valid, errors };
+}
+
 export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): void {
   // ── Read-only tools ─────────────────────────────────────────────────────────
 
@@ -313,7 +394,9 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
       description:
         "Replace the full OpenPipeline configuration for a specific data type (WRITE, requires DT_ENABLE_WRITES=true). " +
         "Fetch the current configuration first with get_openpipeline_configuration, modify it, then PUT it back. " +
-        "This replaces the entire configuration object.",
+        "Before applying, automatically verifies every DQL processor (type=dql, dqlScript field) and every matcher " +
+        "string in the configuration via the online verify endpoints. If any item is invalid, returns the problems " +
+        "without writing. Supports dryRun to verify-only without applying.",
       inputSchema: {
         id: z
           .string()
@@ -324,9 +407,58 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
           "Full configuration object (typically fetched via get_openpipeline_configuration, then modified). " +
             "PUT replaces the whole configuration.",
         ),
+        dryRun: z
+          .boolean()
+          .optional()
+          .describe(
+            "If true, only verify all DQL processors and matchers in the configuration (no update). " +
+              "Does not require DT_ENABLE_WRITES.",
+          ),
       },
     },
-    async ({ id, configuration }) => {
+    async ({ id, configuration, dryRun }) => {
+      // 1. Collect all DQL processors and matchers via deep-walk
+      const items: CollectedItem[] = [];
+      collectVerifyItems(configuration, "configuration", items);
+
+      const dqlItems = items.filter((i): i is DqlItem => i.kind === "dql");
+      const matcherItems = items.filter((i): i is MatcherItem => i.kind === "matcher");
+
+      // 2. Verify each item in parallel via online endpoints
+      const results: VerifyResult[] = await Promise.all([
+        ...dqlItems.map(async (item): Promise<VerifyResult> => {
+          const raw = await deps.client.platform.post<RawVerifyResponse>(
+            `${BASE}/dqlProcessor/verify`,
+            { script: item.script, configurationId: id },
+          );
+          const { valid, errors } = interpretVerifyResponse(raw);
+          return { kind: "dql", location: item.location, valid, errors };
+        }),
+        ...matcherItems.map(async (item): Promise<VerifyResult> => {
+          const raw = await deps.client.platform.post<RawVerifyResponse>(
+            `${BASE}/matcher/verify`,
+            { query: item.value, configurationId: id },
+          );
+          const { valid, errors } = interpretVerifyResponse(raw);
+          return { kind: "matcher", location: item.location, valid, errors };
+        }),
+      ]);
+
+      // 3. Guard: if any item is invalid, return problems without persisting
+      const problems = results.filter((r) => !r.valid);
+      if (problems.length > 0) {
+        return jsonResult({ valid: false, problems });
+      }
+
+      // 4. dryRun: all valid, return counts without applying
+      if (dryRun) {
+        return jsonResult({
+          valid: true,
+          verified: { dqlProcessors: dqlItems.length, matchers: matcherItems.length },
+        });
+      }
+
+      // 5. Require writes, then PUT
       requireWrites(deps.config);
       return jsonResult(
         await deps.client.platform.put(

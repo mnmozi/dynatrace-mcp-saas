@@ -385,6 +385,201 @@ describe("update_openpipeline_configuration — typed body acceptance", () => {
   });
 });
 
+// ── update_openpipeline_configuration auto-verify guard ──────────────────────
+
+/** A minimal config with one DQL processor and one matcher string */
+const dqlAndMatcherConfig = {
+  definition: {
+    pipelines: [
+      {
+        id: "p1",
+        processing: [
+          {
+            type: "dql",
+            id: "proc1",
+            dqlScript: "parse content, \"SIMPLE_TEXT:msg\"",
+            matcher: "isNotNull(content)",
+          },
+        ],
+      },
+    ],
+    routingRules: [
+      {
+        matcher: "matchesValue(type, \"logs\")",
+        pipelineId: "p1",
+      },
+    ],
+  },
+};
+
+describe("update_openpipeline_configuration — dryRun verifies, never PUTs", () => {
+  it("returns valid:true with counts when all verify pass and dryRun=true", async () => {
+    let putCalled = false;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () =>
+        HttpResponse.json({ valid: true, notifications: [] }),
+      ),
+      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () =>
+        HttpResponse.json({ valid: true, notifications: [] }),
+      ),
+      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
+        putCalled = true;
+        return HttpResponse.json({ id: "logs" });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "update_openpipeline_configuration",
+      arguments: { id: "logs", configuration: dqlAndMatcherConfig, dryRun: true },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    const result = JSON.parse(text) as { valid: boolean; verified: { dqlProcessors: number; matchers: number } };
+    expect(result.valid).toBe(true);
+    // 1 DQL processor, 2 matchers (one from the processor, one from routingRules)
+    expect(result.verified.dqlProcessors).toBe(1);
+    expect(result.verified.matchers).toBe(2);
+    expect(putCalled).toBe(false);
+  });
+});
+
+describe("update_openpipeline_configuration — invalid DQL → problems, no PUT", () => {
+  it("returns valid:false with problems and does NOT PUT when DQL verify fails", async () => {
+    let putCalled = false;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () =>
+        HttpResponse.json({
+          valid: false,
+          notifications: [
+            {
+              severity: "ERROR",
+              message: "There's been an error during parsing: There's no command `parsee`.",
+            },
+          ],
+        }),
+      ),
+      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () =>
+        HttpResponse.json({ valid: true, notifications: [] }),
+      ),
+      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
+        putCalled = true;
+        return HttpResponse.json({ id: "logs" });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "update_openpipeline_configuration",
+      arguments: { id: "logs", configuration: dqlAndMatcherConfig },
+    });
+
+    // Should NOT be an MCP-level error — returns a structured result
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    const result = JSON.parse(text) as { valid: boolean; problems: Array<{ kind: string; location: string }> };
+    expect(result.valid).toBe(false);
+    expect(result.problems.length).toBeGreaterThan(0);
+    expect(result.problems.some((p) => p.kind === "dql")).toBe(true);
+    expect(putCalled).toBe(false);
+  });
+});
+
+describe("update_openpipeline_configuration — all valid + writes enabled → verify THEN PUT", () => {
+  it("calls verify endpoints and then PUTs when all valid and writes enabled", async () => {
+    let dqlVerifyCalled = false;
+    let matcherVerifyCalled = false;
+    let putCalled = false;
+
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () => {
+        dqlVerifyCalled = true;
+        return HttpResponse.json({ valid: true, notifications: [] });
+      }),
+      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () => {
+        matcherVerifyCalled = true;
+        return HttpResponse.json({ valid: true, notifications: [] });
+      }),
+      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
+        putCalled = true;
+        return HttpResponse.json({ id: "logs", updated: true });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "update_openpipeline_configuration",
+      arguments: { id: "logs", configuration: dqlAndMatcherConfig },
+    });
+
+    expect(res.isError).toBeFalsy();
+    const text = (res.content as Array<{ text: string }>)[0].text;
+    expect(text).toContain("updated");
+    expect(dqlVerifyCalled).toBe(true);
+    expect(matcherVerifyCalled).toBe(true);
+    expect(putCalled).toBe(true);
+  });
+});
+
+describe("update_openpipeline_configuration — writes disabled + dryRun false + all valid → write-gate blocks", () => {
+  it("blocks with DT_ENABLE_WRITES after verify passes when writes disabled", async () => {
+    mswServer.use(
+      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () =>
+        HttpResponse.json({ valid: true, notifications: [] }),
+      ),
+      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () =>
+        HttpResponse.json({ valid: true, notifications: [] }),
+      ),
+    );
+
+    // default cfg has enableWrites: false
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "update_openpipeline_configuration",
+      arguments: { id: "logs", configuration: dqlAndMatcherConfig },
+    });
+
+    expect(res.isError).toBe(true);
+    expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
+  });
+});
+
+describe("update_openpipeline_configuration — config with no DQL/matcher → zero verify calls, proceeds to PUT", () => {
+  it("skips verify entirely and PUTs directly when no DQL processors or matchers", async () => {
+    let putCalled = false;
+
+    mswServer.use(
+      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
+        putCalled = true;
+        return HttpResponse.json({ id: "logs" });
+      }),
+    );
+
+    const writeCfg: Config = { ...cfg, enableWrites: true };
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "update_openpipeline_configuration",
+      arguments: {
+        id: "logs",
+        configuration: {
+          id: "logs",
+          editable: true,
+          definition: { pipelinesSpecification: { processing: ["fieldsAdd"] } },
+        },
+      },
+    });
+
+    expect(res.isError).toBeFalsy();
+    expect(putCalled).toBe(true);
+  });
+});
+
 describe("list_openpipeline_processor_types", () => {
   it("returns all configs with stage processor types when called without configId", async () => {
     mswServer.use(
