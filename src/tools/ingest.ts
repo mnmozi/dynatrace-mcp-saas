@@ -35,9 +35,7 @@ export function registerIngestTools(server: McpServer, deps: ToolDeps): void {
         "Required fields: eventType (e.g. CUSTOM_INFO, CUSTOM_DEPLOYMENT, AVAILABILITY_EVENT), title. " +
         "Optional: entitySelector, properties (key/value map), startTime, endTime, timeout.",
       inputSchema: {
-        event: z
-          .record(z.unknown())
-          .describe("Event payload: eventType, title, properties, etc. per spec"),
+        event: z.record(z.unknown()).describe("Event payload: eventType, title, properties, etc. per spec"),
       },
     },
     async ({ event }) => {
@@ -55,9 +53,7 @@ export function registerIngestTools(server: McpServer, deps: ToolDeps): void {
         "Required CloudEvent fields: id, source, specversion, type. " +
         "Optional: data, datacontenttype, dataschema, dtcontext, subject, time, traceparent.",
       inputSchema: {
-        bizevent: z
-          .record(z.unknown())
-          .describe("Business event payload per spec"),
+        bizevent: z.record(z.unknown()).describe("Business event payload per spec"),
       },
     },
     async ({ bizevent }) => {

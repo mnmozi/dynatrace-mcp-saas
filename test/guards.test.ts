@@ -3,7 +3,12 @@ import { requireWrites } from "../src/util/guards.js";
 import type { Config } from "../src/types.js";
 
 const cfg = (enableWrites: boolean): Config => ({
-  platformUrl: "x", classicUrl: "x", platformToken: "x", apiToken: "x", enableWrites, timeoutMs: 1,
+  platformUrl: "x",
+  classicUrl: "x",
+  platformToken: "x",
+  apiToken: "x",
+  enableWrites,
+  timeoutMs: 1,
 });
 
 describe("requireWrites", () => {

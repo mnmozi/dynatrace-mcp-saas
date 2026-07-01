@@ -16,25 +16,13 @@ export function registerVulnerabilitiesTools(server: McpServer, deps: ToolDeps):
         filter: z
           .string()
           .optional()
-          .describe(
-            'Filter expression, e.g. \'davisAssessment.exploitStatus = "AVAILABLE" and risk.score > 8\'.',
-          ),
-        sort: z
-          .string()
-          .optional()
-          .describe(
-            "Sort expression, e.g. \"-risk.score\" for descending risk score.",
-          ),
+          .describe("Filter expression, e.g. 'davisAssessment.exploitStatus = \"AVAILABLE\" and risk.score > 8'."),
+        sort: z.string().optional().describe('Sort expression, e.g. "-risk.score" for descending risk score.'),
         startTime: z
           .string()
           .optional()
-          .describe(
-            'Start of timeframe. ISO-8601 timestamp or relative, e.g. "now-7d". Defaults to "now-30m".',
-          ),
-        endTime: z
-          .string()
-          .optional()
-          .describe('End of timeframe. Only "now" is supported. Defaults to "now".'),
+          .describe('Start of timeframe. ISO-8601 timestamp or relative, e.g. "now-7d". Defaults to "now-30m".'),
+        endTime: z.string().optional().describe('End of timeframe. Only "now" is supported. Defaults to "now".'),
       },
     },
     async ({ filter, sort, startTime, endTime }) =>
@@ -51,31 +39,22 @@ export function registerVulnerabilitiesTools(server: McpServer, deps: ToolDeps):
   server.registerTool(
     "get_vulnerability",
     {
-      description:
-        "Get full details of a single vulnerability by its ID (Dynatrace Platform Vulnerabilities v1).",
+      description: "Get full details of a single vulnerability by its ID (Dynatrace Platform Vulnerabilities v1).",
       inputSchema: {
         id: z.string().describe("The vulnerability ID."),
         startTime: z
           .string()
           .optional()
-          .describe(
-            'Start of timeframe. ISO-8601 timestamp or relative, e.g. "now-7d". Defaults to "now-30m".',
-          ),
-        endTime: z
-          .string()
-          .optional()
-          .describe('End of timeframe. Only "now" is supported. Defaults to "now".'),
+          .describe('Start of timeframe. ISO-8601 timestamp or relative, e.g. "now-7d". Defaults to "now-30m".'),
+        endTime: z.string().optional().describe('End of timeframe. Only "now" is supported. Defaults to "now".'),
       },
     },
     async ({ id, startTime, endTime }) =>
       jsonResult(
-        await deps.client.platform.get(
-          `${BASE}/vulnerabilities/${encodeURIComponent(id)}`,
-          {
-            ...(startTime !== undefined && { "start-time": startTime }),
-            ...(endTime !== undefined && { "end-time": endTime }),
-          },
-        ),
+        await deps.client.platform.get(`${BASE}/vulnerabilities/${encodeURIComponent(id)}`, {
+          ...(startTime !== undefined && { "start-time": startTime }),
+          ...(endTime !== undefined && { "end-time": endTime }),
+        }),
       ),
   );
 }

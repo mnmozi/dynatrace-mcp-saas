@@ -42,10 +42,7 @@ export const openPipelineProcessorSchema = z
  */
 export const openPipelineConfigurationSchema = z
   .object({
-    id: z
-      .string()
-      .optional()
-      .describe("Configuration / data-type id, e.g. 'logs'."),
+    id: z.string().optional().describe("Configuration / data-type id, e.g. 'logs'."),
     editable: z.boolean().optional(),
     definition: z
       .record(z.unknown())
@@ -68,10 +65,7 @@ export const dqlProcessorVerifySchema = z
       .string()
       .optional()
       .describe("The unverified DQL script, e.g. 'parse content, \"IPV4:ip LD HTTPDATE:time\\']\\'  LD:text\"'."),
-    configurationId: z
-      .string()
-      .optional()
-      .describe("Identifier of the configuration the script belongs to."),
+    configurationId: z.string().optional().describe("Identifier of the configuration the script belongs to."),
     protectedFields: z
       .array(z.string())
       .optional()
@@ -85,23 +79,14 @@ export const dqlProcessorVerifySchema = z
  */
 export const dqlProcessorAutocompleteSchema = z
   .object({
-    script: z
-      .string()
-      .optional()
-      .describe("The current (in-)complete DQL script, e.g. 'parse'."),
+    script: z.string().optional().describe("The current (in-)complete DQL script, e.g. 'parse'."),
     cursorPosition: z
       .number()
       .int()
       .optional()
       .describe("The position of the cursor inside the script (0-based character offset)."),
-    configurationId: z
-      .string()
-      .optional()
-      .describe("Identifier of the configuration."),
-    protectedFields: z
-      .array(z.string())
-      .optional()
-      .describe("List of protected fields."),
+    configurationId: z.string().optional().describe("Identifier of the configuration."),
+    protectedFields: z.array(z.string()).optional().describe("List of protected fields."),
   })
   .passthrough();
 
@@ -111,22 +96,12 @@ export const dqlProcessorAutocompleteSchema = z
  */
 export const matcherVerifySchema = z
   .object({
-    query: z
-      .string()
-      .optional()
-      .describe("The matcher query to verify, e.g. 'matchesValue(type, \"security\")'."),
+    query: z.string().optional().describe("The matcher query to verify, e.g. 'matchesValue(type, \"security\")'."),
     configurationId: z
       .string()
       .optional()
-      .describe(
-        "Identifier of the configuration in which the validity of the matcher query should be verified.",
-      ),
-    context: z
-      .string()
-      .optional()
-      .describe(
-        "Context for verification, e.g. 'processing' or 'ROUTING_RULE'.",
-      ),
+      .describe("Identifier of the configuration in which the validity of the matcher query should be verified."),
+    context: z.string().optional().describe("Context for verification, e.g. 'processing' or 'ROUTING_RULE'."),
     restrictedFields: z
       .array(z.string())
       .optional()
@@ -140,10 +115,7 @@ export const matcherVerifySchema = z
  */
 export const matcherAutocompleteSchema = z
   .object({
-    query: z
-      .string()
-      .optional()
-      .describe("The current (in-)complete matcher query."),
+    query: z.string().optional().describe("The current (in-)complete matcher query."),
     cursorPosition: z
       .number()
       .int()
@@ -162,7 +134,7 @@ export const lqlToDqlSchema = z
       .string()
       .optional()
       .describe(
-        "The LQL matcher string to convert, e.g. 'log.source=\"snmptraps\" AND snmp.trap_oid=\"F5-BIGIP-COMMON-MIB\"'.",
+        'The LQL matcher string to convert, e.g. \'log.source="snmptraps" AND snmp.trap_oid="F5-BIGIP-COMMON-MIB"\'.',
       ),
   })
   .passthrough();

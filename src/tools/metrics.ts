@@ -11,17 +11,8 @@ export function registerMetricsTools(server: McpServer, deps: ToolDeps): void {
       description:
         "List/search metric descriptors (classic Metrics v2). Use a metricSelector like 'builtin:host.*' to filter. On Gen3/Grail tenants this endpoint may be unavailable; use query_metric or execute_dql instead.",
       inputSchema: {
-        selector: z
-          .string()
-          .optional()
-          .describe("metricSelector filter, e.g. 'builtin:host.cpu.*'."),
-        pageSize: z
-          .number()
-          .int()
-          .positive()
-          .max(500)
-          .optional()
-          .describe("Page size (default 100)."),
+        selector: z.string().optional().describe("metricSelector filter, e.g. 'builtin:host.cpu.*'."),
+        pageSize: z.number().int().positive().max(500).optional().describe("Page size (default 100)."),
       },
     },
     async ({ selector, pageSize }) => {
@@ -54,18 +45,12 @@ export function registerMetricsTools(server: McpServer, deps: ToolDeps): void {
       description:
         "Get the descriptor/metadata for a single metric by key (classic Metrics v2). On Gen3/Grail tenants this endpoint may be unavailable; use query_metric or execute_dql instead.",
       inputSchema: {
-        metricKey: z
-          .string()
-          .describe("The metric key, e.g. 'builtin:host.cpu.usage'."),
+        metricKey: z.string().describe("The metric key, e.g. 'builtin:host.cpu.usage'."),
       },
     },
     async ({ metricKey }) => {
       try {
-        return jsonResult(
-          await deps.client.classic.get(
-            `/api/v2/metrics/${encodeURIComponent(metricKey)}`,
-          ),
-        );
+        return jsonResult(await deps.client.classic.get(`/api/v2/metrics/${encodeURIComponent(metricKey)}`));
       } catch (e) {
         if (e instanceof DynatraceApiError && e.status === 403) {
           return jsonResult({
@@ -87,41 +72,19 @@ export function registerMetricsTools(server: McpServer, deps: ToolDeps): void {
       description:
         "Query metric data points via Grail DQL 'timeseries' (Gen3-native, platform token). Builds a timeseries query and executes it against the Grail storage API. Works on all Gen3/Grail tenants with the storage:metrics:read scope.",
       inputSchema: {
-        metricKey: z
-          .string()
-          .describe("Metric key, e.g. 'dt.host.cpu.usage'."),
+        metricKey: z.string().describe("Metric key, e.g. 'dt.host.cpu.usage'."),
         aggregation: z
           .string()
           .optional()
-          .describe(
-            "Aggregation: avg|sum|min|max|count|median|percentile etc. Default 'avg'.",
-          ),
-        by: z
-          .array(z.string())
-          .optional()
-          .describe(
-            "Dimensions to split by, e.g. ['dt.entity.host'].",
-          ),
+          .describe("Aggregation: avg|sum|min|max|count|median|percentile etc. Default 'avg'."),
+        by: z.array(z.string()).optional().describe("Dimensions to split by, e.g. ['dt.entity.host']."),
         filter: z
           .string()
           .optional()
-          .describe(
-            "Optional DQL filter expression, e.g. 'dt.entity.host == \"HOST-123\"'.",
-          ),
-        from: z
-          .string()
-          .optional()
-          .describe("DQL timeframe start (default 'now()-1h')."),
-        to: z
-          .string()
-          .optional()
-          .describe("DQL timeframe end (default 'now()')."),
-        limit: z
-          .number()
-          .int()
-          .positive()
-          .max(1000)
-          .optional(),
+          .describe("Optional DQL filter expression, e.g. 'dt.entity.host == \"HOST-123\"'."),
+        from: z.string().optional().describe("DQL timeframe start (default 'now()-1h')."),
+        to: z.string().optional().describe("DQL timeframe end (default 'now()')."),
+        limit: z.number().int().positive().max(1000).optional(),
       },
     },
     async ({ metricKey, aggregation, by, filter, from, to, limit }) => {

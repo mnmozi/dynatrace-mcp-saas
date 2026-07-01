@@ -82,9 +82,7 @@ class HostClientImpl implements HostClient {
    * Non-retryable responses (other 4xx, 2xx, 3xx) are returned immediately.
    * After exhausting retries, returns the last Response or rethrows the last error.
    */
-  private async withRetry(
-    fetchFn: (signal: AbortSignal) => Promise<Response>,
-  ): Promise<Response> {
+  private async withRetry(fetchFn: (signal: AbortSignal) => Promise<Response>): Promise<Response> {
     let lastError: unknown = undefined;
     let lastResponse: Response | undefined = undefined;
 
@@ -131,9 +129,7 @@ class HostClientImpl implements HostClient {
       Accept: "application/json",
     };
 
-    const res = await this.withRetry((signal) =>
-      fetch(url, { method, headers, body: serializedBody, signal }),
-    );
+    const res = await this.withRetry((signal) => fetch(url, { method, headers, body: serializedBody, signal }));
 
     const text = await res.text();
     const parsed = text ? safeJson(text) : undefined;
@@ -151,9 +147,7 @@ class HostClientImpl implements HostClient {
       Accept: "application/json",
     };
 
-    const res = await this.withRetry((signal) =>
-      fetch(url, { method, headers, body: form, signal }),
-    );
+    const res = await this.withRetry((signal) => fetch(url, { method, headers, body: form, signal }));
 
     const text = await res.text();
     const parsed = text ? safeJson(text) : undefined;
@@ -169,9 +163,7 @@ class HostClientImpl implements HostClient {
       Authorization: this.authHeader,
     };
 
-    const res = await this.withRetry((signal) =>
-      fetch(url, { method: "GET", headers, signal }),
-    );
+    const res = await this.withRetry((signal) => fetch(url, { method: "GET", headers, signal }));
 
     const text = await res.text();
     if (!res.ok) {
@@ -181,17 +173,35 @@ class HostClientImpl implements HostClient {
     return text;
   }
 
-  get<T>(path: string, query?: QueryParams) { return this.request<T>("GET", path, undefined, query); }
-  post<T>(path: string, body?: unknown, query?: QueryParams) { return this.request<T>("POST", path, body, query); }
-  put<T>(path: string, body?: unknown, query?: QueryParams) { return this.request<T>("PUT", path, body, query); }
-  del<T>(path: string, query?: QueryParams) { return this.request<T>("DELETE", path, undefined, query); }
-  postForm<T>(path: string, form: FormData, query?: QueryParams) { return this.requestForm<T>("POST", path, form, query); }
-  patchForm<T>(path: string, form: FormData, query?: QueryParams) { return this.requestForm<T>("PATCH", path, form, query); }
-  getText(path: string, query?: QueryParams) { return this.requestText(path, query); }
+  get<T>(path: string, query?: QueryParams) {
+    return this.request<T>("GET", path, undefined, query);
+  }
+  post<T>(path: string, body?: unknown, query?: QueryParams) {
+    return this.request<T>("POST", path, body, query);
+  }
+  put<T>(path: string, body?: unknown, query?: QueryParams) {
+    return this.request<T>("PUT", path, body, query);
+  }
+  del<T>(path: string, query?: QueryParams) {
+    return this.request<T>("DELETE", path, undefined, query);
+  }
+  postForm<T>(path: string, form: FormData, query?: QueryParams) {
+    return this.requestForm<T>("POST", path, form, query);
+  }
+  patchForm<T>(path: string, form: FormData, query?: QueryParams) {
+    return this.requestForm<T>("PATCH", path, form, query);
+  }
+  getText(path: string, query?: QueryParams) {
+    return this.requestText(path, query);
+  }
 }
 
 function safeJson(text: string): unknown {
-  try { return JSON.parse(text); } catch { return text; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 /**
@@ -248,7 +258,10 @@ export class DynatraceClient {
         : unconfiguredHost("platform", "DT_PLATFORM_URL + DT_PLATFORM_TOKEN");
   }
 
-  dqlExecute(query: string, opts?: { maxResultRecords?: number; pollIntervalMs?: number; maxPolls?: number }): Promise<DqlResult> {
+  dqlExecute(
+    query: string,
+    opts?: { maxResultRecords?: number; pollIntervalMs?: number; maxPolls?: number },
+  ): Promise<DqlResult> {
     return dqlExecute(this.platform, query, opts);
   }
 }

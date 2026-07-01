@@ -36,7 +36,23 @@ const mswServer = setupServer(
     const filter = url.searchParams.get("filter");
     if (filter && filter.includes("dashboard")) {
       return HttpResponse.json({
-        documents: [{ id: "D1", name: "Ops", type: "dashboard", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true }],
+        documents: [
+          {
+            id: "D1",
+            name: "Ops",
+            type: "dashboard",
+            version: "1",
+            owner: "u1",
+            modificationInfo: {
+              createdBy: "u1",
+              createdTime: "2024-01-01T00:00:00Z",
+              lastModifiedBy: "u1",
+              lastModifiedTime: "2024-01-01T00:00:00Z",
+            },
+            access: ["read", "write", "delete"],
+            isPrivate: true,
+          },
+        ],
         totalCount: 1,
         nextPageKey: "K2",
       });
@@ -47,7 +63,21 @@ const mswServer = setupServer(
   // GET dashboard metadata
   http.get(`${PLATFORM}/platform/document/v1/documents/:id/metadata`, ({ params }) => {
     if (params["id"] === "D1") {
-      return HttpResponse.json({ id: "D1", name: "Ops", type: "dashboard", version: "2", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-02T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true });
+      return HttpResponse.json({
+        id: "D1",
+        name: "Ops",
+        type: "dashboard",
+        version: "2",
+        owner: "u1",
+        modificationInfo: {
+          createdBy: "u1",
+          createdTime: "2024-01-01T00:00:00Z",
+          lastModifiedBy: "u1",
+          lastModifiedTime: "2024-01-02T00:00:00Z",
+        },
+        access: ["read", "write", "delete"],
+        isPrivate: true,
+      });
     }
     return new HttpResponse(null, { status: 404 });
   }),
@@ -62,13 +92,46 @@ const mswServer = setupServer(
 
   // CREATE dashboard
   http.post(`${PLATFORM}/platform/document/v1/documents`, async () => {
-    return HttpResponse.json({ id: "D-new", name: "My New Dashboard", type: "dashboard", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true }, { status: 201 });
+    return HttpResponse.json(
+      {
+        id: "D-new",
+        name: "My New Dashboard",
+        type: "dashboard",
+        version: "1",
+        owner: "u1",
+        modificationInfo: {
+          createdBy: "u1",
+          createdTime: "2024-01-01T00:00:00Z",
+          lastModifiedBy: "u1",
+          lastModifiedTime: "2024-01-01T00:00:00Z",
+        },
+        access: ["read", "write", "delete"],
+        isPrivate: true,
+      },
+      { status: 201 },
+    );
   }),
 
   // UPDATE dashboard (PATCH)
   http.patch(`${PLATFORM}/platform/document/v1/documents/:id`, async ({ params }) => {
     if (params["id"] === "D1") {
-      return HttpResponse.json({ documentMetadata: { id: "D1", name: "Ops Updated", type: "dashboard", version: "3", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-03T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true } });
+      return HttpResponse.json({
+        documentMetadata: {
+          id: "D1",
+          name: "Ops Updated",
+          type: "dashboard",
+          version: "3",
+          owner: "u1",
+          modificationInfo: {
+            createdBy: "u1",
+            createdTime: "2024-01-01T00:00:00Z",
+            lastModifiedBy: "u1",
+            lastModifiedTime: "2024-01-03T00:00:00Z",
+          },
+          access: ["read", "write", "delete"],
+          isPrivate: true,
+        },
+      });
     }
     return new HttpResponse(null, { status: 404 });
   }),
@@ -83,7 +146,10 @@ const mswServer = setupServer(
 );
 
 beforeAll(() => mswServer.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { mswServer.resetHandlers(); lastDocRequestUrl = ""; });
+afterEach(() => {
+  mswServer.resetHandlers();
+  lastDocRequestUrl = "";
+});
 afterAll(() => mswServer.close());
 
 async function makeClient(cfg: Config) {
@@ -230,7 +296,21 @@ describe("create_dashboard with contentPath", () => {
       http.post(`${PLATFORM}/platform/document/v1/documents`, async ({ request }) => {
         body = await request.text();
         return HttpResponse.json(
-          { id: "D-new", name: "x", type: "dashboard", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read"], isPrivate: true },
+          {
+            id: "D-new",
+            name: "x",
+            type: "dashboard",
+            version: "1",
+            owner: "u1",
+            modificationInfo: {
+              createdBy: "u1",
+              createdTime: "2024-01-01T00:00:00Z",
+              lastModifiedBy: "u1",
+              lastModifiedTime: "2024-01-01T00:00:00Z",
+            },
+            access: ["read"],
+            isPrivate: true,
+          },
           { status: 201 },
         );
       }),
@@ -278,7 +358,23 @@ describe("update_dashboard with contentPath", () => {
     mswServer.use(
       http.patch(`${PLATFORM}/platform/document/v1/documents/:id`, async ({ request }) => {
         body = await request.text();
-        return HttpResponse.json({ documentMetadata: { id: "D1", name: "Ops", type: "dashboard", version: "3", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-03T00:00:00Z" }, access: ["read"], isPrivate: true } });
+        return HttpResponse.json({
+          documentMetadata: {
+            id: "D1",
+            name: "Ops",
+            type: "dashboard",
+            version: "3",
+            owner: "u1",
+            modificationInfo: {
+              createdBy: "u1",
+              createdTime: "2024-01-01T00:00:00Z",
+              lastModifiedBy: "u1",
+              lastModifiedTime: "2024-01-03T00:00:00Z",
+            },
+            access: ["read"],
+            isPrivate: true,
+          },
+        });
       }),
     );
 

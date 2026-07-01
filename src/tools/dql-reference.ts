@@ -12,13 +12,19 @@ const OFFICIAL_REFS_DIR = fileURLToPath(
 );
 
 const TOPIC_MAP = {
-  playbook:       { file: "dql-skill.md",                      desc: "Compact agent cheat-sheet — start here before writing any DQL" },
-  reference:      { file: "dql-reference.md",                   desc: "Full practical DQL reference guide" },
-  metrics:        { file: "dql-metrics-and-self-monitoring.md", desc: "Metrics and self-monitoring queries" },
-  gotchas:        { file: "dql-filter-after-summarize-bug.md",  desc: "Gotcha: filter silently dropped after summarize (optimizer bug)" },
-  "business-cases": { file: "dql-business-cases.md",            desc: "Business-oriented DQL query patterns" },
-  k8s:            { file: "dql-k8s-investigation.md",           desc: "Kubernetes investigation DQL queries" },
-  official:       { file: "vendor/dynatrace-for-ai/dt-dql-essentials/SKILL.md", desc: "Official Dynatrace dt-dql-essentials skill entry point (Apache-2.0); use officialRef to fetch its function-reference docs" },
+  playbook: { file: "dql-skill.md", desc: "Compact agent cheat-sheet — start here before writing any DQL" },
+  reference: { file: "dql-reference.md", desc: "Full practical DQL reference guide" },
+  metrics: { file: "dql-metrics-and-self-monitoring.md", desc: "Metrics and self-monitoring queries" },
+  gotchas: {
+    file: "dql-filter-after-summarize-bug.md",
+    desc: "Gotcha: filter silently dropped after summarize (optimizer bug)",
+  },
+  "business-cases": { file: "dql-business-cases.md", desc: "Business-oriented DQL query patterns" },
+  k8s: { file: "dql-k8s-investigation.md", desc: "Kubernetes investigation DQL queries" },
+  official: {
+    file: "vendor/dynatrace-for-ai/dt-dql-essentials/SKILL.md",
+    desc: "Official Dynatrace dt-dql-essentials skill entry point (Apache-2.0); use officialRef to fetch its function-reference docs",
+  },
 } as const;
 
 type Topic = keyof typeof TOPIC_MAP;
@@ -44,15 +50,15 @@ export function registerDqlReferenceTools(server: McpServer): void {
           .optional()
           .describe(
             "Which knowledge doc: playbook (default), reference (full), metrics, gotchas, " +
-            "business-cases, k8s, official (Dynatrace dt-dql-essentials skill).",
+              "business-cases, k8s, official (Dynatrace dt-dql-essentials skill).",
           ),
         officialRef: z
           .string()
           .optional()
           .describe(
             "Relative path of an official dt-dql-essentials reference doc to fetch, e.g. " +
-            "'dql/dql-functions-string.md' or 'optimization.md'. Takes precedence over topic. " +
-            "Discover available paths with list_dql_official_references.",
+              "'dql/dql-functions-string.md' or 'optimization.md'. Takes precedence over topic. " +
+              "Discover available paths with list_dql_official_references.",
           ),
       },
     },
@@ -63,7 +69,9 @@ export function registerDqlReferenceTools(server: McpServer): void {
         const abs = resolve(OFFICIAL_REFS_DIR, rel);
         const base = OFFICIAL_REFS_DIR.replace(new RegExp(`${sep}$`), "");
         if (abs !== base && !abs.startsWith(base + sep)) {
-          return textResult(`Error: invalid officialRef path '${officialRef}' (must stay within the references directory).`);
+          return textResult(
+            `Error: invalid officialRef path '${officialRef}' (must stay within the references directory).`,
+          );
         }
         try {
           return textResult(await readFile(abs, "utf-8"));
@@ -78,7 +86,9 @@ export function registerDqlReferenceTools(server: McpServer): void {
       try {
         return textResult(await readFile(filePath, "utf-8"));
       } catch (err) {
-        return textResult(`Error: could not read DQL knowledge doc '${file}' at '${filePath}': ${(err as Error).message}`);
+        return textResult(
+          `Error: could not read DQL knowledge doc '${file}' at '${filePath}': ${(err as Error).message}`,
+        );
       }
     },
   );
@@ -133,20 +143,17 @@ export function registerDqlReferenceTools(server: McpServer): void {
   for (const [key, { file, desc }] of Object.entries(TOPIC_MAP)) {
     const uri = `dql://${key}`;
     const filePath = `${KNOWLEDGE_DIR}${file}`;
-    server.resource(
-      `dql-${key}`,
-      uri,
-      { description: desc, mimeType: "text/markdown" },
-      async (resourceUri) => {
-        try {
-          const text = await readFile(filePath, "utf-8");
-          return { contents: [{ uri: resourceUri.href, mimeType: "text/markdown", text }] };
-        } catch (err) {
-          return {
-            contents: [{ uri: resourceUri.href, mimeType: "text/plain", text: `Error reading ${file}: ${(err as Error).message}` }],
-          };
-        }
-      },
-    );
+    server.resource(`dql-${key}`, uri, { description: desc, mimeType: "text/markdown" }, async (resourceUri) => {
+      try {
+        const text = await readFile(filePath, "utf-8");
+        return { contents: [{ uri: resourceUri.href, mimeType: "text/markdown", text }] };
+      } catch (err) {
+        return {
+          contents: [
+            { uri: resourceUri.href, mimeType: "text/plain", text: `Error reading ${file}: ${(err as Error).message}` },
+          ],
+        };
+      }
+    });
   }
 }

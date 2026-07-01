@@ -15,20 +15,9 @@ const criteriaSchema = z
         "Start of the evaluation timeframe. Supports relative time expressions (e.g. 'now-7d') " +
           "and ISO 8601 timestamps.",
       ),
-    timeframeTo: z
-      .string()
-      .optional()
-      .describe(
-        "End of the evaluation timeframe. Defaults to 'now' when omitted.",
-      ),
-    target: z
-      .number()
-      .optional()
-      .describe("The target SLO compliance percentage (0–100)."),
-    warning: z
-      .number()
-      .optional()
-      .describe("Optional warning threshold percentage (0–100)."),
+    timeframeTo: z.string().optional().describe("End of the evaluation timeframe. Defaults to 'now' when omitted."),
+    target: z.number().optional().describe("The target SLO compliance percentage (0–100)."),
+    warning: z.number().optional().describe("Optional warning threshold percentage (0–100)."),
   })
   .passthrough();
 
@@ -42,13 +31,8 @@ const criteriaSchema = z
  */
 export const sloSchema = z
   .object({
-    name: z
-      .string()
-      .describe("The name of the service-level objective (required)."),
-    description: z
-      .string()
-      .optional()
-      .describe("An optional description of the SLO (max 250 chars)."),
+    name: z.string().describe("The name of the service-level objective (required)."),
+    description: z.string().optional().describe("An optional description of the SLO (max 250 chars)."),
     criteria: z
       .array(criteriaSchema)
       .optional()
@@ -66,22 +50,16 @@ export const sloSchema = z
     externalId: z
       .string()
       .optional()
-      .describe(
-        "An optional user-provided external identifier for the SLO. Must be unique across all SLOs.",
-      ),
+      .describe("An optional user-provided external identifier for the SLO. Must be unique across all SLOs."),
     sliReference: z
       .record(z.unknown())
       .optional()
-      .describe(
-        "Reference to an objective template SLI definition. " +
-          "Provide either this or customSli, not both.",
-      ),
+      .describe("Reference to an objective template SLI definition. " + "Provide either this or customSli, not both."),
     customSli: z
       .record(z.unknown())
       .optional()
       .describe(
-        "Custom SLI definition with an `indicator` DQL expression. " +
-          "Provide either this or sliReference, not both.",
+        "Custom SLI definition with an `indicator` DQL expression. " + "Provide either this or sliReference, not both.",
       ),
   })
   .passthrough();

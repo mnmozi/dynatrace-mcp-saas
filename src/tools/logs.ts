@@ -8,12 +8,16 @@ export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "search_logs",
     {
-      description: "Search logs in Grail via DQL. Builds a 'fetch logs' query with optional filters. For advanced needs use execute_dql.",
+      description:
+        "Search logs in Grail via DQL. Builds a 'fetch logs' query with optional filters. For advanced needs use execute_dql.",
       inputSchema: {
         contains: z.string().optional().describe("Substring to match in log content."),
         loglevel: z.string().optional().describe("e.g. 'ERROR', 'WARN'."),
         host: z.string().optional().describe("Host name to filter by (dt.host.name)."),
-        from: z.string().optional().describe("DQL timeframe start expression, e.g. 'now()-1h' (default) or 'now()-24h'."),
+        from: z
+          .string()
+          .optional()
+          .describe("DQL timeframe start expression, e.g. 'now()-1h' (default) or 'now()-24h'."),
         limit: z.number().int().positive().max(1000).optional().describe("Max rows (default 100)."),
       },
     },

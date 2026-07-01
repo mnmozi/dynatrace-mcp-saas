@@ -19,10 +19,11 @@
 ## Shared contracts (defined once, referenced everywhere)
 
 **Config** (Task 2):
+
 ```ts
 export interface Config {
-  platformUrl: string;   // no trailing slash
-  classicUrl: string;    // no trailing slash
+  platformUrl: string; // no trailing slash
+  classicUrl: string; // no trailing slash
   platformToken: string;
   apiToken: string;
   enableWrites: boolean;
@@ -31,6 +32,7 @@ export interface Config {
 ```
 
 **HostClient & DynatraceClient** (Task 4):
+
 ```ts
 export interface HostClient {
   get<T = unknown>(path: string, query?: QueryParams): Promise<T>;
@@ -41,13 +43,14 @@ export interface HostClient {
 export type QueryParams = Record<string, string | number | boolean | undefined>;
 
 export class DynatraceClient {
-  readonly classic: HostClient;   // DT_CLASSIC_URL + "Api-Token <apiToken>"
-  readonly platform: HostClient;  // DT_PLATFORM_URL + "Bearer <platformToken>"
+  readonly classic: HostClient; // DT_CLASSIC_URL + "Api-Token <apiToken>"
+  readonly platform: HostClient; // DT_PLATFORM_URL + "Bearer <platformToken>"
   dqlExecute(query: string, opts?: { maxResultRecords?: number; timeoutMs?: number }): Promise<DqlResult>;
 }
 ```
 
 **DQL result** (Task 5):
+
 ```ts
 export interface DqlResult {
   records: Array<Record<string, unknown>>;
@@ -56,13 +59,18 @@ export interface DqlResult {
 ```
 
 **Tool module contract** (every `src/tools/*.ts`):
+
 ```ts
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-export interface ToolDeps { client: DynatraceClient; config: Config }
+export interface ToolDeps {
+  client: DynatraceClient;
+  config: Config;
+}
 export function registerXxx(server: McpServer, deps: ToolDeps): void;
 ```
 
 **Tool result helper** (Task 7, `src/util/result.ts`):
+
 ```ts
 export function jsonResult(data: unknown) {
   return { content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] };
@@ -76,6 +84,7 @@ export function jsonResult(data: unknown) {
 ### Task 1: Project scaffold
 
 **Files:**
+
 - Create: `package.json`
 - Create: `tsconfig.json`
 - Create: `vitest.config.ts`
@@ -179,6 +188,7 @@ git commit -m "chore: scaffold TypeScript MCP project"
 ### Task 2: Config loader
 
 **Files:**
+
 - Create: `src/config.ts`
 - Test: `test/config.test.ts`
 
@@ -282,6 +292,7 @@ git commit -m "feat: config loader with dual-host/dual-token + write gate"
 ### Task 3: Error normalization
 
 **Files:**
+
 - Create: `src/http/errors.ts`
 - Test: `test/errors.test.ts`
 
@@ -337,9 +348,7 @@ export function friendlyMessage(status: number, host: HostKind): string {
     case 429:
       return "429 Too Many Requests: rate limited; retry after the indicated delay.";
     default:
-      return status >= 500
-        ? `${status}: Dynatrace server error; retry later.`
-        : `${status}: request failed.`;
+      return status >= 500 ? `${status}: Dynatrace server error; retry later.` : `${status}: request failed.`;
   }
 }
 
@@ -373,6 +382,7 @@ git commit -m "feat: HTTP error normalization with token-type hints"
 ### Task 4: DynatraceClient (dual host/auth)
 
 **Files:**
+
 - Create: `src/http/client.ts`
 - Test: `test/client.test.ts`
 
@@ -486,14 +496,26 @@ class HostClientImpl implements HostClient {
     }
   }
 
-  get<T>(path: string, query?: QueryParams) { return this.request<T>("GET", path, undefined, query); }
-  post<T>(path: string, body?: unknown, query?: QueryParams) { return this.request<T>("POST", path, body, query); }
-  put<T>(path: string, body?: unknown, query?: QueryParams) { return this.request<T>("PUT", path, body, query); }
-  del<T>(path: string, query?: QueryParams) { return this.request<T>("DELETE", path, undefined, query); }
+  get<T>(path: string, query?: QueryParams) {
+    return this.request<T>("GET", path, undefined, query);
+  }
+  post<T>(path: string, body?: unknown, query?: QueryParams) {
+    return this.request<T>("POST", path, body, query);
+  }
+  put<T>(path: string, body?: unknown, query?: QueryParams) {
+    return this.request<T>("PUT", path, body, query);
+  }
+  del<T>(path: string, query?: QueryParams) {
+    return this.request<T>("DELETE", path, undefined, query);
+  }
 }
 
 function safeJson(text: string): unknown {
-  try { return JSON.parse(text); } catch { return text; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 export class DynatraceClient {
@@ -545,6 +567,7 @@ git commit -m "feat: DynatraceClient with dual host/auth routing"
 ### Task 5: DQL execute→poll helper
 
 **Files:**
+
 - Modify: `src/http/client.ts` (add `dqlExecute`)
 - Create: `src/http/dql.ts` (poll logic)
 - Test: `test/dql.test.ts`
@@ -559,8 +582,12 @@ import { DynatraceClient } from "../src/http/client.js";
 import type { Config } from "../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://plat.example.com", classicUrl: "https://classic.example.com",
-  platformToken: "PTOK", apiToken: "ATOK", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://plat.example.com",
+  classicUrl: "https://classic.example.com",
+  platformToken: "PTOK",
+  apiToken: "ATOK",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 
 let polls = 0;
@@ -576,7 +603,10 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { server.resetHandlers(); polls = 0; });
+afterEach(() => {
+  server.resetHandlers();
+  polls = 0;
+});
 afterAll(() => server.close());
 
 describe("dqlExecute", () => {
@@ -603,9 +633,20 @@ export interface DqlResult {
   metadata?: Record<string, unknown>;
 }
 
-interface ExecuteResponse { state: string; requestToken?: string; result?: RawResult }
-interface PollResponse { state: string; result?: RawResult; progress?: number }
-interface RawResult { records?: Array<Record<string, unknown>>; metadata?: Record<string, unknown> }
+interface ExecuteResponse {
+  state: string;
+  requestToken?: string;
+  result?: RawResult;
+}
+interface PollResponse {
+  state: string;
+  result?: RawResult;
+  progress?: number;
+}
+interface RawResult {
+  records?: Array<Record<string, unknown>>;
+  metadata?: Record<string, unknown>;
+}
 
 const BASE = "/platform/storage/query/v1";
 
@@ -646,10 +687,13 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 - [ ] **Step 4: Wire `dqlExecute` into `DynatraceClient` in `src/http/client.ts`**
 
 Add import at top:
+
 ```ts
 import { dqlExecute, type DqlResult } from "./dql.js";
 ```
+
 Add method to the `DynatraceClient` class body:
+
 ```ts
   dqlExecute(query: string, opts?: { maxResultRecords?: number; pollIntervalMs?: number; maxPolls?: number }): Promise<DqlResult> {
     return dqlExecute(this.platform, query, opts);
@@ -675,6 +719,7 @@ git commit -m "feat: async DQL execute->poll helper"
 ### Task 6: Write guard
 
 **Files:**
+
 - Create: `src/util/guards.ts`
 - Test: `test/guards.test.ts`
 
@@ -686,7 +731,12 @@ import { requireWrites } from "../src/util/guards.js";
 import type { Config } from "../src/types.js";
 
 const cfg = (enableWrites: boolean): Config => ({
-  platformUrl: "x", classicUrl: "x", platformToken: "x", apiToken: "x", enableWrites, timeoutMs: 1,
+  platformUrl: "x",
+  classicUrl: "x",
+  platformToken: "x",
+  apiToken: "x",
+  enableWrites,
+  timeoutMs: 1,
 });
 
 describe("requireWrites", () => {
@@ -711,9 +761,7 @@ import type { Config } from "../types.js";
 
 export function requireWrites(config: Config): void {
   if (!config.enableWrites) {
-    throw new Error(
-      "Write blocked: set DT_ENABLE_WRITES=true to enable mutating operations (create/update/delete).",
-    );
+    throw new Error("Write blocked: set DT_ENABLE_WRITES=true to enable mutating operations (create/update/delete).");
   }
 }
 ```
@@ -735,6 +783,7 @@ git commit -m "feat: requireWrites guard"
 ### Task 7: Server bootstrap, registry, result helper
 
 **Files:**
+
 - Create: `src/util/result.ts`
 - Create: `src/tools/registry.ts`
 - Modify: `src/index.ts`
@@ -761,8 +810,12 @@ import { DynatraceClient } from "../src/http/client.js";
 import type { Config } from "../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://p", classicUrl: "https://c", platformToken: "p", apiToken: "a",
-  enableWrites: false, timeoutMs: 1000,
+  platformUrl: "https://p",
+  classicUrl: "https://c",
+  platformToken: "p",
+  apiToken: "a",
+  enableWrites: false,
+  timeoutMs: 1000,
 };
 
 describe("registerAllTools", () => {
@@ -786,11 +839,15 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { DynatraceClient } from "../http/client.js";
 import type { Config } from "../types.js";
 
-export interface ToolDeps { client: DynatraceClient; config: Config }
+export interface ToolDeps {
+  client: DynatraceClient;
+  config: Config;
+}
 
 // Tool registrations are added here by Tasks 8–19.
 export function registerAllTools(server: McpServer, deps: ToolDeps): void {
-  void server; void deps;
+  void server;
+  void deps;
 }
 ```
 
@@ -811,9 +868,7 @@ async function main() {
   registerAllTools(server, { client, config });
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error(
-    `dynatrace-saas-mcp ready (writes ${config.enableWrites ? "ENABLED" : "disabled"})`,
-  );
+  console.error(`dynatrace-saas-mcp ready (writes ${config.enableWrites ? "ENABLED" : "disabled"})`);
 }
 
 main().catch((err) => {
@@ -843,6 +898,7 @@ git commit -m "feat: server bootstrap, tool registry, result helpers"
 ### Task 8: DQL tools (`execute_dql`, `verify_dql`)
 
 **Files:**
+
 - Create: `src/tools/dql.ts`
 - Modify: `src/tools/registry.ts`
 - Test: `test/tools/dql.test.ts`
@@ -861,8 +917,12 @@ import { DynatraceClient } from "../../src/http/client.js";
 import type { Config } from "../../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://plat.example.com", classicUrl: "https://c",
-  platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://plat.example.com",
+  classicUrl: "https://c",
+  platformToken: "P",
+  apiToken: "A",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 
 const server = setupServer(
@@ -912,7 +972,13 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
     "Execute a Dynatrace Query Language (DQL) statement against Grail and return the result records. Use for logs, spans/traces, events, metrics, and entities. Example: 'fetch logs | filter loglevel == \"ERROR\" | limit 50'.",
     {
       query: z.string().describe("The DQL statement to execute."),
-      maxResultRecords: z.number().int().positive().max(10000).optional().describe("Max records to return (default 1000)."),
+      maxResultRecords: z
+        .number()
+        .int()
+        .positive()
+        .max(10000)
+        .optional()
+        .describe("Max records to return (default 1000)."),
     },
     async ({ query, maxResultRecords }) => {
       const result = await deps.client.dqlExecute(query, { maxResultRecords });
@@ -959,6 +1025,7 @@ git commit -m "feat: execute_dql and verify_dql tools"
 ### Task 9: Metrics tools (`list_metrics`, `get_metric_metadata`, `query_metric`)
 
 **Files:**
+
 - Create: `src/tools/metrics.ts`
 - Modify: `src/tools/registry.ts`
 - Test: `test/tools/metrics.test.ts`
@@ -980,8 +1047,12 @@ import { DynatraceClient } from "../../src/http/client.js";
 import type { Config } from "../../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://p", classicUrl: "https://classic.example.com",
-  platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://p",
+  classicUrl: "https://classic.example.com",
+  platformToken: "P",
+  apiToken: "A",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 const server = setupServer(
   http.get("https://classic.example.com/api/v2/metrics", () =>
@@ -1029,11 +1100,13 @@ export function registerMetricsTools(server: McpServer, deps: ToolDeps): void {
       pageSize: z.number().int().positive().max(500).optional().describe("Page size (default 100)."),
     },
     async ({ selector, pageSize }) =>
-      jsonResult(await deps.client.classic.get("/api/v2/metrics", {
-        metricSelector: selector,
-        pageSize: pageSize ?? 100,
-        fields: "metricId,displayName,unit,description,defaultAggregation",
-      })),
+      jsonResult(
+        await deps.client.classic.get("/api/v2/metrics", {
+          metricSelector: selector,
+          pageSize: pageSize ?? 100,
+          fields: "metricId,displayName,unit,description,defaultAggregation",
+        }),
+      ),
   );
 
   server.tool(
@@ -1055,9 +1128,15 @@ export function registerMetricsTools(server: McpServer, deps: ToolDeps): void {
       entitySelector: z.string().optional().describe("Optional entitySelector to scope results."),
     },
     async ({ metricSelector, from, to, resolution, entitySelector }) =>
-      jsonResult(await deps.client.classic.get("/api/v2/metrics/query", {
-        metricSelector, from, to, resolution, entitySelector,
-      })),
+      jsonResult(
+        await deps.client.classic.get("/api/v2/metrics/query", {
+          metricSelector,
+          from,
+          to,
+          resolution,
+          entitySelector,
+        }),
+      ),
   );
 }
 ```
@@ -1086,7 +1165,7 @@ Endpoints (classic v2): `GET /api/v2/entities?entitySelector=&fields=`, `GET /ap
 ```ts
 http.get("https://classic.example.com/api/v2/entities", () =>
   HttpResponse.json({ entities: [{ entityId: "HOST-1", displayName: "web01" }], totalCount: 1 }),
-)
+);
 ```
 
 - [ ] **Step 2: Run red** — `npm test -- tools/entities`; Expected: FAIL.
@@ -1112,11 +1191,13 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
       let selector = "type(HOST)";
       if (tag) selector += `,tag("${tag}")`;
       if (managementZone) selector += `,mzName("${managementZone}")`;
-      return jsonResult(await deps.client.classic.get("/api/v2/entities", {
-        entitySelector: selector,
-        pageSize: pageSize ?? 100,
-        fields: "+properties.osType,+properties.monitoringMode,+tags",
-      }));
+      return jsonResult(
+        await deps.client.classic.get("/api/v2/entities", {
+          entitySelector: selector,
+          pageSize: pageSize ?? 100,
+          fields: "+properties.osType,+properties.monitoringMode,+tags",
+        }),
+      );
     },
   );
 
@@ -1125,13 +1206,20 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
     "Find monitored entities by entitySelector (services, process groups, applications, etc.).",
     {
       entitySelector: z.string().describe('entitySelector, e.g. type(SERVICE),entityName.contains("checkout").'),
-      from: z.string().optional(), to: z.string().optional(),
+      from: z.string().optional(),
+      to: z.string().optional(),
       pageSize: z.number().int().positive().max(500).optional(),
     },
     async ({ entitySelector, from, to, pageSize }) =>
-      jsonResult(await deps.client.classic.get("/api/v2/entities", {
-        entitySelector, from, to, pageSize: pageSize ?? 100, fields: "+tags,+properties",
-      })),
+      jsonResult(
+        await deps.client.classic.get("/api/v2/entities", {
+          entitySelector,
+          from,
+          to,
+          pageSize: pageSize ?? 100,
+          fields: "+tags,+properties",
+        }),
+      ),
   );
 
   server.tool(
@@ -1139,9 +1227,11 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
     "Get details for one monitored entity by id, including properties and relationships.",
     { entityId: z.string().describe("Entity id, e.g. 'HOST-ABC123' or 'SERVICE-XYZ'.") },
     async ({ entityId }) =>
-      jsonResult(await deps.client.classic.get(`/api/v2/entities/${encodeURIComponent(entityId)}`, {
-        fields: "+properties,+toRelationships,+fromRelationships,+tags",
-      })),
+      jsonResult(
+        await deps.client.classic.get(`/api/v2/entities/${encodeURIComponent(entityId)}`, {
+          fields: "+properties,+toRelationships,+fromRelationships,+tags",
+        }),
+      ),
   );
 
   server.tool(
@@ -1187,9 +1277,14 @@ export function registerProblemsTools(server: McpServer, deps: ToolDeps): void {
       pageSize: z.number().int().positive().max(500).optional(),
     },
     async ({ problemSelector, from, to, pageSize }) =>
-      jsonResult(await deps.client.classic.get("/api/v2/problems", {
-        problemSelector, from: from ?? "now-2h", to, pageSize: pageSize ?? 50,
-      })),
+      jsonResult(
+        await deps.client.classic.get("/api/v2/problems", {
+          problemSelector,
+          from: from ?? "now-2h",
+          to,
+          pageSize: pageSize ?? 50,
+        }),
+      ),
   );
 
   server.tool(
@@ -1220,7 +1315,9 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 
-function dqlString(v: string): string { return v.replace(/"/g, '\\"'); }
+function dqlString(v: string): string {
+  return v.replace(/"/g, '\\"');
+}
 
 export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
   server.tool(
@@ -1266,7 +1363,9 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 
-function dqlString(v: string): string { return v.replace(/"/g, '\\"'); }
+function dqlString(v: string): string {
+  return v.replace(/"/g, '\\"');
+}
 
 export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
   server.tool(
@@ -1340,9 +1439,14 @@ Endpoints (classic v2): `GET /api/v2/settings/schemas`, `GET /api/v2/settings/sc
 - [ ] **Step 1: Failing test** — mock `GET /api/v2/settings/schemas` → `{ items: [{ schemaId: "builtin:tags", displayName: "Tags" }] }`; assert `list_settings_schemas` contains `builtin:tags`. Add a second test: with `enableWrites:false`, `create_settings_object` returns an error mentioning `DT_ENABLE_WRITES`.
 
 ```ts
-const res = await client.callTool({ name: "create_settings_object", arguments: {
-  schemaId: "builtin:tags", scope: "environment", value: {},
-}});
+const res = await client.callTool({
+  name: "create_settings_object",
+  arguments: {
+    schemaId: "builtin:tags",
+    scope: "environment",
+    value: {},
+  },
+});
 expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
 ```
 
@@ -1384,9 +1488,14 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
       pageSize: z.number().int().positive().max(500).optional(),
     },
     async ({ schemaIds, scopes, pageSize }) =>
-      jsonResult(await deps.client.classic.get("/api/v2/settings/objects", {
-        schemaIds, scopes, pageSize: pageSize ?? 100, fields: "objectId,value,scope,schemaId",
-      })),
+      jsonResult(
+        await deps.client.classic.get("/api/v2/settings/objects", {
+          schemaIds,
+          scopes,
+          pageSize: pageSize ?? 100,
+          fields: "objectId,value,scope,schemaId",
+        }),
+      ),
   );
 
   server.tool(
@@ -1406,7 +1515,11 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
       value: z.record(z.unknown()).describe("The settings value object matching the schema."),
     },
     async ({ schemaId, scope, value }) =>
-      jsonResult(await deps.client.classic.post("/api/v2/settings/objects", [{ schemaId, scope, value }], { validateOnly: true })),
+      jsonResult(
+        await deps.client.classic.post("/api/v2/settings/objects", [{ schemaId, scope, value }], {
+          validateOnly: true,
+        }),
+      ),
   );
 
   server.tool(
@@ -1429,7 +1542,9 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
     { objectId: z.string(), value: z.record(z.unknown()) },
     async ({ objectId, value }) => {
       requireWrites(deps.config);
-      return jsonResult(await deps.client.classic.put(`/api/v2/settings/objects/${encodeURIComponent(objectId)}`, { value }));
+      return jsonResult(
+        await deps.client.classic.put(`/api/v2/settings/objects/${encodeURIComponent(objectId)}`, { value }),
+      );
     },
   );
 
@@ -1474,9 +1589,12 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
     "List dashboard documents (platform Document Service).",
     { pageSize: z.number().int().positive().max(100).optional() },
     async ({ pageSize }) =>
-      jsonResult(await deps.client.platform.get(DOC, {
-        filter: "type=='dashboard'", "page-size": pageSize ?? 50,
-      })),
+      jsonResult(
+        await deps.client.platform.get(DOC, {
+          filter: "type=='dashboard'",
+          "page-size": pageSize ?? 50,
+        }),
+      ),
   );
 
   server.tool(
@@ -1499,9 +1617,13 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
     },
     async ({ name, content }) => {
       requireWrites(deps.config);
-      return jsonResult(await deps.client.platform.post(DOC, {
-        name, type: "dashboard", content,
-      }));
+      return jsonResult(
+        await deps.client.platform.post(DOC, {
+          name,
+          type: "dashboard",
+          content,
+        }),
+      );
     },
   );
 
@@ -1519,9 +1641,11 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
       const body: Record<string, unknown> = {};
       if (name !== undefined) body.name = name;
       if (content !== undefined) body.content = content;
-      return jsonResult(await deps.client.platform.put(`${DOC}/${encodeURIComponent(id)}`, body, {
-        "optimistic-locking-version": version,
-      }));
+      return jsonResult(
+        await deps.client.platform.put(`${DOC}/${encodeURIComponent(id)}`, body, {
+          "optimistic-locking-version": version,
+        }),
+      );
     },
   );
 
@@ -1576,40 +1700,52 @@ import { requireWrites } from "../util/guards.js";
 const SLO = "/platform/slo/v1/slos";
 
 export function registerSloTools(server: McpServer, deps: ToolDeps): void {
-  server.tool("list_slos", "List Service-Level Objectives (platform SLO v1).",
+  server.tool(
+    "list_slos",
+    "List Service-Level Objectives (platform SLO v1).",
     { pageSize: z.number().int().positive().max(500).optional() },
     async ({ pageSize }) => jsonResult(await deps.client.platform.get(SLO, { "page-size": pageSize ?? 100 })),
   );
 
-  server.tool("get_slo", "Get one SLO by id (platform SLO v1).",
-    { id: z.string() },
-    async ({ id }) => jsonResult(await deps.client.platform.get(`${SLO}/${encodeURIComponent(id)}`)),
+  server.tool("get_slo", "Get one SLO by id (platform SLO v1).", { id: z.string() }, async ({ id }) =>
+    jsonResult(await deps.client.platform.get(`${SLO}/${encodeURIComponent(id)}`)),
   );
 
-  server.tool("evaluate_slo", "Get the current evaluation/error-budget for SLOs (platform SLO v1).",
+  server.tool(
+    "evaluate_slo",
+    "Get the current evaluation/error-budget for SLOs (platform SLO v1).",
     { from: z.string().optional(), to: z.string().optional() },
     async ({ from, to }) => jsonResult(await deps.client.platform.get(`${SLO}/evaluation`, { from, to })),
   );
 
-  server.tool("list_objective_templates", "List SLO objective templates (platform SLO v1).",
-    {},
-    async () => jsonResult(await deps.client.platform.get("/platform/slo/v1/objective-templates")),
+  server.tool("list_objective_templates", "List SLO objective templates (platform SLO v1).", {}, async () =>
+    jsonResult(await deps.client.platform.get("/platform/slo/v1/objective-templates")),
   );
 
-  server.tool("create_slo", "Create an SLO (WRITE). Body fields per the SLO v1 spec (name, criteria, target, etc.).",
+  server.tool(
+    "create_slo",
+    "Create an SLO (WRITE). Body fields per the SLO v1 spec (name, criteria, target, etc.).",
     { slo: z.record(z.unknown()).describe("SLO definition object matching platform SLO v1.") },
-    async ({ slo }) => { requireWrites(deps.config); return jsonResult(await deps.client.platform.post(SLO, slo)); },
+    async ({ slo }) => {
+      requireWrites(deps.config);
+      return jsonResult(await deps.client.platform.post(SLO, slo));
+    },
   );
 
-  server.tool("update_slo", "Update an SLO by id (WRITE).",
+  server.tool(
+    "update_slo",
+    "Update an SLO by id (WRITE).",
     { id: z.string(), slo: z.record(z.unknown()) },
-    async ({ id, slo }) => { requireWrites(deps.config); return jsonResult(await deps.client.platform.put(`${SLO}/${encodeURIComponent(id)}`, slo)); },
+    async ({ id, slo }) => {
+      requireWrites(deps.config);
+      return jsonResult(await deps.client.platform.put(`${SLO}/${encodeURIComponent(id)}`, slo));
+    },
   );
 
-  server.tool("delete_slo", "Delete an SLO by id (WRITE, destructive).",
-    { id: z.string() },
-    async ({ id }) => { requireWrites(deps.config); return jsonResult(await deps.client.platform.del(`${SLO}/${encodeURIComponent(id)}`)); },
-  );
+  server.tool("delete_slo", "Delete an SLO by id (WRITE, destructive).", { id: z.string() }, async ({ id }) => {
+    requireWrites(deps.config);
+    return jsonResult(await deps.client.platform.del(`${SLO}/${encodeURIComponent(id)}`));
+  });
 }
 ```
 
@@ -1650,7 +1786,14 @@ import { registerAllTools } from "../../src/tools/registry.js";
 import { DynatraceClient } from "../../src/http/client.js";
 import type { Config } from "../../src/types.js";
 
-const cfg: Config = { platformUrl: "https://p", classicUrl: "https://c", platformToken: "p", apiToken: "a", enableWrites: false, timeoutMs: 1000 };
+const cfg: Config = {
+  platformUrl: "https://p",
+  classicUrl: "https://c",
+  platformToken: "p",
+  apiToken: "a",
+  enableWrites: false,
+  timeoutMs: 1000,
+};
 
 describe("registry", () => {
   it("exposes the expected tools", async () => {
@@ -1661,10 +1804,23 @@ describe("registry", () => {
     await Promise.all([mcp.connect(a), client.connect(b)]);
     const { tools } = await client.listTools();
     const names = tools.map((t) => t.name);
-    for (const expected of ["execute_dql", "list_metrics", "list_hosts", "list_problems",
-      "search_logs", "search_spans", "get_trace", "list_settings_schemas",
-      "create_settings_object", "list_dashboards", "create_dashboard", "list_notebooks",
-      "list_slos", "create_slo", "list_monitors"]) {
+    for (const expected of [
+      "execute_dql",
+      "list_metrics",
+      "list_hosts",
+      "list_problems",
+      "search_logs",
+      "search_spans",
+      "get_trace",
+      "list_settings_schemas",
+      "create_settings_object",
+      "list_dashboards",
+      "create_dashboard",
+      "list_notebooks",
+      "list_slos",
+      "create_slo",
+      "list_monitors",
+    ]) {
       expect(names).toContain(expected);
     }
   });
@@ -1725,14 +1881,17 @@ describe.runIf(RUN)("live smoke (read-only)", () => {
   });
 
   it("lists dashboards (platform document service)", async () => {
-    const r = await client.platform.get("/platform/document/v1/documents", { filter: "type=='dashboard'", "page-size": 1 });
+    const r = await client.platform.get("/platform/document/v1/documents", {
+      filter: "type=='dashboard'",
+      "page-size": 1,
+    });
     expect(r).toBeDefined();
   });
 });
 ```
 
 - [ ] **Step 2: Run gated** — Run: `DT_LIVE_TEST=1 npm test -- live/smoke`
-Expected: PASS against the sprint tenant (validates real paths; if any fails, fix the corresponding tool's path/params per the spec — this is the task that resolves the §10 open items: Document content shape, metric query params, DQL field names).
+      Expected: PASS against the sprint tenant (validates real paths; if any fails, fix the corresponding tool's path/params per the spec — this is the task that resolves the §10 open items: Document content shape, metric query params, DQL field names).
 
 - [ ] **Step 3: Commit** — `git commit -m "test: gated live smoke tests for classic + platform"`.
 
@@ -1741,6 +1900,7 @@ Expected: PASS against the sprint tenant (validates real paths; if any fails, fi
 ## Self-Review (completed by plan author)
 
 **Spec coverage:**
+
 - Dual-host/dual-token client → Tasks 2,4. DQL async → Task 5. Write gate → Tasks 6 + each write tool. Errors → Task 3.
 - Observability (DQL, logs, traces, metrics, entities/hosts, problems, vulnerabilities) → Tasks 8–14.
 - Config (settings, dashboards, notebooks, SLOs, synthetic) → Tasks 15–19.

@@ -5,8 +5,12 @@ import { DynatraceClient } from "../src/http/client.js";
 import type { Config } from "../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://plat.example.com", classicUrl: "https://classic.example.com",
-  platformToken: "PTOK", apiToken: "ATOK", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://plat.example.com",
+  classicUrl: "https://classic.example.com",
+  platformToken: "PTOK",
+  apiToken: "ATOK",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 
 let polls = 0;
@@ -22,7 +26,10 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { server.resetHandlers(); polls = 0; });
+afterEach(() => {
+  server.resetHandlers();
+  polls = 0;
+});
 afterAll(() => server.close());
 
 describe("dqlExecute", () => {

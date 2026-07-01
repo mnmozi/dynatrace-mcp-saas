@@ -5,9 +5,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { textResult, jsonResult } from "../util/result.js";
 
 // Vendored official Dynatrace skills (Apache-2.0) — see knowledge/dashboards/vendor/dynatrace-for-ai/LICENSE
-const VENDOR_DIR = fileURLToPath(
-  new URL("../../knowledge/dashboards/vendor/dynatrace-for-ai/", import.meta.url),
-);
+const VENDOR_DIR = fileURLToPath(new URL("../../knowledge/dashboards/vendor/dynatrace-for-ai/", import.meta.url));
 
 const TOPIC_MAP = {
   skill: {
@@ -85,8 +83,8 @@ export function registerDashboardReferenceTools(server: McpServer): void {
           .optional()
           .describe(
             "Which knowledge doc to return: skill (default, dashboard overview), tiles (tile types + viz types), " +
-            "visualizations (per-viz settings JSONC), variables, create-update, analyzing, example (full dashboard JSON), " +
-            "notebooks (notebook skill), notebook-sections, notebook-create-update, notebook-example.",
+              "visualizations (per-viz settings JSONC), variables, create-update, analyzing, example (full dashboard JSON), " +
+              "notebooks (notebook skill), notebook-sections, notebook-create-update, notebook-example.",
           ),
       },
     },
@@ -129,26 +127,21 @@ export function registerDashboardReferenceTools(server: McpServer): void {
   for (const [key, { file, desc, mimeType }] of Object.entries(TOPIC_MAP)) {
     const uri = `dashboard://${key}`;
     const filePath = `${VENDOR_DIR}${file}`;
-    server.resource(
-      `dashboard-${key}`,
-      uri,
-      { description: desc, mimeType },
-      async (resourceUri) => {
-        try {
-          const text = await readFile(filePath, "utf-8");
-          return { contents: [{ uri: resourceUri.href, mimeType, text }] };
-        } catch (err) {
-          return {
-            contents: [
-              {
-                uri: resourceUri.href,
-                mimeType: "text/plain",
-                text: `Error reading ${file}: ${(err as Error).message}`,
-              },
-            ],
-          };
-        }
-      },
-    );
+    server.resource(`dashboard-${key}`, uri, { description: desc, mimeType }, async (resourceUri) => {
+      try {
+        const text = await readFile(filePath, "utf-8");
+        return { contents: [{ uri: resourceUri.href, mimeType, text }] };
+      } catch (err) {
+        return {
+          contents: [
+            {
+              uri: resourceUri.href,
+              mimeType: "text/plain",
+              text: `Error reading ${file}: ${(err as Error).message}`,
+            },
+          ],
+        };
+      }
+    });
   }
 }

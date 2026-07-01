@@ -29,8 +29,7 @@ export function registerNotificationTools(server: McpServer, deps: ToolDeps): vo
       description: "Get a single self-notification by ID (platform notification v1).",
       inputSchema: { id: z.string().describe("Self-notification UUID.") },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.platform.get(`${V1}/self-notifications/${encodeURIComponent(id)}`)),
+    async ({ id }) => jsonResult(await deps.client.platform.get(`${V1}/self-notifications/${encodeURIComponent(id)}`)),
   );
 
   server.registerTool(
@@ -57,10 +56,7 @@ export function registerNotificationTools(server: McpServer, deps: ToolDeps): vo
     async ({ id, notification }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.put(
-          `${V1}/self-notifications/${encodeURIComponent(id)}`,
-          notification,
-        ),
+        await deps.client.platform.put(`${V1}/self-notifications/${encodeURIComponent(id)}`, notification),
       );
     },
   );
@@ -73,9 +69,7 @@ export function registerNotificationTools(server: McpServer, deps: ToolDeps): vo
     },
     async ({ id }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.del(`${V1}/self-notifications/${encodeURIComponent(id)}`),
-      );
+      return jsonResult(await deps.client.platform.del(`${V1}/self-notifications/${encodeURIComponent(id)}`));
     },
   );
 
@@ -96,10 +90,7 @@ export function registerNotificationTools(server: McpServer, deps: ToolDeps): vo
       description: "Get a single event-notification by ID (platform notification v2).",
       inputSchema: { id: z.string().describe("Event-notification UUID.") },
     },
-    async ({ id }) =>
-      jsonResult(
-        await deps.client.platform.get(`${V2}/event-notifications/${encodeURIComponent(id)}`),
-      ),
+    async ({ id }) => jsonResult(await deps.client.platform.get(`${V2}/event-notifications/${encodeURIComponent(id)}`)),
   );
 
   server.registerTool(
@@ -126,10 +117,7 @@ export function registerNotificationTools(server: McpServer, deps: ToolDeps): vo
     async ({ id, notification }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.put(
-          `${V2}/event-notifications/${encodeURIComponent(id)}`,
-          notification,
-        ),
+        await deps.client.platform.put(`${V2}/event-notifications/${encodeURIComponent(id)}`, notification),
       );
     },
   );
@@ -142,9 +130,7 @@ export function registerNotificationTools(server: McpServer, deps: ToolDeps): vo
     },
     async ({ id }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.del(`${V2}/event-notifications/${encodeURIComponent(id)}`),
-      );
+      return jsonResult(await deps.client.platform.del(`${V2}/event-notifications/${encodeURIComponent(id)}`));
     },
   );
 }

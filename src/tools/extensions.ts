@@ -32,9 +32,7 @@ export function registerExtensionsTools(server: McpServer, deps: ToolDeps): void
       },
     },
     async ({ extensionName }) =>
-      jsonResult(
-        await deps.client.platform.get(`${BASE}/${encodeURIComponent(extensionName)}`),
-      ),
+      jsonResult(await deps.client.platform.get(`${BASE}/${encodeURIComponent(extensionName)}`)),
   );
 
   server.registerTool(
@@ -47,9 +45,7 @@ export function registerExtensionsTools(server: McpServer, deps: ToolDeps): void
     },
     async ({ extensionName }) =>
       jsonResult(
-        await deps.client.platform.get(
-          `${BASE}/${encodeURIComponent(extensionName)}/environment-configuration`,
-        ),
+        await deps.client.platform.get(`${BASE}/${encodeURIComponent(extensionName)}/environment-configuration`),
       ),
   );
 
@@ -64,10 +60,9 @@ export function registerExtensionsTools(server: McpServer, deps: ToolDeps): void
     },
     async ({ extensionName, pageSize }) =>
       jsonResult(
-        await deps.client.platform.get(
-          `${BASE}/${encodeURIComponent(extensionName)}/monitoring-configurations`,
-          { "page-size": pageSize ?? 20 },
-        ),
+        await deps.client.platform.get(`${BASE}/${encodeURIComponent(extensionName)}/monitoring-configurations`, {
+          "page-size": pageSize ?? 20,
+        }),
       ),
   );
 
@@ -121,9 +116,7 @@ export function registerExtensionsTools(server: McpServer, deps: ToolDeps): void
       inputSchema: {
         extensionName: z.string().describe("The extension name."),
         configurationId: z.string().describe("The monitoring configuration ID to update."),
-        config: z
-          .record(z.unknown())
-          .describe("Update body. Typically contains a 'value' object."),
+        config: z.record(z.unknown()).describe("Update body. Typically contains a 'value' object."),
       },
     },
     async ({ extensionName, configurationId, config }) => {

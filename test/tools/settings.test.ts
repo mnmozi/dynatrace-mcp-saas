@@ -29,12 +29,19 @@ const server = setupServer(
   }),
   http.get("https://classic.example.com/api/v2/settings/objects", ({ request }) => {
     lastRequestUrl = request.url;
-    return HttpResponse.json({ items: [{ objectId: "obj-1", schemaId: "builtin:tags", scope: "environment", value: {} }], totalCount: 1, nextPageKey: "NEXT1" });
+    return HttpResponse.json({
+      items: [{ objectId: "obj-1", schemaId: "builtin:tags", scope: "environment", value: {} }],
+      totalCount: 1,
+      nextPageKey: "NEXT1",
+    });
   }),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { server.resetHandlers(); lastRequestUrl = ""; });
+afterEach(() => {
+  server.resetHandlers();
+  lastRequestUrl = "";
+});
 afterAll(() => server.close());
 
 async function makeClient(config: Config = cfg) {

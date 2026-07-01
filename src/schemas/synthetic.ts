@@ -16,23 +16,10 @@ export const syntheticMonitorSchema = z
   .object({
     name: z
       .string()
-      .describe(
-        "The name of the monitor (required by the API for both browser and multi-protocol monitors).",
-      ),
-    type: z
-      .string()
-      .optional()
-      .describe(
-        "Monitor type: 'BROWSER', 'HTTP', or 'MULTI_PROTOCOL'.",
-      ),
-    description: z
-      .string()
-      .optional()
-      .describe("Monitor description."),
-    enabled: z
-      .boolean()
-      .optional()
-      .describe("If true, the monitor is enabled. Defaults to true."),
+      .describe("The name of the monitor (required by the API for both browser and multi-protocol monitors)."),
+    type: z.string().optional().describe("Monitor type: 'BROWSER', 'HTTP', or 'MULTI_PROTOCOL'."),
+    description: z.string().optional().describe("Monitor description."),
+    enabled: z.boolean().optional().describe("If true, the monitor is enabled. Defaults to true."),
     frequencyMin: z
       .number()
       .optional()
@@ -57,15 +44,11 @@ export const syntheticMonitorSchema = z
     primaryGrailTags: z
       .array(z.record(z.unknown()))
       .optional()
-      .describe(
-        "Primary Grail tags as a list of key-value pairs. Up to 10 tags. SaaS only.",
-      ),
+      .describe("Primary Grail tags as a list of key-value pairs. Up to 10 tags. SaaS only."),
     securityContext: z
       .array(z.string())
       .optional()
-      .describe(
-        "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values. SaaS only.",
-      ),
+      .describe("[FEATURE DISABLED] Security context as a list of strings. Up to 10 values. SaaS only."),
     manuallyAssignedEntities: z
       .array(z.string())
       .optional()

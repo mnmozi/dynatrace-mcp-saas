@@ -13,9 +13,7 @@ export function friendlyMessage(status: number, host: HostKind): string {
     case 429:
       return "429 Too Many Requests: rate limited; retry after the indicated delay.";
     default:
-      return status >= 500
-        ? `${status}: Dynatrace server error; retry later.`
-        : `${status}: request failed.`;
+      return status >= 500 ? `${status}: Dynatrace server error; retry later.` : `${status}: request failed.`;
   }
 }
 
@@ -48,11 +46,9 @@ export function extractDqlErrorDetail(payload: unknown): DqlErrorDetail {
   const details = (e.details && typeof e.details === "object" ? e.details : {}) as Record<string, unknown>;
 
   const errMsg = typeof e.message === "string" ? e.message : undefined;
-  const message =
-    (typeof details.errorMessage === "string" && details.errorMessage) || errMsg || undefined;
+  const message = (typeof details.errorMessage === "string" && details.errorMessage) || errMsg || undefined;
   // `error.message` is frequently the type code itself (e.g. "FIELD_DOES_NOT_EXIST").
-  const errorType =
-    (typeof details.errorType === "string" && details.errorType) || errMsg || undefined;
+  const errorType = (typeof details.errorType === "string" && details.errorType) || errMsg || undefined;
   const exceptionType = typeof details.exceptionType === "string" ? details.exceptionType : undefined;
 
   let position: { line: number; column: number } | undefined;

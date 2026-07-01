@@ -8,7 +8,8 @@ export function registerTracesTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "search_spans",
     {
-      description: "Search distributed-tracing spans in Grail via DQL ('fetch spans'). Filter by service, status, or duration.",
+      description:
+        "Search distributed-tracing spans in Grail via DQL ('fetch spans'). Filter by service, status, or duration.",
       inputSchema: {
         service: z.string().optional().describe("Service name (service.name)."),
         onlyErrors: z.boolean().optional().describe("If true, only failed spans."),

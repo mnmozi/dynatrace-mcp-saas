@@ -56,9 +56,7 @@ export function registerEmailTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ email }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.post(`${EMAIL_BASE}/emails`, email),
-      );
+      return jsonResult(await deps.client.platform.post(`${EMAIL_BASE}/emails`, email));
     },
   );
 }

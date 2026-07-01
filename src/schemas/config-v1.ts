@@ -15,10 +15,7 @@ const requestAttributeDataSourceSchema = z
         "Capture source, e.g. POST_PARAMETER, GET_PARAMETER, REQUEST_HEADER, RESPONSE_HEADER, " +
           "METHOD_PARAM, CLIENT_IP, …",
       ),
-    parameterName: z
-      .string()
-      .optional()
-      .describe("Parameter/header name to capture (for parameter/header sources)."),
+    parameterName: z.string().optional().describe("Parameter/header name to capture (for parameter/header sources)."),
     captureAndStore: z
       .string()
       .optional()
@@ -41,18 +38,9 @@ export const requestAttributeSchema = z
   .object({
     name: z.string().describe("Request attribute name."),
     enabled: z.boolean().optional(),
-    dataType: z
-      .string()
-      .optional()
-      .describe("STRING | INTEGER | DOUBLE."),
-    normalization: z
-      .string()
-      .optional()
-      .describe("ORIGINAL | TO_LOWER_CASE | TO_UPPER_CASE."),
-    aggregation: z
-      .string()
-      .optional()
-      .describe("FIRST | LAST | ALL_DISTINCT_VALUES | COUNT_DISTINCT_VALUES | …"),
+    dataType: z.string().optional().describe("STRING | INTEGER | DOUBLE."),
+    normalization: z.string().optional().describe("ORIGINAL | TO_LOWER_CASE | TO_UPPER_CASE."),
+    aggregation: z.string().optional().describe("FIRST | LAST | ALL_DISTINCT_VALUES | COUNT_DISTINCT_VALUES | …"),
     confidential: z.boolean().optional(),
     skipPersonalDataMasking: z.boolean().optional(),
     dataSources: z
@@ -73,9 +61,7 @@ export const requestAttributeSchema = z
  */
 const requestNamingConditionSchema = z
   .object({
-    attribute: z
-      .string()
-      .describe("Condition attribute, e.g. SERVICE_TYPE, SERVICE_DISPLAY_NAME, …"),
+    attribute: z.string().describe("Condition attribute, e.g. SERVICE_TYPE, SERVICE_DISPLAY_NAME, …"),
     comparisonInfo: z
       .object({
         type: z.string().describe("Comparison type, e.g. SERVICE_TYPE, STRING, …"),
@@ -95,16 +81,12 @@ const requestNamingConditionSchema = z
  */
 export const requestNamingSchema = z
   .object({
-    namingPattern: z
-      .string()
-      .describe("The naming pattern/placeholder string applied to matching requests."),
+    namingPattern: z.string().describe("The naming pattern/placeholder string applied to matching requests."),
     enabled: z.boolean().optional(),
     managementZones: z.array(z.string()).optional(),
     conditions: z
       .array(requestNamingConditionSchema)
       .optional()
-      .describe(
-        "At least one condition (or a management zone) is required by the API.",
-      ),
+      .describe("At least one condition (or a management zone) is required by the API."),
   })
   .passthrough();

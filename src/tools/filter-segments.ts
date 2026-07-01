@@ -22,8 +22,7 @@ export function registerFilterSegmentTools(server: McpServer, deps: ToolDeps): v
       description: "Get a filter segment by UID (platform storage filter-segments v1).",
       inputSchema: { uid: z.string() },
     },
-    async ({ uid }) =>
-      jsonResult(await deps.client.platform.get(`${BASE}/${encodeURIComponent(uid)}`)),
+    async ({ uid }) => jsonResult(await deps.client.platform.get(`${BASE}/${encodeURIComponent(uid)}`)),
   );
 
   server.registerTool(
@@ -35,9 +34,7 @@ export function registerFilterSegmentTools(server: McpServer, deps: ToolDeps): v
       inputSchema: {
         filterSegment: z
           .record(z.unknown())
-          .describe(
-            "Filter segment definition: name, variables, dql/filter, etc. per spec",
-          ),
+          .describe("Filter segment definition: name, variables, dql/filter, etc. per spec"),
       },
     },
     async ({ filterSegment }) => {
@@ -56,16 +53,12 @@ export function registerFilterSegmentTools(server: McpServer, deps: ToolDeps): v
         uid: z.string(),
         filterSegment: z
           .record(z.unknown())
-          .describe(
-            "Full filter segment body to replace the existing one (name, isPublic, includes, etc.).",
-          ),
+          .describe("Full filter segment body to replace the existing one (name, isPublic, includes, etc.)."),
       },
     },
     async ({ uid, filterSegment }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.put(`${BASE}/${encodeURIComponent(uid)}`, filterSegment),
-      );
+      return jsonResult(await deps.client.platform.put(`${BASE}/${encodeURIComponent(uid)}`, filterSegment));
     },
   );
 
@@ -79,9 +72,7 @@ export function registerFilterSegmentTools(server: McpServer, deps: ToolDeps): v
     },
     async ({ uid }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.del(`${BASE}/${encodeURIComponent(uid)}`),
-      );
+      return jsonResult(await deps.client.platform.del(`${BASE}/${encodeURIComponent(uid)}`));
     },
   );
 }

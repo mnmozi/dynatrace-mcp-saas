@@ -19,24 +19,16 @@ export function loadConfig(env: Env = process.env): Config {
 
   // Check for half-set pairs — one present without the other.
   if (platformUrl && !platformToken) {
-    throw new Error(
-      "DT_PLATFORM_URL is set but DT_PLATFORM_TOKEN is missing (provide both or neither).",
-    );
+    throw new Error("DT_PLATFORM_URL is set but DT_PLATFORM_TOKEN is missing (provide both or neither).");
   }
   if (platformToken && !platformUrl) {
-    throw new Error(
-      "DT_PLATFORM_TOKEN is set but DT_PLATFORM_URL is missing (provide both or neither).",
-    );
+    throw new Error("DT_PLATFORM_TOKEN is set but DT_PLATFORM_URL is missing (provide both or neither).");
   }
   if (classicUrl && !apiToken) {
-    throw new Error(
-      "DT_CLASSIC_URL is set but DT_API_TOKEN is missing (provide both or neither).",
-    );
+    throw new Error("DT_CLASSIC_URL is set but DT_API_TOKEN is missing (provide both or neither).");
   }
   if (apiToken && !classicUrl) {
-    throw new Error(
-      "DT_API_TOKEN is set but DT_CLASSIC_URL is missing (provide both or neither).",
-    );
+    throw new Error("DT_API_TOKEN is set but DT_CLASSIC_URL is missing (provide both or neither).");
   }
 
   const hasPlatform = !!(platformUrl && platformToken);
@@ -45,8 +37,8 @@ export function loadConfig(env: Env = process.env): Config {
   if (!hasPlatform && !hasClassic) {
     throw new Error(
       "No Dynatrace credentials configured. Provide at least one pair: " +
-      "(DT_PLATFORM_URL + DT_PLATFORM_TOKEN) for platform/Grail tools, and/or " +
-      "(DT_CLASSIC_URL + DT_API_TOKEN) for classic /api/v2 tools.",
+        "(DT_PLATFORM_URL + DT_PLATFORM_TOKEN) for platform/Grail tools, and/or " +
+        "(DT_CLASSIC_URL + DT_API_TOKEN) for classic /api/v2 tools.",
     );
   }
 

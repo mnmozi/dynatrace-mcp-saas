@@ -65,15 +65,13 @@ describe("list_metrics", () => {
 describe("query_metric", () => {
   it("builds a DQL timeseries query and returns records", async () => {
     server.use(
-      http.post(
-        "https://plat.example.com/platform/storage/query/v1/query:execute",
-        () =>
-          HttpResponse.json({
-            state: "SUCCEEDED",
-            result: {
-              records: [{ "avg(dt.host.cpu.usage)": 12.3 }],
-            },
-          }),
+      http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
+        HttpResponse.json({
+          state: "SUCCEEDED",
+          result: {
+            records: [{ "avg(dt.host.cpu.usage)": 12.3 }],
+          },
+        }),
       ),
     );
     const client = await makeClient();

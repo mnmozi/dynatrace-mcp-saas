@@ -61,10 +61,7 @@ describe("diffVersionMap", () => {
   });
 
   it("sorts changed entries by key", () => {
-    const result = diffVersionMap(
-      { b: "1", a: "1" },
-      { b: "2", a: "2" },
-    );
+    const result = diffVersionMap({ b: "1", a: "1" }, { b: "2", a: "2" });
     expect(result.changed.map((c) => c.key)).toEqual(["a", "b"]);
   });
 
@@ -179,7 +176,6 @@ describe("objectKeyPaths", () => {
   it("deduplicates paths from multiple array elements", () => {
     // Two elements both having key "id" should produce one path, not two
     const paths = objectKeyPaths([{ id: 1 }, { id: 2 }]);
-    const idPaths = paths.filter((p) => p === "[]id" || p.endsWith(".id") || p === "[].id");
     // key path is "[]id" or "[].id" depending on interpretation — we check the actual shape
     expect(paths.filter((p) => p.includes("id"))).toHaveLength(1);
   });

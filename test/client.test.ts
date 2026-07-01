@@ -12,7 +12,7 @@ const cfg: Config = {
   apiToken: "ATOK",
   enableWrites: false,
   timeoutMs: 5000,
-  maxRetries: 0,   // no retries in basic client tests
+  maxRetries: 0, // no retries in basic client tests
   retryBaseMs: 0,
 };
 

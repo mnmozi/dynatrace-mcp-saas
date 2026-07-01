@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  DynatraceApiError,
-  friendlyMessage,
-  extractDqlErrorDetail,
-  formatDqlErrorSuffix,
-} from "../src/http/errors.js";
+import { DynatraceApiError, friendlyMessage, extractDqlErrorDetail, formatDqlErrorSuffix } from "../src/http/errors.js";
 
 // Real 400 envelope captured from the tenant for a field-not-found DQL error.
 const FIELD_NOT_FOUND_BODY = {
@@ -60,9 +55,7 @@ describe("extractDqlErrorDetail", () => {
 describe("formatDqlErrorSuffix", () => {
   it("renders message with type and position", () => {
     const d = extractDqlErrorDetail(FIELD_NOT_FOUND_BODY);
-    expect(formatDqlErrorSuffix(d)).toBe(
-      " — The field content doesn't exist. [FIELD_DOES_NOT_EXIST @ line 1, col 56]",
-    );
+    expect(formatDqlErrorSuffix(d)).toBe(" — The field content doesn't exist. [FIELD_DOES_NOT_EXIST @ line 1, col 56]");
   });
 
   it("does not duplicate the type when it equals the message", () => {

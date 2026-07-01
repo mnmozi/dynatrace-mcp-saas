@@ -6,8 +6,7 @@ import { requireWrites } from "../util/guards.js";
 
 const BASE = "/platform/storage/management/v1/bucket-definitions";
 
-const WRITE_NOTE =
-  "Requires DT_ENABLE_WRITES=true and the platform scope storage:bucket-definitions:write.";
+const WRITE_NOTE = "Requires DT_ENABLE_WRITES=true and the platform scope storage:bucket-definitions:write.";
 
 export function registerBucketTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
@@ -24,20 +23,16 @@ export function registerBucketTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "get_grail_bucket",
     {
-      description:
-        "Get a single Grail retention bucket definition by name (Dynatrace Storage Management v1).",
+      description: "Get a single Grail retention bucket definition by name (Dynatrace Storage Management v1).",
       inputSchema: { bucketName: z.string().describe("The unique bucket name to retrieve.") },
     },
-    async ({ bucketName }) =>
-      jsonResult(await deps.client.platform.get(`${BASE}/${encodeURIComponent(bucketName)}`)),
+    async ({ bucketName }) => jsonResult(await deps.client.platform.get(`${BASE}/${encodeURIComponent(bucketName)}`)),
   );
 
   server.registerTool(
     "create_grail_bucket",
     {
-      description:
-        "Create a new custom Grail retention bucket (WRITE, Dynatrace Storage Management v1). " +
-        WRITE_NOTE,
+      description: "Create a new custom Grail retention bucket (WRITE, Dynatrace Storage Management v1). " + WRITE_NOTE,
       inputSchema: {
         bucket: z
           .record(z.unknown())

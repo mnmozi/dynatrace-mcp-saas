@@ -55,26 +55,18 @@ describe("loadConfig", () => {
   });
 
   it("throws naming the missing var when DT_PLATFORM_URL is set without DT_PLATFORM_TOKEN", () => {
-    expect(() =>
-      loadConfig({ DT_PLATFORM_URL: "https://x.apps.dynatracelabs.com" }),
-    ).toThrow(/DT_PLATFORM_TOKEN/);
+    expect(() => loadConfig({ DT_PLATFORM_URL: "https://x.apps.dynatracelabs.com" })).toThrow(/DT_PLATFORM_TOKEN/);
   });
 
   it("throws naming the missing var when DT_PLATFORM_TOKEN is set without DT_PLATFORM_URL", () => {
-    expect(() =>
-      loadConfig({ DT_PLATFORM_TOKEN: "dt0s16.AAA" }),
-    ).toThrow(/DT_PLATFORM_URL/);
+    expect(() => loadConfig({ DT_PLATFORM_TOKEN: "dt0s16.AAA" })).toThrow(/DT_PLATFORM_URL/);
   });
 
   it("throws naming the missing var when DT_CLASSIC_URL is set without DT_API_TOKEN", () => {
-    expect(() =>
-      loadConfig({ DT_CLASSIC_URL: "https://x.dynatracelabs.com" }),
-    ).toThrow(/DT_API_TOKEN/);
+    expect(() => loadConfig({ DT_CLASSIC_URL: "https://x.dynatracelabs.com" })).toThrow(/DT_API_TOKEN/);
   });
 
   it("throws naming the missing var when DT_API_TOKEN is set without DT_CLASSIC_URL", () => {
-    expect(() =>
-      loadConfig({ DT_API_TOKEN: "dt0c01.BBB" }),
-    ).toThrow(/DT_CLASSIC_URL/);
+    expect(() => loadConfig({ DT_API_TOKEN: "dt0c01.BBB" })).toThrow(/DT_CLASSIC_URL/);
   });
 });

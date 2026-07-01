@@ -20,13 +20,11 @@ const cfg: Config = {
 };
 
 const mswServer = setupServer(
-  http.get(
-    `${PLATFORM}/platform/iam/v1/organizational-levels/accounts/ACC-1/groups`,
-    () =>
-      HttpResponse.json({
-        results: [{ uuid: "g1", groupName: "Admins", type: "LOCAL" }],
-        totalCount: 1,
-      }),
+  http.get(`${PLATFORM}/platform/iam/v1/organizational-levels/accounts/ACC-1/groups`, () =>
+    HttpResponse.json({
+      results: [{ uuid: "g1", groupName: "Admins", type: "LOCAL" }],
+      totalCount: 1,
+    }),
   ),
 );
 
@@ -63,8 +61,6 @@ describe("create_iam_group write-gate", () => {
       arguments: { levelType: "accounts", levelId: "ACC-1", group: {} },
     });
     expect(res.isError).toBe(true);
-    expect((res.content as Array<{ text: string }>)[0].text).toMatch(
-      /DT_ENABLE_WRITES/,
-    );
+    expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
   });
 });

@@ -36,7 +36,23 @@ const mswServer = setupServer(
     const filter = url.searchParams.get("filter");
     if (filter && filter.includes("notebook")) {
       return HttpResponse.json({
-        documents: [{ id: "N1", name: "Investigation", type: "notebook", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true }],
+        documents: [
+          {
+            id: "N1",
+            name: "Investigation",
+            type: "notebook",
+            version: "1",
+            owner: "u1",
+            modificationInfo: {
+              createdBy: "u1",
+              createdTime: "2024-01-01T00:00:00Z",
+              lastModifiedBy: "u1",
+              lastModifiedTime: "2024-01-01T00:00:00Z",
+            },
+            access: ["read", "write", "delete"],
+            isPrivate: true,
+          },
+        ],
         totalCount: 1,
         nextPageKey: "K3",
       });
@@ -47,7 +63,21 @@ const mswServer = setupServer(
   // GET notebook metadata
   http.get(`${PLATFORM}/platform/document/v1/documents/:id/metadata`, ({ params }) => {
     if (params["id"] === "N1") {
-      return HttpResponse.json({ id: "N1", name: "Investigation", type: "notebook", version: "2", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-02T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true });
+      return HttpResponse.json({
+        id: "N1",
+        name: "Investigation",
+        type: "notebook",
+        version: "2",
+        owner: "u1",
+        modificationInfo: {
+          createdBy: "u1",
+          createdTime: "2024-01-01T00:00:00Z",
+          lastModifiedBy: "u1",
+          lastModifiedTime: "2024-01-02T00:00:00Z",
+        },
+        access: ["read", "write", "delete"],
+        isPrivate: true,
+      });
     }
     return new HttpResponse(null, { status: 404 });
   }),
@@ -62,13 +92,46 @@ const mswServer = setupServer(
 
   // CREATE notebook
   http.post(`${PLATFORM}/platform/document/v1/documents`, async () => {
-    return HttpResponse.json({ id: "N-new", name: "My New Notebook", type: "notebook", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true }, { status: 201 });
+    return HttpResponse.json(
+      {
+        id: "N-new",
+        name: "My New Notebook",
+        type: "notebook",
+        version: "1",
+        owner: "u1",
+        modificationInfo: {
+          createdBy: "u1",
+          createdTime: "2024-01-01T00:00:00Z",
+          lastModifiedBy: "u1",
+          lastModifiedTime: "2024-01-01T00:00:00Z",
+        },
+        access: ["read", "write", "delete"],
+        isPrivate: true,
+      },
+      { status: 201 },
+    );
   }),
 
   // UPDATE notebook (PATCH)
   http.patch(`${PLATFORM}/platform/document/v1/documents/:id`, async ({ params }) => {
     if (params["id"] === "N1") {
-      return HttpResponse.json({ documentMetadata: { id: "N1", name: "Investigation Updated", type: "notebook", version: "3", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-03T00:00:00Z" }, access: ["read", "write", "delete"], isPrivate: true } });
+      return HttpResponse.json({
+        documentMetadata: {
+          id: "N1",
+          name: "Investigation Updated",
+          type: "notebook",
+          version: "3",
+          owner: "u1",
+          modificationInfo: {
+            createdBy: "u1",
+            createdTime: "2024-01-01T00:00:00Z",
+            lastModifiedBy: "u1",
+            lastModifiedTime: "2024-01-03T00:00:00Z",
+          },
+          access: ["read", "write", "delete"],
+          isPrivate: true,
+        },
+      });
     }
     return new HttpResponse(null, { status: 404 });
   }),
@@ -83,7 +146,10 @@ const mswServer = setupServer(
 );
 
 beforeAll(() => mswServer.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { mswServer.resetHandlers(); lastDocRequestUrl = ""; });
+afterEach(() => {
+  mswServer.resetHandlers();
+  lastDocRequestUrl = "";
+});
 afterAll(() => mswServer.close());
 
 async function makeClient(cfg: Config) {
@@ -230,7 +296,21 @@ describe("create_notebook with contentPath", () => {
       http.post(`${PLATFORM}/platform/document/v1/documents`, async ({ request }) => {
         body = await request.text();
         return HttpResponse.json(
-          { id: "N-new", name: "x", type: "notebook", version: "1", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-01T00:00:00Z" }, access: ["read"], isPrivate: true },
+          {
+            id: "N-new",
+            name: "x",
+            type: "notebook",
+            version: "1",
+            owner: "u1",
+            modificationInfo: {
+              createdBy: "u1",
+              createdTime: "2024-01-01T00:00:00Z",
+              lastModifiedBy: "u1",
+              lastModifiedTime: "2024-01-01T00:00:00Z",
+            },
+            access: ["read"],
+            isPrivate: true,
+          },
           { status: 201 },
         );
       }),
@@ -264,7 +344,23 @@ describe("update_notebook with contentPath", () => {
     mswServer.use(
       http.patch(`${PLATFORM}/platform/document/v1/documents/:id`, async ({ request }) => {
         body = await request.text();
-        return HttpResponse.json({ documentMetadata: { id: "N1", name: "Investigation", type: "notebook", version: "3", owner: "u1", modificationInfo: { createdBy: "u1", createdTime: "2024-01-01T00:00:00Z", lastModifiedBy: "u1", lastModifiedTime: "2024-01-03T00:00:00Z" }, access: ["read"], isPrivate: true } });
+        return HttpResponse.json({
+          documentMetadata: {
+            id: "N1",
+            name: "Investigation",
+            type: "notebook",
+            version: "3",
+            owner: "u1",
+            modificationInfo: {
+              createdBy: "u1",
+              createdTime: "2024-01-01T00:00:00Z",
+              lastModifiedBy: "u1",
+              lastModifiedTime: "2024-01-03T00:00:00Z",
+            },
+            access: ["read"],
+            isPrivate: true,
+          },
+        });
       }),
     );
 

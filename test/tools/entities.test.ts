@@ -9,8 +9,12 @@ import { DynatraceClient } from "../../src/http/client.js";
 import type { Config } from "../../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://plat.example.com", classicUrl: "https://classic.example.com",
-  platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://plat.example.com",
+  classicUrl: "https://classic.example.com",
+  platformToken: "P",
+  apiToken: "A",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 
 let lastUrl = "";
@@ -120,11 +124,7 @@ describe("find_entities (default = Grail DQL)", () => {
 
   it("returns structured unavailable when selector has no type() clause (mentions execute_dql AND useClassic)", async () => {
     // No DQL call expected here — we return early with the guidance message
-    server.use(
-      http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
-        dqlSuccess([]),
-      ),
-    );
+    server.use(http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () => dqlSuccess([])));
     const client = await makeClient();
     const res = await client.callTool({
       name: "find_entities",

@@ -9,8 +9,12 @@ import { DynatraceClient } from "../../src/http/client.js";
 import type { Config } from "../../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://p", classicUrl: "https://classic.example.com",
-  platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://p",
+  classicUrl: "https://classic.example.com",
+  platformToken: "P",
+  apiToken: "A",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 
 let lastRequestUrl = "";
@@ -23,7 +27,10 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { server.resetHandlers(); lastRequestUrl = ""; });
+afterEach(() => {
+  server.resetHandlers();
+  lastRequestUrl = "";
+});
 afterAll(() => server.close());
 
 async function makeClient() {

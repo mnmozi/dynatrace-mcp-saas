@@ -126,7 +126,7 @@ describe("preview_openpipeline_pipeline", () => {
     // Call 2: { a: 1, step_1: true } → has 2 fields → adds step_2 → { a: 1, step_1: true, step_2: true }
     mswServer.use(
       http.post(`${PLATFORM}/platform/openpipeline/v1/preview/processor`, async ({ request }) => {
-        const body = await request.json() as { processor: { sampleData: string } };
+        const body = (await request.json()) as { processor: { sampleData: string } };
         const parsed = JSON.parse(body.processor.sampleData) as Record<string, unknown>;
         const markerKey = `step_${Object.keys(parsed).length}`;
         const record = { ...parsed, [markerKey]: true };
@@ -148,7 +148,10 @@ describe("preview_openpipeline_pipeline", () => {
 
     expect(res.isError).toBeFalsy();
     const text = (res.content as Array<{ text: string }>)[0].text;
-    const parsed = JSON.parse(text) as { steps: Array<{ matched: boolean; record: Record<string, unknown> }>; finalRecord: Record<string, unknown> };
+    const parsed = JSON.parse(text) as {
+      steps: Array<{ matched: boolean; record: Record<string, unknown> }>;
+      finalRecord: Record<string, unknown>;
+    };
 
     // Both steps must have run
     expect(parsed.steps).toHaveLength(2);
@@ -212,7 +215,7 @@ describe("preview_openpipeline_processor — passthrough acceptance", () => {
 
 describe("preview_openpipeline_pipeline — passthrough acceptance", () => {
   it("preserves type-specific fields in each pipeline processor element", async () => {
-    let capturedBodies: Array<unknown> = [];
+    const capturedBodies: Array<unknown> = [];
 
     mswServer.use(
       http.post(`${PLATFORM}/platform/openpipeline/v1/preview/processor`, async ({ request }) => {
@@ -267,7 +270,7 @@ describe("verify_openpipeline_dql_processor — typed body acceptance", () => {
       name: "verify_openpipeline_dql_processor",
       arguments: {
         body: {
-          script: 'parse content, "IPV4:ip LD HTTPDATE:time \']\' LD:text"',
+          script: "parse content, \"IPV4:ip LD HTTPDATE:time ']' LD:text\"",
           configurationId: "logs",
           protectedFields: ["timestamp"],
         },
@@ -397,7 +400,7 @@ const dqlAndMatcherConfig = {
           {
             type: "dql",
             id: "proc1",
-            dqlScript: "parse content, \"SIMPLE_TEXT:msg\"",
+            dqlScript: 'parse content, "SIMPLE_TEXT:msg"',
             matcher: "isNotNull(content)",
           },
         ],
@@ -405,7 +408,7 @@ const dqlAndMatcherConfig = {
     ],
     routingRules: [
       {
-        matcher: "matchesValue(type, \"logs\")",
+        matcher: 'matchesValue(type, "logs")',
         pipelineId: "p1",
       },
     ],

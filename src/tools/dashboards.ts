@@ -37,10 +37,19 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "Filters to type='dashboard'. Optionally pass pageSize (max 1000). " +
         "Returns one page; pass pageKey (from a previous response's nextPageKey) to page through results.",
       inputSchema: {
-        pageSize: z.number().int().positive().max(1000).optional()
+        pageSize: z
+          .number()
+          .int()
+          .positive()
+          .max(1000)
+          .optional()
           .describe("Number of results per page (default 20, max 1000)."),
-        pageKey: z.string().optional()
-          .describe("Opaque next-page cursor from a previous response's nextPageKey; pass as page-key to fetch the next page."),
+        pageKey: z
+          .string()
+          .optional()
+          .describe(
+            "Opaque next-page cursor from a previous response's nextPageKey; pass as page-key to fetch the next page.",
+          ),
       },
     },
     async ({ pageSize, pageKey }) => {
@@ -49,9 +58,7 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
       };
       if (pageSize !== undefined) query["page-size"] = pageSize;
       if (pageKey !== undefined) query["page-key"] = pageKey;
-      return jsonResult(
-        await deps.client.platform.get(DOC_BASE, query),
-      );
+      return jsonResult(await deps.client.platform.get(DOC_BASE, query));
     },
   );
 
@@ -104,7 +111,12 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
       inputSchema: {
         name: z.string().max(128).describe("Dashboard display name."),
         content: z.record(z.unknown()).optional().describe("Dashboard content as a JSON object (e.g. { tiles: [] })."),
-        contentPath: z.string().optional().describe("Absolute or cwd-relative path to a JSON file whose contents become the dashboard content. Provide exactly one of content or contentPath."),
+        contentPath: z
+          .string()
+          .optional()
+          .describe(
+            "Absolute or cwd-relative path to a JSON file whose contents become the dashboard content. Provide exactly one of content or contentPath.",
+          ),
       },
     },
     async ({ name, content, contentPath }) => {
@@ -120,9 +132,7 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
       const contentBlob = new Blob([JSON.stringify(resolved)], { type: "application/json" });
       form.append("content", contentBlob, "dashboard.json");
 
-      return jsonResult(
-        await deps.client.platform.postForm(DOC_BASE, form),
-      );
+      return jsonResult(await deps.client.platform.postForm(DOC_BASE, form));
     },
   );
 
@@ -140,12 +150,19 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "Call dashboard_reference (topic 'tiles'/'example') first to construct a valid content object.",
       inputSchema: {
         id: z.string().describe("Dashboard document id."),
-        version: z.number().int().positive()
+        version: z
+          .number()
+          .int()
+          .positive()
           .describe("Current document version for optimistic locking (required by the spec)."),
         name: z.string().max(128).optional().describe("New display name (optional)."),
-        content: z.record(z.unknown()).optional()
-          .describe("New dashboard content as a JSON object (optional)."),
-        contentPath: z.string().optional().describe("Absolute or cwd-relative path to a JSON file whose contents become the new dashboard content. Mutually exclusive with content."),
+        content: z.record(z.unknown()).optional().describe("New dashboard content as a JSON object (optional)."),
+        contentPath: z
+          .string()
+          .optional()
+          .describe(
+            "Absolute or cwd-relative path to a JSON file whose contents become the new dashboard content. Mutually exclusive with content.",
+          ),
       },
     },
     async ({ id, version, name, content, contentPath }) => {
@@ -167,13 +184,7 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "optimistic-locking-version": String(version),
       };
 
-      return jsonResult(
-        await deps.client.platform.patchForm(
-          `${DOC_BASE}/${encodeURIComponent(id)}`,
-          form,
-          query,
-        ),
-      );
+      return jsonResult(await deps.client.platform.patchForm(`${DOC_BASE}/${encodeURIComponent(id)}`, form, query));
     },
   );
 
@@ -189,7 +200,10 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "Requires DT_ENABLE_WRITES=true.",
       inputSchema: {
         id: z.string().describe("Dashboard document id."),
-        version: z.number().int().positive()
+        version: z
+          .number()
+          .int()
+          .positive()
           .describe("Current document version for optimistic locking (required by the spec)."),
       },
     },
@@ -200,10 +214,7 @@ export function registerDashboardTools(server: McpServer, deps: ToolDeps): void 
         "optimistic-locking-version": String(version),
       };
 
-      const result = await deps.client.platform.del(
-        `${DOC_BASE}/${encodeURIComponent(id)}`,
-        query,
-      );
+      const result = await deps.client.platform.del(`${DOC_BASE}/${encodeURIComponent(id)}`, query);
       return jsonResult(result ?? { deleted: true, id });
     },
   );

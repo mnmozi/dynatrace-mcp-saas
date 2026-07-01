@@ -14,8 +14,7 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
       description: "List Service-Level Objectives (platform SLO v1).",
       inputSchema: { pageSize: z.number().int().positive().max(500).optional() },
     },
-    async ({ pageSize }) =>
-      jsonResult(await deps.client.platform.get(SLO, { "page-size": pageSize ?? 100 })),
+    async ({ pageSize }) => jsonResult(await deps.client.platform.get(SLO, { "page-size": pageSize ?? 100 })),
   );
 
   server.registerTool(
@@ -24,8 +23,7 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
       description: "Get one SLO by id (platform SLO v1).",
       inputSchema: { id: z.string() },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.platform.get(`${SLO}/${encodeURIComponent(id)}`)),
+    async ({ id }) => jsonResult(await deps.client.platform.get(`${SLO}/${encodeURIComponent(id)}`)),
   );
 
   server.registerTool(
@@ -40,10 +38,7 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
           .string()
           .optional()
           .describe("Start of the custom timeframe, e.g. 'now-7d' or an ISO 8601 timestamp."),
-        timeframeTo: z
-          .string()
-          .optional()
-          .describe("End of the custom timeframe (defaults to 'now' when omitted)."),
+        timeframeTo: z.string().optional().describe("End of the custom timeframe (defaults to 'now' when omitted)."),
       },
     },
     async ({ id, timeframeFrom, timeframeTo }) => {
@@ -60,11 +55,9 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
       }
 
       // POST evaluation:start — may return 200 (done) or 202 (async, has evaluationToken)
-      const start = await deps.client.platform.post<SloEvalResp>(
-        `${SLO}/evaluation:start`,
-        body,
-        { "request-timeout-milliseconds": 5000 },
-      );
+      const start = await deps.client.platform.post<SloEvalResp>(`${SLO}/evaluation:start`, body, {
+        "request-timeout-milliseconds": 5000,
+      });
 
       if (!start.evaluationToken) {
         // 200 — result is inline
@@ -76,10 +69,10 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
       const pollIntervalMs = 1000;
 
       for (let i = 0; i < maxPolls; i++) {
-        const poll = await deps.client.platform.get<SloEvalResp>(
-          `${SLO}/evaluation:poll`,
-          { "evaluation-token": token, "request-timeout-milliseconds": 5000 },
-        );
+        const poll = await deps.client.platform.get<SloEvalResp>(`${SLO}/evaluation:poll`, {
+          "evaluation-token": token,
+          "request-timeout-milliseconds": 5000,
+        });
         if (!poll.evaluationToken) {
           // 200 — evaluation complete
           return jsonResult(poll);
@@ -97,8 +90,7 @@ export function registerSloTools(server: McpServer, deps: ToolDeps): void {
       description: "List SLO objective templates (platform SLO v1).",
       inputSchema: {},
     },
-    async () =>
-      jsonResult(await deps.client.platform.get("/platform/slo/v1/objective-templates")),
+    async () => jsonResult(await deps.client.platform.get("/platform/slo/v1/objective-templates")),
   );
 
   server.registerTool(

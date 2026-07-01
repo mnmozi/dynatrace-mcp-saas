@@ -21,29 +21,38 @@ export function registerAuditTools(server: McpServer, deps: ToolDeps): void {
         "free-text `filter` query. Uses the classic Environment API v2: GET /api/v2/auditlogs. " +
         "Returns one page; pass nextPageKey to page through results.",
       inputSchema: {
-        filter: z.string().optional().describe(
-          'Filter expression, e.g. category("CONFIG") or user("admin@example.com").',
-        ),
-        from: z.string().optional().describe(
-          "Start of the timeframe. Accepts UTC ms, ISO 8601, or relative (e.g. now-1h). Default: now-2h.",
-        ),
-        to: z.string().optional().describe(
-          "End of the timeframe. Accepts UTC ms, ISO 8601, or relative. Default: now.",
-        ),
-        pageSize: z.number().int().positive().max(1000).optional().describe(
-          "Number of entries per page (max 1000). Default: 50.",
-        ),
-        nextPageKey: z.string().optional().describe(
-          "Opaque next-page cursor from a previous response's nextPageKey; when set, other filters are ignored (classic API requirement).",
-        ),
+        filter: z
+          .string()
+          .optional()
+          .describe('Filter expression, e.g. category("CONFIG") or user("admin@example.com").'),
+        from: z
+          .string()
+          .optional()
+          .describe("Start of the timeframe. Accepts UTC ms, ISO 8601, or relative (e.g. now-1h). Default: now-2h."),
+        to: z
+          .string()
+          .optional()
+          .describe("End of the timeframe. Accepts UTC ms, ISO 8601, or relative. Default: now."),
+        pageSize: z
+          .number()
+          .int()
+          .positive()
+          .max(1000)
+          .optional()
+          .describe("Number of entries per page (max 1000). Default: 50."),
+        nextPageKey: z
+          .string()
+          .optional()
+          .describe(
+            "Opaque next-page cursor from a previous response's nextPageKey; when set, other filters are ignored (classic API requirement).",
+          ),
       },
     },
     async ({ filter, from, to, pageSize, nextPageKey }) =>
       jsonResult(
-        await deps.client.classic.get("/api/v2/auditlogs",
-          nextPageKey
-            ? { nextPageKey }
-            : { filter, from: from ?? "now-2h", to, pageSize: pageSize ?? 50 },
+        await deps.client.classic.get(
+          "/api/v2/auditlogs",
+          nextPageKey ? { nextPageKey } : { filter, from: from ?? "now-2h", to, pageSize: pageSize ?? 50 },
         ),
       ),
   );
@@ -58,9 +67,6 @@ export function registerAuditTools(server: McpServer, deps: ToolDeps): void {
         id: z.string().describe("The log entry ID (logId field)."),
       },
     },
-    async ({ id }) =>
-      jsonResult(
-        await deps.client.classic.get(`/api/v2/auditlogs/${encodeURIComponent(id)}`),
-      ),
+    async ({ id }) => jsonResult(await deps.client.classic.get(`/api/v2/auditlogs/${encodeURIComponent(id)}`)),
   );
 }

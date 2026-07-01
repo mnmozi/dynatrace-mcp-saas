@@ -62,7 +62,7 @@ describe("execute_record_deletion write-gate", () => {
     const res = await client.callTool({
       name: "execute_record_deletion",
       arguments: {
-        query: "fetch logs | filter contains(content, \"test\")",
+        query: 'fetch logs | filter contains(content, "test")',
       },
     });
     expect(res.isError).toBe(true);
@@ -86,7 +86,7 @@ describe("execute_record_deletion", () => {
     const res = await client.callTool({
       name: "execute_record_deletion",
       arguments: {
-        query: "fetch logs | filter contains(content, \"delete_records_test\")",
+        query: 'fetch logs | filter contains(content, "delete_records_test")',
         timeFrame: { start: "2023-04-04T00:00:00Z", end: "2023-04-04T01:00:00Z" },
         timezone: "UTC",
         locale: "en-US",

@@ -90,12 +90,9 @@ describe("400 no retry", () => {
       }),
     );
 
-    await expect(client.classic.get("/api/v2/test-400"))
-      .rejects.toBeInstanceOf(DynatraceApiError);
+    await expect(client.classic.get("/api/v2/test-400")).rejects.toBeInstanceOf(DynatraceApiError);
 
-    const err = await client.classic
-      .get("/api/v2/test-400")
-      .catch((e: unknown) => e);
+    const err = await client.classic.get("/api/v2/test-400").catch((e: unknown) => e);
     expect((err as DynatraceApiError).status).toBe(400);
 
     // callCount should be 2 (one from each get() call, no retries on either)

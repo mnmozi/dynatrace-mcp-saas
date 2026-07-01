@@ -5,8 +5,12 @@ import { DynatraceClient } from "../src/http/client.js";
 import type { Config } from "../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://p", classicUrl: "https://c", platformToken: "p", apiToken: "a",
-  enableWrites: false, timeoutMs: 1000,
+  platformUrl: "https://p",
+  classicUrl: "https://c",
+  platformToken: "p",
+  apiToken: "a",
+  enableWrites: false,
+  timeoutMs: 1000,
 };
 
 describe("registerAllTools", () => {

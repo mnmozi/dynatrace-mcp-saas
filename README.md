@@ -21,35 +21,38 @@ All write operations (create / update / delete) are **blocked by default** and m
 
 Dynatrace SaaS exposes APIs across two distinct hostnames, each requiring a different token type.
 
-| Host | Env var | Example value | Auth header | APIs served |
-|------|---------|---------------|-------------|-------------|
-| **Platform host** | `DT_PLATFORM_URL` | `https://asn8731h.sprint.apps.dynatracelabs.com` | `Authorization: Bearer dt0s16…` | `/platform/*` — DQL (Grail), dashboards, notebooks, SLOs, synthetic, vulnerabilities |
-| **Classic host** | `DT_CLASSIC_URL` | `https://asn8731h.sprint.dynatracelabs.com` | `Authorization: Api-Token dt0c01…` | `/api/v2/*` — settings, metrics, entities, problems, logs (v2) |
+| Host              | Env var           | Example value                                    | Auth header                        | APIs served                                                                          |
+| ----------------- | ----------------- | ------------------------------------------------ | ---------------------------------- | ------------------------------------------------------------------------------------ |
+| **Platform host** | `DT_PLATFORM_URL` | `https://asn8731h.sprint.apps.dynatracelabs.com` | `Authorization: Bearer dt0s16…`    | `/platform/*` — DQL (Grail), dashboards, notebooks, SLOs, synthetic, vulnerabilities |
+| **Classic host**  | `DT_CLASSIC_URL`  | `https://asn8731h.sprint.dynatracelabs.com`      | `Authorization: Api-Token dt0c01…` | `/api/v2/*` — settings, metrics, entities, problems, logs (v2)                       |
 
 ---
 
 ## Setup
 
 1. **Clone & install:**
+
    ```bash
    npm install
    ```
 
 2. **Configure environment:**
+
    ```bash
    cp .env.example .env
    # then edit .env
    ```
+
    `.env` is gitignored — never commit it.
 
-   | Variable | Required | Description |
-   |----------|----------|-------------|
-   | `DT_PLATFORM_URL` | yes | Platform host base URL |
-   | `DT_CLASSIC_URL` | yes | Classic host base URL |
-   | `DT_PLATFORM_TOKEN` | yes | Bearer token (`dt0s16…`) for platform APIs |
-   | `DT_API_TOKEN` | yes | Api-Token (`dt0c01…`) for classic APIs |
-   | `DT_ENABLE_WRITES` | no | Set to `true` to allow create/update/delete operations |
-   | `DT_HTTP_TIMEOUT_MS` | no | Request timeout in ms (default: 30000) |
+   | Variable             | Required | Description                                            |
+   | -------------------- | -------- | ------------------------------------------------------ |
+   | `DT_PLATFORM_URL`    | yes      | Platform host base URL                                 |
+   | `DT_CLASSIC_URL`     | yes      | Classic host base URL                                  |
+   | `DT_PLATFORM_TOKEN`  | yes      | Bearer token (`dt0s16…`) for platform APIs             |
+   | `DT_API_TOKEN`       | yes      | Api-Token (`dt0c01…`) for classic APIs                 |
+   | `DT_ENABLE_WRITES`   | no       | Set to `true` to allow create/update/delete operations |
+   | `DT_HTTP_TIMEOUT_MS` | no       | Request timeout in ms (default: 30000)                 |
 
 ---
 
@@ -127,24 +130,24 @@ Set `DT_ENABLE_WRITES=true` in your `.env` (or in the MCP client env config) to 
 
 ### Observability
 
-| Tool | Description |
-|------|-------------|
-| `execute_dql` | Execute a DQL statement against Grail |
-| `verify_dql` | Validate a DQL statement without returning data |
-| `search_logs` | Search logs via DQL |
-| `search_spans` | Search spans/traces via DQL |
-| `get_trace` | Retrieve a trace by trace ID |
-| `list_metrics` | List available metric descriptors |
-| `get_metric_metadata` | Get metadata for a specific metric |
-| `query_metric` | Query metric data points |
-| `list_hosts` | List host entities |
-| `find_entities` | Query entities with an entitySelector |
-| `get_entity` | Get details for a specific entity |
-| `list_entity_types` | List available entity types |
-| `list_problems` | List open or recent problems |
-| `get_problem` | Get details for a specific problem |
-| `list_vulnerabilities` | List security vulnerabilities |
-| `get_vulnerability` | Get details for a specific vulnerability |
+| Tool                   | Description                                     |
+| ---------------------- | ----------------------------------------------- |
+| `execute_dql`          | Execute a DQL statement against Grail           |
+| `verify_dql`           | Validate a DQL statement without returning data |
+| `search_logs`          | Search logs via DQL                             |
+| `search_spans`         | Search spans/traces via DQL                     |
+| `get_trace`            | Retrieve a trace by trace ID                    |
+| `list_metrics`         | List available metric descriptors               |
+| `get_metric_metadata`  | Get metadata for a specific metric              |
+| `query_metric`         | Query metric data points                        |
+| `list_hosts`           | List host entities                              |
+| `find_entities`        | Query entities with an entitySelector           |
+| `get_entity`           | Get details for a specific entity               |
+| `list_entity_types`    | List available entity types                     |
+| `list_problems`        | List open or recent problems                    |
+| `get_problem`          | Get details for a specific problem              |
+| `list_vulnerabilities` | List security vulnerabilities                   |
+| `get_vulnerability`    | Get details for a specific vulnerability        |
 
 ### Configuration
 

@@ -42,15 +42,13 @@ export function registerSyntheticTools(server: McpServer, deps: ToolDeps): void 
       description: "Get the full definition of a single synthetic monitor by its entity ID.",
       inputSchema: { id: z.string().describe("Synthetic monitor entity ID, e.g. 'SYNTHETIC_TEST-1234'.") },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.platform.get(`${MONITORS}/${encodeURIComponent(id)}`)),
+    async ({ id }) => jsonResult(await deps.client.platform.get(`${MONITORS}/${encodeURIComponent(id)}`)),
   );
 
   server.registerTool(
     "list_synthetic_locations",
     {
-      description:
-        "List all synthetic locations (both public and private) available for the environment.",
+      description: "List all synthetic locations (both public and private) available for the environment.",
       inputSchema: {},
     },
     async () => jsonResult(await deps.client.platform.get(LOCATIONS)),
@@ -75,9 +73,7 @@ export function registerSyntheticTools(server: McpServer, deps: ToolDeps): void 
         "Pass a full monitor body per the platform synthetic v1 spec " +
         "(SyntheticMultiProtocolMonitorRequest or SyntheticBrowserMonitorRequest).",
       inputSchema: {
-        monitor: syntheticMonitorSchema.describe(
-          "Monitor definition object matching platform synthetic v1.",
-        ),
+        monitor: syntheticMonitorSchema.describe("Monitor definition object matching platform synthetic v1."),
       },
     },
     async ({ monitor }) => {
@@ -94,16 +90,12 @@ export function registerSyntheticTools(server: McpServer, deps: ToolDeps): void 
         "Sends a full PUT to /monitors/{monitor-id} per the platform synthetic v1 spec.",
       inputSchema: {
         id: z.string().describe("Synthetic monitor entity ID."),
-        monitor: syntheticMonitorSchema.describe(
-          "Updated monitor definition object matching platform synthetic v1.",
-        ),
+        monitor: syntheticMonitorSchema.describe("Updated monitor definition object matching platform synthetic v1."),
       },
     },
     async ({ id, monitor }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.put(`${MONITORS}/${encodeURIComponent(id)}`, monitor),
-      );
+      return jsonResult(await deps.client.platform.put(`${MONITORS}/${encodeURIComponent(id)}`, monitor));
     },
   );
 
@@ -115,9 +107,7 @@ export function registerSyntheticTools(server: McpServer, deps: ToolDeps): void 
     },
     async ({ id }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.del(`${MONITORS}/${encodeURIComponent(id)}`),
-      );
+      return jsonResult(await deps.client.platform.del(`${MONITORS}/${encodeURIComponent(id)}`));
     },
   );
 }

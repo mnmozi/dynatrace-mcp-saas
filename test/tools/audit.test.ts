@@ -9,8 +9,12 @@ import { DynatraceClient } from "../../src/http/client.js";
 import type { Config } from "../../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://p", classicUrl: "https://classic.example.com",
-  platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://p",
+  classicUrl: "https://classic.example.com",
+  platformToken: "P",
+  apiToken: "A",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 
 let lastRequestUrl = "";
@@ -19,17 +23,40 @@ const server = setupServer(
   http.get("https://classic.example.com/api/v2/auditlogs", ({ request }) => {
     lastRequestUrl = request.url;
     return HttpResponse.json({
-      auditLogs: [{ logId: "a1", user: "x@example.com", eventType: "UPDATE", category: "CONFIG", environmentId: "env-1", success: true, timestamp: 1000, userType: "USER_NAME" }],
+      auditLogs: [
+        {
+          logId: "a1",
+          user: "x@example.com",
+          eventType: "UPDATE",
+          category: "CONFIG",
+          environmentId: "env-1",
+          success: true,
+          timestamp: 1000,
+          userType: "USER_NAME",
+        },
+      ],
       totalCount: 1,
     });
   }),
   http.get("https://classic.example.com/api/v2/auditlogs/a1", () =>
-    HttpResponse.json({ logId: "a1", user: "x@example.com", eventType: "UPDATE", category: "CONFIG", environmentId: "env-1", success: true, timestamp: 1000, userType: "USER_NAME" }),
+    HttpResponse.json({
+      logId: "a1",
+      user: "x@example.com",
+      eventType: "UPDATE",
+      category: "CONFIG",
+      environmentId: "env-1",
+      success: true,
+      timestamp: 1000,
+      userType: "USER_NAME",
+    }),
   ),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => { server.resetHandlers(); lastRequestUrl = ""; });
+afterEach(() => {
+  server.resetHandlers();
+  lastRequestUrl = "";
+});
 afterAll(() => server.close());
 
 async function makeClient() {

@@ -5,12 +5,7 @@ import YAML from "yaml";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
-import {
-  diffStringSets,
-  diffVersionMap,
-  diffObjectKeyPaths,
-  diffOperations,
-} from "../util/diff.js";
+import { diffStringSets, diffVersionMap, diffObjectKeyPaths, diffOperations } from "../util/diff.js";
 import { DynatraceApiError } from "../http/errors.js";
 
 const SPECS_DIR = fileURLToPath(new URL("../../specs/", import.meta.url));
@@ -48,10 +43,7 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ schemaId }) => {
       // Read committed manifest
-      const manifestText = await readFile(
-        SPECS_DIR + "settings-schemas/manifest.json",
-        "utf8",
-      );
+      const manifestText = await readFile(SPECS_DIR + "settings-schemas/manifest.json", "utf8");
       const manifest = JSON.parse(manifestText) as {
         count: number;
         schemas: Record<string, { version: string; displayName: string }>;
@@ -136,9 +128,7 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
       }>("/platform/metadata/v1/swagger-ui.json");
 
       // Derive stems from live catalog
-      const liveCatalogEntries = (swaggerUi.urls ?? []).filter((e) =>
-        e.url.startsWith("/platform"),
-      );
+      const liveCatalogEntries = (swaggerUi.urls ?? []).filter((e) => e.url.startsWith("/platform"));
       const liveDerivedStems = liveCatalogEntries.map((e) => urlToStem(e.url));
 
       // List committed platform spec stems
@@ -171,10 +161,7 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
         const liveSpec = typeof raw === "string" ? (YAML.parse(raw) as unknown) : raw;
 
         // Read committed spec
-        const committedText = await readFile(
-          SPECS_DIR + `platform/${spec}.yaml`,
-          "utf8",
-        );
+        const committedText = await readFile(SPECS_DIR + `platform/${spec}.yaml`, "utf8");
         const committedSpec = YAML.parse(committedText) as unknown;
 
         return jsonResult({
@@ -187,25 +174,15 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
       }
 
       if (spec === "environment-api-v2") {
-        const liveSpec = await deps.client.classic.get<{ paths?: Record<string, unknown> }>(
-          "/api/v2/spec3.json",
-        );
-        const committedText = await readFile(
-          SPECS_DIR + "classic/environment-api-v2.json",
-          "utf8",
-        );
+        const liveSpec = await deps.client.classic.get<{ paths?: Record<string, unknown> }>("/api/v2/spec3.json");
+        const committedText = await readFile(SPECS_DIR + "classic/environment-api-v2.json", "utf8");
         const committedSpec = JSON.parse(committedText) as { paths?: Record<string, unknown> };
         return jsonResult({ spec, operationDrift: diffOperations(committedSpec, liveSpec) });
       }
 
       if (spec === "environment-api-v1") {
-        const liveSpec = await deps.client.classic.get<{ paths?: Record<string, unknown> }>(
-          "/api/v1/spec",
-        );
-        const committedText = await readFile(
-          SPECS_DIR + "classic/environment-api-v1.json",
-          "utf8",
-        );
+        const liveSpec = await deps.client.classic.get<{ paths?: Record<string, unknown> }>("/api/v1/spec");
+        const committedText = await readFile(SPECS_DIR + "classic/environment-api-v1.json", "utf8");
         const committedSpec = JSON.parse(committedText) as { paths?: Record<string, unknown> };
         return jsonResult({ spec, operationDrift: diffOperations(committedSpec, liveSpec) });
       }
@@ -225,10 +202,7 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
         "Returns violations, required-missing keys, and a corrected value filtered to known properties.",
       inputSchema: {
         schemaId: z.string(),
-        scope: z
-          .string()
-          .optional()
-          .describe("default 'environment'"),
+        scope: z.string().optional().describe("default 'environment'"),
         value: z.record(z.unknown()),
       },
     },
@@ -255,8 +229,8 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
         if (err instanceof DynatraceApiError) {
           valid = false;
           violations =
-            (err.body as { error?: { constraintViolations?: unknown } } | null)?.error
-              ?.constraintViolations ?? err.body;
+            (err.body as { error?: { constraintViolations?: unknown } } | null)?.error?.constraintViolations ??
+            err.body;
         } else {
           throw err;
         }
@@ -266,9 +240,7 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
       let correctedValue: Record<string, unknown>;
       const schemaProperties = liveSchema?.properties;
       if (schemaProperties && typeof schemaProperties === "object") {
-        correctedValue = Object.fromEntries(
-          Object.entries(value).filter(([k]) => k in schemaProperties),
-        );
+        correctedValue = Object.fromEntries(Object.entries(value).filter(([k]) => k in schemaProperties));
       } else {
         correctedValue = value;
       }

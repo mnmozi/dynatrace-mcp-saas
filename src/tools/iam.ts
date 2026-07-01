@@ -44,8 +44,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     "get_iam_user",
     {
       description:
-        "Get a single active user by UUID at an organisational level (IAM v1). " +
-        "Requires iam:users:read scope.",
+        "Get a single active user by UUID at an organisational level (IAM v1). " + "Requires iam:users:read scope.",
       inputSchema: {
         levelType: z.string().describe("Organisational level type: 'account' or 'environment'."),
         levelId: z.string().describe("UUID of the level-type instance."),
@@ -70,9 +69,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
       inputSchema: {
         levelType: z.string().describe("Organisational level type: 'account' or 'environment'."),
         levelId: z.string().describe("UUID of the level-type instance."),
-        user: z
-          .record(z.unknown())
-          .describe("User definition object (uid, email, groups, permissions, etc.)."),
+        user: z.record(z.unknown()).describe("User definition object (uid, email, groups, permissions, etc.)."),
       },
     },
     async ({ levelType, levelId, user }) => {
@@ -139,9 +136,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
       inputSchema: {
         levelType: z.string().describe("Organisational level type: 'account' or 'environment'."),
         levelId: z.string().describe("UUID of the level-type instance."),
-        group: z
-          .record(z.unknown())
-          .describe("Group definition object (groupName, description, permissions, etc.)."),
+        group: z.record(z.unknown()).describe("Group definition object (groupName, description, permissions, etc.)."),
       },
     },
     async ({ levelType, levelId, group }) => {
@@ -178,8 +173,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "get_trust_policy",
     {
-      description:
-        "Get a WIF trust policy by UUID, including its service user mappings (IAM v1).",
+      description: "Get a WIF trust policy by UUID, including its service user mappings (IAM v1).",
       inputSchema: {
         accountUuid: z.string().describe("Account UUID."),
         trustPolicyUuid: z.string().describe("Trust policy UUID."),
@@ -197,15 +191,12 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     "create_trust_policy",
     {
       description:
-        "Create a WIF trust policy for an account (IAM v1, WRITE). " +
-        "Requires an account-scoped platform token.",
+        "Create a WIF trust policy for an account (IAM v1, WRITE). " + "Requires an account-scoped platform token.",
       inputSchema: {
         accountUuid: z.string().describe("Account UUID."),
         trustPolicy: z
           .record(z.unknown())
-          .describe(
-            "Trust policy definition object (name, issuerUrl, audience, jwksUri, description).",
-          ),
+          .describe("Trust policy definition object (name, issuerUrl, audience, jwksUri, description)."),
       },
     },
     async ({ accountUuid, trustPolicy }) => {
@@ -222,17 +213,13 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "update_trust_policy",
     {
-      description:
-        "Update a WIF trust policy by UUID (IAM v1, WRITE). " +
-        "Requires an account-scoped platform token.",
+      description: "Update a WIF trust policy by UUID (IAM v1, WRITE). " + "Requires an account-scoped platform token.",
       inputSchema: {
         accountUuid: z.string().describe("Account UUID."),
         trustPolicyUuid: z.string().describe("Trust policy UUID."),
         trustPolicy: z
           .record(z.unknown())
-          .describe(
-            "Updated trust policy definition (name, issuerUrl, audience, jwksUri, description).",
-          ),
+          .describe("Updated trust policy definition (name, issuerUrl, audience, jwksUri, description)."),
       },
     },
     async ({ accountUuid, trustPolicyUuid, trustPolicy }) => {
@@ -272,9 +259,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "list_trust_policy_mappings",
     {
-      description:
-        "List WIF service user mappings for a trust policy (IAM v1). " +
-        "Response array field: results.",
+      description: "List WIF service user mappings for a trust policy (IAM v1). " + "Response array field: results.",
       inputSchema: {
         accountUuid: z.string().describe("Account UUID."),
         trustPolicyUuid: z.string().describe("Trust policy UUID."),
@@ -299,9 +284,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
         trustPolicyUuid: z.string().describe("Trust policy UUID."),
         mapping: z
           .record(z.unknown())
-          .describe(
-            "Mapping definition (serviceUserUuid, environmentId, scopes, claimMappings).",
-          ),
+          .describe("Mapping definition (serviceUserUuid, environmentId, scopes, claimMappings)."),
       },
     },
     async ({ accountUuid, trustPolicyUuid, mapping }) => {

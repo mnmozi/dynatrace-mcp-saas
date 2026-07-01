@@ -29,8 +29,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
       description: "Get a single request attribute definition by ID (classic Config API v1).",
       inputSchema: { id: z.string().describe("Request attribute ID.") },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.classic.get(`${REQUEST_ATTRIBUTES}/${encodeURIComponent(id)}`)),
+    async ({ id }) => jsonResult(await deps.client.classic.get(`${REQUEST_ATTRIBUTES}/${encodeURIComponent(id)}`)),
   );
 
   server.registerTool(
@@ -63,10 +62,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
     async ({ id, requestAttribute }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.classic.put(
-          `${REQUEST_ATTRIBUTES}/${encodeURIComponent(id)}`,
-          requestAttribute,
-        ),
+        await deps.client.classic.put(`${REQUEST_ATTRIBUTES}/${encodeURIComponent(id)}`, requestAttribute),
       );
     },
   );
@@ -79,9 +75,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ id }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.classic.del(`${REQUEST_ATTRIBUTES}/${encodeURIComponent(id)}`),
-      );
+      return jsonResult(await deps.client.classic.del(`${REQUEST_ATTRIBUTES}/${encodeURIComponent(id)}`));
     },
   );
 
@@ -102,8 +96,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
       description: "Get a single request naming rule by ID (classic Config API v1).",
       inputSchema: { id: z.string().describe("Request naming rule ID.") },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.classic.get(`${REQUEST_NAMING}/${encodeURIComponent(id)}`)),
+    async ({ id }) => jsonResult(await deps.client.classic.get(`${REQUEST_NAMING}/${encodeURIComponent(id)}`)),
   );
 
   server.registerTool(
@@ -135,12 +128,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ id, requestNaming }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.classic.put(
-          `${REQUEST_NAMING}/${encodeURIComponent(id)}`,
-          requestNaming,
-        ),
-      );
+      return jsonResult(await deps.client.classic.put(`${REQUEST_NAMING}/${encodeURIComponent(id)}`, requestNaming));
     },
   );
 
@@ -152,9 +140,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ id }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.classic.del(`${REQUEST_NAMING}/${encodeURIComponent(id)}`),
-      );
+      return jsonResult(await deps.client.classic.del(`${REQUEST_NAMING}/${encodeURIComponent(id)}`));
     },
   );
 
@@ -163,25 +149,19 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "list_custom_services",
     {
-      description:
-        "List all custom service definitions for a given technology (classic Config API v1, read-only).",
+      description: "List all custom service definitions for a given technology (classic Config API v1, read-only).",
       inputSchema: {
-        technology: TECHNOLOGY_ENUM.describe(
-          "Technology to list custom services for.",
-        ),
+        technology: TECHNOLOGY_ENUM.describe("Technology to list custom services for."),
       },
     },
     async ({ technology }) =>
-      jsonResult(
-        await deps.client.classic.get(`${CUSTOM_SERVICES}/${encodeURIComponent(technology)}`),
-      ),
+      jsonResult(await deps.client.classic.get(`${CUSTOM_SERVICES}/${encodeURIComponent(technology)}`)),
   );
 
   server.registerTool(
     "get_custom_service",
     {
-      description:
-        "Get a single custom service definition by technology and ID (classic Config API v1, read-only).",
+      description: "Get a single custom service definition by technology and ID (classic Config API v1, read-only).",
       inputSchema: {
         technology: TECHNOLOGY_ENUM.describe("Technology the custom service belongs to."),
         id: z.string().describe("Custom service ID."),
@@ -189,9 +169,7 @@ export function registerConfigV1Tools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ technology, id }) =>
       jsonResult(
-        await deps.client.classic.get(
-          `${CUSTOM_SERVICES}/${encodeURIComponent(technology)}/${encodeURIComponent(id)}`,
-        ),
+        await deps.client.classic.get(`${CUSTOM_SERVICES}/${encodeURIComponent(technology)}/${encodeURIComponent(id)}`),
       ),
   );
 }

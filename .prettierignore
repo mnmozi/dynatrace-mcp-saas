@@ -1,0 +1,11 @@
+# Build output and dependencies
+dist
+node_modules
+coverage
+
+# Vendored / generated data — not ours to reformat
+specs
+knowledge
+
+# Lockfile
+package-lock.json

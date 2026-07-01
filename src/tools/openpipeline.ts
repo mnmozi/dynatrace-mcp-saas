@@ -48,11 +48,12 @@ function collectVerifyItems(node: unknown, path: string, out: CollectedItem[]): 
 
   // Check for DQL processor (type === "dql")
   if (obj["type"] === "dql") {
-    const script = (typeof obj["dqlScript"] === "string" && obj["dqlScript"])
-      ? obj["dqlScript"]
-      : (typeof obj["script"] === "string" && obj["script"])
-        ? obj["script"]
-        : null;
+    const script =
+      typeof obj["dqlScript"] === "string" && obj["dqlScript"]
+        ? obj["dqlScript"]
+        : typeof obj["script"] === "string" && obj["script"]
+          ? obj["script"]
+          : null;
     if (script) {
       out.push({ kind: "dql", location: path, script });
     }
@@ -88,8 +89,7 @@ interface RawVerifyResponse {
 
 function interpretVerifyResponse(raw: RawVerifyResponse): { valid: boolean; errors: string[] } {
   // Primary signal: `valid` boolean
-  const valid = raw.valid !== false &&
-    !(raw.notifications ?? []).some((n) => n.severity === "ERROR");
+  const valid = raw.valid !== false && !(raw.notifications ?? []).some((n) => n.severity === "ERROR");
   const errors = (raw.notifications ?? [])
     .filter((n) => n.severity === "ERROR")
     .map((n) => n.message ?? "Unknown error");
@@ -129,16 +129,12 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
     },
     async ({ id }) => {
       try {
-        return jsonResult(
-          await deps.client.platform.get(`${BASE}/configurations/${encodeURIComponent(id)}`),
-        );
+        return jsonResult(await deps.client.platform.get(`${BASE}/configurations/${encodeURIComponent(id)}`));
       } catch (err) {
         // Some tenants (during/after platform migration) disable GET-by-id, but the
         // list endpoint carries each configuration's full `definition` inline.
         // Fall back to the list and return the matching configuration.
-        const all = await deps.client.platform.get<Array<{ id?: string }>>(
-          `${BASE}/configurations`,
-        );
+        const all = await deps.client.platform.get<Array<{ id?: string }>>(`${BASE}/configurations`);
         const match = Array.isArray(all) ? all.find((c) => c?.id === id) : undefined;
         if (match) return jsonResult(match);
         throw err;
@@ -168,9 +164,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
       },
     },
     async ({ id }) =>
-      jsonResult(
-        await deps.client.platform.get(`${BASE}/technologies/${encodeURIComponent(id)}/processors`),
-      ),
+      jsonResult(await deps.client.platform.get(`${BASE}/technologies/${encodeURIComponent(id)}/processors`)),
   );
 
   server.registerTool(
@@ -187,8 +181,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         ),
       },
     },
-    async ({ body }) =>
-      jsonResult(await deps.client.platform.post(`${BASE}/dqlProcessor/verify`, body)),
+    async ({ body }) => jsonResult(await deps.client.platform.post(`${BASE}/dqlProcessor/verify`, body)),
   );
 
   server.registerTool(
@@ -203,8 +196,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         ),
       },
     },
-    async ({ body }) =>
-      jsonResult(await deps.client.platform.post(`${BASE}/dqlProcessor/autocomplete`, body)),
+    async ({ body }) => jsonResult(await deps.client.platform.post(`${BASE}/dqlProcessor/autocomplete`, body)),
   );
 
   server.registerTool(
@@ -219,8 +211,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         ),
       },
     },
-    async ({ body }) =>
-      jsonResult(await deps.client.platform.post(`${BASE}/matcher/verify`, body)),
+    async ({ body }) => jsonResult(await deps.client.platform.post(`${BASE}/matcher/verify`, body)),
   );
 
   server.registerTool(
@@ -235,8 +226,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         ),
       },
     },
-    async ({ body }) =>
-      jsonResult(await deps.client.platform.post(`${BASE}/matcher/autocomplete`, body)),
+    async ({ body }) => jsonResult(await deps.client.platform.post(`${BASE}/matcher/autocomplete`, body)),
   );
 
   server.registerTool(
@@ -251,8 +241,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         ),
       },
     },
-    async ({ body }) =>
-      jsonResult(await deps.client.platform.post(`${BASE}/matcher/lqlToDql`, body)),
+    async ({ body }) => jsonResult(await deps.client.platform.post(`${BASE}/matcher/lqlToDql`, body)),
   );
 
   server.registerTool(
@@ -277,9 +266,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
     async ({ processor }) =>
       // POST body is PreviewProcessorEnvelope: { processor: <PreviewProcessor> }
       // sampleData is a field *inside* the processor object (not a sibling).
-      jsonResult(
-        await deps.client.platform.post(`${BASE}/preview/processor`, { processor }),
-      ),
+      jsonResult(await deps.client.platform.post(`${BASE}/preview/processor`, { processor })),
   );
 
   // ── Code-driven read-only helpers ───────────────────────────────────────────
@@ -304,9 +291,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
           ),
         sampleData: z
           .union([z.string(), z.record(z.unknown())])
-          .describe(
-            "Initial record to feed the pipeline: a JSON-encoded string OR an object.",
-          ),
+          .describe("Initial record to feed the pipeline: a JSON-encoded string OR an object."),
       },
     },
     async ({ processors, sampleData }) => {
@@ -364,9 +349,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         configId: z
           .string()
           .optional()
-          .describe(
-            "Optional data-type id (e.g. 'logs') to return only that one; omit for all.",
-          ),
+          .describe("Optional data-type id (e.g. 'logs') to return only that one; omit for all."),
       },
     },
     async ({ configId }) => {
@@ -400,9 +383,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
       inputSchema: {
         id: z
           .string()
-          .describe(
-            "Configuration id / data type to update, e.g. 'logs', 'events', 'bizevents', 'metrics'.",
-          ),
+          .describe("Configuration id / data type to update, e.g. 'logs', 'events', 'bizevents', 'metrics'."),
         configuration: openPipelineConfigurationSchema.describe(
           "Full configuration object (typically fetched via get_openpipeline_configuration, then modified). " +
             "PUT replaces the whole configuration.",
@@ -427,18 +408,18 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
       // 2. Verify each item in parallel via online endpoints
       const results: VerifyResult[] = await Promise.all([
         ...dqlItems.map(async (item): Promise<VerifyResult> => {
-          const raw = await deps.client.platform.post<RawVerifyResponse>(
-            `${BASE}/dqlProcessor/verify`,
-            { script: item.script, configurationId: id },
-          );
+          const raw = await deps.client.platform.post<RawVerifyResponse>(`${BASE}/dqlProcessor/verify`, {
+            script: item.script,
+            configurationId: id,
+          });
           const { valid, errors } = interpretVerifyResponse(raw);
           return { kind: "dql", location: item.location, valid, errors };
         }),
         ...matcherItems.map(async (item): Promise<VerifyResult> => {
-          const raw = await deps.client.platform.post<RawVerifyResponse>(
-            `${BASE}/matcher/verify`,
-            { query: item.value, configurationId: id },
-          );
+          const raw = await deps.client.platform.post<RawVerifyResponse>(`${BASE}/matcher/verify`, {
+            query: item.value,
+            configurationId: id,
+          });
           const { valid, errors } = interpretVerifyResponse(raw);
           return { kind: "matcher", location: item.location, valid, errors };
         }),
@@ -461,10 +442,7 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
       // 5. Require writes, then PUT
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.put(
-          `${BASE}/configurations/${encodeURIComponent(id)}`,
-          configuration,
-        ),
+        await deps.client.platform.put(`${BASE}/configurations/${encodeURIComponent(id)}`, configuration),
       );
     },
   );

@@ -12,7 +12,11 @@ export function diffStringSets(baseline: string[], current: string[]): { added: 
 export function diffVersionMap(
   baseline: Record<string, string | undefined>,
   current: Record<string, string | undefined>,
-): { added: string[]; removed: string[]; changed: Array<{ key: string; from: string | undefined; to: string | undefined }> } {
+): {
+  added: string[];
+  removed: string[];
+  changed: Array<{ key: string; from: string | undefined; to: string | undefined }>;
+} {
   const set = diffStringSets(Object.keys(baseline), Object.keys(current));
   const changed: Array<{ key: string; from: string | undefined; to: string | undefined }> = [];
   for (const key of Object.keys(current)) {

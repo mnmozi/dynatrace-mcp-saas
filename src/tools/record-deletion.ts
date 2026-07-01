@@ -17,10 +17,7 @@ const timeFrameSchema = z.object({
     .string()
     .min(1)
     .describe("Start of the time frame in ISO 8601 / RFC-3339 format, e.g. '2024-04-04T00:00:00Z'."),
-  end: z
-    .string()
-    .min(1)
-    .describe("End of the time frame in ISO 8601 / RFC-3339 format, e.g. '2024-04-04T01:00:00Z'."),
+  end: z.string().min(1).describe("End of the time frame in ISO 8601 / RFC-3339 format, e.g. '2024-04-04T01:00:00Z'."),
 });
 
 export function registerRecordDeletionTools(server: McpServer, deps: ToolDeps): void {
@@ -39,10 +36,7 @@ export function registerRecordDeletionTools(server: McpServer, deps: ToolDeps): 
         taskId: z.string().min(1).describe("The task ID returned by execute_record_deletion."),
       },
     },
-    async ({ taskId }) =>
-      jsonResult(
-        await deps.client.platform.post(`${BASE}/delete:status`, { taskId }),
-      ),
+    async ({ taskId }) => jsonResult(await deps.client.platform.post(`${BASE}/delete:status`, { taskId })),
   );
 
   // ── WRITE: execute (DESTRUCTIVE) ──────────────────────────────────────────────
@@ -66,7 +60,7 @@ export function registerRecordDeletionTools(server: McpServer, deps: ToolDeps): 
           .min(1)
           .describe(
             "DQL query that selects the records to delete. " +
-              "Example: \"fetch logs | filter contains(content, \\\"delete_records_test\\\")\"",
+              'Example: "fetch logs | filter contains(content, \\"delete_records_test\\")"',
           ),
         timeFrame: timeFrameSchema
           .optional()
@@ -75,14 +69,8 @@ export function registerRecordDeletionTools(server: McpServer, deps: ToolDeps): 
               "Ignored if the query already contains a timeframe clause. " +
               "Both start and end are required when this object is provided.",
           ),
-        timezone: z
-          .string()
-          .optional()
-          .describe("Timezone for the query. Defaults to 'UTC'."),
-        locale: z
-          .string()
-          .optional()
-          .describe("Locale for the query. Defaults to 'en-US'."),
+        timezone: z.string().optional().describe("Timezone for the query. Defaults to 'UTC'."),
+        locale: z.string().optional().describe("Locale for the query. Defaults to 'en-US'."),
       },
     },
     async ({ query, timeFrame, timezone, locale }) => {
@@ -91,9 +79,7 @@ export function registerRecordDeletionTools(server: McpServer, deps: ToolDeps): 
       if (timeFrame !== undefined) body.timeFrame = timeFrame;
       if (timezone !== undefined) body.timezone = timezone;
       if (locale !== undefined) body.locale = locale;
-      return jsonResult(
-        await deps.client.platform.post(`${BASE}/delete:execute`, body),
-      );
+      return jsonResult(await deps.client.platform.post(`${BASE}/delete:execute`, body));
     },
   );
 
@@ -114,9 +100,7 @@ export function registerRecordDeletionTools(server: McpServer, deps: ToolDeps): 
     },
     async ({ taskId }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.post(`${BASE}/delete:cancel`, { taskId }),
-      );
+      return jsonResult(await deps.client.platform.post(`${BASE}/delete:cancel`, { taskId }));
     },
   );
 }

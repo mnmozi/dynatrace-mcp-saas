@@ -9,8 +9,12 @@ import { DynatraceClient } from "../../src/http/client.js";
 import type { Config } from "../../src/types.js";
 
 const cfg: Config = {
-  platformUrl: "https://plat.example.com", classicUrl: "https://c",
-  platformToken: "P", apiToken: "A", enableWrites: false, timeoutMs: 5000,
+  platformUrl: "https://plat.example.com",
+  classicUrl: "https://c",
+  platformToken: "P",
+  apiToken: "A",
+  enableWrites: false,
+  timeoutMs: 5000,
 };
 
 const server = setupServer(

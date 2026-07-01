@@ -19,7 +19,10 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
         "Optional tag/management-zone filters only work with useClassic:true (Gen2).",
       inputSchema: {
         tag: z.string().optional().describe("Filter by tag, e.g. 'env:prod'. Only applied when useClassic:true."),
-        managementZone: z.string().optional().describe("Filter by management zone name. Only applied when useClassic:true."),
+        managementZone: z
+          .string()
+          .optional()
+          .describe("Filter by management zone name. Only applied when useClassic:true."),
         pageSize: z.number().int().positive().max(500).optional(),
         useClassic: z
           .boolean()
@@ -34,11 +37,13 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
         let selector = "type(HOST)";
         if (tag) selector += `,tag("${escapeQuotes(tag)}")`;
         if (managementZone) selector += `,mzName("${escapeQuotes(managementZone)}")`;
-        return jsonResult(await deps.client.classic.get("/api/v2/entities", {
-          entitySelector: selector,
-          pageSize: pageSize ?? 100,
-          fields: "+properties.osType,+properties.monitoringMode,+tags",
-        }));
+        return jsonResult(
+          await deps.client.classic.get("/api/v2/entities", {
+            entitySelector: selector,
+            pageSize: pageSize ?? 100,
+            fields: "+properties.osType,+properties.monitoringMode,+tags",
+          }),
+        );
       }
 
       // Default: Grail DQL
@@ -81,9 +86,15 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ entitySelector, from, to, pageSize, useClassic }) => {
       if (useClassic) {
-        return jsonResult(await deps.client.classic.get("/api/v2/entities", {
-          entitySelector, from, to, pageSize: pageSize ?? 100, fields: "+tags,+properties",
-        }));
+        return jsonResult(
+          await deps.client.classic.get("/api/v2/entities", {
+            entitySelector,
+            from,
+            to,
+            pageSize: pageSize ?? 100,
+            fields: "+tags,+properties",
+          }),
+        );
       }
 
       // Default: Grail DQL — parse the entitySelector
@@ -137,9 +148,11 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ entityId, useClassic }) => {
       if (useClassic) {
-        return jsonResult(await deps.client.classic.get(`/api/v2/entities/${encodeURIComponent(entityId)}`, {
-          fields: "+properties,+toRelationships,+fromRelationships,+tags",
-        }));
+        return jsonResult(
+          await deps.client.classic.get(`/api/v2/entities/${encodeURIComponent(entityId)}`, {
+            fields: "+properties,+toRelationships,+fromRelationships,+tags",
+          }),
+        );
       }
 
       // Default: Grail DQL — derive type from id prefix

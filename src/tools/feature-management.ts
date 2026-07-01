@@ -23,16 +23,11 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
   server.registerTool(
     "get_feature_project",
     {
-      description:
-        "Get a Feature Management project by key (Dynatrace Feature Management API).",
+      description: "Get a Feature Management project by key (Dynatrace Feature Management API).",
       inputSchema: { projectKey: z.string().describe("The project key.") },
     },
     async ({ projectKey }) =>
-      jsonResult(
-        await deps.client.platform.get(
-          `${BASE}/projects/${encodeURIComponent(projectKey)}`,
-        ),
-      ),
+      jsonResult(await deps.client.platform.get(`${BASE}/projects/${encodeURIComponent(projectKey)}`)),
   );
 
   server.registerTool(
@@ -44,9 +39,7 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
       inputSchema: {
         project: z
           .record(z.unknown())
-          .describe(
-            "Project body per the Feature Management API spec (key, name, description, owner, maintainers).",
-          ),
+          .describe("Project body per the Feature Management API spec (key, name, description, owner, maintainers)."),
       },
     },
     async ({ project }) => {
@@ -65,19 +58,12 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
         projectKey: z.string().describe("The project key."),
         project: z
           .record(z.unknown())
-          .describe(
-            "Project update body (name, description, owner, maintainers, version).",
-          ),
+          .describe("Project update body (name, description, owner, maintainers, version)."),
       },
     },
     async ({ projectKey, project }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.put(
-          `${BASE}/projects/${encodeURIComponent(projectKey)}`,
-          project,
-        ),
-      );
+      return jsonResult(await deps.client.platform.put(`${BASE}/projects/${encodeURIComponent(projectKey)}`, project));
     },
   );
 
@@ -91,11 +77,7 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
     },
     async ({ projectKey }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.del(
-          `${BASE}/projects/${encodeURIComponent(projectKey)}`,
-        ),
-      );
+      return jsonResult(await deps.client.platform.del(`${BASE}/projects/${encodeURIComponent(projectKey)}`));
     },
   );
 
@@ -105,16 +87,11 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
     "list_features",
     {
       description:
-        "List all features in a Feature Management project. " +
-        "Requires feature-management:features:read scope.",
+        "List all features in a Feature Management project. " + "Requires feature-management:features:read scope.",
       inputSchema: { projectKey: z.string().describe("The project key.") },
     },
     async ({ projectKey }) =>
-      jsonResult(
-        await deps.client.platform.get(
-          `${BASE}/projects/${encodeURIComponent(projectKey)}/features`,
-        ),
-      ),
+      jsonResult(await deps.client.platform.get(`${BASE}/projects/${encodeURIComponent(projectKey)}/features`)),
   );
 
   server.registerTool(
@@ -154,10 +131,7 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
     async ({ projectKey, feature }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.post(
-          `${BASE}/projects/${encodeURIComponent(projectKey)}/features`,
-          feature,
-        ),
+        await deps.client.platform.post(`${BASE}/projects/${encodeURIComponent(projectKey)}/features`, feature),
       );
     },
   );
@@ -173,9 +147,7 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
         featureKey: z.string().describe("The feature key."),
         feature: z
           .record(z.unknown())
-          .describe(
-            "Feature update body (name, description, type, variants, owner, maintainers, version, status).",
-          ),
+          .describe("Feature update body (name, description, type, variants, owner, maintainers, version, status)."),
       },
     },
     async ({ projectKey, featureKey, feature }) => {
@@ -262,9 +234,7 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
         featureKey: z.string().describe("The feature key."),
         flag: z
           .record(z.unknown())
-          .describe(
-            "Flag body per the Feature Management API spec (key, name, type, variants, description, tags).",
-          ),
+          .describe("Flag body per the Feature Management API spec (key, name, type, variants, description, tags)."),
       },
     },
     async ({ projectKey, featureKey, flag }) => {
@@ -288,11 +258,7 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
         projectKey: z.string().describe("The project key."),
         featureKey: z.string().describe("The feature key."),
         flagKey: z.string().describe("The flag key."),
-        flag: z
-          .record(z.unknown())
-          .describe(
-            "Flag update body (name, description, tags, variants, version).",
-          ),
+        flag: z.record(z.unknown()).describe("Flag update body (name, description, tags, variants, version)."),
       },
     },
     async ({ projectKey, featureKey, flagKey, flag }) => {
@@ -339,10 +305,6 @@ export function registerFeatureManagementTools(server: McpServer, deps: ToolDeps
       inputSchema: { projectKey: z.string().describe("The project key.") },
     },
     async ({ projectKey }) =>
-      jsonResult(
-        await deps.client.platform.get(
-          `${BASE}/projects/${encodeURIComponent(projectKey)}/release-stages`,
-        ),
-      ),
+      jsonResult(await deps.client.platform.get(`${BASE}/projects/${encodeURIComponent(projectKey)}/release-stages`)),
   );
 }

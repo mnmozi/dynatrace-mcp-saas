@@ -45,15 +45,13 @@ describe("resolveDocumentContent", () => {
   });
 
   it("throws when both content and contentPath are provided", async () => {
-    await expect(
-      resolveDocumentContent({ content: { a: 1 }, contentPath: goodFile }),
-    ).rejects.toThrow(/either content or contentPath, not both/i);
+    await expect(resolveDocumentContent({ content: { a: 1 }, contentPath: goodFile })).rejects.toThrow(
+      /either content or contentPath, not both/i,
+    );
   });
 
   it("throws when neither is provided and content is required", async () => {
-    await expect(resolveDocumentContent({}, { required: true })).rejects.toThrow(
-      /provide content .* or contentPath/i,
-    );
+    await expect(resolveDocumentContent({}, { required: true })).rejects.toThrow(/provide content .* or contentPath/i);
   });
 
   it("returns undefined when neither is provided and content is optional", async () => {
@@ -66,14 +64,10 @@ describe("resolveDocumentContent", () => {
   });
 
   it("throws when the file is not valid JSON", async () => {
-    await expect(resolveDocumentContent({ contentPath: badJsonFile })).rejects.toThrow(
-      /must be a JSON object/i,
-    );
+    await expect(resolveDocumentContent({ contentPath: badJsonFile })).rejects.toThrow(/must be a JSON object/i);
   });
 
   it("throws when the file JSON is not an object (e.g. an array)", async () => {
-    await expect(resolveDocumentContent({ contentPath: arrayFile })).rejects.toThrow(
-      /must be a JSON object/i,
-    );
+    await expect(resolveDocumentContent({ contentPath: arrayFile })).rejects.toThrow(/must be a JSON object/i);
   });
 });

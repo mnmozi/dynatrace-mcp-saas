@@ -6,9 +6,20 @@ export interface DqlResult {
   metadata?: Record<string, unknown>;
 }
 
-interface ExecuteResponse { state: string; requestToken?: string; result?: RawResult }
-interface PollResponse { state: string; result?: RawResult; progress?: number }
-interface RawResult { records?: Array<Record<string, unknown>>; metadata?: Record<string, unknown> }
+interface ExecuteResponse {
+  state: string;
+  requestToken?: string;
+  result?: RawResult;
+}
+interface PollResponse {
+  state: string;
+  result?: RawResult;
+  progress?: number;
+}
+interface RawResult {
+  records?: Array<Record<string, unknown>>;
+  metadata?: Record<string, unknown>;
+}
 
 const BASE = "/platform/storage/query/v1";
 

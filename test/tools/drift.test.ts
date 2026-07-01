@@ -93,18 +93,13 @@ describe("check_settings_schema_drift", () => {
       .filter((id) => id !== removedId)
       .map((id) => ({
         schemaId: id,
-        latestSchemaVersion:
-          id === changedId ? changedVersion : manifest.schemas[id].version,
+        latestSchemaVersion: id === changedId ? changedVersion : manifest.schemas[id].version,
       }));
 
     // Add the brand-new schema
     liveItems.push({ schemaId: newId, latestSchemaVersion: "0.0.1" });
 
-    mswServer.use(
-      http.get(`${CLASSIC}/api/v2/settings/schemas`, () =>
-        HttpResponse.json({ items: liveItems }),
-      ),
-    );
+    mswServer.use(http.get(`${CLASSIC}/api/v2/settings/schemas`, () => HttpResponse.json({ items: liveItems })));
 
     const client = await makeClient();
     const res = await client.callTool({
@@ -144,9 +139,7 @@ describe("check_settings_schema_drift", () => {
   it("includes structuralDiff note when schemaId has no committed snapshot", async () => {
     // Return minimal live items to satisfy the schemas list call
     mswServer.use(
-      http.get(`${CLASSIC}/api/v2/settings/schemas`, () =>
-        HttpResponse.json({ items: [] }),
-      ),
+      http.get(`${CLASSIC}/api/v2/settings/schemas`, () => HttpResponse.json({ items: [] })),
       // Return a minimal live schema for the requested schemaId
       http.get(`${CLASSIC}/api/v2/settings/schemas/builtin%3Asome.nonexistent.schema`, () =>
         HttpResponse.json({ properties: { foo: {} }, required: ["foo"] }),
@@ -235,10 +228,12 @@ paths:
           urls: [{ name: "SLO", url: "/platform/slo/v1/openapi.yaml" }],
         }),
       ),
-      http.get(`${PLATFORM}/platform/slo/v1/openapi.yaml`, () =>
-        new HttpResponse(liveYaml, {
-          headers: { "Content-Type": "application/yaml" },
-        }),
+      http.get(
+        `${PLATFORM}/platform/slo/v1/openapi.yaml`,
+        () =>
+          new HttpResponse(liveYaml, {
+            headers: { "Content-Type": "application/yaml" },
+          }),
       ),
     );
 
@@ -265,11 +260,7 @@ paths:
   });
 
   it("returns error for unknown spec stem", async () => {
-    mswServer.use(
-      http.get(`${PLATFORM}/platform/metadata/v1/swagger-ui.json`, () =>
-        HttpResponse.json({ urls: [] }),
-      ),
-    );
+    mswServer.use(http.get(`${PLATFORM}/platform/metadata/v1/swagger-ui.json`, () => HttpResponse.json({ urls: [] })));
 
     const client = await makeClient();
     const res = await client.callTool({
@@ -283,11 +274,7 @@ paths:
   });
 
   it("returns error for completely unknown spec stem (not platform_ or environment-api-*)", async () => {
-    mswServer.use(
-      http.get(`${PLATFORM}/platform/metadata/v1/swagger-ui.json`, () =>
-        HttpResponse.json({ urls: [] }),
-      ),
-    );
+    mswServer.use(http.get(`${PLATFORM}/platform/metadata/v1/swagger-ui.json`, () => HttpResponse.json({ urls: [] })));
 
     const client = await makeClient();
     const res = await client.callTool({
@@ -318,9 +305,7 @@ describe("validate_against_live_schema", () => {
         HttpResponse.json(
           {
             error: {
-              constraintViolations: [
-                { path: "c", message: "Unexpected property." },
-              ],
+              constraintViolations: [{ path: "c", message: "Unexpected property." }],
             },
           },
           { status: 400 },

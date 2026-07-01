@@ -18,10 +18,7 @@ export function registerExtractionTools(server: McpServer, deps: ToolDeps): void
           .enum(["incoming", "outgoing", "both"])
           .optional()
           .describe("Which bizevent HTTP capture rules (default incoming)."),
-        includeRaw: z
-          .boolean()
-          .optional()
-          .describe("Include the raw settings value objects too."),
+        includeRaw: z.boolean().optional().describe("Include the raw settings value objects too."),
       },
     },
     async ({ direction, includeRaw }) => {
@@ -55,9 +52,7 @@ export function registerExtractionTools(server: McpServer, deps: ToolDeps): void
         for (const item of items) {
           const v = item.value as Record<string, unknown>;
           const event = (v.event ?? {}) as Record<string, unknown>;
-          const dataFields = (
-            (event.data as Array<Record<string, unknown>> | undefined) ?? []
-          ).map((d) => {
+          const dataFields = ((event.data as Array<Record<string, unknown>> | undefined) ?? []).map((d) => {
             const src = (d.source ?? {}) as Record<string, unknown>;
             return {
               name: d.name as string | undefined,
@@ -66,9 +61,7 @@ export function registerExtractionTools(server: McpServer, deps: ToolDeps): void
             };
           });
 
-          const triggers = (
-            (v.triggers as Array<Record<string, unknown>> | undefined) ?? []
-          ).map((t) => {
+          const triggers = ((v.triggers as Array<Record<string, unknown>> | undefined) ?? []).map((t) => {
             const src = (t.source ?? {}) as Record<string, unknown>;
             return {
               dataSource: src.dataSource as string | undefined,
@@ -118,20 +111,9 @@ export function registerExtractionTools(server: McpServer, deps: ToolDeps): void
         filter: z
           .string()
           .optional()
-          .describe(
-            "DQL filter expression to scope logs, e.g. 'k8s.container.name == \"api-gateway\"'.",
-          ),
-        from: z
-          .string()
-          .optional()
-          .describe("DQL timeframe start, default 'now()-1h'."),
-        limit: z
-          .number()
-          .int()
-          .positive()
-          .max(500)
-          .optional()
-          .describe("Sample size (default 100)."),
+          .describe("DQL filter expression to scope logs, e.g. 'k8s.container.name == \"api-gateway\"'."),
+        from: z.string().optional().describe("DQL timeframe start, default 'now()-1h'."),
+        limit: z.number().int().positive().max(500).optional().describe("Sample size (default 100)."),
       },
     },
     async ({ filter, from, limit }) => {

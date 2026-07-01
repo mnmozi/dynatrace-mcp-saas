@@ -20,22 +20,9 @@ export function registerAutomationTools(server: McpServer, deps: ToolDeps): void
         "List Dynatrace Automation (Workflows) workflows via the platform Automation v1 API. " +
         "Requires automation:workflows:read scope on the platform token.",
       inputSchema: {
-        limit: z
-          .number()
-          .int()
-          .positive()
-          .optional()
-          .describe("Number of results per page (default: server default)."),
-        offset: z
-          .number()
-          .int()
-          .min(0)
-          .optional()
-          .describe("Pagination offset."),
-        search: z
-          .string()
-          .optional()
-          .describe("Free-text search term to filter workflows by title."),
+        limit: z.number().int().positive().optional().describe("Number of results per page (default: server default)."),
+        offset: z.number().int().min(0).optional().describe("Pagination offset."),
+        search: z.string().optional().describe("Free-text search term to filter workflows by title."),
       },
     },
     async ({ limit, offset, search }) => {
@@ -57,8 +44,7 @@ export function registerAutomationTools(server: McpServer, deps: ToolDeps): void
         id: z.string().describe("UUID of the workflow to retrieve."),
       },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.platform.get(`${WF}/${encodeURIComponent(id)}`)),
+    async ({ id }) => jsonResult(await deps.client.platform.get(`${WF}/${encodeURIComponent(id)}`)),
   );
 
   server.registerTool(
@@ -76,24 +62,9 @@ export function registerAutomationTools(server: McpServer, deps: ToolDeps): void
             "Workflow UUID to filter executions. " +
               "Comma-separated UUIDs are accepted by the spec (multiple values).",
           ),
-        state: z
-          .string()
-          .optional()
-          .describe(
-            "Execution state filter. Comma-separated values, e.g. 'SUCCESS,FAILED'.",
-          ),
-        limit: z
-          .number()
-          .int()
-          .positive()
-          .optional()
-          .describe("Number of results per page."),
-        offset: z
-          .number()
-          .int()
-          .min(0)
-          .optional()
-          .describe("Pagination offset."),
+        state: z.string().optional().describe("Execution state filter. Comma-separated values, e.g. 'SUCCESS,FAILED'."),
+        limit: z.number().int().positive().optional().describe("Number of results per page."),
+        offset: z.number().int().min(0).optional().describe("Pagination offset."),
       },
     },
     async ({ workflow, state, limit, offset }) => {
@@ -116,8 +87,7 @@ export function registerAutomationTools(server: McpServer, deps: ToolDeps): void
         id: z.string().describe("UUID of the execution to retrieve."),
       },
     },
-    async ({ id }) =>
-      jsonResult(await deps.client.platform.get(`${EX}/${encodeURIComponent(id)}`)),
+    async ({ id }) => jsonResult(await deps.client.platform.get(`${EX}/${encodeURIComponent(id)}`)),
   );
 
   // ── WRITE-GATED ────────────────────────────────────────────────────────────
@@ -151,9 +121,7 @@ export function registerAutomationTools(server: McpServer, deps: ToolDeps): void
     },
     async ({ id, workflow }) => {
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.put(`${WF}/${encodeURIComponent(id)}`, workflow),
-      );
+      return jsonResult(await deps.client.platform.put(`${WF}/${encodeURIComponent(id)}`, workflow));
     },
   );
 

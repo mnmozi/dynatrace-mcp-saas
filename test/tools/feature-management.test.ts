@@ -21,9 +21,7 @@ const cfg: Config = {
 };
 
 const mswServer = setupServer(
-  http.get(`${FM_BASE}/projects`, () =>
-    HttpResponse.json({ items: [{ key: "app", name: "App" }] }),
-  ),
+  http.get(`${FM_BASE}/projects`, () => HttpResponse.json({ items: [{ key: "app", name: "App" }] })),
 );
 
 beforeAll(() => mswServer.listen({ onUnhandledRequest: "error" }));

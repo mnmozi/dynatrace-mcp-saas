@@ -61,30 +61,25 @@ const ORDER_ATTEMPT_ITEM = {
 
 const server = setupServer(
   // happy-path bizevent settings
-  http.get(
-    "https://classic.example.com/api/v2/settings/objects",
-    ({ request }) => {
-      const url = new URL(request.url);
-      const schema = url.searchParams.get("schemaIds");
-      if (schema === "builtin:bizevents.http.incoming") {
-        return HttpResponse.json({ items: [ORDER_ATTEMPT_ITEM] });
-      }
-      return HttpResponse.json({ items: [] });
-    },
-  ),
+  http.get("https://classic.example.com/api/v2/settings/objects", ({ request }) => {
+    const url = new URL(request.url);
+    const schema = url.searchParams.get("schemaIds");
+    if (schema === "builtin:bizevents.http.incoming") {
+      return HttpResponse.json({ items: [ORDER_ATTEMPT_ITEM] });
+    }
+    return HttpResponse.json({ items: [] });
+  }),
   // DQL execute (describe_log_fields)
-  http.post(
-    "https://plat.example.com/platform/storage/query/v1/query:execute",
-    () =>
-      HttpResponse.json({
-        state: "SUCCEEDED",
-        result: {
-          records: [
-            { parsed: { "order.id": 1, "order.total": 9 } },
-            { parsed: { "order.id": 2, "payment.status": "OK" } },
-          ],
-        },
-      }),
+  http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
+    HttpResponse.json({
+      state: "SUCCEEDED",
+      result: {
+        records: [
+          { parsed: { "order.id": 1, "order.total": 9 } },
+          { parsed: { "order.id": 2, "payment.status": "OK" } },
+        ],
+      },
+    }),
   ),
 );
 
