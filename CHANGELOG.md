@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.15.0
+
+- Grail Resource Store tools: test_lookup_pattern (online parse check, stores nothing), upload_lookup_data (auto-verified via test-pattern before storing + dryRun) for DQL `lookup` enrichment data, delete_resource_file
+- Grail Fieldsets tools: list/get/create/update/delete_fieldset (curated field presets per table/bucket/tenant)
+
+## 0.14.0
+
+- verify_dql/execute_dql surface Dynatrace's real error detail (errorType, message, line/column) instead of a generic "request failed"; DynatraceApiError carries structured detail for all tools
+
 ## 0.13.0
 
 - update_openpipeline_configuration auto-verifies every DQL processor + matcher via the online verify endpoints before applying (returns problems, no write on failure); new dryRun flag

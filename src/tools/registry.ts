@@ -31,6 +31,8 @@ import { registerAuditTools } from "./audit.js";
 import { registerFeatureManagementTools } from "./feature-management.js";
 import { registerIamTools } from "./iam.js";
 import { registerExtractionTools } from "./extraction.js";
+import { registerFieldsetTools } from "./fieldsets.js";
+import { registerResourceStoreTools } from "./resource-store.js";
 
 export interface ToolDeps {
   client: DynatraceClient;
@@ -68,4 +70,6 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerFeatureManagementTools(server, deps);
   registerIamTools(server, deps);
   registerExtractionTools(server, deps);
+  registerFieldsetTools(server, deps);
+  registerResourceStoreTools(server, deps);
 }

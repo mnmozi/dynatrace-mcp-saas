@@ -20,6 +20,10 @@ const TOPIC_MAP = {
     desc: "Gotcha: filter silently dropped after summarize (optimizer bug)",
   },
   "business-cases": { file: "dql-business-cases.md", desc: "Business-oriented DQL query patterns" },
+  lookup: {
+    file: "dql-lookup-data.md",
+    desc: "Uploading lookup/enrichment data (Resource Store, DPL parse patterns) and joining it with DQL lookup",
+  },
   k8s: { file: "dql-k8s-investigation.md", desc: "Kubernetes investigation DQL queries" },
   official: {
     file: "vendor/dynatrace-for-ai/dt-dql-essentials/SKILL.md",
