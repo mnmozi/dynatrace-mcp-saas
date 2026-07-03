@@ -24,6 +24,10 @@ const TOPIC_MAP = {
     file: "dql-lookup-data.md",
     desc: "Uploading lookup/enrichment data (Resource Store, DPL parse patterns) and joining it with DQL lookup",
   },
+  fields: {
+    file: "dql-grail-fields-and-semantics.md",
+    desc: "Grail field model, semantic dictionary recipes, primary fields, fieldsets, sensitivity/masking tiers, probe-first field discovery",
+  },
   k8s: { file: "dql-k8s-investigation.md", desc: "Kubernetes investigation DQL queries" },
   official: {
     file: "vendor/dynatrace-for-ai/dt-dql-essentials/SKILL.md",
