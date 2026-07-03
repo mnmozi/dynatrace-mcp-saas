@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.2
+
+- dql-reference §15 extended with practical makeTimeseries parameters & gotchas (default:0 vs null bins, count() aliasing, bins default 120 + boundary alignment, rate:, nonempty:, time:/spread:, timeframe inheritance) — live-verified
+
 ## 0.15.1
 
 - New dql_reference topic "fields": Grail field model (schema-on-read, who creates fields), semantic-dictionary lookup recipes, primary fields + semantic tags, fieldsets truth (builtins = sensitive classifications), masking tiers, probe-first field-discovery flow, count() alias gotcha — all live-verified

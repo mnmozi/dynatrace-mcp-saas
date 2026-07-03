@@ -452,6 +452,26 @@ data
 > The value is an **array**, not a scalar. To get back to rows (e.g. to post-process), there are
 > helpers, but for charting/dashboards the array shape is exactly what tiles consume.
 
+### Practical parameters & gotchas (live-verified)
+
+- **Empty bins are `null`, not `0`.** For counts that usually breaks charts/math — use
+  `makeTimeseries count(), default:0`. (For `avg()` null is correct: no data ≠ zero.)
+- **Alias the aggregate.** The array field is literally named `count()`; write
+  `makeTimeseries c = count()` if any later stage references it.
+- **Resolution:** `interval:` (bin width) or `bins:` (target count; **default 120** — the
+  usual chart resolution). Bins snap to interval boundaries, so the output `timeframe`
+  may widen (e.g. a 7-day query aligned to midnights).
+- **`rate:`** rescales to a per-time unit (`rate:1s` → events/second) — required when
+  comparing series computed at different intervals.
+- **`nonempty:true`** emits a flat empty series instead of NO record when nothing matched
+  (without it, zero data → zero rows, and a chart tile renders blank).
+- **`time:`/`spread:`** pick the record's time source: `time:` a timestamp expression
+  (default `timestamp`); `spread:` a timeframe so one record (e.g. a container lifetime,
+  a long span) counts in every bin it overlaps.
+- **Timeframe:** inherited from the fetch unless `from:`/`to:`/`timeframe:` given; records
+  whose `time:` falls outside the inherited window are silently ignored (see vendored
+  summarization.md).
+
 ---
 
 ## 16. Variables & reuse
