@@ -28,6 +28,10 @@ const TOPIC_MAP = {
     file: "dql-grail-fields-and-semantics.md",
     desc: "Grail field model, semantic dictionary recipes, primary fields, fieldsets, sensitivity/masking tiers, probe-first field discovery",
   },
+  davis: {
+    file: "dql-davis-anomaly-detection.md",
+    desc: "Davis anomaly detectors & analyzers: DQL rules (timeseries output, no from:/to:, cardinality), available analyzers, validate/execute flow",
+  },
   k8s: { file: "dql-k8s-investigation.md", desc: "Kubernetes investigation DQL queries" },
   official: {
     file: "vendor/dynatrace-for-ai/dt-dql-essentials/SKILL.md",

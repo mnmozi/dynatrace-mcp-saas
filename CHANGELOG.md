@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.0
+
+- Davis Analyzers tools: list_davis_analyzers, get_davis_analyzer, get_davis_analyzer_input_schema (grounding), validate_davis_analyzer_input (online dry-run), execute_davis_analyzer (auto-validates first; polls 202 long-running executions) — live-verified end-to-end (forecast COMPLETED)
+- New dql_reference topic "davis": detector/analyzer DQL rules (timeseries-shaped output, never pin from:/to: — the analyzer owns the sliding window; no limit; bounded by: cardinality; default:0 vs null alerting semantics)
+
 ## 0.15.2
 
 - dql-reference §15 extended with practical makeTimeseries parameters & gotchas (default:0 vs null bins, count() aliasing, bins default 120 + boundary alignment, rate:, nonempty:, time:/spread:, timeframe inheritance) — live-verified

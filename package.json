@@ -1,6 +1,6 @@
 {
   "name": "dynatrace-saas-mcp",
-  "version": "0.15.2",
+  "version": "0.16.0",
   "description": "MCP server for Dynatrace SaaS (Gen3 platform): observability + configuration tools (DQL, settings, dashboards, SLOs, synthetic, OpenPipeline) with schema drift detection.",
   "type": "module",
   "bin": {
