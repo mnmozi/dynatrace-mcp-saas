@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.16.1
+
+- fix get_filter_segment: request add-fields=INCLUDES,VARIABLES by default (the API hides segment content otherwise); addFields override supported; list_filter_segments gains addFields too
+- fix update_filter_segment: send the REQUIRED optimistic-locking-version as a query parameter (updates previously always 400'd); explicit version input added
+- new raw_get tool: read-only escape hatch for uncovered endpoints/query params (platform or classic host); GET-only by design — raw writes stay unexposed to preserve validation guards
+- HTTP client: query params now support arrays (sent as repeated params)
+
 ## 0.16.0
 
 - Davis Analyzers tools: list_davis_analyzers, get_davis_analyzer, get_davis_analyzer_input_schema (grounding), validate_davis_analyzer_input (online dry-run), execute_davis_analyzer (auto-validates first; polls 202 long-running executions) — live-verified end-to-end (forecast COMPLETED)

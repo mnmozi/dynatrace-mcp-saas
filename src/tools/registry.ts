@@ -34,6 +34,7 @@ import { registerExtractionTools } from "./extraction.js";
 import { registerFieldsetTools } from "./fieldsets.js";
 import { registerResourceStoreTools } from "./resource-store.js";
 import { registerDavisAnalyzerTools } from "./davis-analyzers.js";
+import { registerRawTools } from "./raw.js";
 
 export interface ToolDeps {
   client: DynatraceClient;
@@ -74,4 +75,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerFieldsetTools(server, deps);
   registerResourceStoreTools(server, deps);
   registerDavisAnalyzerTools(server, deps);
+  registerRawTools(server, deps);
 }

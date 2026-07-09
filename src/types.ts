@@ -9,7 +9,7 @@ export interface Config {
   retryBaseMs: number;
 }
 
-export type QueryParams = Record<string, string | number | boolean | undefined>;
+export type QueryParams = Record<string, string | number | boolean | readonly string[] | undefined>;
 
 export interface HostClient {
   get<T = unknown>(path: string, query?: QueryParams): Promise<T>;

@@ -59,3 +59,56 @@ describe("create_filter_segment write-gate", () => {
     expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
   });
 });
+
+describe("get_filter_segment", () => {
+  it("requests add-fields=INCLUDES,VARIABLES by default so the definition is returned", async () => {
+    let capturedUrl = "";
+    mswServer.use(
+      http.get(`${BASE}/filter-segments/seg-1`, ({ request }) => {
+        capturedUrl = request.url;
+        return HttpResponse.json({ uid: "seg-1", name: "Prod only", includes: [{ filter: 'env == "prod"' }] });
+      }),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "get_filter_segment", arguments: { uid: "seg-1" } });
+    expect(res.isError).toBeFalsy();
+    const params = new URL(capturedUrl).searchParams.getAll("add-fields");
+    expect(params).toEqual(["INCLUDES", "VARIABLES"]);
+    expect((res.content as Array<{ text: string }>)[0].text).toContain("includes");
+  });
+
+  it("honours an explicit addFields override (empty = metadata only)", async () => {
+    let capturedUrl = "";
+    mswServer.use(
+      http.get(`${BASE}/filter-segments/seg-1`, ({ request }) => {
+        capturedUrl = request.url;
+        return HttpResponse.json({ uid: "seg-1", name: "Prod only" });
+      }),
+    );
+    const client = await makeClient();
+    await client.callTool({ name: "get_filter_segment", arguments: { uid: "seg-1", addFields: [] } });
+    expect(new URL(capturedUrl).searchParams.getAll("add-fields")).toEqual([]);
+  });
+});
+
+describe("update_filter_segment", () => {
+  it("sends the required optimistic-locking-version as a QUERY parameter", async () => {
+    let capturedUrl = "";
+    let capturedBody: unknown = null;
+    mswServer.use(
+      http.put(`${BASE}/filter-segments/seg-1`, async ({ request }) => {
+        capturedUrl = request.url;
+        capturedBody = await request.json();
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+    const client = await makeClient({ ...cfg, enableWrites: true });
+    const res = await client.callTool({
+      name: "update_filter_segment",
+      arguments: { uid: "seg-1", version: 3, filterSegment: { name: "Prod only", isPublic: false } },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(new URL(capturedUrl).searchParams.get("optimistic-locking-version")).toBe("3");
+    expect((capturedBody as Record<string, unknown>).name).toBe("Prod only");
+  });
+});

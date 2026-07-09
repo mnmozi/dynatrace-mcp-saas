@@ -7,7 +7,12 @@ function buildUrl(base: string, path: string, query?: QueryParams): string {
   const url = new URL(base + path);
   if (query) {
     for (const [k, v] of Object.entries(query)) {
-      if (v !== undefined) url.searchParams.set(k, String(v));
+      if (v === undefined) continue;
+      if (Array.isArray(v)) {
+        for (const item of v) url.searchParams.append(k, String(item));
+      } else {
+        url.searchParams.set(k, String(v));
+      }
     }
   }
   return url.toString();
