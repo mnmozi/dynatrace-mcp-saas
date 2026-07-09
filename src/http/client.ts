@@ -2,6 +2,7 @@ import type { Config } from "../types.js";
 import { DynatraceApiError, type HostKind, type QueryParams } from "./errors.js";
 import type { HostClient } from "../types.js";
 import { dqlExecute, type DqlResult } from "./dql.js";
+import { AccountClient } from "./account.js";
 
 function buildUrl(base: string, path: string, query?: QueryParams): string {
   const url = new URL(base + path);
@@ -233,6 +234,8 @@ function unconfiguredHost(hostKind: "classic" | "platform", envVars: string): Ho
 export class DynatraceClient {
   readonly classic: HostClient;
   readonly platform: HostClient;
+  /** Account Management API client (OAuth client-credentials); null when not configured. */
+  readonly account: AccountClient | null;
 
   constructor(private readonly cfg: Config) {
     const maxRetries = cfg.maxRetries ?? 3;
@@ -261,6 +264,19 @@ export class DynatraceClient {
             retryBaseMs,
           )
         : unconfiguredHost("platform", "DT_PLATFORM_URL + DT_PLATFORM_TOKEN");
+
+    this.account = cfg.oauthClientId && cfg.oauthClientSecret && cfg.accountUrn ? new AccountClient(cfg) : null;
+  }
+
+  /** The account client, or a clear error when the OAuth trio is not configured. */
+  requireAccount(): AccountClient {
+    if (!this.account) {
+      throw new Error(
+        "The Dynatrace Account Management API is not configured on this server. " +
+          "Set DT_OAUTH_CLIENT_ID, DT_OAUTH_CLIENT_SECRET and DT_ACCOUNT_URN (urn:dtaccount:<uuid>) to enable this tool.",
+      );
+    }
+    return this.account;
   }
 
   dqlExecute(

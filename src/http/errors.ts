@@ -1,4 +1,4 @@
-export type HostKind = "classic" | "platform";
+export type HostKind = "classic" | "platform" | "account";
 
 export function friendlyMessage(status: number, host: HostKind): string {
   switch (status) {

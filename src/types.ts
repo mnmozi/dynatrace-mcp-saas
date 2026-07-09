@@ -5,6 +5,12 @@ export interface Config {
   apiToken: string | undefined;
   enableWrites: boolean;
   timeoutMs: number;
+  /** Account Management API (OAuth client-credentials) — all three set, or none. */
+  oauthClientId?: string;
+  oauthClientSecret?: string;
+  accountUrn?: string;
+  ssoTokenUrl?: string;
+  accountApiUrl?: string;
   maxRetries: number;
   retryBaseMs: number;
 }

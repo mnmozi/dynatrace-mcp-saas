@@ -31,6 +31,17 @@ export function loadConfig(env: Env = process.env): Config {
     throw new Error("DT_API_TOKEN is set but DT_CLASSIC_URL is missing (provide both or neither).");
   }
 
+  // Account Management API OAuth client (optional) — all three or none.
+  const oauthClientId = optional(env, "DT_OAUTH_CLIENT_ID");
+  const oauthClientSecret = optional(env, "DT_OAUTH_CLIENT_SECRET");
+  const accountUrn = optional(env, "DT_ACCOUNT_URN");
+  const oauthSet = [oauthClientId, oauthClientSecret, accountUrn].filter(Boolean).length;
+  if (oauthSet > 0 && oauthSet < 3) {
+    throw new Error(
+      "Partial account OAuth config: set ALL of DT_OAUTH_CLIENT_ID, DT_OAUTH_CLIENT_SECRET and DT_ACCOUNT_URN, or none.",
+    );
+  }
+
   const hasPlatform = !!(platformUrl && platformToken);
   const hasClassic = !!(classicUrl && apiToken);
 
@@ -48,6 +59,11 @@ export function loadConfig(env: Env = process.env): Config {
     platformToken,
     apiToken,
     enableWrites: env.DT_ENABLE_WRITES === "true",
+    oauthClientId,
+    oauthClientSecret,
+    accountUrn,
+    ssoTokenUrl: optional(env, "DT_SSO_TOKEN_URL") ?? "https://sso.dynatrace.com/sso/oauth2/token",
+    accountApiUrl: stripSlash(optional(env, "DT_ACCOUNT_API_URL") ?? "https://api.dynatrace.com"),
     timeoutMs: env.DT_HTTP_TIMEOUT_MS ? Number(env.DT_HTTP_TIMEOUT_MS) : 30000,
     maxRetries: env.DT_MAX_RETRIES ? Number(env.DT_MAX_RETRIES) : 3,
     retryBaseMs: env.DT_RETRY_BASE_MS ? Number(env.DT_RETRY_BASE_MS) : 500,

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.17.0
+
+- IAM policy boundaries (Account Management API): list/get/create/update/delete_policy_boundary — boundaries restrict where policy bindings apply via boundary queries
+- New optional third credential: OAuth client-credentials flow (DT_OAUTH_CLIENT_ID + DT_OAUTH_CLIENT_SECRET + DT_ACCOUNT_URN, all-or-nothing) against the Dynatrace SSO token endpoint, with token caching; DT_SSO_TOKEN_URL / DT_ACCOUNT_API_URL host overrides
+- get_server_info reports configured.account; clear "not configured" error when the trio is absent
+
 ## 0.16.1
 
 - fix get_filter_segment: request add-fields=INCLUDES,VARIABLES by default (the API hides segment content otherwise); addFields override supported; list_filter_segments gains addFields too
