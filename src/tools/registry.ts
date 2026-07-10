@@ -39,6 +39,7 @@ import { registerIamBoundaryTools } from "./iam-boundaries.js";
 import { registerIamPolicyTools } from "./iam-policies.js";
 import { registerIamReferenceTools } from "./iam-reference.js";
 import { registerIamGroupTools } from "./iam-groups.js";
+import { registerCostTools } from "./cost.js";
 
 export interface ToolDeps {
   client: DynatraceClient;
@@ -84,4 +85,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerIamPolicyTools(server, deps);
   registerIamReferenceTools(server);
   registerIamGroupTools(server, deps);
+  registerCostTools(server, deps);
 }

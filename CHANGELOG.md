@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.19.0
+
+- Cost & consumption tools (Dynatrace Platform Subscription API, /sub/v2): list_subscriptions, get_subscription, get_subscription_cost (breakdown, filter by environment/capability/cluster), get_subscription_usage. Read-only, routed through the multi-scope account client with the account-uac-read scope
+- Requires the OAuth client to carry account-uac-read (docs-confirmed scope); lights up once granted
+
 ## 0.18.2
 
 - Account group tools (Account Management IDM API): list/get/create/update/delete_account_group. Groups are a SEPARATE API from policies/boundaries and need different OAuth scopes — account-idm-read (reads) / account-idm-write (writes)
