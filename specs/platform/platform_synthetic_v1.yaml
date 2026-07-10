@@ -1,31 +1,28 @@
 openapi: "3.0.1"
 info:
-  description: "\nCreate, read, update and delete synthetic monitors. Currently browser\
-    \ and network availability monitors only.\n\nTo authorize, use a valid OAuth token.\n\
-    \nNotes about compatibility:\n* Operations marked as early adopter or preview\
-    \ may be changed in non-compatible ways, although we try to avoid this.\n* We\
-    \ may add new enum constants without incrementing the API version; thus, clients\
-    \ need to handle unknown enum constants gracefully."
+  description: "\nManage synthetic monitors, locations, nodes, and on-demand executions.\n\
+    \nTo authorize, use a valid OAuth token.\n\nNotes about compatibility:\n* Operations\
+    \ marked as early adopter or preview may be changed in non-compatible ways, although\
+    \ we try to avoid this.\n* We may add new enum constants without incrementing\
+    \ the API version; thus, clients need to handle unknown enum constants gracefully."
   title: "Synthetic"
   version: "1.0.0"
   x-service-category: "Synthetic"
-  x-summary: "Create, read, update and delete synthetic monitors. Currently browser\
-    \ and network availability monitors only."
+  x-summary: "Manage synthetic monitors, locations, nodes, and on-demand executions."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/synthetic/v1"
   x-api-gateway-url: "/platform/synthetic/v1"
 tags:
 - description: "Read and update the set of synthetic-related parameters defined for\
-    \ the whole tenant"
+    \ the whole tenant."
   name: "Synthetic - Configuration"
-- description: "Create, read, update and delete synthetic locations"
+- description: "Create, read, update, and delete synthetic locations."
   name: "Synthetic - Locations"
-- description: "Create, read, update and delete synthetic monitors. Currently browser\
-    \ and network availability monitors only."
+- description: "Create, read, update, and delete synthetic monitors."
   name: "Synthetic - Monitors"
-- description: "Information about synthetic nodes"
+- description: "View properties and details of synthetic nodes."
   name: "Synthetic - Nodes"
-- description: "Trigger and view information about on-demand synthetic monitor executions"
+- description: "Trigger and view information about on-demand synthetic monitor executions."
   name: "Synthetic - On-demand monitor executions"
 paths:
   /configuration:
@@ -112,7 +109,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/SyntheticOnDemandExecutionResult"
+                $ref: "#/components/schemas/SyntheticOnDemandExecutionResponse"
           description: "Created"
         "4XX":
           content:
@@ -130,7 +127,7 @@ paths:
       - ssoAuth:
         - "synthetic:monitors:execute"
       - ssoBearerAuth: []
-      summary: "Triggers on-demand executions for synthetic monitors | maturity=EARLY_ADOPTER"
+      summary: "Triggers on-demand executions for synthetic monitors. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - On-demand monitor executions"
       x-maturity: "EARLY_ADOPTER"
@@ -139,7 +136,7 @@ paths:
     post:
       operationId: "rerunOnDemandExecution"
       parameters:
-      - description: "The identifier of the on-demand execution."
+      - description: "The ID of the on-demand execution."
         in: "path"
         name: "execution-id"
         required: true
@@ -151,7 +148,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/SyntheticOnDemandExecutionResult"
+                $ref: "#/components/schemas/SyntheticOnDemandExecutionResponse"
           description: "Success"
         "4XX":
           content:
@@ -169,7 +166,7 @@ paths:
       - ssoAuth:
         - "synthetic:monitors:execute"
       - ssoBearerAuth: []
-      summary: "Reruns specified on-demand execution of synthetic monitors | maturity=EARLY_ADOPTER"
+      summary: "Reruns the specified on-demand synthetic monitor execution. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - On-demand monitor executions"
       x-maturity: "EARLY_ADOPTER"
@@ -178,7 +175,7 @@ paths:
     get:
       operationId: "getLocations"
       parameters:
-      - description: "Filters the resulting set of locations to those which are hosted\
+      - description: "Filters the resulting set of locations to those that are hosted\
           \ on a specific cloud platform."
         in: "query"
         name: "cloud-platform"
@@ -199,8 +196,8 @@ paths:
           enum:
           - "PUBLIC"
           - "PRIVATE"
-      - description: "Filters the resulting set of locations to those which support\
-          \ specific capability."
+      - description: "Filters the resulting set of locations to those that support\
+          \ a specific capability."
         in: "query"
         name: "capability"
         schema:
@@ -217,7 +214,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/SyntheticLocations"
+                $ref: "#/components/schemas/SyntheticLocationsResponse"
           description: "Success"
         "4XX":
           content:
@@ -247,7 +244,7 @@ paths:
         content:
           application/json; charset=utf-8:
             schema:
-              $ref: "#/components/schemas/PrivateSyntheticLocation"
+              $ref: "#/components/schemas/SyntheticPrivateLocationDto"
         description: "The JSON body of the request. Contains parameters of the new\
           \ private synthetic location."
         required: true
@@ -256,7 +253,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/SyntheticLocationIdsDto"
+                $ref: "#/components/schemas/SyntheticLocationIdsResponse"
           description: "Success. The private location has been created. The response\
             \ contains the ID of the new location."
         "4XX":
@@ -284,13 +281,13 @@ paths:
     get:
       operationId: "getMetricAdapterDeploymentYaml"
       parameters:
-      - description: "Container platform, currently supported are: KUBERNETES and\
-          \ OPENSHIFT. Default value is KUBERNETES."
+      - description: "The container platform. Currently supported values are `KUBERNETES`\
+          \ and `OPENSHIFT`. The default value is `KUBERNETES`."
         in: "query"
         name: "platform"
         schema:
           type: "string"
-      - description: "Namespace"
+      - description: "The target namespace."
         in: "query"
         name: "namespace"
         schema:
@@ -299,7 +296,7 @@ paths:
         "200":
           content:
             application/yaml: {}
-          description: "Success. The response contains the content of deployment yaml\
+          description: "Success. The response contains the content of the YAML deployment\
             \ file."
           headers:
             Content-Disposition:
@@ -323,7 +320,7 @@ paths:
       - ssoAuth:
         - "synthetic:locations:read"
       - ssoBearerAuth: []
-      summary: "Gets yaml file content to deploy metric adapter in Kubernetes/Openshift\
+      summary: "Gets the YAML file content to deploy the metric adapter in a Kubernetes/OpenShift\
         \ cluster. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Locations"
@@ -337,7 +334,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/SyntheticPublicLocationsStatus"
+                $ref: "#/components/schemas/SyntheticPublicLocationsStatusDto"
           description: "Success. The response contains the public locations status."
         "4XX":
           content:
@@ -366,7 +363,7 @@ paths:
         content:
           application/json; charset=utf-8:
             schema:
-              $ref: "#/components/schemas/SyntheticPublicLocationsStatus"
+              $ref: "#/components/schemas/SyntheticPublicLocationsStatusDto"
         description: "The new status of public synthetic locations."
         required: true
       responses:
@@ -400,8 +397,7 @@ paths:
     delete:
       operationId: "removeLocation"
       parameters:
-      - description: "The Dynatrace entity ID of the private synthetic location to\
-          \ be deleted."
+      - description: "The ID of the private synthetic location to be deleted."
         in: "path"
         name: "location-id"
         required: true
@@ -435,7 +431,7 @@ paths:
     get:
       operationId: "getLocation"
       parameters:
-      - description: "The Dynatrace entity ID of the required location."
+      - description: "The ID of the required location."
         in: "path"
         name: "location-id"
         required: true
@@ -447,8 +443,8 @@ paths:
             application/json; charset=utf-8:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/SyntheticLocation"
-                - $ref: "#/components/schemas/PrivateSyntheticLocation"
+                - $ref: "#/components/schemas/SyntheticPublicLocationDto"
+                - $ref: "#/components/schemas/SyntheticPrivateLocationDto"
           description: "Success. The response contains parameters of the synthetic\
             \ location."
         "4XX":
@@ -477,7 +473,7 @@ paths:
         \ locations you can only change the location status."
       operationId: "updateLocation"
       parameters:
-      - description: "The Dynatrace entity ID of the synthetic location to be updated."
+      - description: "The ID of the synthetic location to be updated."
         in: "path"
         name: "location-id"
         required: true
@@ -487,7 +483,9 @@ paths:
         content:
           application/json; charset=utf-8:
             schema:
-              $ref: "#/components/schemas/SyntheticLocationUpdate"
+              oneOf:
+              - $ref: "#/components/schemas/SyntheticPrivateLocationUpdateRequest"
+              - $ref: "#/components/schemas/SyntheticPublicLocationUpdateRequest"
         description: "The JSON body of the request. Contains updated parameters of\
           \ the location."
         required: true
@@ -519,36 +517,36 @@ paths:
     get:
       operationId: "getLocationDeploymentYaml"
       parameters:
-      - description: "The Dynatrace entity ID of the required location."
+      - description: "The ID of the required location."
         in: "path"
         name: "location-id"
         required: true
         schema:
           type: "string"
-      - description: "Active gate name"
+      - description: "The name of the ActiveGate."
         in: "query"
         name: "active-gate-name"
         schema:
           type: "string"
-      - description: "Namespace"
+      - description: "The target namespace."
         in: "query"
         name: "namespace"
         schema:
           type: "string"
-      - description: "Custom images registry prefix - this will replace 'dynatrace'\
-          \ in image URLs in generated yaml."
+      - description: "Custom image registry prefix; replaces `dynatrace` in image\
+          \ URLs in the generated YAML."
         in: "query"
         name: "custom-registry"
         schema:
           type: "string"
-      - description: "Custom version tag for Active Gate - this will be used as desired\
-          \ Active Gate version in generated yaml."
+      - description: "Custom version tag for ActiveGate; used as the desired ActiveGate\
+          \ version in the generated YAML."
         in: "query"
         name: "tag-version-active-gate"
         schema:
           type: "string"
-      - description: "Custom version tag for Synthetic - this will be used as desired\
-          \ Synthetic version in generated yaml."
+      - description: "Custom version tag for Synthetic; used as the desired Synthetic\
+          \ version in the generated YAML."
         in: "query"
         name: "tag-version-synthetic"
         schema:
@@ -557,7 +555,7 @@ paths:
         "200":
           content:
             application/yaml: {}
-          description: "Success. The response contains the content of deployment yaml\
+          description: "Success. The response contains the content of the YAML deployment\
             \ file."
           headers:
             Content-Disposition:
@@ -581,7 +579,7 @@ paths:
       - ssoAuth:
         - "synthetic:locations:read"
       - ssoBearerAuth: []
-      summary: "Gets yaml file content to deploy location in Kubernetes/Openshift\
+      summary: "Gets the YAML file content to deploy a location in a Kubernetes/OpenShift\
         \ cluster. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Locations"
@@ -592,20 +590,19 @@ paths:
       operationId: "getMonitors"
       parameters:
       - description: "Defines the scope of the query. Only monitors matching **all**\
-          \ criteria are included in the response.\n\nYou can add one or several of\
-          \ the criteria listed below. For each criterion you can specify multiple\
-          \ comma-separated values, unless stated otherwise. If several values are\
-          \ specified, the **OR** logic applies.\n* Monitor type: `type(HTTP,MULTI_PROTOCOL)`.\
-          \ Possible values: 'HTTP', 'BROWSER', 'MULTI_PROTOCOL' (Note that only 'BROWSER'\
-          \ and 'MULTI_PROTOCOL' are currently supported).\n* Synthetic Location ME\
-          \ ID: `location(SYNTHETIC_LOCATION-123)`.\n* Monitored host ME ID: `monitoredEntity(HOST-123)`.\n\
-          * Monitor tags: `tag([context]key:value,key:value,key)`. Tags in `[context]key:value`,\
-          \ `key:value`, and `key` formats are detected and parsed automatically.\
-          \ If a key-only tag has a colon (`:`) in it, you must escape the colon with\
-          \ a backslash(`\\`). Otherwise, the tag will be parsed as a `key:value tag`.\
-          \ All tag values are case-sensitive.\n* Monitor enablement: `enabled(true)`.\n\
-          * Security context: `securityContext(value1, value2)`\n\nTo set several\
-          \ criteria, separate them with a comma (`,`).\n"
+          \ criteria are included in the response.\n\nYou can add one or more of the\
+          \ criteria listed below. For each criterion you can specify multiple comma-separated\
+          \ values, unless stated otherwise. If several values are specified, the\
+          \ **OR** logic applies.\n* Monitor type: `type(HTTP,NETWORK_AVAILABILITY)`.\
+          \ Possible values: `HTTP`, `BROWSER`, `NETWORK_AVAILABILITY`.\n* Synthetic\
+          \ Location ME ID: `location(SYNTHETIC_LOCATION-123)`.\n* Monitored host\
+          \ ME ID: `monitoredEntity(HOST-123)`.\n* Monitor tags: `tag([context]key:value,key:value,key)`.\
+          \ Tags in `[context]key:value`, `key:value`, and `key` formats are detected\
+          \ and parsed automatically. If a key-only tag has a colon (`:`) in it, you\
+          \ must escape the colon with a backslash (`\\`). Otherwise, the tag will\
+          \ be parsed as a `key:value` tag. All tag values are case-sensitive.\n*\
+          \ Monitor enablement: `enabled(true)`.\n* Security context: `securityContext(value1,value2)`.\n\
+          \nTo set several criteria, separate them with a comma (`,`).\n"
         in: "query"
         name: "monitor-selector"
         schema:
@@ -615,7 +612,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/SyntheticMonitorListDto"
+                $ref: "#/components/schemas/SyntheticMonitorListResponse"
           description: "Success"
         "4XX":
           content:
@@ -633,8 +630,7 @@ paths:
       - ssoAuth:
         - "synthetic:monitors:read"
       - ssoBearerAuth: []
-      summary: "Gets all synthetic monitors. Currently browser and network availability\
-        \ monitors only. | maturity=EARLY_ADOPTER"
+      summary: "Gets all synthetic monitors. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Monitors"
       x-maturity: "EARLY_ADOPTER"
@@ -646,8 +642,9 @@ paths:
           application/json; charset=utf-8:
             schema:
               oneOf:
-              - $ref: "#/components/schemas/SyntheticMultiProtocolMonitorRequest"
-              - $ref: "#/components/schemas/SyntheticBrowserMonitorRequest"
+              - $ref: "#/components/schemas/NetworkAvailabilityMonitorRequest"
+              - $ref: "#/components/schemas/BrowserMonitorRequest"
+              - $ref: "#/components/schemas/HttpMonitorRequest"
         description: "The JSON body of the request. Contains the parameters of the\
           \ monitor."
         required: true
@@ -656,7 +653,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/MonitorEntityIdDto"
+                $ref: "#/components/schemas/MonitorIdResponse"
           description: "Success"
         "4XX":
           content:
@@ -674,8 +671,7 @@ paths:
       - ssoAuth:
         - "synthetic:monitors:write"
       - ssoBearerAuth: []
-      summary: "Creates a synthetic monitor definition. Currently browser and network\
-        \ availability monitors only. | maturity=EARLY_ADOPTER"
+      summary: "Creates a synthetic monitor definition. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Monitors"
       x-maturity: "EARLY_ADOPTER"
@@ -684,7 +680,7 @@ paths:
     delete:
       operationId: "deleteMonitor"
       parameters:
-      - description: "The identifier of the monitor."
+      - description: "The ID of the monitor."
         in: "path"
         name: "monitor-id"
         required: true
@@ -709,8 +705,8 @@ paths:
       - ssoAuth:
         - "synthetic:monitors:write"
       - ssoBearerAuth: []
-      summary: "Deletes a synthetic monitor definition for the given monitor ID. Currently\
-        \ browser and network availability monitors only. | maturity=EARLY_ADOPTER"
+      summary: "Deletes a synthetic monitor definition for the given monitor ID. |\
+        \ maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Monitors"
       x-maturity: "EARLY_ADOPTER"
@@ -718,7 +714,7 @@ paths:
     get:
       operationId: "getMonitor"
       parameters:
-      - description: "The identifier of the monitor."
+      - description: "The ID of the monitor."
         in: "path"
         name: "monitor-id"
         required: true
@@ -730,8 +726,9 @@ paths:
             application/json; charset=utf-8:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/SyntheticMultiProtocolMonitorResponse"
-                - $ref: "#/components/schemas/SyntheticBrowserMonitorResponse"
+                - $ref: "#/components/schemas/NetworkAvailabilityMonitorResponse"
+                - $ref: "#/components/schemas/BrowserMonitorResponse"
+                - $ref: "#/components/schemas/HttpMonitorResponse"
           description: "Success"
         "4XX":
           content:
@@ -749,8 +746,7 @@ paths:
       - ssoAuth:
         - "synthetic:monitors:read"
       - ssoBearerAuth: []
-      summary: "Gets a synthetic monitor definition for the given monitor ID. Currently\
-        \ browser and network availability monitors only. | maturity=EARLY_ADOPTER"
+      summary: "Gets a synthetic monitor definition for the given monitor ID. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Monitors"
       x-maturity: "EARLY_ADOPTER"
@@ -758,7 +754,7 @@ paths:
     put:
       operationId: "updateMonitor"
       parameters:
-      - description: "The identifier of the monitor."
+      - description: "The ID of the monitor."
         in: "path"
         name: "monitor-id"
         required: true
@@ -769,8 +765,9 @@ paths:
           application/json; charset=utf-8:
             schema:
               oneOf:
-              - $ref: "#/components/schemas/SyntheticMultiProtocolMonitorRequest"
-              - $ref: "#/components/schemas/SyntheticBrowserMonitorRequest"
+              - $ref: "#/components/schemas/NetworkAvailabilityMonitorRequest"
+              - $ref: "#/components/schemas/BrowserMonitorRequest"
+              - $ref: "#/components/schemas/HttpMonitorRequest"
         description: "The JSON body of the request. Contains the parameters of the\
           \ monitor."
         required: true
@@ -793,8 +790,8 @@ paths:
       - ssoAuth:
         - "synthetic:monitors:write"
       - ssoBearerAuth: []
-      summary: "Updates a synthetic monitor definition for the given monitor ID. Currently\
-        \ browser and network availability monitors only. | maturity=EARLY_ADOPTER"
+      summary: "Updates a synthetic monitor definition for the given monitor ID. |\
+        \ maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Monitors"
       x-maturity: "EARLY_ADOPTER"
@@ -811,8 +808,8 @@ paths:
         schema:
           type: "boolean"
       - description: "If set to true, returns only containerized nodes. If set to\
-          \ false, returns only uncontainerized nodes. If omitted, returns both containerized\
-          \ and uncontainerized nodes."
+          \ false, returns only non-containerized nodes. If omitted, returns both\
+          \ containerized and non-containerized nodes."
         in: "query"
         name: "containerized"
         schema:
@@ -822,7 +819,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/Nodes"
+                $ref: "#/components/schemas/NodesResponse"
           description: "Success"
         "4XX":
           content:
@@ -860,7 +857,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: "#/components/schemas/Node"
+                $ref: "#/components/schemas/ExtendedNodeResponse"
           description: "Success"
         "4XX":
           content:
@@ -878,7 +875,7 @@ paths:
       - ssoAuth:
         - "synthetic:locations:read"
       - ssoBearerAuth: []
-      summary: "Lists properties of the specified synthetic node. | maturity=EARLY_ADOPTER"
+      summary: "Gets properties of the specified synthetic node. | maturity=EARLY_ADOPTER"
       tags:
       - "Synthetic - Nodes"
       x-maturity: "EARLY_ADOPTER"
@@ -951,1257 +948,7 @@ components:
           - "VALIDATION"
       required:
       - "type"
-    BrowserPermissionsDto:
-      type: "object"
-      description: "Permissions settings for browser."
-      properties:
-        camera:
-          type: "boolean"
-          description: "Camera permission. If not defined in request, it will be set\
-            \ to false by default."
-        location:
-          type: "boolean"
-          description: "Location permission. If not defined in request, it will be\
-            \ set to false by default."
-        microphone:
-          type: "boolean"
-          description: "Microphone permission. If not defined in request, it will\
-            \ be set to false by default."
-        notifications:
-          type: "boolean"
-          description: "Notifications permission. If not defined in request, it will\
-            \ be set to false by default."
-    ChromiumStartupFlagsDto:
-      type: "object"
-      description: "Chromium startup flags of a Browser Monitor."
-      properties:
-        autoplay-policy:
-          type: "string"
-          description: "autoplay-policy type."
-          enum:
-          - "no-user-gesture-required"
-          - "document-user-activation-required"
-        disable-features:
-          type: "object"
-          additionalProperties:
-            type: "boolean"
-            description: "disable-features map"
-          description: "disable-features map"
-        disable-site-isolation-trials:
-          type: "boolean"
-          description: "disable-site-isolation-trials flag."
-        disable-web-security:
-          type: "boolean"
-          description: "disable-web-security flag. If no value is passed, it will\
-            \ be set to false by default."
-        host-resolver-rules:
-          type: "string"
-          description: "host-resolver-rules."
-        ignore-certificate-errors:
-          type: "boolean"
-          description: "ignore-certificate-errors flag."
-        ssl-version-max:
-          type: "string"
-          description: "ssl-version-max."
-        ssl-version-min:
-          type: "string"
-          description: "ssl-version-min."
-        test-type:
-          type: "boolean"
-          description: "test-type flag."
-    ClientCertificateDto:
-      type: "object"
-      description: "Client certificate."
-      properties:
-        credentialId:
-          type: "string"
-          description: "Certificate CV id."
-        domain:
-          type: "string"
-          description: "Domain certificate will be applied to."
-      required:
-      - "credentialId"
-      - "domain"
-    ConstraintViolation:
-      type: "object"
-      description: "Information about a single constraint violation."
-      properties:
-        context:
-          type: "object"
-          additionalProperties:
-            type: "string"
-            description: "Structured context of the constraint violation.\nWell known\
-              \ keys that **can** be present are:\n* `reason` -> Additional reasoning\
-              \ behind the occurred violation.\n* `pipeline` -> Pipeline related to\
-              \ the violation.\n* `endpoint` -> Endpoint related to the violation.\n\
-              * `stage` -> Stage related to the violation.\n* `processor` -> Processor\
-              \ related to the violation.\n* `routingRule` -> Routing rule related\
-              \ to the violation.\n"
-          description: "Structured context of the constraint violation.\nWell known\
-            \ keys that **can** be present are:\n* `reason` -> Additional reasoning\
-            \ behind the occurred violation.\n* `pipeline` -> Pipeline related to\
-            \ the violation.\n* `endpoint` -> Endpoint related to the violation.\n\
-            * `stage` -> Stage related to the violation.\n* `processor` -> Processor\
-            \ related to the violation.\n* `routingRule` -> Routing rule related to\
-            \ the violation.\n"
-        message:
-          type: "string"
-          description: "Description of the constraint violation."
-      required:
-      - "message"
-    ConstraintViolationDetails:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/ErrorResponseDetails"
-      - type: "object"
-        properties:
-          constraintViolations:
-            type: "array"
-            description: "List of encountered constraint violations."
-            items:
-              $ref: "#/components/schemas/ConstraintViolation"
-      description: "List of encountered constraint violations."
-      required:
-      - "constraintViolations"
-    CookieStepDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-      - type: "object"
-        properties:
-          cookies:
-            type: "array"
-            description: "Field containing the list of cookies."
-            items:
-              $ref: "#/components/schemas/SyntheticMonitorCookieDto"
-            maxItems: 2147483647
-            minItems: 1
-            uniqueItems: true
-      description: "Cookie step of Browser Monitor."
-      required:
-      - "cookies"
-      - "name"
-      - "type"
-    EnablementDto:
-      type: "object"
-      description: "Browser monitor enablement settings."
-      properties:
-        enableOnGrail:
-          type: "boolean"
-          description: "Enable 3rd gen JS agent reporting. Relevant only for grail-enabled\
-            \ SaaS environments."
-        origin:
-          type: "string"
-          description: "Indicates the origin of these settings."
-          enum:
-          - "MONITOR"
-          - "TENANT"
-          - "DEFAULT"
-          - "UNKNOWN"
-      required:
-      - "enableOnGrail"
-    ErrorResponse:
-      type: "object"
-      description: "Basic information of the encountered error."
-      properties:
-        code:
-          type: "integer"
-          format: "int32"
-          description: "The returned HTTP status code."
-        details:
-          $ref: "#/components/schemas/ErrorResponseDetails"
-        message:
-          type: "string"
-          description: "Description of the encountered error."
-      required:
-      - "code"
-      - "message"
-    ErrorResponseDetails:
-      type: "object"
-      description: "Detailed information of the error."
-      discriminator:
-        mapping:
-          constraintViolation: "#/components/schemas/ConstraintViolationDetails"
-        propertyName: "type"
-      properties:
-        type:
-          type: "string"
-          description: "Defines the actual set of fields depending on the value. See\
-            \ one of the following objects: \n\n* `constraintViolation` -> ConstraintViolationDetails\
-            \ \n"
-          enum:
-          - "constraintViolation"
-      required:
-      - "type"
-    ErrorResponseEnvelope:
-      type: "object"
-      description: "Encloses the encountered error."
-      properties:
-        error:
-          $ref: "#/components/schemas/ErrorResponse"
-      required:
-      - "error"
-    FilteredRequestsDto:
-      type: "object"
-      description: "Filtered requests of a Browser Monitor."
-      properties:
-        mode:
-          type: "string"
-          description: "Filter mode for filtered requests."
-          enum:
-          - "BLOCK"
-          - "ALLOW"
-        requests:
-          type: "array"
-          description: "Requests to be filtered."
-          items:
-            $ref: "#/components/schemas/RequestFilterDto"
-      required:
-      - "mode"
-      - "requests"
-    FrameworkOptionsDto:
-      type: "object"
-      description: "JS framework options of a JS Agent."
-      properties:
-        activeXObject:
-          type: "boolean"
-          description: "activeXObject support. If not defined in request, it will\
-            \ be set to false by default."
-        angular:
-          type: "boolean"
-          description: "Angular support. If not defined in request, it will be set\
-            \ to false by default."
-        dojo:
-          type: "boolean"
-          description: "Dojo support. If not defined in request, it will be set to\
-            \ false by default."
-        extJs:
-          type: "boolean"
-          description: "extJs support. If not defined in request, it will be set to\
-            \ false by default."
-        icefaces:
-          type: "boolean"
-          description: "icefaces support. If not defined in request, it will be set\
-            \ to false by default."
-        jQuery:
-          type: "boolean"
-          description: "jquery support. If not defined in request, it will be set\
-            \ to false by default."
-        mooTools:
-          type: "boolean"
-          description: "mooTools support. If not defined in request, it will be set\
-            \ to false by default."
-        prototype:
-          type: "boolean"
-          description: "prototype support. If not defined in request, it will be set\
-            \ to false by default."
-    IgnoredErrorCodesDto:
-      type: "object"
-      description: "Ignored Error Codes of a Browser Monitor."
-      properties:
-        matchingDocumentRequests:
-          type: "string"
-          description: "Ignoring status codes will be applied to requests matching\
-            \ pattern."
-        statusCodes:
-          type: "string"
-          description: "Status codes to be ignored."
-    InteractionStepDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-      - type: "object"
-        properties:
-          button:
-            type: "string"
-            description: "Integer containing the button index."
-            enum:
-            - "MOUSE_LEFT"
-            - "MOUSE_MIDDLE"
-            - "MOUSE_RIGHT"
-          target:
-            $ref: "#/components/schemas/TargetDto"
-          validationRules:
-            type: "array"
-            description: "List of validation rules for the step to perform."
-            items:
-              $ref: "#/components/schemas/ValidationRuleDto"
-          waitCondition:
-            $ref: "#/components/schemas/BaseWaitConditionDto"
-      description: "Interaction step of Browser Monitor."
-      required:
-      - "button"
-      - "name"
-      - "type"
-    JavaScriptAgentSettingsDto:
-      type: "object"
-      description: "JavaScript Agent Settings."
-      properties:
-        customProperties:
-          type: "string"
-          description: "Custom configuration properties"
-        experimentalValues:
-          type: "boolean"
-          description: "Experimental values support. If not defined in request, it\
-            \ will be set to false by default."
-        fetchRequests:
-          type: "boolean"
-          description: "Capture fetch() requests. If not defined in request, it will\
-            \ be set to true by default."
-        javaScriptErrors:
-          type: "boolean"
-          description: "Enable this setting to monitor JavaScript errors. The window.onError\
-            \ handler is used for capturing JavaScript errors. If not defined in request,\
-            \ it will be set to true by default."
-        javaScriptFrameworkSupport:
-          $ref: "#/components/schemas/FrameworkOptionsDto"
-        timedActions:
-          type: "boolean"
-          description: "Within JavaScript frameworks, XHRs are often sent via setTimeout\
-            \ methods. Enable this setting to detect actions that trigger such XHRs.\
-            \ If not defined in request, it will be set to true by default."
-        timeoutSettings:
-          $ref: "#/components/schemas/TimeoutSettingsDto"
-        visuallyCompleteOptions:
-          $ref: "#/components/schemas/VisuallyCompleteOptionsDto"
-        xmlHttpRequests:
-          type: "boolean"
-          description: "Capture xml Http requests (XHR). If not defined in request,\
-            \ it will be set to true by default."
-    JavaScriptStepDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-      - type: "object"
-        properties:
-          javaScript:
-            type: "string"
-            description: "String containing a script in JavaScript."
-          target:
-            $ref: "#/components/schemas/TargetDto"
-          waitCondition:
-            $ref: "#/components/schemas/BaseWaitConditionDto"
-      description: "JavaScript step of Browser Monitor."
-      required:
-      - "javaScript"
-      - "name"
-      - "type"
-    KeyPerformanceMetrics:
-      type: "object"
-      description: "The key performance metrics configuration."
-      properties:
-        loadActionKpm:
-          type: "string"
-          description: "Load action key performance metric."
-          enum:
-          - "USER_ACTION_DURATION"
-          - "VISUALLY_COMPLETE"
-          - "SPEED_INDEX"
-          - "DOM_INTERACTIVE"
-          - "LOAD_EVENT_START"
-          - "LOAD_EVENT_END"
-          - "RESPONSE_START"
-          - "RESPONSE_END"
-          - "LARGEST_CONTENTFUL_PAINT"
-          - "CUMULATIVE_LAYOUT_SHIFT"
-        xhrActionKpm:
-          type: "string"
-          description: "XHR action key performance metric."
-          enum:
-          - "USER_ACTION_DURATION"
-          - "VISUALLY_COMPLETE"
-          - "RESPONSE_START"
-          - "RESPONSE_END"
-    KeyStrokesStepDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-      - type: "object"
-        properties:
-          input:
-            $ref: "#/components/schemas/KeystrokesInputDto"
-          simulateBlurEvent:
-            type: "boolean"
-            description: "Boolean value set to true if blur event should be simulated."
-          simulateReturnKey:
-            type: "boolean"
-            description: "Boolean value set to true if return key should be simulated."
-          target:
-            $ref: "#/components/schemas/TargetDto"
-          validationRules:
-            type: "array"
-            description: "List of validation rules for the step to perform."
-            items:
-              $ref: "#/components/schemas/ValidationRuleDto"
-          waitCondition:
-            $ref: "#/components/schemas/BaseWaitConditionDto"
-      description: "Key strokes step of Browser Monitor."
-      example:
-        entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
-        name: "Enter credentials."
-        simulateBlurEvent: false
-        simulateReturnKey: true
-        target:
-          locators:
-          - type: "CSS"
-            value: "<img>[id='logoIcon']"
-          - type: "CSS"
-            value: "<a>[id='externalSite']"
-          window: "ruxitWin[0]"
-        type: "KEYSTROKES"
-        validationRules:
-        - failIfFound: false
-          match: "some text to match"
-          regex: false
-          target:
-            locators:
-            - type: "CSS"
-              value: "<img>[id='logoIcon']"
-            - type: "CSS"
-              value: "<a>[id='externalSite']"
-            window: "ruxitWin[0]"
-          type: "TEXT_MATCH"
-        waitCondition:
-          milliseconds: 10
-          waitFor: "TIME"
-      required:
-      - "input"
-      - "name"
-      - "type"
-    KeystrokesInputDto:
-      type: "object"
-      description: "Key strokes step input."
-      discriminator:
-        mapping:
-          PLAIN: "#/components/schemas/PlainKeystrokesInputDto"
-          SECURE: "#/components/schemas/SecureKeystrokesInputDto"
-        propertyName: "type"
-      properties:
-        type:
-          type: "string"
-          description: "Defines the actual set of fields depending on the value. See\
-            \ one of the following objects: \n\n* `SECURE` -> SecureKeystrokesInputDto\
-            \ \n* `PLAIN` -> PlainKeystrokesInputDto \n"
-          enum:
-          - "PLAIN"
-          - "SECURE"
-      required:
-      - "type"
-    LocationCollectionElement:
-      type: "object"
-      description: "A synthetic location."
-      properties:
-        capabilities:
-          type: "array"
-          description: "The list of location's capabilities."
-          items:
-            type: "string"
-        cloudPlatform:
-          type: "string"
-          description: "The cloud provider where the location is hosted. \n\n Only\
-            \ applicable to `PUBLIC` locations."
-          enum:
-          - "ALIBABA"
-          - "AMAZON_EC2"
-          - "AZURE"
-          - "DYNATRACE_CLOUD"
-          - "GOOGLE_CLOUD"
-          - "INTEROUTE"
-          - "OTHER"
-          - "UNDEFINED"
-        deploymentType:
-          type: "string"
-          description: "Location's deployment type"
-          enum:
-          - "KUBERNETES"
-          - "OPENSHIFT"
-          - "STANDARD"
-          - "UNKNOWN"
-        entityId:
-          type: "string"
-          description: "The Dynatrace entity ID of the location."
-        geoCity:
-          type: "string"
-          description: "Location's city."
-        geoContinent:
-          type: "string"
-          description: "Location's continent."
-        geoCountry:
-          type: "string"
-          description: "Location's country."
-        geoLatitude:
-          type: "number"
-          format: "double"
-          description: "Location's latitude."
-        geoLocationId:
-          type: "string"
-          description: "The Dynatrace GeoLocation ID of the location."
-        geoLongitude:
-          type: "number"
-          format: "double"
-          description: "Location's longitude."
-        ips:
-          type: "array"
-          description: "The list of IP addresses assigned to the location. \n\n Only\
-            \ applicable to `PUBLIC` locations."
-          items:
-            type: "string"
-        lastModificationTimestamp:
-          type: "integer"
-          format: "int64"
-          description: "The timestamp of the last modification of the location."
-        name:
-          type: "string"
-          description: "The name of the location."
-        nodes:
-          type: "array"
-          description: "A list of synthetic nodes belonging to the location. \n\n\
-            \ You can retrieve the list of available nodes with the [GET all nodes](https://dt-url.net/miy3rpl)\
-            \ call."
-          items:
-            type: "string"
-        stage:
-          type: "string"
-          description: "The release stage of the location."
-          enum:
-          - "BETA"
-          - "COMING_SOON"
-          - "DELETED"
-          - "GA"
-        status:
-          type: "string"
-          description: "The status of the location."
-          enum:
-          - "DISABLED"
-          - "ENABLED"
-          - "HIDDEN"
-        type:
-          type: "string"
-          description: "The type of the location."
-          enum:
-          - "CLUSTER"
-          - "PRIVATE"
-          - "PUBLIC"
-      required:
-      - "entityId"
-      - "geoLocationId"
-      - "name"
-      - "type"
-    LocatorDto:
-      type: "object"
-      description: "Browser Monitor locator."
-      example:
-        type: "CSS"
-        value: "<img>[id='logoIcon']"
-      properties:
-        type:
-          type: "string"
-          description: "Enum value of the locator type."
-          enum:
-          - "CSS"
-          - "DOM"
-        value:
-          type: "string"
-          description: "Value of the locator."
-      required:
-      - "type"
-      - "value"
-    MonitorEntityIdDto:
-      type: "object"
-      description: "A DTO for monitor entity ID."
-      example:
-        entityId: "MULTIPROTOCOL_MONITOR-63653CB579F573D1"
-      properties:
-        entityId:
-          type: "string"
-          description: "Monitor entity ID."
-      required:
-      - "entityId"
-    MonitorPropertyDto:
-      type: "object"
-      description: "Property of a Browser Monitor."
-      properties:
-        name:
-          type: "string"
-          description: "Property name."
-        value:
-          type: "string"
-          description: "Property value."
-      required:
-      - "name"
-      - "value"
-    MonitorRequestHeader:
-      type: "object"
-      description: "A header of the Http request"
-      properties:
-        name:
-          type: "string"
-          description: "Header's name."
-        value:
-          type: "string"
-          description: "Header's value."
-      required:
-      - "name"
-      - "value"
-    NavigateStepDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-      - type: "object"
-        properties:
-          authentication:
-            $ref: "#/components/schemas/AuthenticationDto"
-          target:
-            $ref: "#/components/schemas/TargetDto"
-          url:
-            type: "string"
-            description: "Field containing the url that the monitor should navigate\
-              \ to."
-          validationRules:
-            type: "array"
-            description: "List of validation rules for the step to perform."
-            items:
-              $ref: "#/components/schemas/ValidationRuleDto"
-          waitCondition:
-            $ref: "#/components/schemas/BaseWaitConditionDto"
-      description: "Step of Browser Monitor that navigates to a website."
-      required:
-      - "name"
-      - "type"
-      - "url"
-    NetworkThrottlingDto:
-      type: "object"
-      description: "Network throttling of a Browser Monitor."
-      properties:
-        download:
-          type: "integer"
-          format: "int32"
-          description: "Download throughput. If not defined in request, it will be\
-            \ set to -1 by default."
-          maximum: 100000000
-        latency:
-          type: "integer"
-          format: "int32"
-          description: "Latency. If not defined in request, it will be set to 0 by\
-            \ default."
-          maximum: 1000
-        name:
-          type: "string"
-          description: "Predefined network type. If not defined in request, it will\
-            \ be set to \"\" by default."
-        upload:
-          type: "integer"
-          format: "int32"
-          description: "Upload throughput. If not defined in request, it will be set\
-            \ to -1 by default."
-          maximum: 50000000
-    Node:
-      type: "object"
-      description: "Configuration of a synthetic node. \n\n A *synthetic node* is\
-        \ an ActiveGate that is able to execute synthetic monitors."
-      example:
-        activeGateVersion: "1.172.2.20190607-040913"
-        autoUpdateEnabled: true
-        browserMonitorsEnabled: true
-        browserType: "Chrome"
-        browserVersion: "69.0.3497.81"
-        capabilities:
-        - "HTTP_HIGH_RESOURCE"
-        - "HTTP"
-        entityId: "3086117876"
-        healthCheckStatus: "Ok"
-        hostname: "gdn.dyna.trace"
-        ips:
-        - "238.245.160.14"
-        oneAgentRoutingEnabled: true
-        operatingSystem: "Linux"
-        playerVersion: "1.179.0.20190920-145430"
-        status: "Running"
-        version: "1.161.0.20181210-173639"
-      properties:
-        activeGateVersion:
-          type: "string"
-          description: "The version of the Active Gate."
-        autoUpdateEnabled:
-          type: "boolean"
-          description: "The Active Gate has the Auto update option enabled ('true')\
-            \ or not ('false')"
-        browserMonitorsEnabled:
-          type: "boolean"
-          description: "The synthetic node is able to execute browser monitors (`true`)\
-            \ or not (`false`)."
-        browserType:
-          type: "string"
-          description: "The browser type."
-        browserVersion:
-          type: "string"
-          description: "The browser version."
-        capabilities:
-          type: "array"
-          description: "The list of node's capabilities."
-          items:
-            type: "string"
-            description: "The list of node's capabilities."
-        entityId:
-          type: "string"
-          description: "The ID of the synthetic node."
-        healthCheckStatus:
-          type: "string"
-          description: "The health check status of the synthetic node."
-        hostname:
-          type: "string"
-          description: "The hostname of the synthetic node."
-        ips:
-          type: "array"
-          description: "The IP of the synthetic node."
-          items:
-            type: "string"
-        oneAgentRoutingEnabled:
-          type: "boolean"
-          description: "The Active Gate has the One Agent routing enabled ('true')\
-            \ or not ('false')."
-        operatingSystem:
-          type: "string"
-          description: "The Active Gate's host operating system."
-        playerVersion:
-          type: "string"
-          description: "The version of the synthetic player."
-        status:
-          type: "string"
-          description: "The status of the synthetic node."
-        version:
-          type: "string"
-          description: "The version of the synthetic node."
-      required:
-      - "activeGateVersion"
-      - "autoUpdateEnabled"
-      - "browserMonitorsEnabled"
-      - "browserType"
-      - "browserVersion"
-      - "capabilities"
-      - "entityId"
-      - "healthCheckStatus"
-      - "hostname"
-      - "ips"
-      - "oneAgentRoutingEnabled"
-      - "operatingSystem"
-      - "playerVersion"
-      - "status"
-      - "version"
-    NodeCollectionElement:
-      type: "object"
-      description: "The short representation of a synthetic object. Only contains\
-        \ the ID and the display name."
-      properties:
-        activeGateVersion:
-          type: "string"
-          description: "The version of the Active Gate."
-        autoUpdateEnabled:
-          type: "boolean"
-          description: "The Active Gate has the Auto update option enabled ('true')\
-            \ or not ('false')"
-        browserMonitorsEnabled:
-          type: "boolean"
-          description: "Browser check capabilities enabled flag."
-        capabilities:
-          type: "array"
-          description: "The list of node's capabilities."
-          items:
-            type: "string"
-            description: "The list of node's capabilities."
-        entityId:
-          type: "string"
-          description: "The ID of a node."
-        healthCheckStatus:
-          type: "string"
-          description: "The health check status of the synthetic node."
-        hostname:
-          type: "string"
-          description: "The hostname of a node."
-        ips:
-          type: "array"
-          description: "The IP of a node."
-          items:
-            type: "string"
-        oneAgentRoutingEnabled:
-          type: "boolean"
-          description: "The Active Gate has the One Agent routing enabled ('true')\
-            \ or not ('false')."
-        operatingSystem:
-          type: "string"
-          description: "The Active Gate's host operating system."
-        playerVersion:
-          type: "string"
-          description: "The version of the synthetic player."
-        status:
-          type: "string"
-          description: "The status of the synthetic node."
-        version:
-          type: "string"
-          description: "The version of a node"
-      required:
-      - "activeGateVersion"
-      - "autoUpdateEnabled"
-      - "browserMonitorsEnabled"
-      - "capabilities"
-      - "entityId"
-      - "healthCheckStatus"
-      - "hostname"
-      - "ips"
-      - "oneAgentRoutingEnabled"
-      - "operatingSystem"
-      - "playerVersion"
-      - "status"
-      - "version"
-    Nodes:
-      type: "object"
-      description: "A list of synthetic nodes"
-      example:
-        nodes:
-        - activeGateVersion: "1.172.2.20190607-040913"
-          autoUpdateEnabled: true
-          browserMonitorsEnabled: true
-          capabilities:
-          - "HTTP_HIGH_RESOURCE"
-          - "HTTP"
-          entityId: "3086117876"
-          healthCheckStatus: "Ok"
-          hostname: "gdn.dyna.trace"
-          ips:
-          - "238.245.160.14"
-          oneAgentRoutingEnabled: true
-          operatingSystem: "Linux"
-          playerVersion: "1.179.0.20190920-145430"
-          status: "Running"
-          version: "1.161.0.20181210-173639"
-      properties:
-        nodes:
-          type: "array"
-          description: "A list of synthetic nodes"
-          items:
-            $ref: "#/components/schemas/NodeCollectionElement"
-      required:
-      - "nodes"
-    PlainAuthenticationDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/AuthenticationDto"
-      - type: "object"
-        properties:
-          password:
-            type: "string"
-            description: "String containing the password."
-          username:
-            type: "string"
-            description: "String containing the username."
-      description: "Plain authentication dto for Browser Monitor step."
-      example:
-        password: "1234"
-        type: "HTTP_AUTHENTICATION"
-        username: "admin"
-      required:
-      - "inputType"
-      - "password"
-      - "type"
-      - "username"
-    PlainKeystrokesInputDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/KeystrokesInputDto"
-      - type: "object"
-        properties:
-          masked:
-            type: "boolean"
-            description: "Boolean value set to true only if key strokes input `textValue`\
-              \ field is encoded by recorder and should be decoded by VUP. Set to\
-              \ `false` by default."
-          textValue:
-            type: "string"
-            description: "String value containing the text."
-      description: "Credential-based input for keystrokes step."
-      required:
-      - "textValue"
-      - "type"
-    PrivateSyntheticLocation:
-      type: "object"
-      description: "Configuration of a private synthetic location. \n\n Some fields\
-        \ are inherited from the base *SyntheticLocation* object."
-      example:
-        autoUpdateChromium: true
-        availabilityLocationNodeOutageDelayInMinutes: 5
-        availabilityLocationOutage: false
-        availabilityNodeOutage: false
-        availabilityNotificationsEnabled: true
-        browserExecutionSupported: true
-        city: "Linz"
-        countryCode: "AT"
-        deploymentType: "STANDARD"
-        fipsMode: "DISABLED"
-        latitude: 48.306351
-        longitude: 14.287399
-        maxActiveGateCount: 5
-        minActiveGateCount: 2
-        namExecutionSupported: false
-        name: "Linz Location"
-        nodeNames:
-          "93302281": "ActiveGate 1"
-        nodeSize: "S"
-        nodes:
-        - "93302281"
-        regionCode: "04"
-        status: "ENABLED"
-        type: "PRIVATE"
-        useNewKubernetesVersion: true
-      properties:
-        autoUpdateChromium:
-          type: "boolean"
-          description: "Non-containerized location property. Auto upgrade of Chromium\
-            \ is enabled (`true`) or disabled (`false`)."
-        availabilityLocationOutage:
-          type: "boolean"
-          description: "Alerting for location outage is enabled (`true`) or disabled\
-            \ (`false`). Supported only for private Synthetic locations."
-        availabilityNodeOutage:
-          type: "boolean"
-          description: "Alerting for node outage is enabled (`true`) or disabled (`false`).\
-            \ \\n\\n If enabled, the outage of *any* node in the location triggers\
-            \ an alert. Supported only for private Synthetic locations."
-        availabilityNotificationsEnabled:
-          type: "boolean"
-          description: "Notifications for location and node outage are enabled (`true`)\
-            \ or disabled (`false`). Supported only for private Synthetic locations."
-        browserExecutionSupported:
-          type: "boolean"
-          description: "Containerized location property. Boolean value describes if\
-            \ browser monitors will be executed on this location:\n\n* `false`: Browser\
-            \ monitor executions disabled.\n* `true`: Browser monitor executions enabled."
-        city:
-          type: "string"
-          description: "The city of the location."
-        countryCode:
-          type: "string"
-          description: "The country code of the location. \n\n To fetch the list of\
-            \ available country codes, use the [GET all countries](https://dt-url.net/37030go)\
-            \ request."
-        countryName:
-          type: "string"
-          description: "The country name of the location."
-        deploymentType:
-          type: "string"
-          description: "The deployment type of the location: \n\n* `STANDARD`: The\
-            \ location is deployed on Windows or Linux.\n* `KUBERNETES`: The location\
-            \ is deployed on Kubernetes."
-          enum:
-          - "KUBERNETES"
-          - "OPENSHIFT"
-          - "STANDARD"
-          - "UNKNOWN"
-        entityId:
-          type: "string"
-          description: "The Dynatrace entity ID of the location."
-        fipsMode:
-          type: "string"
-          description: "Containerized location property indicating whether FIPS mode\
-            \ is enabled on this location:\n\n* `DISABLED`: FIPS is not enabled on\
-            \ the location.\n* `ENABLED`: FIPS is enabled on the location.\n* `ENABLED_WITH_CORPORATE_PROXY`:\
-            \ FIPS with corporate proxy is enabled on this location.\nDefault: DISABLED"
-          enum:
-          - "DISABLED"
-          - "ENABLED"
-          - "ENABLED_WITH_CORPORATE_PROXY"
-        geoLocationId:
-          type: "string"
-          description: "The Dynatrace GeoLocation ID of the location."
-        latitude:
-          type: "number"
-          format: "double"
-          description: "The latitude of the location in `DDD.dddd` format."
-        locationNodeOutageDelayInMinutes:
-          type: "integer"
-          format: "int32"
-          description: "Alert if location or node outage lasts longer than *X* minutes.\
-            \ \\n\\n Only applicable when `availabilityLocationOutage` or `availabilityNodeOutage`\
-            \ is set to `true`. Supported only for private Synthetic locations."
-          maximum: 5
-          minimum: 1
-        longitude:
-          type: "number"
-          format: "double"
-          description: "The longitude of the location in `DDD.dddd` format."
-        namExecutionSupported:
-          type: "boolean"
-          description: "Containerized location property. Boolean value describes if\
-            \ icmp monitors will be executed on this location:\n\n* `false`: Icmp\
-            \ monitor executions disabled.\n* `true`: Icmp monitor executions enabled."
-        name:
-          type: "string"
-          description: "The name of the location."
-        nodeNames:
-          type: "object"
-          additionalProperties:
-            type: "string"
-            description: "A mapping id to name of the nodes belonging to the location."
-          description: "A mapping id to name of the nodes belonging to the location."
-        nodes:
-          type: "array"
-          description: "A list of synthetic nodes belonging to the location. \n\n\
-            \ You can retrieve the list of available nodes with the [GET all nodes](https://dt-url.net/miy3rpl)\
-            \ call."
-          items:
-            type: "string"
-        regionCode:
-          type: "string"
-          description: "The region code of the location. \n\n To fetch the list of\
-            \ available region codes, use the [GET regions of the country](https://dt-url.net/az230x0)\
-            \ request."
-        regionName:
-          type: "string"
-          description: "The region name of the location."
-        status:
-          type: "string"
-          description: "The status of the location: \n\n* `ENABLED`: The location\
-            \ is displayed as active in the UI. You can assign monitors to the location.\
-            \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
-            \ can't assign monitors to the location. Monitors already assigned to\
-            \ the location will stay there and will be executed from the location.\
-            \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
-            \ monitors to the location. You can only set location as `HIDDEN` when\
-            \ no monitor is assigned to it."
-          enum:
-          - "DISABLED"
-          - "ENABLED"
-          - "HIDDEN"
-        type:
-          type: "string"
-          enum:
-          - "CLUSTER"
-          - "PRIVATE"
-          - "PUBLIC"
-        useNewKubernetesVersion:
-          type: "boolean"
-          description: "Containerized location property. Boolean value describes which\
-            \ kubernetes version will be used:\n\n* `false`: Version 1.23+ that is\
-            \ older than 1.26\n* `true`: Version 1.26+."
-      required:
-      - "latitude"
-      - "longitude"
-      - "name"
-      - "nodes"
-      - "type"
-    ProxyDto:
-      type: "object"
-      description: "Browser Monitor proxy."
-      properties:
-        pacUrl:
-          type: "string"
-          description: "pacUrl"
-      required:
-      - "pacUrl"
-    PublicSyntheticLocation:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticLocation"
-      - type: "object"
-        properties:
-          browserType:
-            type: "string"
-            description: "The type of the browser the location is using to execute\
-              \ browser monitors."
-          browserVersion:
-            type: "string"
-            description: "The version of the browser the location is using to execute\
-              \ browser monitors."
-          capabilities:
-            type: "array"
-            description: "A list of location capabilities."
-            items:
-              type: "string"
-          cloudPlatform:
-            type: "string"
-            description: "The cloud provider where the location is hosted."
-            enum:
-            - "ALIBABA"
-            - "AMAZON_EC2"
-            - "AZURE"
-            - "DYNATRACE_CLOUD"
-            - "GOOGLE_CLOUD"
-            - "INTEROUTE"
-            - "OTHER"
-            - "UNDEFINED"
-          ips:
-            type: "array"
-            description: "The list of IP addresses assigned to the location."
-            items:
-              type: "string"
-            uniqueItems: true
-          stage:
-            type: "string"
-            description: "The stage of the location."
-            enum:
-            - "BETA"
-            - "COMING_SOON"
-            - "DELETED"
-            - "GA"
-      description: "Configuration of a public synthetic location. \n\n Some fields\
-        \ are inherited from the base *SyntheticLocation* object."
-      example:
-        browserType: "Chrome"
-        browserVersion: "69.0.3497.81"
-        capabilities:
-        - "BROWSER"
-        - "HTTP"
-        city: "Amazon US East (N. Virginia)"
-        cloudPlatform: "AMAZON_EC2"
-        countryCode: "US"
-        entityId: "SYNTHETIC_LOCATION-95196F3C9A4F4215"
-        geoLocationId: "GEOLOCATION-95196F3C9A4F4215"
-        ips:
-        - "134.189.153.97"
-        - "134.189.153.98"
-        latitude: 39.0436
-        longitude: -77.4875
-        name: "Amazon US East"
-        regionCode: "VA"
-        stage: "GA"
-        status: "ENABLED"
-        type: "PUBLIC"
-      required:
-      - "browserType"
-      - "browserVersion"
-      - "cloudPlatform"
-      - "ips"
-      - "latitude"
-      - "longitude"
-      - "name"
-      - "stage"
-      - "type"
-    RequestFilterDto:
-      type: "object"
-      description: "Request filter for Browser Monitor."
-      properties:
-        matchingPattern:
-          type: "string"
-          description: "Regex for request that filter will be applied to."
-        type:
-          type: "string"
-          description: "Filter type."
-          enum:
-          - "STARTS_WITH"
-          - "ENDS_WITH"
-          - "CONTAINS"
-          - "EQUALS"
-          - "REGEX"
-      required:
-      - "matchingPattern"
-      - "type"
-    RequestHeaderOptionsDto:
-      type: "object"
-      description: "Header Options of a Browser Monitor."
-      properties:
-        matchingPatterns:
-          type: "array"
-          description: "Apply headers to requests matching pattern."
-          items:
-            type: "string"
-            description: "Apply headers to requests matching pattern."
-          maxItems: 500
-          minItems: 0
-          uniqueItems: true
-        requestHeaders:
-          type: "array"
-          description: "Request headers list."
-          items:
-            $ref: "#/components/schemas/MonitorRequestHeader"
-      required:
-      - "matchingPatterns"
-      - "requestHeaders"
-    SecureAuthenticationDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/AuthenticationDto"
-      - type: "object"
-        properties:
-          credentialId:
-            type: "string"
-            description: "Id of the username and password credential which will be\
-              \ used for authentication."
-      description: "Secure authentication dto for Browser Monitor step."
-      example:
-        credential:
-          field: "USERNAME"
-          id: "CREDENTIALS_VAULT-42069"
-        type: "HTTP_AUTHENTICATION"
-      required:
-      - "credentialId"
-      - "inputType"
-      - "type"
-    SecureKeystrokesInputDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/KeystrokesInputDto"
-      - type: "object"
-        properties:
-          credentialField:
-            type: "string"
-            description: "Enum value of the credential field."
-            enum:
-            - "USERNAME"
-            - "PASSWORD"
-            - "TOKEN"
-          credentialId:
-            type: "string"
-            description: "String value containing the credential id."
-      description: "Credential-based input for keystrokes step."
-      required:
-      - "credentialField"
-      - "credentialId"
-      - "type"
-    SelectOptionStepDto:
-      type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-      - type: "object"
-        properties:
-          selections:
-            type: "array"
-            description: "Field containing the credential."
-            items:
-              $ref: "#/components/schemas/SelectionDto"
-            maxItems: 2147483647
-            minItems: 1
-          target:
-            $ref: "#/components/schemas/TargetDto"
-          validationRules:
-            type: "array"
-            description: "List of validation rules for the step to perform."
-            items:
-              $ref: "#/components/schemas/ValidationRuleDto"
-          waitCondition:
-            $ref: "#/components/schemas/BaseWaitConditionDto"
-      description: "Select option step of Browser Monitor."
-      required:
-      - "name"
-      - "selections"
-      - "type"
-    SelectionDto:
-      type: "object"
-      description: "Option selection for Browser Monitor step."
-      example:
-        index: 0
-        value: "selection-1"
-      properties:
-        index:
-          type: "integer"
-          format: "int32"
-          description: "Selection index."
-          minimum: 0
-        value:
-          type: "string"
-          description: "Selection value."
-      required:
-      - "index"
-      - "value"
-    SyntheticBrowserMonitorConfigurationDto:
+    BrowserMonitorConfigurationDto:
       type: "object"
       description: "Browser Monitor configuration."
       properties:
@@ -2232,17 +979,17 @@ components:
           type: "array"
           description: "Cookies list."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorCookieDto"
+            $ref: "#/components/schemas/MonitorCookieDto"
           uniqueItems: true
         device:
           $ref: "#/components/schemas/TestDeviceDto"
         enablement:
-          $ref: "#/components/schemas/EnablementDto"
+          $ref: "#/components/schemas/PlatformEnablementDto"
         experimentalProperties:
           type: "array"
           description: "Experimental properties list."
           items:
-            $ref: "#/components/schemas/MonitorPropertyDto"
+            $ref: "#/components/schemas/BrowserMonitorPropertyDto"
         filteredRequests:
           $ref: "#/components/schemas/FilteredRequestsDto"
         ignoredErrorCodes:
@@ -2265,10 +1012,23 @@ components:
             \ be set to false by default."
         userAgent:
           type: "string"
-          description: "User agent"
+          description: "User agent."
       required:
       - "device"
-    SyntheticBrowserMonitorRequest:
+    BrowserMonitorPropertyDto:
+      type: "object"
+      description: "Property of a Browser Monitor."
+      properties:
+        name:
+          type: "string"
+          description: "Property name."
+        value:
+          type: "string"
+          description: "Property value."
+      required:
+      - "name"
+      - "value"
+    BrowserMonitorRequest:
       type: "object"
       description: "Browser monitor update."
       example:
@@ -2352,6 +1112,12 @@ components:
         manuallyAssignedEntities:
         - "APPLICATION-213769420"
         name: "My browser monitor"
+        outageHandling:
+          globalConsecutiveOutageCountThreshold: "1"
+          globalOutages: "true"
+          localConsecutiveOutageCountThreshold: "3"
+          localLocationOutageCountThreshold: "3"
+          localOutages: "true"
         performanceThresholds:
           enabled: "true"
           thresholds:
@@ -2375,11 +1141,11 @@ components:
             name: "cookie"
             path: "/"
             value: "some_value"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Cookie step."
           type: "COOKIE"
         - button: "MOUSE_LEFT"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Click on \"submit\""
           target:
             locators:
@@ -2404,7 +1170,7 @@ components:
           waitCondition:
             milliseconds: 10
             waitFor: "TIME"
-        - entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+        - id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           javaScript: "api.fail(\":( Your pc ran into a problem and needs to restart.\"\
             );"
           name: "Execute javascript."
@@ -2421,8 +1187,8 @@ components:
             waitFor: "TIME"
         - credential:
             field: "USERNAME"
-            id: "CREDENTIALS_VAULT-42069"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+            id: "CREDENTIAL_VAULT_ENTRY-42069"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Enter credentials."
           simulateBlurEvent: false
           simulateReturnKey: true
@@ -2452,9 +1218,9 @@ components:
         - authentication:
             credential:
               field: "USERNAME"
-              id: "CREDENTIALS_VAULT-42069"
+              id: "CREDENTIAL_VAULT_ENTRY-42069"
             type: "HTTP_AUTHENTICATION"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Step that navigates to dynatrace.com."
           target:
             locators:
@@ -2480,7 +1246,7 @@ components:
           waitCondition:
             milliseconds: 10
             waitFor: "TIME"
-        - entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+        - id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Select option step."
           selections:
           - index: 0
@@ -2508,12 +1274,6 @@ components:
           waitCondition:
             milliseconds: 10
             waitFor: "TIME"
-        syntheticMonitorOutageHandlingSettings:
-          globalConsecutiveOutageCountThreshold: "1"
-          globalOutages: "true"
-          localConsecutiveOutageCountThreshold: "3"
-          localLocationOutageCountThreshold: "3"
-          localOutages: "true"
         tags:
         - key: "sample key"
           value: "sample value"
@@ -2521,10 +1281,10 @@ components:
         type: "BROWSER"
       properties:
         configuration:
-          $ref: "#/components/schemas/SyntheticBrowserMonitorConfigurationDto"
+          $ref: "#/components/schemas/BrowserMonitorConfigurationDto"
         description:
           type: "string"
-          description: "Monitor description"
+          description: "Monitor description."
         enabled:
           type: "boolean"
           default: true
@@ -2533,10 +1293,9 @@ components:
           type: "integer"
           format: "int64"
           description: "The frequency of the monitor, in minutes. Default value depends\
-            \ on the monitor type (1 minute for MULTI_PROTOCOL and HTTP, 15 minutes\
-            \ for BROWSER)."
+            \ on the monitor type (1 minute for NAM and HTTP, 15 minutes for BROWSER)."
         keyPerformanceMetrics:
-          $ref: "#/components/schemas/KeyPerformanceMetrics"
+          $ref: "#/components/schemas/KeyPerformanceMetricsDto"
         locations:
           type: "array"
           description: "The locations to which the monitor is assigned."
@@ -2554,14 +1313,16 @@ components:
         name:
           type: "string"
           description: "The name of the monitor."
+        outageHandling:
+          $ref: "#/components/schemas/MonitorOutageHandlingSettingsDto"
         performanceThresholds:
-          $ref: "#/components/schemas/SyntheticMonitorPerformanceThresholdsDto"
+          $ref: "#/components/schemas/MonitorPerformanceThresholdsDto"
         primaryGrailTags:
           type: "array"
           description: "Primary Grail tags as a list of key-value pairs. Up to 10\
             \ tags. Those fields are only available for SaaS and not for Managed."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorPrimaryGrailTagDto"
+            $ref: "#/components/schemas/MonitorPrimaryGrailTagDto"
           maxItems: 10
           minItems: 0
           uniqueItems: true
@@ -2580,12 +1341,10 @@ components:
           type: "array"
           description: "The steps of the monitor."
           items:
-            $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-        syntheticMonitorOutageHandlingSettings:
-          $ref: "#/components/schemas/SyntheticMonitorOutageHandlingSettingsDto"
+            $ref: "#/components/schemas/BrowserMonitorStepDto"
         tags:
           type: "array"
-          description: "A set of tags assigned to the monitor. \n\n You can specify\
+          description: "A set of tags assigned to the monitor. \n\nYou can specify\
             \ only the value of the tag here and the `CONTEXTLESS` context and source\
             \ 'USER' will be added automatically. But preferred option is usage of\
             \ SyntheticTagWithSourceDto model."
@@ -2596,7 +1355,7 @@ components:
           type: "string"
           description: "Monitor type."
           enum:
-          - "MULTI_PROTOCOL"
+          - "NETWORK_AVAILABILITY"
           - "BROWSER"
           - "HTTP"
       required:
@@ -2605,7 +1364,7 @@ components:
       - "name"
       - "steps"
       - "type"
-    SyntheticBrowserMonitorResponse:
+    BrowserMonitorResponse:
       type: "object"
       description: "Browser Monitor."
       example:
@@ -2682,8 +1441,8 @@ components:
               value: "www.wp.pl"
         description: "My browser monitor description"
         enabled: "true"
-        entityId: "SYNTHETIC_TEST-3724112C5023ADB4"
         frequencyMin: "60"
+        id: "BROWSER_MONITOR-3724112C5023ADB4"
         keyPerformanceMetrics:
           loadActionKpm: "USER_ACTION_DURATION"
           xhrActionKpm: "VISUALLY_COMPLETE"
@@ -2693,6 +1452,12 @@ components:
         - "APPLICATION-213769420"
         modificationTimestamp: "1716448454338l"
         name: "My browser monitor"
+        outageHandling:
+          globalConsecutiveOutageCountThreshold: "1"
+          globalOutages: "true"
+          localConsecutiveOutageCountThreshold: "3"
+          localLocationOutageCountThreshold: "3"
+          localOutages: "true"
         performanceThresholds:
           enabled: "true"
           thresholds:
@@ -2716,11 +1481,11 @@ components:
             name: "cookie"
             path: "/"
             value: "some_value"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Cookie step."
           type: "COOKIE"
         - button: "MOUSE_LEFT"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Click on \"submit\""
           target:
             locators:
@@ -2745,7 +1510,7 @@ components:
           waitCondition:
             milliseconds: 10
             waitFor: "TIME"
-        - entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+        - id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           javaScript: "api.fail(\":( Your pc ran into a problem and needs to restart.\"\
             );"
           name: "Execute javascript."
@@ -2762,8 +1527,8 @@ components:
             waitFor: "TIME"
         - credential:
             field: "USERNAME"
-            id: "CREDENTIALS_VAULT-42069"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+            id: "CREDENTIAL_VAULT_ENTRY-42069"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Enter credentials."
           simulateBlurEvent: false
           simulateReturnKey: true
@@ -2793,9 +1558,9 @@ components:
         - authentication:
             credential:
               field: "USERNAME"
-              id: "CREDENTIALS_VAULT-42069"
+              id: "CREDENTIAL_VAULT_ENTRY-42069"
             type: "HTTP_AUTHENTICATION"
-          entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+          id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Step that navigates to dynatrace.com."
           target:
             locators:
@@ -2821,7 +1586,7 @@ components:
           waitCondition:
             milliseconds: 10
             waitFor: "TIME"
-        - entityId: "SYNTHETIC_TEST_STEP-43EF14E26B1A462A"
+        - id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
           name: "Select option step."
           selections:
           - index: 0
@@ -2849,12 +1614,6 @@ components:
           waitCondition:
             milliseconds: 10
             waitFor: "TIME"
-        syntheticMonitorOutageHandlingSettings:
-          globalConsecutiveOutageCountThreshold: "1"
-          globalOutages: "true"
-          localConsecutiveOutageCountThreshold: "3"
-          localLocationOutageCountThreshold: "3"
-          localOutages: "true"
         tags:
         - key: "sample key"
           value: "sample value"
@@ -2871,23 +1630,23 @@ components:
           readOnly: true
           uniqueItems: true
         configuration:
-          $ref: "#/components/schemas/SyntheticBrowserMonitorConfigurationDto"
+          $ref: "#/components/schemas/BrowserMonitorConfigurationDto"
         description:
           type: "string"
-          description: "Monitor description"
+          description: "Monitor description."
         enabled:
           type: "boolean"
           description: "If true, the monitor is enabled."
-        entityId:
-          type: "string"
-          description: "The entity id of the monitor."
-          readOnly: true
         frequencyMin:
           type: "integer"
           format: "int64"
           description: "The frequency of the monitor, in minutes."
+        id:
+          type: "string"
+          description: "The smartscape id of the monitor."
+          readOnly: true
         keyPerformanceMetrics:
-          $ref: "#/components/schemas/KeyPerformanceMetrics"
+          $ref: "#/components/schemas/KeyPerformanceMetricsDto"
         locations:
           type: "array"
           description: "The locations to which the monitor is assigned."
@@ -2905,18 +1664,20 @@ components:
         modificationTimestamp:
           type: "integer"
           format: "int64"
-          description: "The timestamp of the last modification"
+          description: "The timestamp of the last modification."
         name:
           type: "string"
           description: "The name of the monitor."
+        outageHandling:
+          $ref: "#/components/schemas/MonitorOutageHandlingSettingsDto"
         performanceThresholds:
-          $ref: "#/components/schemas/SyntheticMonitorPerformanceThresholdsDto"
+          $ref: "#/components/schemas/MonitorPerformanceThresholdsDto"
         primaryGrailTags:
           type: "array"
           description: "Primary Grail tags as a list of key-value pairs. Up to 10\
             \ tags. Those fields are only available for SaaS and not for Managed."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorPrimaryGrailTagDto"
+            $ref: "#/components/schemas/MonitorPrimaryGrailTagDto"
           uniqueItems: true
         securityContext:
           type: "array"
@@ -2933,12 +1694,10 @@ components:
           type: "array"
           description: "The steps of the monitor."
           items:
-            $ref: "#/components/schemas/SyntheticBrowserMonitorStepDto"
-        syntheticMonitorOutageHandlingSettings:
-          $ref: "#/components/schemas/SyntheticMonitorOutageHandlingSettingsDto"
+            $ref: "#/components/schemas/BrowserMonitorStepDto"
         tags:
           type: "array"
-          description: "A set of tags assigned to the monitor. \n\n You can specify\
+          description: "A set of tags assigned to the monitor. \n\nYou can specify\
             \ only the value of the tag here and the `CONTEXTLESS` context and source\
             \ 'USER' will be added automatically. But preferred option is usage of\
             \ SyntheticTagWithSourceDto model."
@@ -2949,17 +1708,16 @@ components:
           type: "string"
           description: "Monitor type."
           enum:
-          - "MULTI_PROTOCOL"
+          - "NETWORK_AVAILABILITY"
           - "BROWSER"
-          - "HTTP"
       required:
       - "configuration"
-      - "entityId"
+      - "id"
       - "keyPerformanceMetrics"
+      - "outageHandling"
       - "steps"
-      - "syntheticMonitorOutageHandlingSettings"
       - "type"
-    SyntheticBrowserMonitorStepDto:
+    BrowserMonitorStepDto:
       type: "object"
       description: "Base step of Browser Monitor."
       discriminator:
@@ -2973,9 +1731,9 @@ components:
           TAP: "#/components/schemas/InteractionStepDto"
         propertyName: "type"
       properties:
-        entityId:
+        id:
           type: "string"
-          description: "Entity Id."
+          description: "Step Id."
           readOnly: true
         name:
           type: "string"
@@ -3000,175 +1758,1132 @@ components:
       required:
       - "name"
       - "type"
-    SyntheticConfigDto:
+    BrowserPermissionsDto:
       type: "object"
-      description: "A DTO for synthetic configuration."
+      description: "Permissions settings for browser."
       properties:
-        bmMonitorTimeout:
-          type: "integer"
-          format: "int64"
-          description: "bmMonitorTimeout - browser monitor execution timeout (ms)"
-          maximum: 900000
-          minimum: 60000
-        bmStepTimeout:
-          type: "integer"
-          format: "int64"
-          description: "bmStepTimeout - browser monitor single step execution timeout\
-            \ (ms)"
-          maximum: 180000
-          minimum: 10000
-      required:
-      - "bmMonitorTimeout"
-      - "bmStepTimeout"
-    SyntheticLocation:
+        camera:
+          type: "boolean"
+          description: "Camera permission. If not defined in request, it will be set\
+            \ to false by default."
+        location:
+          type: "boolean"
+          description: "Location permission. If not defined in request, it will be\
+            \ set to false by default."
+        microphone:
+          type: "boolean"
+          description: "Microphone permission. If not defined in request, it will\
+            \ be set to false by default."
+        notifications:
+          type: "boolean"
+          description: "Notifications permission. If not defined in request, it will\
+            \ be set to false by default."
+    ChromiumStartupFlagsDto:
       type: "object"
-      description: "Configuration of a synthetic location. \n\n **countryCode**, **regionCode**,\
-        \ **city** parameters are optional as they can be retrieved based on **latitude**\
-        \ and **longitude** of location.\n\n The actual set of fields depends on the\
-        \ type of the location. Find the list of actual objects in the description\
-        \ of the **type** field or see [Synthetic locations API v2 - JSON models](https://dt-url.net/3n43szj)."
+      description: "Chromium startup flags of a Browser Monitor."
+      properties:
+        autoplay-policy:
+          type: "string"
+          description: "autoplay-policy type."
+          enum:
+          - "no-user-gesture-required"
+          - "document-user-activation-required"
+        disable-features:
+          type: "object"
+          additionalProperties:
+            type: "boolean"
+            description: "disable-features map."
+          description: "disable-features map."
+        disable-site-isolation-trials:
+          type: "boolean"
+          description: "disable-site-isolation-trials flag."
+        disable-web-security:
+          type: "boolean"
+          description: "disable-web-security flag. If no value is passed, it will\
+            \ be set to false by default."
+        host-resolver-rules:
+          type: "string"
+          description: "host-resolver-rules."
+        ignore-certificate-errors:
+          type: "boolean"
+          description: "ignore-certificate-errors flag."
+        ssl-version-max:
+          type: "string"
+          description: "ssl-version-max."
+        ssl-version-min:
+          type: "string"
+          description: "ssl-version-min."
+        test-type:
+          type: "boolean"
+          description: "test-type flag."
+    ClientCertificateDto:
+      type: "object"
+      description: "Client certificate."
+      properties:
+        credentialId:
+          type: "string"
+          description: "Certificate CV id."
+        domain:
+          type: "string"
+          description: "Domain certificate will be applied to."
+      required:
+      - "credentialId"
+      - "domain"
+    ConstraintViolation:
+      type: "object"
+      description: "Information about a single constraint violation."
+      properties:
+        context:
+          type: "object"
+          additionalProperties:
+            type: "string"
+            description: "Structured context of the constraint violation.\nWell known\
+              \ keys that **can** be present are:\n* `reason` -> Additional reasoning\
+              \ behind the occurred violation.\n* `pipeline` -> Pipeline related to\
+              \ the violation.\n* `endpoint` -> Endpoint related to the violation.\n\
+              * `stage` -> Stage related to the violation.\n* `processor` -> Processor\
+              \ related to the violation.\n* `routingRule` -> Routing rule related\
+              \ to the violation.\n"
+          description: "Structured context of the constraint violation.\nWell known\
+            \ keys that **can** be present are:\n* `reason` -> Additional reasoning\
+            \ behind the occurred violation.\n* `pipeline` -> Pipeline related to\
+            \ the violation.\n* `endpoint` -> Endpoint related to the violation.\n\
+            * `stage` -> Stage related to the violation.\n* `processor` -> Processor\
+            \ related to the violation.\n* `routingRule` -> Routing rule related to\
+            \ the violation.\n"
+        message:
+          type: "string"
+          description: "Description of the constraint violation."
+      required:
+      - "message"
+    ConstraintViolationDetails:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/ErrorResponseDetails"
+      - type: "object"
+        properties:
+          constraintViolations:
+            type: "array"
+            description: "List of encountered constraint violations."
+            items:
+              $ref: "#/components/schemas/ConstraintViolation"
+      description: "List of encountered constraint violations."
+      required:
+      - "constraintViolations"
+    CookieStepDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/BrowserMonitorStepDto"
+      - type: "object"
+        properties:
+          cookies:
+            type: "array"
+            description: "Field containing the list of cookies."
+            items:
+              $ref: "#/components/schemas/MonitorCookieDto"
+            maxItems: 2147483647
+            minItems: 1
+            uniqueItems: true
+      description: "Cookie step of Browser Monitor."
+      required:
+      - "cookies"
+      - "name"
+      - "type"
+    ErrorResponse:
+      type: "object"
+      description: "Basic information of the encountered error."
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "The returned HTTP status code."
+        details:
+          $ref: "#/components/schemas/ErrorResponseDetails"
+        message:
+          type: "string"
+          description: "Description of the encountered error."
+      required:
+      - "code"
+      - "message"
+    ErrorResponseDetails:
+      type: "object"
+      description: "Detailed information of the error."
       discriminator:
         mapping:
-          CLUSTER: "#/components/schemas/PrivateSyntheticLocation"
-          PRIVATE: "#/components/schemas/PrivateSyntheticLocation"
-          PUBLIC: "#/components/schemas/PublicSyntheticLocation"
+          constraintViolation: "#/components/schemas/ConstraintViolationDetails"
         propertyName: "type"
       properties:
-        city:
+        type:
           type: "string"
-          description: "The city of the location."
-        countryCode:
+          description: "Defines the actual set of fields depending on the value. See\
+            \ one of the following objects: \n\n* `constraintViolation` -> ConstraintViolationDetails\
+            \ \n"
+          enum:
+          - "constraintViolation"
+      required:
+      - "type"
+    ErrorResponseEnvelope:
+      type: "object"
+      description: "Encloses the encountered error."
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorResponse"
+      required:
+      - "error"
+    ExtendedNodeResponse:
+      type: "object"
+      description: "Configuration of a synthetic node. Compare to NodeResponse contains\
+        \ additional browser-related data."
+      example:
+        activeGateVersion: "1.172.2.20190607-040913"
+        autoUpdateEnabled: true
+        browserMonitorsEnabled: true
+        browserType: "Chrome"
+        browserVersion: "69.0.3497.81"
+        capabilities:
+        - "HTTP_HIGH_RESOURCE"
+        - "HTTP"
+        healthCheckStatus: "Ok"
+        hostname: "gdn.dyna.trace"
+        id: "3086117876"
+        ips:
+        - "238.245.160.14"
+        oneAgentRoutingEnabled: true
+        operatingSystem: "Linux"
+        playerVersion: "1.179.0.20190920-145430"
+        status: "Running"
+        version: "1.161.0.20181210-173639"
+      properties:
+        activeGateVersion:
           type: "string"
-          description: "The country code of the location. \n\n To fetch the list of\
-            \ available country codes, use the [GET all countries](https://dt-url.net/37030go)\
-            \ request."
-        countryName:
+          description: "The version of the Active Gate."
+        autoUpdateEnabled:
+          type: "boolean"
+          description: "The Active Gate has the Auto update option enabled ('true')\
+            \ or not ('false')."
+        browserMonitorsEnabled:
+          type: "boolean"
+          description: "The synthetic node is able to execute browser monitors (`true`)\
+            \ or not (`false`)."
+        browserType:
           type: "string"
-          description: "The country name of the location."
-        entityId:
+          description: "The browser type."
+        browserVersion:
           type: "string"
-          description: "The Dynatrace entity ID of the location."
+          description: "The browser version."
+        capabilities:
+          type: "array"
+          description: "The list of node's capabilities."
+          items:
+            type: "string"
+            description: "The list of node's capabilities."
+        healthCheckStatus:
+          type: "string"
+          description: "The health check status of the synthetic node."
+        hostname:
+          type: "string"
+          description: "The hostname of the synthetic node."
+        id:
+          type: "string"
+          description: "The ID of the synthetic node."
+        ips:
+          type: "array"
+          description: "The IP of the synthetic node."
+          items:
+            type: "string"
+        oneAgentRoutingEnabled:
+          type: "boolean"
+          description: "The Active Gate has the One Agent routing enabled ('true')\
+            \ or not ('false')."
+        operatingSystem:
+          type: "string"
+          description: "The Active Gate's host operating system."
+        playerVersion:
+          type: "string"
+          description: "The version of the synthetic player."
+        status:
+          type: "string"
+          description: "The status of the synthetic node."
+        version:
+          type: "string"
+          description: "The version of the synthetic node."
+      required:
+      - "activeGateVersion"
+      - "autoUpdateEnabled"
+      - "browserMonitorsEnabled"
+      - "browserType"
+      - "browserVersion"
+      - "capabilities"
+      - "healthCheckStatus"
+      - "hostname"
+      - "id"
+      - "ips"
+      - "oneAgentRoutingEnabled"
+      - "operatingSystem"
+      - "playerVersion"
+      - "status"
+      - "version"
+    FilteredRequestsDto:
+      type: "object"
+      description: "Filtered requests of a Browser Monitor."
+      properties:
+        mode:
+          type: "string"
+          description: "Filter mode for filtered requests."
+          enum:
+          - "BLOCK"
+          - "ALLOW"
+        requests:
+          type: "array"
+          description: "Requests to be filtered."
+          items:
+            $ref: "#/components/schemas/RequestFilterDto"
+      required:
+      - "mode"
+      - "requests"
+    FrameworkOptionsDto:
+      type: "object"
+      description: "JS framework options of a JS Agent."
+      properties:
+        activeXObject:
+          type: "boolean"
+          description: "activeXObject support. If not defined in request, it will\
+            \ be set to false by default."
+        angular:
+          type: "boolean"
+          description: "Angular support. If not defined in request, it will be set\
+            \ to false by default."
+        dojo:
+          type: "boolean"
+          description: "Dojo support. If not defined in request, it will be set to\
+            \ false by default."
+        extJs:
+          type: "boolean"
+          description: "extJs support. If not defined in request, it will be set to\
+            \ false by default."
+        icefaces:
+          type: "boolean"
+          description: "icefaces support. If not defined in request, it will be set\
+            \ to false by default."
+        jQuery:
+          type: "boolean"
+          description: "jquery support. If not defined in request, it will be set\
+            \ to false by default."
+        mooTools:
+          type: "boolean"
+          description: "mooTools support. If not defined in request, it will be set\
+            \ to false by default."
+        prototype:
+          type: "boolean"
+          description: "prototype support. If not defined in request, it will be set\
+            \ to false by default."
+    HeaderDto:
+      type: "object"
+      description: "A header of the request."
+      properties:
+        name:
+          type: "string"
+          description: "Header's name."
+        value:
+          type: "string"
+          description: "Header's value."
+      required:
+      - "name"
+      - "value"
+    HttpAuthenticationDto:
+      type: "object"
+      description: "The Http step's authentication."
+      properties:
+        credentials:
+          type: "string"
+          description: "Credential vault identifier."
+        kdcIp:
+          type: "string"
+          description: "KDC IP in case KERBEROS auth type is selected."
+        realmName:
+          type: "string"
+          description: "Realm name in case KERBEROS type is selected."
+        type:
+          type: "string"
+          description: "Authentication type."
+          enum:
+          - "BASIC_AUTHENTICATION"
+          - "NTLM"
+          - "KERBEROS"
+      required:
+      - "credentials"
+      - "type"
+    HttpMonitorAdvancedSettingsDto:
+      type: "object"
+      description: "Http monitor's advanced settings."
+      properties:
+        connectTimeout:
+          type: "integer"
+          format: "int32"
+          description: "Connect timeout per request in ms."
+        dnsQueryTimeout:
+          type: "integer"
+          format: "int32"
+          description: "DNS query timeout in ms."
+        maxCustomScriptSize:
+          type: "integer"
+          format: "int32"
+          description: "Maximum size of each pre- or post- execution script size in\
+            \ bytes."
+        maxHeaderSize:
+          type: "integer"
+          format: "int32"
+          description: "Maximum size of each request header in bytes."
+        maxRequestBodySize:
+          type: "integer"
+          format: "int32"
+          description: "Maximum request body size in bytes."
+        maxResponseBodyReadByScriptSize:
+          type: "integer"
+          format: "int32"
+          description: "Maximum size of response body read by post-execution script\
+            \ in bytes."
+        maxResponseBodySize:
+          type: "integer"
+          format: "int32"
+          description: "Maximum response body size in bytes."
+        monitorExecutionTimeout:
+          type: "integer"
+          format: "int32"
+          description: "Monitor execution timeout in ms."
+        requestTimeout:
+          type: "integer"
+          format: "int32"
+          description: "Request timeout in ms."
+        scriptExecutionTimeout:
+          type: "integer"
+          format: "int32"
+          description: "Pre- or post- execution script timeout in ms."
+    HttpMonitorRequest:
+      type: "object"
+      description: "Http monitor's settings."
+      example:
+        advancedSettings:
+          connectTimeout: "10000"
+          dnsQueryTimeout: "5000"
+          maxCustomScriptSize: "5678"
+          maxHeaderSize: "8192"
+          maxRequestBodySize: "1234"
+          maxResponseBodyReadByScriptSize: "10240"
+          maxResponseBodySize: "9000"
+          monitorExecutionTimeout: "60000"
+          requestTimeout: "30000"
+          scriptExecutionTimeout: "10000"
+        cookies:
+        - domain: "www.wp.pl"
+          name: "Cookie's name"
+          value: "Cookie's value"
+        description: "Example of Http monitor description"
+        enabled: "true"
+        frequencyMin: "1"
+        locations:
+        - "SYNTHETIC_LOCATION-D3A5BFD8676A4F19"
+        manuallyAssignedEntities:
+        - "APPLICATION-213769420"
+        name: "My Http monitor"
+        outageHandling:
+          globalConsecutiveOutageCountThreshold: "1"
+          globalOutages: "true"
+          localConsecutiveOutageCountThreshold: "3"
+          localLocationOutageCountThreshold: "3"
+          localOutages: "true"
+        performanceThresholds:
+          enabled: "true"
+          thresholds:
+          - stepIndex: "1"
+            threshold: "200"
+            type: "STEP"
+        primaryGrailTags:
+        - key: "sample key"
+          value: "sample value"
+        - key: "another sample key"
+          value: "another sample value"
+        securityContext:
+        - "sample security context"
+        - "another security context"
+        steps:
+        - authentication:
+            credentials: "CREDENTIAL_VAULT_ENTRY-1234567890ABCDEF"
+            type: "BASIC_AUTHENTICATION"
+          configuration:
+            acceptAnyCertificate: "true"
+            doNotPersistSensitiveData: "false"
+            followRedirects: "true"
+            headers:
+            - name: "user-agent"
+              value: "Test header"
+          constraints:
+          - properties:
+              operator: "<"
+              value: "400"
+            type: "HTTP_STATUSES"
+          id: "HTTP_MONITOR_STEP-3C611C9979F57331"
+          methodType: "GET"
+          name: "Example page"
+          postScript: ""
+          preScript: ""
+          requestBody: ""
+          requestTimeout: "30"
+          url: "https://google.com"
+        tags:
+        - key: "sample key"
+          value: "sample value"
+        - key: "sample key"
+        type: "HTTP"
+      properties:
+        advancedSettings:
+          $ref: "#/components/schemas/HttpMonitorAdvancedSettingsDto"
+        cookies:
+          type: "array"
+          description: "The cookies of the monitor."
+          items:
+            $ref: "#/components/schemas/MonitorCookieDto"
+          uniqueItems: true
+        description:
+          type: "string"
+          description: "Monitor description."
+        enabled:
+          type: "boolean"
+          default: true
+          description: "If true, the monitor is enabled."
+        frequencyMin:
+          type: "integer"
+          format: "int64"
+          description: "The frequency of the monitor, in minutes. Default value depends\
+            \ on the monitor type (1 minute for NAM and HTTP, 15 minutes for BROWSER)."
+        locations:
+          type: "array"
+          description: "The locations to which the monitor is assigned."
+          items:
+            type: "string"
+            description: "The locations to which the monitor is assigned."
+          uniqueItems: true
+        manuallyAssignedEntities:
+          type: "array"
+          description: "Manually assigned entities."
+          items:
+            type: "string"
+            description: "Manually assigned entities."
+        name:
+          type: "string"
+          description: "The name of the monitor."
+        outageHandling:
+          $ref: "#/components/schemas/MonitorOutageHandlingSettingsDto"
+        performanceThresholds:
+          $ref: "#/components/schemas/MonitorPerformanceThresholdsDto"
+        primaryGrailTags:
+          type: "array"
+          description: "Primary Grail tags as a list of key-value pairs. Up to 10\
+            \ tags. Those fields are only available for SaaS and not for Managed."
+          items:
+            $ref: "#/components/schemas/MonitorPrimaryGrailTagDto"
+          maxItems: 10
+          minItems: 0
+          uniqueItems: true
+        securityContext:
+          type: "array"
+          description: "[FEATURE DISABLED] Security context as a list of strings.\
+            \ Up to 10 values, max 200 characters per value. Those fields are only\
+            \ available for SaaS and not for Managed."
+          items:
+            type: "string"
+            description: "[FEATURE DISABLED] Security context as a list of strings.\
+              \ Up to 10 values, max 200 characters per value. Those fields are only\
+              \ available for SaaS and not for Managed."
+          uniqueItems: true
+        steps:
+          type: "array"
+          description: "The steps of the monitor."
+          items:
+            $ref: "#/components/schemas/HttpMonitorStepDto"
+        tags:
+          type: "array"
+          description: "A set of tags assigned to the monitor. \n\nYou can specify\
+            \ only the value of the tag here and the `CONTEXTLESS` context and source\
+            \ 'USER' will be added automatically. But preferred option is usage of\
+            \ SyntheticTagWithSourceDto model."
+          items:
+            $ref: "#/components/schemas/SyntheticTagWithSourceDto"
+          uniqueItems: true
+        type:
+          type: "string"
+          description: "Monitor type."
+          enum:
+          - "NETWORK_AVAILABILITY"
+          - "BROWSER"
+          - "HTTP"
+      required:
+      - "locations"
+      - "name"
+      - "steps"
+      - "type"
+    HttpMonitorResponse:
+      type: "object"
+      description: "Http monitor."
+      example:
+        automaticallyAssignedEntities:
+        - "APPLICATION-123456789"
+        cookies:
+        - domain: "www.wp.pl"
+          name: "Cookie's name"
+          value: "Cookie's value"
+        description: "Example of Http monitor description"
+        enabled: "true"
+        frequencyMin: "1"
+        id: "HTTP_MONITOR-2C611CB579F573D1"
+        locations:
+        - "SYNTHETIC_LOCATION-D3A5BFD8676A4F19"
+        manuallyAssignedEntities:
+        - "APPLICATION-213769420"
+        modificationTimestamp: "1716448454338l"
+        name: "My Http monitor"
+        outageHandling:
+          globalConsecutiveOutageCountThreshold: "1"
+          globalOutages: "true"
+          localConsecutiveOutageCountThreshold: "3"
+          localLocationOutageCountThreshold: "3"
+          localOutages: "true"
+        performanceThresholds:
+          enabled: "true"
+          thresholds:
+          - stepIndex: "1"
+            threshold: "200"
+            type: "STEP"
+        primaryGrailTags:
+        - key: "sample key"
+          value: "sample value"
+        - key: "another sample key"
+          value: "another sample value"
+        securityContext:
+        - "sample security context"
+        - "another security context"
+        steps:
+        - authentication:
+            credentials: "CREDENTIAL_VAULT_ENTRY-1234567890ABCDEF"
+            type: "BASIC_AUTHENTICATION"
+          configuration:
+            acceptAnyCertificate: "true"
+            doNotPersistSensitiveData: "false"
+            followRedirects: "true"
+            headers:
+            - name: "user-agent"
+              value: "Test header"
+          constraints:
+          - properties:
+              operator: "<"
+              value: "400"
+            type: "HTTP_STATUSES"
+          id: "HTTP_MONITOR_STEP-3C611C9979F57331"
+          methodType: "GET"
+          name: "Example page"
+          postScript: ""
+          preScript: ""
+          requestBody: ""
+          requestTimeout: "30"
+          url: "https://google.com"
+        tags:
+        - key: "sample key"
+          value: "sample value"
+        - key: "sample key"
+        type: "HTTP"
+      properties:
+        advancedSettings:
+          $ref: "#/components/schemas/HttpMonitorAdvancedSettingsDto"
+        automaticallyAssignedEntities:
+          type: "array"
+          description: "Automatically assigned entities."
+          items:
+            type: "string"
+            description: "Automatically assigned entities."
+            readOnly: true
+          readOnly: true
+          uniqueItems: true
+        cookies:
+          type: "array"
+          description: "The cookies of the monitor."
+          items:
+            $ref: "#/components/schemas/MonitorCookieDto"
+          uniqueItems: true
+        description:
+          type: "string"
+          description: "Monitor description."
+        enabled:
+          type: "boolean"
+          description: "If true, the monitor is enabled."
+        frequencyMin:
+          type: "integer"
+          format: "int64"
+          description: "The frequency of the monitor, in minutes."
+        id:
+          type: "string"
+          description: "The smartscape id of the monitor."
+          readOnly: true
+        locations:
+          type: "array"
+          description: "The locations to which the monitor is assigned."
+          items:
+            type: "string"
+            description: "The locations to which the monitor is assigned."
+          uniqueItems: true
+        manuallyAssignedEntities:
+          type: "array"
+          description: "Manually assigned entities."
+          items:
+            type: "string"
+            description: "Manually assigned entities."
+          uniqueItems: true
+        modificationTimestamp:
+          type: "integer"
+          format: "int64"
+          description: "The timestamp of the last modification."
+        name:
+          type: "string"
+          description: "The name of the monitor."
+        outageHandling:
+          $ref: "#/components/schemas/MonitorOutageHandlingSettingsDto"
+        performanceThresholds:
+          $ref: "#/components/schemas/MonitorPerformanceThresholdsDto"
+        primaryGrailTags:
+          type: "array"
+          description: "Primary Grail tags as a list of key-value pairs. Up to 10\
+            \ tags. Those fields are only available for SaaS and not for Managed."
+          items:
+            $ref: "#/components/schemas/MonitorPrimaryGrailTagDto"
+          uniqueItems: true
+        securityContext:
+          type: "array"
+          description: "[FEATURE DISABLED] Security context as a list of strings.\
+            \ Up to 10 values, max 200 characters per value. Those fields are only\
+            \ available for SaaS and not for Managed."
+          items:
+            type: "string"
+            description: "[FEATURE DISABLED] Security context as a list of strings.\
+              \ Up to 10 values, max 200 characters per value. Those fields are only\
+              \ available for SaaS and not for Managed."
+          uniqueItems: true
+        steps:
+          type: "array"
+          description: "The steps of the monitor."
+          items:
+            $ref: "#/components/schemas/HttpMonitorStepDto"
+        tags:
+          type: "array"
+          description: "A set of tags assigned to the monitor. \n\nYou can specify\
+            \ only the value of the tag here and the `CONTEXTLESS` context and source\
+            \ 'USER' will be added automatically. But preferred option is usage of\
+            \ SyntheticTagWithSourceDto model."
+          items:
+            $ref: "#/components/schemas/SyntheticTagWithSourceDto"
+          uniqueItems: true
+        type:
+          type: "string"
+          description: "Monitor type."
+          enum:
+          - "NETWORK_AVAILABILITY"
+          - "BROWSER"
+      required:
+      - "id"
+      - "outageHandling"
+      - "steps"
+      - "type"
+    HttpMonitorStepDto:
+      type: "object"
+      description: "The step of a Http monitor."
+      properties:
+        authentication:
+          $ref: "#/components/schemas/HttpAuthenticationDto"
+        configuration:
+          $ref: "#/components/schemas/HttpStepConfigurationDto"
+        constraints:
+          type: "array"
+          description: "The list of constraints."
+          items:
+            $ref: "#/components/schemas/MonitorConstraintDto"
+        id:
+          type: "string"
+          description: "Step Id."
+          readOnly: true
+        methodType:
+          type: "string"
+          description: "Method type."
+          enum:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "HEAD"
+          - "OPTIONS"
+          - "PATCH"
+        name:
+          type: "string"
+          description: "Step name."
+        postScript:
+          type: "string"
+          description: "PostScript."
+        preScript:
+          type: "string"
+          description: "PreScript."
+        requestBody:
+          type: "string"
+          description: "Request body."
+        requestTimeout:
+          type: "integer"
+          format: "int64"
+          description: "Request timeout in s."
+        url:
+          type: "string"
+          description: "Step url."
+      required:
+      - "constraints"
+      - "methodType"
+      - "name"
+      - "url"
+    HttpStepConfigurationDto:
+      type: "object"
+      description: "The Http step's configuration."
+      properties:
+        acceptAnyCertificate:
+          type: "boolean"
+          default: true
+          description: "If true accept any certificate flag."
+        clientCertificateId:
+          type: "string"
+          description: "Identifier of stored client's certificate."
+        doNotPersistSensitiveData:
+          type: "boolean"
+          default: false
+          description: "If true the step's data aren't stored and displayed."
+        followRedirects:
+          type: "boolean"
+          default: false
+          description: "If true follow redirects."
+        headers:
+          type: "array"
+          description: "The headers."
+          items:
+            $ref: "#/components/schemas/HeaderDto"
+        sslCertificateExpirationDaysToAlert:
+          type: "integer"
+          format: "int32"
+          description: "Number of days within SSL certificate expires."
+    IgnoredErrorCodesDto:
+      type: "object"
+      description: "Ignored Error Codes of a Browser Monitor."
+      properties:
+        matchingDocumentRequests:
+          type: "string"
+          description: "Ignoring status codes will be applied to requests matching\
+            \ pattern."
+        statusCodes:
+          type: "string"
+          description: "Status codes to be ignored."
+    InteractionStepDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/BrowserMonitorStepDto"
+      - type: "object"
+        properties:
+          button:
+            type: "string"
+            description: "Integer containing the button index."
+            enum:
+            - "MOUSE_LEFT"
+            - "MOUSE_MIDDLE"
+            - "MOUSE_RIGHT"
+          target:
+            $ref: "#/components/schemas/TargetDto"
+          validationRules:
+            type: "array"
+            description: "List of validation rules for the step to perform."
+            items:
+              $ref: "#/components/schemas/ValidationRuleDto"
+          waitCondition:
+            $ref: "#/components/schemas/BaseWaitConditionDto"
+      description: "Interaction step of Browser Monitor."
+      required:
+      - "button"
+      - "name"
+      - "type"
+    JavaScriptAgentSettingsDto:
+      type: "object"
+      description: "JavaScript Agent Settings."
+      properties:
+        customProperties:
+          type: "string"
+          description: "Custom configuration properties."
+        experimentalValues:
+          type: "boolean"
+          description: "Experimental values support. If not defined in request, it\
+            \ will be set to false by default."
+        fetchRequests:
+          type: "boolean"
+          description: "Capture fetch() requests. If not defined in request, it will\
+            \ be set to true by default."
+        javaScriptErrors:
+          type: "boolean"
+          description: "Enable this setting to monitor JavaScript errors. The window.onError\
+            \ handler is used for capturing JavaScript errors. If not defined in request,\
+            \ it will be set to true by default."
+        javaScriptFrameworkSupport:
+          $ref: "#/components/schemas/FrameworkOptionsDto"
+        timedActions:
+          type: "boolean"
+          description: "Within JavaScript frameworks, XHRs are often sent via setTimeout\
+            \ methods. Enable this setting to detect actions that trigger such XHRs.\
+            \ If not defined in request, it will be set to true by default."
+        timeoutSettings:
+          $ref: "#/components/schemas/TimeoutSettingsDto"
+        visuallyCompleteOptions:
+          $ref: "#/components/schemas/VisuallyCompleteOptionsDto"
+        xmlHttpRequests:
+          type: "boolean"
+          description: "Capture xml Http requests (XHR). If not defined in request,\
+            \ it will be set to true by default."
+    JavaScriptStepDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/BrowserMonitorStepDto"
+      - type: "object"
+        properties:
+          javaScript:
+            type: "string"
+            description: "String containing a script in JavaScript."
+          target:
+            $ref: "#/components/schemas/TargetDto"
+          waitCondition:
+            $ref: "#/components/schemas/BaseWaitConditionDto"
+      description: "JavaScript step of Browser Monitor."
+      required:
+      - "javaScript"
+      - "name"
+      - "type"
+    KeyPerformanceMetricsDto:
+      type: "object"
+      description: "The key performance metrics configuration."
+      properties:
+        loadActionKpm:
+          type: "string"
+          description: "Load action key performance metric."
+          enum:
+          - "USER_ACTION_DURATION"
+          - "VISUALLY_COMPLETE"
+          - "SPEED_INDEX"
+          - "DOM_INTERACTIVE"
+          - "LOAD_EVENT_START"
+          - "LOAD_EVENT_END"
+          - "RESPONSE_START"
+          - "RESPONSE_END"
+          - "LARGEST_CONTENTFUL_PAINT"
+          - "CUMULATIVE_LAYOUT_SHIFT"
+        xhrActionKpm:
+          type: "string"
+          description: "XHR action key performance metric."
+          enum:
+          - "USER_ACTION_DURATION"
+          - "VISUALLY_COMPLETE"
+          - "RESPONSE_START"
+          - "RESPONSE_END"
+    KeyStrokesStepDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/BrowserMonitorStepDto"
+      - type: "object"
+        properties:
+          input:
+            $ref: "#/components/schemas/KeystrokesInputDto"
+          simulateBlurEvent:
+            type: "boolean"
+            description: "Boolean value set to true if blur event should be simulated."
+          simulateReturnKey:
+            type: "boolean"
+            description: "Boolean value set to true if return key should be simulated."
+          target:
+            $ref: "#/components/schemas/TargetDto"
+          validationRules:
+            type: "array"
+            description: "List of validation rules for the step to perform."
+            items:
+              $ref: "#/components/schemas/ValidationRuleDto"
+          waitCondition:
+            $ref: "#/components/schemas/BaseWaitConditionDto"
+      description: "Key strokes step of Browser Monitor."
+      example:
+        id: "BROWSER_MONITOR_STEP-43EF14E26B1A462A"
+        name: "Enter credentials."
+        simulateBlurEvent: false
+        simulateReturnKey: true
+        target:
+          locators:
+          - type: "CSS"
+            value: "<img>[id='logoIcon']"
+          - type: "CSS"
+            value: "<a>[id='externalSite']"
+          window: "ruxitWin[0]"
+        type: "KEYSTROKES"
+        validationRules:
+        - failIfFound: false
+          match: "some text to match"
+          regex: false
+          target:
+            locators:
+            - type: "CSS"
+              value: "<img>[id='logoIcon']"
+            - type: "CSS"
+              value: "<a>[id='externalSite']"
+            window: "ruxitWin[0]"
+          type: "TEXT_MATCH"
+        waitCondition:
+          milliseconds: 10
+          waitFor: "TIME"
+      required:
+      - "input"
+      - "name"
+      - "type"
+    KeystrokesInputDto:
+      type: "object"
+      description: "Key strokes step input."
+      discriminator:
+        mapping:
+          PLAIN: "#/components/schemas/PlainKeyStrokesInputDto"
+          SECURE: "#/components/schemas/SecureKeyStrokesInputDto"
+        propertyName: "type"
+      properties:
+        type:
+          type: "string"
+          description: "Defines the actual set of fields depending on the value. See\
+            \ one of the following objects: \n\n* `SECURE` -> SecureKeyStrokesInputDto\
+            \ \n* `PLAIN` -> PlainKeyStrokesInputDto \n"
+          enum:
+          - "PLAIN"
+          - "SECURE"
+      required:
+      - "type"
+    LocationCollectionElementDto:
+      type: "object"
+      description: "A synthetic location."
+      properties:
+        capabilities:
+          type: "array"
+          description: "The list of location's capabilities."
+          items:
+            type: "string"
+        cloudPlatform:
+          type: "string"
+          description: "The cloud provider where the location is hosted. \n\n Only\
+            \ applicable to `PUBLIC` locations."
+          enum:
+          - "ALIBABA"
+          - "AMAZON_EC2"
+          - "AZURE"
+          - "DYNATRACE_CLOUD"
+          - "GOOGLE_CLOUD"
+          - "INTEROUTE"
+          - "OTHER"
+          - "UNDEFINED"
+        deploymentType:
+          type: "string"
+          description: "Location's deployment type."
+          enum:
+          - "KUBERNETES"
+          - "OPENSHIFT"
+          - "STANDARD"
+          - "UNKNOWN"
+        geoCity:
+          type: "string"
+          description: "Location's city."
+        geoContinent:
+          type: "string"
+          description: "Location's continent."
+        geoCountry:
+          type: "string"
+          description: "Location's country."
+        geoLatitude:
+          type: "number"
+          format: "double"
+          description: "Location's latitude."
         geoLocationId:
           type: "string"
-          description: "The Dynatrace GeoLocation ID of the location."
-        latitude:
+          description: "The Dynatrace GeoLocation ID."
+        geoLongitude:
           type: "number"
           format: "double"
-          description: "The latitude of the location in `DDD.dddd` format."
-        longitude:
-          type: "number"
-          format: "double"
-          description: "The longitude of the location in `DDD.dddd` format."
+          description: "Location's longitude."
+        id:
+          type: "string"
+          description: "The Dynatrace Location ID."
+        ips:
+          type: "array"
+          description: "The list of IP addresses assigned to the location. \n\n Only\
+            \ applicable to `PUBLIC` locations."
+          items:
+            type: "string"
+        lastModificationTimeMillis:
+          type: "integer"
+          format: "int64"
+          description: "The timestamp of the last modification of the location, in\
+            \ milliseconds since the Unix epoch."
         name:
           type: "string"
           description: "The name of the location."
-        regionCode:
+        nodes:
+          type: "array"
+          description: "A list of synthetic nodes belonging to the location. \n\n\
+            \ You can retrieve the list of available nodes with the [GET all nodes](https://dt-url.net/miy3rpl)\
+            \ call."
+          items:
+            type: "string"
+        stage:
           type: "string"
-          description: "The region code of the location. \n\n To fetch the list of\
-            \ available region codes, use the [GET regions of the country](https://dt-url.net/az230x0)\
-            \ request."
-        regionName:
-          type: "string"
-          description: "The region name of the location."
+          description: "The release stage of the location."
+          enum:
+          - "BETA"
+          - "COMING_SOON"
+          - "DELETED"
+          - "GA"
         status:
           type: "string"
-          description: "The status of the location: \n\n* `ENABLED`: The location\
-            \ is displayed as active in the UI. You can assign monitors to the location.\
-            \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
-            \ can't assign monitors to the location. Monitors already assigned to\
-            \ the location will stay there and will be executed from the location.\
-            \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
-            \ monitors to the location. You can only set location as `HIDDEN` when\
-            \ no monitor is assigned to it."
+          description: "The status of the location."
           enum:
           - "DISABLED"
           - "ENABLED"
           - "HIDDEN"
         type:
           type: "string"
-          description: "Defines the actual set of fields depending on the value. See\
-            \ one of the following objects: \n\n* `PUBLIC` -> PublicSyntheticLocation\
-            \ \n* `PRIVATE` -> PrivateSyntheticLocation \n* `CLUSTER` -> PrivateSyntheticLocation\
-            \ \n"
+          description: "The type of the location."
           enum:
           - "CLUSTER"
           - "PRIVATE"
           - "PUBLIC"
       required:
-      - "latitude"
-      - "longitude"
+      - "geoLocationId"
+      - "id"
       - "name"
       - "type"
-    SyntheticLocationIdsDto:
+    LocatorDto:
       type: "object"
-      description: "A DTO for synthetic Location IDs."
-      properties:
-        entityId:
-          type: "string"
-          description: "Entity ID to be transferred"
-        geoLocationId:
-          type: "string"
-          description: "GeoLocation ID to be transferred"
-      required:
-      - "entityId"
-      - "geoLocationId"
-    SyntheticLocationUpdate:
-      type: "object"
-      description: "The synthetic location update. This is a base object, the exact\
-        \ type depends on the value of the `type` field."
-      discriminator:
-        mapping:
-          PRIVATE: "#/components/schemas/SyntheticPrivateLocationUpdate"
-          PUBLIC: "#/components/schemas/SyntheticPublicLocationUpdate"
-        propertyName: "type"
+      description: "Browser Monitor locator."
+      example:
+        type: "CSS"
+        value: "<img>[id='logoIcon']"
       properties:
         type:
           type: "string"
-          description: "Defines the actual set of fields depending on the value. See\
-            \ one of the following objects: \n\n* `PUBLIC` -> SyntheticPublicLocationUpdate\
-            \ \n* `PRIVATE` -> SyntheticPrivateLocationUpdate \n"
+          description: "Enum value of the locator type."
           enum:
-          - "PRIVATE"
-          - "PUBLIC"
+          - "CSS"
+          - "DOM"
+        value:
+          type: "string"
+          description: "Value of the locator."
       required:
       - "type"
-    SyntheticLocations:
-      type: "object"
-      description: "A list of synthetic locations."
-      example:
-        locations:
-        - capabilities:
-          - "BROWSER"
-          - "HTTP"
-          cloudPlatform: "AMAZON_EC2"
-          entityId: "SYNTHETIC_LOCATION-53F47ECB33907667"
-          geoCity: "Gdansk"
-          geoContinent: "Europe"
-          geoCountry: "Poland"
-          geoLatitude: "54.399078369140625"
-          geoLocationId: "GEOLOCATION-95196F3C9A4F4215"
-          geoLongitude: "18.576557159423828"
-          ips:
-          - "134.189.153.97"
-          - "134.189.153.98"
-          name: "Gdansk"
-          stage: "GA"
-          status: "ENABLED"
-          type: "PUBLIC"
-        - entityId: "SYNTHETIC_LOCATION-53F47ECB33907667"
-          geoLocationId: "GEOLOCATION-95196F3C9A4F4215"
-          name: "My private location"
-          status: "ENABLED"
-          type: "PRIVATE"
-      properties:
-        locations:
-          type: "array"
-          description: "A list of synthetic locations."
-          items:
-            $ref: "#/components/schemas/LocationCollectionElement"
-      required:
-      - "locations"
-    SyntheticMonitorConstraintDto:
+      - "value"
+    MonitorConstraintDto:
       type: "object"
       description: "Synthetic monitor constraint. The allowed type and properties\
         \ depend on the monitor and step/request context."
@@ -3192,15 +2907,15 @@ components:
           type: "string"
           description: "Constraint type. Allowed values depend on monitor type and\
             \ step/request context. HTTP monitor step constraints: HTTP_STATUSES,\
-            \ HTTP_RESPONSE_PATTERN, HTTP_RESPONSE_REGEX. Network availability monitor(MULTI_PROTOCOL)\
-            \ step constraints: SUCCESS_RATE_PERCENT. Network availability monitor(MULTI_PROTOCOL)\
+            \ HTTP_RESPONSE_PATTERN, HTTP_RESPONSE_REGEX. Network availability monitor(NAM)\
+            \ step constraints: SUCCESS_RATE_PERCENT. Network availability monitor(NAM)\
             \ request configuration constraints are request-type specific, for example\
             \ ICMP_SUCCESS_RATE_PERCENT (ICMP) and DNS_STATUS_CODE (DNS)."
           example: "ICMP_SUCCESS_RATE_PERCENT"
       required:
       - "properties"
       - "type"
-    SyntheticMonitorCookieDto:
+    MonitorCookieDto:
       type: "object"
       description: "Cookie dto for Synthetic Monitor step."
       example:
@@ -3225,26 +2940,18 @@ components:
       - "domain"
       - "name"
       - "value"
-    SyntheticMonitorListDto:
+    MonitorIdResponse:
       type: "object"
-      description: "List of available synthetic monitors."
+      description: "A Response with monitor ID."
       example:
-        monitors:
-        - enabled: "true"
-          entityId: "MULTIPROTOCOL_MONITOR-63653CB579F573D1"
-          name: "My network availability monitor"
-          type: "MULTI_PROTOCOL"
-        - enabled: "false"
-          entityId: "MULTIPROTOCOL_MONITOR-63653CB579F573D2"
-          name: "Disabled network availability monitor"
-          type: "MULTI_PROTOCOL"
+        id: "NETWORK-AVAILABILITY-MONITOR-63653CB579F573D1"
       properties:
-        monitors:
-          type: "array"
-          description: "List of monitors."
-          items:
-            $ref: "#/components/schemas/SyntheticMonitorSummaryDto"
-    SyntheticMonitorOutageHandlingSettingsDto:
+        id:
+          type: "string"
+          description: "Monitor ID."
+      required:
+      - "id"
+    MonitorOutageHandlingSettingsDto:
       type: "object"
       description: "Outage handling configuration."
       example:
@@ -3289,14 +2996,14 @@ components:
       required:
       - "globalOutages"
       - "localOutages"
-    SyntheticMonitorPerformanceThresholdDto:
+    MonitorPerformanceThresholdDto:
       type: "object"
       description: "The performance threshold rule."
       properties:
         aggregation:
           type: "string"
           default: "AVG"
-          description: "Aggregation type"
+          description: "Aggregation type."
           enum:
           - "AVG"
           - "MAX"
@@ -3329,10 +3036,11 @@ components:
           minimum: 0.0
         type:
           type: "string"
-          description: "Type of performance threshold"
+          description: "Type of performance threshold."
           enum:
-          - "STEP"
           - "MONITOR"
+          - "STEP"
+          - "UNDEFINED_STEP"
         violatingSamples:
           type: "integer"
           format: "int32"
@@ -3341,7 +3049,7 @@ components:
           minimum: 1
       required:
       - "threshold"
-    SyntheticMonitorPerformanceThresholdsDto:
+    MonitorPerformanceThresholdsDto:
       type: "object"
       description: "Performance thresholds configuration."
       properties:
@@ -3352,11 +3060,11 @@ components:
           type: "array"
           description: "The list of performance threshold rules."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorPerformanceThresholdDto"
+            $ref: "#/components/schemas/MonitorPerformanceThresholdDto"
           uniqueItems: true
       required:
       - "enabled"
-    SyntheticMonitorPrimaryGrailTagDto:
+    MonitorPrimaryGrailTagDto:
       type: "object"
       description: "Primary grail tag key-value pair."
       properties:
@@ -3373,32 +3081,33 @@ components:
       required:
       - "key"
       - "value"
-    SyntheticMonitorSummaryDto:
+    NavigateStepDto:
       type: "object"
-      description: "Basic monitor data."
-      example:
-        enabled: "True"
-        entityId: "MULTIPROTOCOL_MONITOR-63653CB579F573D1"
-        name: "My network availability monitor"
-        type: "MULTI_PROTOCOL"
-      properties:
-        enabled:
-          type: "boolean"
-          description: "If true, the monitor is enabled."
-        entityId:
-          type: "string"
-          description: "The entity id of the monitor."
-        name:
-          type: "string"
-          description: "The name of the monitor."
-        type:
-          type: "string"
-          description: "The type of the monitor."
-          enum:
-          - "MULTI_PROTOCOL"
-          - "BROWSER"
-          - "HTTP"
-    SyntheticMultiProtocolMonitorRequest:
+      allOf:
+      - $ref: "#/components/schemas/BrowserMonitorStepDto"
+      - type: "object"
+        properties:
+          authentication:
+            $ref: "#/components/schemas/AuthenticationDto"
+          target:
+            $ref: "#/components/schemas/TargetDto"
+          url:
+            type: "string"
+            description: "Field containing the url that the monitor should navigate\
+              \ to."
+          validationRules:
+            type: "array"
+            description: "List of validation rules for the step to perform."
+            items:
+              $ref: "#/components/schemas/ValidationRuleDto"
+          waitCondition:
+            $ref: "#/components/schemas/BaseWaitConditionDto"
+      description: "Step of Browser Monitor that navigates to a website."
+      required:
+      - "name"
+      - "type"
+      - "url"
+    NetworkAvailabilityMonitorRequest:
       type: "object"
       description: "Network availability monitor."
       example:
@@ -3408,6 +3117,12 @@ components:
         locations:
         - "SYNTHETIC_LOCATION-D3A5BFD8676A4F19"
         name: "My network availability monitor"
+        outageHandling:
+          globalConsecutiveOutageCountThreshold: "1"
+          globalOutages: "true"
+          localConsecutiveOutageCountThreshold: "3"
+          localLocationOutageCountThreshold: "3"
+          localOutages: "true"
         performanceThresholds:
           enabled: "true"
           thresholds:
@@ -3447,21 +3162,15 @@ components:
           targetList:
           - "127.0.0.1"
           - "127.0.0.2"
-        syntheticMonitorOutageHandlingSettings:
-          globalConsecutiveOutageCountThreshold: "1"
-          globalOutages: "true"
-          localConsecutiveOutageCountThreshold: "3"
-          localLocationOutageCountThreshold: "3"
-          localOutages: "true"
         tags:
         - key: "sample key"
           value: "sample value"
         - key: "sample key"
-        type: "MULTI_PROTOCOL"
+        type: "NETWORK_AVAILABILITY"
       properties:
         description:
           type: "string"
-          description: "Monitor description"
+          description: "Monitor description."
         enabled:
           type: "boolean"
           default: true
@@ -3470,8 +3179,7 @@ components:
           type: "integer"
           format: "int64"
           description: "The frequency of the monitor, in minutes. Default value depends\
-            \ on the monitor type (1 minute for MULTI_PROTOCOL and HTTP, 15 minutes\
-            \ for BROWSER)."
+            \ on the monitor type (1 minute for NAM and HTTP, 15 minutes for BROWSER)."
         locations:
           type: "array"
           description: "The locations to which the monitor is assigned."
@@ -3482,14 +3190,16 @@ components:
         name:
           type: "string"
           description: "The name of the monitor."
+        outageHandling:
+          $ref: "#/components/schemas/MonitorOutageHandlingSettingsDto"
         performanceThresholds:
-          $ref: "#/components/schemas/SyntheticMonitorPerformanceThresholdsDto"
+          $ref: "#/components/schemas/MonitorPerformanceThresholdsDto"
         primaryGrailTags:
           type: "array"
           description: "Primary Grail tags as a list of key-value pairs. Up to 10\
             \ tags. Those fields are only available for SaaS and not for Managed."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorPrimaryGrailTagDto"
+            $ref: "#/components/schemas/MonitorPrimaryGrailTagDto"
           maxItems: 10
           minItems: 0
           uniqueItems: true
@@ -3508,12 +3218,10 @@ components:
           type: "array"
           description: "The steps of the monitor."
           items:
-            $ref: "#/components/schemas/SyntheticMultiProtocolMonitorStepDto"
-        syntheticMonitorOutageHandlingSettings:
-          $ref: "#/components/schemas/SyntheticMonitorOutageHandlingSettingsDto"
+            $ref: "#/components/schemas/NetworkAvailabilityMonitorStepDto"
         tags:
           type: "array"
-          description: "A set of tags assigned to the monitor. \n\n You can specify\
+          description: "A set of tags assigned to the monitor. \n\nYou can specify\
             \ only the value of the tag here and the `CONTEXTLESS` context and source\
             \ 'USER' will be added automatically. But preferred option is usage of\
             \ SyntheticTagWithSourceDto model."
@@ -3524,7 +3232,7 @@ components:
           type: "string"
           description: "Monitor type."
           enum:
-          - "MULTI_PROTOCOL"
+          - "NETWORK_AVAILABILITY"
           - "BROWSER"
           - "HTTP"
       required:
@@ -3532,18 +3240,41 @@ components:
       - "name"
       - "steps"
       - "type"
-    SyntheticMultiProtocolMonitorResponse:
+    NetworkAvailabilityMonitorRequestConfigurationDto:
+      type: "object"
+      description: "The configuration of a network availability monitor request."
+      example:
+        constraints:
+        - properties:
+            operand: ">="
+            value: "90"
+          type: "ICMP_SUCCESS_RATE_PERCENT\n"
+      properties:
+        constraints:
+          type: "array"
+          description: "Request constraints."
+          items:
+            $ref: "#/components/schemas/MonitorConstraintDto"
+      required:
+      - "constraints"
+    NetworkAvailabilityMonitorResponse:
       type: "object"
       description: "Network availability monitor."
       example:
         description: "My network availability monitor description"
         enabled: "true"
-        entityId: "MULTIPROTOCOL_MONITOR-63653CB579F573D1"
         frequencyMin: "60"
+        id: "NETWORK-AVAILABILITY-MONITOR-63653CB579F573D1"
         locations:
         - "SYNTHETIC_LOCATION-D3A5BFD8676A4F20"
         modificationTimestamp: "1716448454338l"
         name: "My network availability monitor"
+        outageHandling:
+          globalConsecutiveOutageCountThreshold: "1"
+          globalOutages: "true"
+          localConsecutiveOutageCountThreshold: "3"
+          localLocationOutageCountThreshold: "3"
+          localOutages: "true"
         performanceThresholds:
           enabled: "true"
           thresholds:
@@ -3583,32 +3314,26 @@ components:
           targetList:
           - "127.0.0.1"
           - "127.0.0.2"
-        syntheticMonitorOutageHandlingSettings:
-          globalConsecutiveOutageCountThreshold: "1"
-          globalOutages: "true"
-          localConsecutiveOutageCountThreshold: "3"
-          localLocationOutageCountThreshold: "3"
-          localOutages: "true"
         tags:
         - key: "sample key"
           value: "sample value"
         - key: "sample key"
-        type: "MULTI_PROTOCOL"
+        type: "NETWORK_AVAILABILITY"
       properties:
         description:
           type: "string"
-          description: "Monitor description"
+          description: "Monitor description."
         enabled:
           type: "boolean"
           description: "If true, the monitor is enabled."
-        entityId:
-          type: "string"
-          description: "The entity id of the monitor."
-          readOnly: true
         frequencyMin:
           type: "integer"
           format: "int64"
           description: "The frequency of the monitor, in minutes."
+        id:
+          type: "string"
+          description: "The smartscape id of the monitor."
+          readOnly: true
         locations:
           type: "array"
           description: "The locations to which the monitor is assigned."
@@ -3619,18 +3344,20 @@ components:
         modificationTimestamp:
           type: "integer"
           format: "int64"
-          description: "The timestamp of the last modification"
+          description: "The timestamp of the last modification."
         name:
           type: "string"
           description: "The name of the monitor."
+        outageHandling:
+          $ref: "#/components/schemas/MonitorOutageHandlingSettingsDto"
         performanceThresholds:
-          $ref: "#/components/schemas/SyntheticMonitorPerformanceThresholdsDto"
+          $ref: "#/components/schemas/MonitorPerformanceThresholdsDto"
         primaryGrailTags:
           type: "array"
           description: "Primary Grail tags as a list of key-value pairs. Up to 10\
             \ tags. Those fields are only available for SaaS and not for Managed."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorPrimaryGrailTagDto"
+            $ref: "#/components/schemas/MonitorPrimaryGrailTagDto"
           uniqueItems: true
         securityContext:
           type: "array"
@@ -3647,12 +3374,10 @@ components:
           type: "array"
           description: "The steps of the monitor."
           items:
-            $ref: "#/components/schemas/SyntheticMultiProtocolMonitorStepDto"
-        syntheticMonitorOutageHandlingSettings:
-          $ref: "#/components/schemas/SyntheticMonitorOutageHandlingSettingsDto"
+            $ref: "#/components/schemas/NetworkAvailabilityMonitorStepDto"
         tags:
           type: "array"
-          description: "A set of tags assigned to the monitor. \n\n You can specify\
+          description: "A set of tags assigned to the monitor. \n\nYou can specify\
             \ only the value of the tag here and the `CONTEXTLESS` context and source\
             \ 'USER' will be added automatically. But preferred option is usage of\
             \ SyntheticTagWithSourceDto model."
@@ -3663,15 +3388,14 @@ components:
           type: "string"
           description: "Monitor type."
           enum:
-          - "MULTI_PROTOCOL"
+          - "NETWORK_AVAILABILITY"
           - "BROWSER"
-          - "HTTP"
       required:
-      - "entityId"
+      - "id"
+      - "outageHandling"
       - "steps"
-      - "syntheticMonitorOutageHandlingSettings"
       - "type"
-    SyntheticMultiProtocolMonitorStepDto:
+    NetworkAvailabilityMonitorStepDto:
       type: "object"
       description: "The step of a network availability monitor."
       example:
@@ -3698,7 +3422,7 @@ components:
           description: "The list of constraints which apply to all requests in the\
             \ step."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorConstraintDto"
+            $ref: "#/components/schemas/MonitorConstraintDto"
         name:
           type: "string"
           description: "Step name."
@@ -3712,7 +3436,7 @@ components:
           type: "array"
           description: "Request configurations."
           items:
-            $ref: "#/components/schemas/SyntheticMultiProtocolRequestConfigurationDto"
+            $ref: "#/components/schemas/NetworkAvailabilityMonitorRequestConfigurationDto"
           uniqueItems: true
         requestType:
           type: "string"
@@ -3737,23 +3461,437 @@ components:
       - "properties"
       - "requestConfigurations"
       - "requestType"
-    SyntheticMultiProtocolRequestConfigurationDto:
+    NetworkThrottlingDto:
       type: "object"
-      description: "The configuration of a network availability monitor request."
-      example:
-        constraints:
-        - properties:
-            operand: ">="
-            value: "90"
-          type: "ICMP_SUCCESS_RATE_PERCENT\n"
+      description: "Network throttling of a Browser Monitor."
       properties:
-        constraints:
+        download:
+          type: "integer"
+          format: "int32"
+          description: "Download throughput. If not defined in request, it will be\
+            \ set to -1 by default."
+          maximum: 100000000
+        latency:
+          type: "integer"
+          format: "int32"
+          description: "Latency. If not defined in request, it will be set to 0 by\
+            \ default."
+          maximum: 1000
+        name:
+          type: "string"
+          description: "Predefined network type. If not defined in request, it will\
+            \ be set to \"\" by default."
+        upload:
+          type: "integer"
+          format: "int32"
+          description: "Upload throughput. If not defined in request, it will be set\
+            \ to -1 by default."
+          maximum: 50000000
+    NodeResponse:
+      type: "object"
+      description: "Configuration of a synthetic node. \n\n A *synthetic node* is\
+        \ an ActiveGate that is able to execute synthetic monitors."
+      properties:
+        activeGateVersion:
+          type: "string"
+          description: "The version of the Active Gate."
+        autoUpdateEnabled:
+          type: "boolean"
+          description: "The Active Gate has the Auto update option enabled ('true')\
+            \ or not ('false')."
+        browserMonitorsEnabled:
+          type: "boolean"
+          description: "Browser check capabilities enabled flag."
+        capabilities:
           type: "array"
-          description: "Request constraints."
+          description: "The list of node's capabilities."
           items:
-            $ref: "#/components/schemas/SyntheticMonitorConstraintDto"
+            type: "string"
+            description: "The list of node's capabilities."
+        healthCheckStatus:
+          type: "string"
+          description: "The health check status of the synthetic node."
+        hostname:
+          type: "string"
+          description: "The hostname of a node."
+        id:
+          type: "string"
+          description: "The ID of a node."
+        ips:
+          type: "array"
+          description: "The IP of a node."
+          items:
+            type: "string"
+        oneAgentRoutingEnabled:
+          type: "boolean"
+          description: "The Active Gate has the One Agent routing enabled ('true')\
+            \ or not ('false')."
+        operatingSystem:
+          type: "string"
+          description: "The Active Gate's host operating system."
+        playerVersion:
+          type: "string"
+          description: "The version of the synthetic player."
+        status:
+          type: "string"
+          description: "The status of the synthetic node."
+        version:
+          type: "string"
+          description: "The version of a node."
       required:
-      - "constraints"
+      - "activeGateVersion"
+      - "autoUpdateEnabled"
+      - "browserMonitorsEnabled"
+      - "capabilities"
+      - "healthCheckStatus"
+      - "hostname"
+      - "id"
+      - "ips"
+      - "oneAgentRoutingEnabled"
+      - "operatingSystem"
+      - "playerVersion"
+      - "status"
+      - "version"
+    NodesResponse:
+      type: "object"
+      description: "A list of synthetic nodes."
+      example:
+        nodes:
+        - activeGateVersion: "1.172.2.20190607-040913"
+          autoUpdateEnabled: true
+          browserMonitorsEnabled: true
+          capabilities:
+          - "HTTP_HIGH_RESOURCE"
+          - "HTTP"
+          healthCheckStatus: "Ok"
+          hostname: "gdn.dyna.trace"
+          id: "3086117876"
+          ips:
+          - "238.245.160.14"
+          oneAgentRoutingEnabled: true
+          operatingSystem: "Linux"
+          playerVersion: "1.179.0.20190920-145430"
+          status: "Running"
+          version: "1.161.0.20181210-173639"
+      properties:
+        nodes:
+          type: "array"
+          description: "A list of synthetic nodes."
+          items:
+            $ref: "#/components/schemas/NodeResponse"
+      required:
+      - "nodes"
+    PlainAuthenticationDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/AuthenticationDto"
+      - type: "object"
+        properties:
+          password:
+            type: "string"
+            description: "String containing the password."
+          username:
+            type: "string"
+            description: "String containing the username."
+      description: "Plain authentication dto for Browser Monitor step."
+      example:
+        password: "1234"
+        type: "HTTP_AUTHENTICATION"
+        username: "admin"
+      required:
+      - "inputType"
+      - "password"
+      - "type"
+      - "username"
+    PlainKeyStrokesInputDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/KeystrokesInputDto"
+      - type: "object"
+        properties:
+          masked:
+            type: "boolean"
+            description: "Boolean value set to true only if key strokes input `textValue`\
+              \ field is encoded by recorder and should be decoded by VUP. Set to\
+              \ `false` by default."
+          textValue:
+            type: "string"
+            description: "String value containing the text."
+      description: "Credential-based input for keystrokes step."
+      required:
+      - "textValue"
+      - "type"
+    PlatformEnablementDto:
+      type: "object"
+      description: "Browser monitor enablement settings for 3rd gen."
+      properties:
+        enableOnGrail:
+          type: "boolean"
+          description: "Enable 3rd gen JS agent reporting. Relevant only for grail-enabled\
+            \ SaaS environments."
+        origin:
+          type: "string"
+          description: "Indicates the origin of these settings."
+          enum:
+          - "MONITOR"
+          - "TENANT"
+          - "DEFAULT"
+          - "UNKNOWN"
+      required:
+      - "enableOnGrail"
+    ProxyDto:
+      type: "object"
+      description: "Browser Monitor proxy."
+      properties:
+        pacUrl:
+          type: "string"
+          description: "URL of the Proxy Auto-Configuration (PAC) file."
+      required:
+      - "pacUrl"
+    RequestFilterDto:
+      type: "object"
+      description: "Request filter for Browser Monitor."
+      properties:
+        matchingPattern:
+          type: "string"
+          description: "Regex for request that filter will be applied to."
+        type:
+          type: "string"
+          description: "Filter type."
+          enum:
+          - "STARTS_WITH"
+          - "ENDS_WITH"
+          - "CONTAINS"
+          - "EQUALS"
+          - "REGEX"
+      required:
+      - "matchingPattern"
+      - "type"
+    RequestHeaderOptionsDto:
+      type: "object"
+      description: "Header Options of a Browser Monitor."
+      properties:
+        matchingPatterns:
+          type: "array"
+          description: "Apply headers to requests matching pattern."
+          items:
+            type: "string"
+            description: "Apply headers to requests matching pattern."
+          maxItems: 500
+          minItems: 0
+          uniqueItems: true
+        requestHeaders:
+          type: "array"
+          description: "Request headers list."
+          items:
+            $ref: "#/components/schemas/HeaderDto"
+      required:
+      - "matchingPatterns"
+      - "requestHeaders"
+    SecureAuthenticationDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/AuthenticationDto"
+      - type: "object"
+        properties:
+          credentialId:
+            type: "string"
+            description: "Id of the username and password credential which will be\
+              \ used for authentication."
+      description: "Secure authentication dto for Browser Monitor step."
+      example:
+        credential:
+          field: "USERNAME"
+          id: "CREDENTIAL_VAULT_ENTRY-42069"
+        type: "HTTP_AUTHENTICATION"
+      required:
+      - "credentialId"
+      - "inputType"
+      - "type"
+    SecureKeyStrokesInputDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/KeystrokesInputDto"
+      - type: "object"
+        properties:
+          credentialField:
+            type: "string"
+            description: "Enum value of the credential field."
+            enum:
+            - "USERNAME"
+            - "PASSWORD"
+            - "TOKEN"
+          credentialId:
+            type: "string"
+            description: "String value containing the credential id."
+      description: "Credential-based input for keystrokes step."
+      required:
+      - "credentialField"
+      - "credentialId"
+      - "type"
+    SelectOptionStepDto:
+      type: "object"
+      allOf:
+      - $ref: "#/components/schemas/BrowserMonitorStepDto"
+      - type: "object"
+        properties:
+          selections:
+            type: "array"
+            description: "Field containing the credential."
+            items:
+              $ref: "#/components/schemas/SelectionDto"
+            maxItems: 2147483647
+            minItems: 1
+          target:
+            $ref: "#/components/schemas/TargetDto"
+          validationRules:
+            type: "array"
+            description: "List of validation rules for the step to perform."
+            items:
+              $ref: "#/components/schemas/ValidationRuleDto"
+          waitCondition:
+            $ref: "#/components/schemas/BaseWaitConditionDto"
+      description: "Select option step of Browser Monitor."
+      required:
+      - "name"
+      - "selections"
+      - "type"
+    SelectionDto:
+      type: "object"
+      description: "Option selection for Browser Monitor step."
+      example:
+        index: 0
+        value: "selection-1"
+      properties:
+        index:
+          type: "integer"
+          format: "int32"
+          description: "Selection index."
+          minimum: 0
+        value:
+          type: "string"
+          description: "Selection value."
+      required:
+      - "index"
+      - "value"
+    SyntheticConfigDto:
+      type: "object"
+      description: "A DTO for synthetic configuration."
+      properties:
+        bmMonitorTimeout:
+          type: "integer"
+          format: "int64"
+          description: "bmMonitorTimeout - browser monitor execution timeout (ms)."
+          maximum: 900000
+          minimum: 60000
+        bmStepTimeout:
+          type: "integer"
+          format: "int64"
+          description: "bmStepTimeout - browser monitor single step execution timeout\
+            \ (ms)."
+          maximum: 180000
+          minimum: 10000
+      required:
+      - "bmMonitorTimeout"
+      - "bmStepTimeout"
+    SyntheticLocationIdsResponse:
+      type: "object"
+      description: "A Response for synthetic Location IDs (Smartscape ID + GeoLocation\
+        \ ID)."
+      properties:
+        geoLocationId:
+          type: "string"
+          description: "GeoLocation ID of the synthetic location."
+        id:
+          type: "string"
+          description: "Smartscape ID of the synthetic location."
+      required:
+      - "geoLocationId"
+      - "id"
+    SyntheticLocationsResponse:
+      type: "object"
+      description: "A list of synthetic locations."
+      example:
+        locations:
+        - capabilities:
+          - "BROWSER"
+          - "HTTP"
+          cloudPlatform: "AMAZON_EC2"
+          geoCity: "Gdansk"
+          geoContinent: "Europe"
+          geoCountry: "Poland"
+          geoLatitude: "54.399078369140625"
+          geoLocationId: "GEOLOCATION-95196F3C9A4F4215"
+          geoLongitude: "18.576557159423828"
+          id: "SYNTHETIC_LOCATION-53F47ECB33907667"
+          ips:
+          - "134.189.153.97"
+          - "134.189.153.98"
+          name: "Gdansk"
+          stage: "GA"
+          status: "ENABLED"
+          type: "PUBLIC"
+        - geoLocationId: "GEOLOCATION-95196F3C9A4F4215"
+          id: "SYNTHETIC_LOCATION-53F47ECB33907667"
+          name: "My private location"
+          status: "ENABLED"
+          type: "PRIVATE"
+      properties:
+        locations:
+          type: "array"
+          description: "A list of synthetic locations."
+          items:
+            $ref: "#/components/schemas/LocationCollectionElementDto"
+      required:
+      - "locations"
+    SyntheticMonitorListResponse:
+      type: "object"
+      description: "List of available synthetic monitors."
+      example:
+        monitors:
+        - enabled: "true"
+          id: "NETWORK-AVAILABILITY-MONITOR-63653CB579F573D1"
+          name: "My network availability monitor"
+          type: "NETWORK_AVAILABILITY"
+        - enabled: "false"
+          id: "NETWORK-AVAILABILITY-MONITOR-63653CB579F573D2"
+          name: "Disabled network availability monitor"
+          type: "NETWORK_AVAILABILITY"
+      properties:
+        monitors:
+          type: "array"
+          description: "List of monitors."
+          items:
+            $ref: "#/components/schemas/SyntheticMonitorSummaryDto"
+    SyntheticMonitorSummaryDto:
+      type: "object"
+      description: "Basic monitor data."
+      example:
+        enabled: "true"
+        id: "NETWORK-AVAILABILITY-MONITOR-63653CB579F573D1"
+        name: "My network availability monitor"
+        type: "NETWORK_AVAILABILITY"
+      properties:
+        enabled:
+          type: "boolean"
+          default: true
+          description: "If true, the monitor is enabled."
+        id:
+          type: "string"
+          description: "Id of the monitor."
+        name:
+          type: "string"
+          description: "The name of the monitor."
+        type:
+          type: "string"
+          enum:
+          - "BROWSER"
+          - "HTTP"
+          - "NETWORK_AVAILABILITY"
+      required:
+      - "id"
+      - "name"
+      - "type"
     SyntheticOnDemandExecutionRequest:
       type: "object"
       description: "Contains parameters for the on-demand execution of monitors identified\
@@ -3787,7 +3925,7 @@ components:
           locations:
           - "SYNTHETIC_LOCATION-9BB04DAEBA71B8CA"
           - "SYNTHETIC_LOCATION-ACCA399FAA1194DD"
-          monitorId: "HTTP_CHECK-6349B98E1CD87352"
+          monitorId: "HTTP_MONITOR-6349B98E1CD87352"
           repeatMode: "SEQUENTIAL"
         processingMode: "EXECUTIONS_DETAILS_ONLY"
         stopOnProblem: true
@@ -3804,22 +3942,22 @@ components:
             \ fail in case of an SSL certificate expiration warning or if the certificate\
             \ is missing."
         group:
-          $ref: "#/components/schemas/SyntheticOnDemandExecutionRequestGroup"
+          $ref: "#/components/schemas/SyntheticOnDemandGroupExecutionRequest"
         metadata:
           type: "object"
           additionalProperties:
             type: "string"
-            description: "String to string map of metadata properties for execution"
-          description: "String to string map of metadata properties for execution"
+            description: "String to string map of metadata properties for execution."
+          description: "String to string map of metadata properties for execution."
         monitors:
           type: "array"
           description: "List of monitors to be triggered."
           items:
-            $ref: "#/components/schemas/SyntheticOnDemandExecutionRequestMonitor"
+            $ref: "#/components/schemas/SyntheticOnDemandMonitorExecutionRequest"
         processingMode:
           type: "string"
           default: "STANDARD"
-          description: "The execution's processing mode"
+          description: "The execution's processing mode."
           enum:
           - "STANDARD"
           - "DISABLE_PROBLEM_DETECTION"
@@ -3833,7 +3971,55 @@ components:
           default: false
           description: "If true, the screenshots will be taken during the execution\
             \ of a browser monitor."
-    SyntheticOnDemandExecutionRequestGroup:
+    SyntheticOnDemandExecutionResponse:
+      type: "object"
+      description: "The result of on-demand synthetic monitor execution."
+      example:
+        batchId: "22396514015719218"
+        triggered:
+        - executions:
+          - executionId: "1069999568093682590"
+            locationId: "SYNTHETIC_LOCATION-9BB04DAE11123122"
+          monitorId: "HTTP_MONITOR-69A9B98E1CD87352"
+        triggeredCount: 1
+        triggeringProblemsCount: 4
+        triggeringProblemsDetails:
+        - cause: "Location not found"
+          id: "HTTP_MONITOR-6349B98E1CD87352"
+          locationId: "SYNTHETIC_LOCAT-9BB04DAEBA71B8CA"
+        - cause: "Monitor not found"
+          id: "HTTP_MONITOR-6349B98E1CD85432"
+        - cause: "Incorrect monitor identifier format"
+          id: "HTTP_HACK-AAAAAAA"
+        - cause: "Incorrect application identifier format"
+          id: "APPLICATION-WRONG"
+      properties:
+        batchId:
+          type: "string"
+          description: "The batch identifier of the triggered executions."
+        triggered:
+          type: "array"
+          description: "Monitors for which on-demand executions were triggered."
+          items:
+            $ref: "#/components/schemas/SyntheticOnDemandTriggeredMonitorResponse"
+        triggeredCount:
+          type: "integer"
+          format: "int32"
+          description: "The total number of the triggered executions within the batch."
+        triggeringProblemsCount:
+          type: "integer"
+          format: "int32"
+          description: "The total number of problems within the batch."
+        triggeringProblemsDetails:
+          type: "array"
+          description: "List with the entities for which triggering problems occurred."
+          items:
+            $ref: "#/components/schemas/SyntheticOnDemandTriggeringProblemDetailsResponse"
+      required:
+      - "batchId"
+      - "triggeredCount"
+      - "triggeringProblemsCount"
+    SyntheticOnDemandGroupExecutionRequest:
       type: "object"
       description: "Contains parameters for the on-demand execution of monitors identified\
         \ by tags, applications, or services."
@@ -3871,7 +4057,7 @@ components:
             description: "List of tags. Only monitors with all tags assigned will\
               \ be executed."
           uniqueItems: true
-    SyntheticOnDemandExecutionRequestMonitor:
+    SyntheticOnDemandMonitorExecutionRequest:
       type: "object"
       description: "Contains monitors to be executed on demand from the locations\
         \ specified."
@@ -3903,55 +4089,7 @@ components:
           - "PARALLEL"
       required:
       - "monitorId"
-    SyntheticOnDemandExecutionResult:
-      type: "object"
-      description: "The result of on-demand synthetic monitor execution."
-      example:
-        batchId: "22396514015719218"
-        triggered:
-        - executions:
-          - executionId: "1069999568093682590"
-            locationId: "SYNTHETIC_LOCATION-9BB04DAE11123122"
-          monitorId: "HTTP_CHECK-69A9B98E1CD87352"
-        triggeredCount: 1
-        triggeringProblemsCount: 4
-        triggeringProblemsDetails:
-        - cause: "Location not found"
-          entityId: "HTTP_CHECK-6349B98E1CD87352"
-          locationId: "SYNTHETIC_LOCAT-9BB04DAEBA71B8CA"
-        - cause: "Monitor not found"
-          entityId: "HTTP_CHECK-6349B98E1CD85432"
-        - cause: "Incorrect monitor identifier format"
-          entityId: "HTTP_HACK-AAAAAAA"
-        - cause: "Incorrect application identifier format"
-          entityId: "APPLICATION-WRONG"
-      properties:
-        batchId:
-          type: "string"
-          description: "The batch identifier of the triggered executions."
-        triggered:
-          type: "array"
-          description: "Monitors for which on-demand executions were triggered."
-          items:
-            $ref: "#/components/schemas/SyntheticOnDemandTriggeredMonitor"
-        triggeredCount:
-          type: "integer"
-          format: "int32"
-          description: "The total number of the triggered executions within the batch."
-        triggeringProblemsCount:
-          type: "integer"
-          format: "int32"
-          description: "The total number of problems within the batch."
-        triggeringProblemsDetails:
-          type: "array"
-          description: "List with the entities for which triggering problems occurred."
-          items:
-            $ref: "#/components/schemas/SyntheticOnDemandTriggeringProblemDetails"
-      required:
-      - "batchId"
-      - "triggeredCount"
-      - "triggeringProblemsCount"
-    SyntheticOnDemandTriggeredExecutionDetails:
+    SyntheticOnDemandTriggeredExecutionDetailsResponse:
       type: "object"
       description: "Contains details of the triggered on-demand execution."
       properties:
@@ -3965,7 +4103,7 @@ components:
       required:
       - "executionId"
       - "locationId"
-    SyntheticOnDemandTriggeredMonitor:
+    SyntheticOnDemandTriggeredMonitorResponse:
       type: "object"
       description: "Contains the list of on-demand executions of the monitor."
       properties:
@@ -3973,14 +4111,14 @@ components:
           type: "array"
           description: "The list of triggered executions."
           items:
-            $ref: "#/components/schemas/SyntheticOnDemandTriggeredExecutionDetails"
+            $ref: "#/components/schemas/SyntheticOnDemandTriggeredExecutionDetailsResponse"
         monitorId:
           type: "string"
           description: "The monitor identifier."
       required:
       - "executions"
       - "monitorId"
-    SyntheticOnDemandTriggeringProblemDetails:
+    SyntheticOnDemandTriggeringProblemDetailsResponse:
       type: "object"
       description: "Contains the details of problems encountered while triggering\
         \ on-demand executions."
@@ -3991,199 +4129,530 @@ components:
         details:
           type: "string"
           description: "The details of triggering problem."
-        entityId:
-          type: "string"
-          description: "The entity identifier."
         executionId:
           type: "string"
           description: "The execution identifier."
+        id:
+          type: "string"
+          description: "The entity identifier."
         locationId:
           type: "string"
           description: "The location identifier."
       required:
       - "cause"
       - "details"
-      - "entityId"
       - "executionId"
-    SyntheticPrivateLocationUpdate:
+      - "id"
+    SyntheticPrivateLocationDto:
       type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticLocationUpdate"
-      - type: "object"
-        properties:
-          autoUpdateChromium:
-            type: "boolean"
-            description: "Non-containerized location property. Auto upgrade of Chromium\
-              \ is enabled (`true`) or disabled (`false`)."
-          availabilityLocationOutage:
-            type: "boolean"
-            description: "Alerting for location outage is enabled (`true`) or disabled\
-              \ (`false`). Supported only for private Synthetic locations."
-          availabilityNodeOutage:
-            type: "boolean"
-            description: "Alerting for node outage is enabled (`true`) or disabled\
-              \ (`false`). \\n\\n If enabled, the outage of *any* node in the location\
-              \ triggers an alert. Supported only for private Synthetic locations."
-          availabilityNotificationsEnabled:
-            type: "boolean"
-            description: "Notifications for location and node outage are enabled (`true`)\
-              \ or disabled (`false`). Supported only for private Synthetic locations."
-          browserExecutionSupported:
-            type: "boolean"
-            description: "Containerized location property. Boolean value describes\
-              \ if browser monitors will be executed on this location:\n\n* `false`:\
-              \ Browser monitor executions disabled.\n* `true`: Browser monitor executions\
-              \ enabled."
-          city:
+      description: "Configuration of a private synthetic location.\n\n**countryCode**,\
+        \ **regionCode**, **city** parameters are optional as they can be retrieved\
+        \ based on **latitude** and **longitude** of location."
+      example:
+        autoUpdateChromium: true
+        availabilityLocationNodeOutageDelayInMinutes: 5
+        availabilityLocationOutage: false
+        availabilityNodeOutage: false
+        availabilityNotificationsEnabled: true
+        deploymentType: "STANDARD"
+        fipsMode: "DISABLED"
+        latitude: 48.306351
+        longitude: 14.287399
+        name: "Linz Location"
+        nodes:
+        - "93302281"
+        status: "ENABLED"
+        type: "PRIVATE"
+      properties:
+        autoUpdateChromium:
+          type: "boolean"
+          description: "Non-containerized location property. Auto upgrade of Chromium\
+            \ is enabled (`true`) or disabled (`false`)."
+        availabilityLocationOutage:
+          type: "boolean"
+          description: "Alerting for location outage is enabled (`true`) or disabled\
+            \ (`false`). Supported only for private Synthetic locations."
+        availabilityNodeOutage:
+          type: "boolean"
+          description: "Alerting for node outage is enabled (`true`) or disabled (`false`).\
+            \ \\n\\n If enabled, the outage of *any* node in the location triggers\
+            \ an alert. Supported only for private Synthetic locations."
+        availabilityNotificationsEnabled:
+          type: "boolean"
+          description: "Notifications for location and node outage are enabled (`true`)\
+            \ or disabled (`false`). Supported only for private Synthetic locations."
+        browserExecutionSupported:
+          type: "boolean"
+          description: "Containerized location property. Boolean value describes if\
+            \ browser monitors will be executed on this location:\n\n* `false`: Browser\
+            \ monitor executions disabled.\n* `true`: Browser monitor executions enabled."
+        city:
+          type: "string"
+          description: "The city of the location."
+        countryCode:
+          type: "string"
+          description: "The country code of the location. \n\n To fetch the list of\
+            \ available country codes, use the [GET all countries](https://dt-url.net/37030go)\
+            \ request."
+        countryName:
+          type: "string"
+          description: "The country name of the location."
+        deploymentType:
+          type: "string"
+          description: "The deployment type of the location: \n\n* `STANDARD`: The\
+            \ location is deployed on Windows or Linux.\n* `KUBERNETES`: The location\
+            \ is deployed on Kubernetes."
+          enum:
+          - "KUBERNETES"
+          - "OPENSHIFT"
+          - "STANDARD"
+          - "UNKNOWN"
+        fipsMode:
+          type: "string"
+          description: "Containerized location property indicating whether FIPS mode\
+            \ is enabled on this location:\n\n* `DISABLED`: FIPS is not enabled on\
+            \ the location.\n* `ENABLED`: FIPS is enabled on the location.\n* `ENABLED_WITH_CORPORATE_PROXY`:\
+            \ FIPS with corporate proxy is enabled on this location.\nDefault: DISABLED"
+          enum:
+          - "DISABLED"
+          - "ENABLED"
+          - "ENABLED_WITH_CORPORATE_PROXY"
+        geoLocationId:
+          type: "string"
+          description: "The Dynatrace GeoLocation ID."
+        id:
+          type: "string"
+          description: "The Dynatrace Location ID."
+        latitude:
+          type: "number"
+          format: "double"
+          description: "The latitude of the location in `DDD.dddd` format."
+        locationNodeOutageDelayInMinutes:
+          type: "integer"
+          format: "int32"
+          description: "Alert if location or node outage lasts longer than *X* minutes.\
+            \ \\n\\n Only applicable when `availabilityLocationOutage` or `availabilityNodeOutage`\
+            \ is set to `true`. Supported only for private Synthetic locations."
+          maximum: 5
+          minimum: 1
+        longitude:
+          type: "number"
+          format: "double"
+          description: "The longitude of the location in `DDD.dddd` format."
+        maxActiveGateCount:
+          type: "integer"
+          format: "int32"
+          description: "Containerized location property. The maximum number of ActiveGates\
+            \ deployed for the location (required for a Kubernetes location)."
+          maximum: 100
+          minimum: 1
+        minActiveGateCount:
+          type: "integer"
+          format: "int32"
+          description: "Containerized location property. The minimum number of ActiveGates\
+            \ deployed for the location (required for a Kubernetes location)."
+          maximum: 100
+          minimum: 1
+        namExecutionSupported:
+          type: "boolean"
+          description: "Containerized location property. Boolean value describes if\
+            \ icmp monitors will be executed on this location:\n\n* `false`: Icmp\
+            \ monitor executions disabled.\n* `true`: Icmp monitor executions enabled."
+        name:
+          type: "string"
+          description: "The name of the location."
+        nodeNames:
+          type: "object"
+          additionalProperties:
             type: "string"
-            description: "The city of the location."
-          countryCode:
+            description: "A mapping id to name of the nodes belonging to the location."
+          description: "A mapping id to name of the nodes belonging to the location."
+        nodeSize:
+          type: "string"
+          description: "Containerized location property. The size of a containerized\
+            \ node deployed for the location (required for a Kubernetes location).\
+            \ Accepted values: \n\n* `XS`: extra small\n* `S`: small\n* `M`: medium\n\
+            The node size `L` is not supported in containerized locations."
+          enum:
+          - "M"
+          - "S"
+          - "UNSUPPORTED"
+          - "XS"
+        nodes:
+          type: "array"
+          description: "A list of synthetic nodes belonging to the location. \n\n\
+            \ You can retrieve the list of available nodes with the [GET all nodes](https://dt-url.net/miy3rpl)\
+            \ call."
+          items:
             type: "string"
-            description: "The country code of the location. \n\n To fetch the list\
-              \ of available country codes, use the [GET all countries](https://dt-url.net/37030go)\
-              \ request."
-          deploymentType:
-            type: "string"
-            description: "The deployment type of the location: \n\n* `STANDARD`: The\
-              \ location is deployed on Windows or Linux.\n* `KUBERNETES`: The location\
-              \ is deployed on Kubernetes."
-            enum:
-            - "KUBERNETES"
-            - "OPENSHIFT"
-            - "STANDARD"
-            - "UNKNOWN"
-          fipsMode:
-            type: "string"
-            description: "Containerized location property indicating whether FIPS\
-              \ mode is enabled on this location:\n\n* `DISABLED`: FIPS is not enabled\
-              \ on the location.\n* `ENABLED`: FIPS is enabled on the location.\n\
-              * `ENABLED_WITH_CORPORATE_PROXY`: FIPS with corporate proxy is enabled\
-              \ on this location.\nDefault: DISABLED"
-            enum:
-            - "DISABLED"
-            - "ENABLED"
-            - "ENABLED_WITH_CORPORATE_PROXY"
-          latitude:
-            type: "number"
-            format: "double"
-            description: "The latitude of the location in `DDD.dddd` format."
-          locationNodeOutageDelayInMinutes:
-            type: "integer"
-            format: "int32"
-            description: "Alert if location or node outage lasts longer than *X* minutes.\
-              \ \\n\\n Only applicable when `availabilityLocationOutage` or `availabilityNodeOutage`\
-              \ is set to `true`. Supported only for private Synthetic locations."
-            maximum: 5
-            minimum: 1
-          longitude:
-            type: "number"
-            format: "double"
-            description: "The longitude of the location in `DDD.dddd` format."
-          maxActiveGateCount:
-            type: "integer"
-            format: "int32"
-            description: "Containerized location property. The maximum number of ActiveGates\
-              \ deployed for the location (required for a Kubernetes location)."
-            maximum: 100
-            minimum: 1
-          minActiveGateCount:
-            type: "integer"
-            format: "int32"
-            description: "Containerized location property. The minimum number of ActiveGates\
-              \ deployed for the location (required for a Kubernetes location)."
-            maximum: 100
-            minimum: 1
-          namExecutionSupported:
-            type: "boolean"
-            description: "Containerized location property. Boolean value describes\
-              \ if icmp monitors will be executed on this location:\n\n* `false`:\
-              \ Icmp monitor executions disabled.\n* `true`: Icmp monitor executions\
-              \ enabled."
-          name:
-            type: "string"
-            description: "The name of the location."
-          nodeSize:
-            type: "string"
-            description: "Containerized location property. The size of a containerized\
-              \ node deployed for the location (required for a Kubernetes location).\
-              \ Accepted values: \n\n* `XS`: extra small\n* `S`: small\n* `M`: medium\n\
-              The node size `L` is not supported in containerized locations."
-            enum:
-            - "M"
-            - "S"
-            - "UNSUPPORTED"
-            - "XS"
-          nodes:
-            type: "array"
-            description: "A list of synthetic nodes belonging to the location. \n\n\
-              \ You can retrieve the list of available nodes with the [GET all nodes](https://dt-url.net/miy3rpl)\
-              \ call."
-            items:
-              type: "string"
-          regionCode:
-            type: "string"
-            description: "The region code of the location. \n\n To fetch the list\
-              \ of available region codes, use the [GET regions of the country](https://dt-url.net/az230x0)\
-              \ request."
-          status:
-            type: "string"
-            description: "The status of the location: \n\n* `ENABLED`: The location\
-              \ is displayed as active in the UI. You can assign monitors to the location.\
-              \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
-              \ can't assign monitors to the location. Monitors already assigned to\
-              \ the location will stay there and will be executed from the location.\
-              \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
-              \ monitors to the location. You can only set location as `HIDDEN` when\
-              \ no monitor is assigned to it."
-            enum:
-            - "DISABLED"
-            - "ENABLED"
-            - "HIDDEN"
-          useNewKubernetesVersion:
-            type: "boolean"
-            description: "Containerized location property. Boolean value describes\
-              \ which kubernetes version will be used:\n\n* `false`: Version 1.23+\
-              \ that is older than 1.26\n* `true`: Version 1.26+."
-      description: "Configuration of a private synthetic location"
+        regionCode:
+          type: "string"
+          description: "The region code of the location. \n\n To fetch the list of\
+            \ available region codes, use the [GET regions of the country](https://dt-url.net/az230x0)\
+            \ request."
+        regionName:
+          type: "string"
+          description: "The region name of the location."
+        status:
+          type: "string"
+          description: "The status of the location: \n\n* `ENABLED`: The location\
+            \ is displayed as active in the UI. You can assign monitors to the location.\
+            \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
+            \ can't assign monitors to the location. Monitors already assigned to\
+            \ the location will stay there and will be executed from the location.\
+            \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
+            \ monitors to the location. You can only set location as `HIDDEN` when\
+            \ no monitor is assigned to it."
+          enum:
+          - "DISABLED"
+          - "ENABLED"
+          - "HIDDEN"
+        type:
+          type: "string"
+          enum:
+          - "CLUSTER"
+          - "PRIVATE"
+          - "PUBLIC"
+        useNewKubernetesVersion:
+          type: "boolean"
+          description: "Containerized location property. Boolean value describes which\
+            \ kubernetes version will be used:\n\n* `false`: Version 1.23+ that is\
+            \ older than 1.26\n* `true`: Version 1.26+."
       required:
       - "latitude"
       - "longitude"
       - "name"
       - "type"
-    SyntheticPublicLocationUpdate:
+    SyntheticPrivateLocationUpdateRequest:
       type: "object"
-      allOf:
-      - $ref: "#/components/schemas/SyntheticLocationUpdate"
-      - type: "object"
-        properties:
-          status:
+      description: "The request to update of a private Synthetic location. Some fields\
+        \ need to be defined only for containerized locations."
+      example:
+        autoUpdateChromium: true
+        availabilityNodeOutage: false
+        availabilityNotificationsEnabled: true
+        deploymentType: "STANDARD"
+        fipsMode: "DISABLED"
+        isAvailabilityNodeOutage: false
+        latitude: 48.306351
+        locationNodeOutageDelayInMinutes: 5
+        longitude: 14.287399
+        name: "Linz Location"
+        nodes:
+        - "93302281"
+        status: "ENABLED"
+        type: "PRIVATE"
+      properties:
+        autoUpdateChromium:
+          type: "boolean"
+          description: "Non-containerized location property. Auto upgrade of Chromium\
+            \ is enabled (`true`) or disabled (`false`)."
+        availabilityLocationOutage:
+          type: "boolean"
+          description: "Alerting for location outage is enabled (`true`) or disabled\
+            \ (`false`). Supported only for private Synthetic locations."
+        availabilityNodeOutage:
+          type: "boolean"
+          description: "Alerting for node outage is enabled (`true`) or disabled (`false`).\
+            \ \\n\\n If enabled, the outage of *any* node in the location triggers\
+            \ an alert. Supported only for private Synthetic locations."
+        availabilityNotificationsEnabled:
+          type: "boolean"
+          description: "Notifications for location and node outage are enabled (`true`)\
+            \ or disabled (`false`). Supported only for private Synthetic locations."
+        browserExecutionSupported:
+          type: "boolean"
+          description: "Containerized location property. Boolean value describes if\
+            \ browser monitors will be executed on this location:\n\n* `false`: Browser\
+            \ monitor executions disabled.\n* `true`: Browser monitor executions enabled."
+        city:
+          type: "string"
+          description: "The city of the location."
+        countryCode:
+          type: "string"
+          description: "The country code of the location. \n\n To fetch the list of\
+            \ available country codes, use the [GET all countries](https://dt-url.net/37030go)\
+            \ request."
+        deploymentType:
+          type: "string"
+          description: "The deployment type of the location: \n\n* `STANDARD`: The\
+            \ location is deployed on Windows or Linux.\n* `KUBERNETES`: The location\
+            \ is deployed on Kubernetes."
+          enum:
+          - "KUBERNETES"
+          - "OPENSHIFT"
+          - "STANDARD"
+          - "UNKNOWN"
+        fipsMode:
+          type: "string"
+          description: "Containerized location property indicating whether FIPS mode\
+            \ is enabled on this location:\n\n* `DISABLED`: FIPS is not enabled on\
+            \ the location.\n* `ENABLED`: FIPS is enabled on the location.\n* `ENABLED_WITH_CORPORATE_PROXY`:\
+            \ FIPS with corporate proxy is enabled on this location.\nDefault: DISABLED"
+          enum:
+          - "DISABLED"
+          - "ENABLED"
+          - "ENABLED_WITH_CORPORATE_PROXY"
+        latitude:
+          type: "number"
+          format: "double"
+          description: "The latitude of the location in `DDD.dddd` format."
+        locationNodeOutageDelayInMinutes:
+          type: "integer"
+          format: "int32"
+          description: "Alert if location or node outage lasts longer than *X* minutes.\
+            \ \\n\\n Only applicable when `availabilityLocationOutage` or `availabilityNodeOutage`\
+            \ is set to `true`. Supported only for private Synthetic locations."
+          maximum: 5
+          minimum: 1
+        longitude:
+          type: "number"
+          format: "double"
+          description: "The longitude of the location in `DDD.dddd` format."
+        maxActiveGateCount:
+          type: "integer"
+          format: "int32"
+          description: "Containerized location property. The maximum number of ActiveGates\
+            \ deployed for the location (required for a Kubernetes location)."
+          maximum: 100
+          minimum: 1
+        minActiveGateCount:
+          type: "integer"
+          format: "int32"
+          description: "Containerized location property. The minimum number of ActiveGates\
+            \ deployed for the location (required for a Kubernetes location)."
+          maximum: 100
+          minimum: 1
+        namExecutionSupported:
+          type: "boolean"
+          description: "Containerized location property. Boolean value describes if\
+            \ icmp monitors will be executed on this location:\n\n* `false`: Icmp\
+            \ monitor executions disabled.\n* `true`: Icmp monitor executions enabled."
+        name:
+          type: "string"
+          description: "The name of the location."
+        nodeSize:
+          type: "string"
+          description: "Containerized location property. The size of a containerized\
+            \ node deployed for the location (required for a Kubernetes location).\
+            \ Accepted values: \n\n* `XS`: extra small\n* `S`: small\n* `M`: medium\n\
+            The node size `L` is not supported in containerized locations."
+          enum:
+          - "M"
+          - "S"
+          - "UNSUPPORTED"
+          - "XS"
+        nodes:
+          type: "array"
+          description: "A list of synthetic nodes belonging to the location. \n\n\
+            \ You can retrieve the list of available nodes with the [GET all nodes](https://dt-url.net/miy3rpl)\
+            \ call."
+          items:
             type: "string"
-            description: "The status of the location: \n\n* `ENABLED`: The location\
-              \ is displayed as active in the UI. You can assign monitors to the location.\
-              \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
-              \ can't assign monitors to the location. Monitors already assigned to\
-              \ the location will stay there and will be executed from the location.\
-              \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
-              \ monitors to the location. You can only set location as `HIDDEN` when\
-              \ no monitor is assigned to it."
-            enum:
-            - "DISABLED"
-            - "ENABLED"
-            - "HIDDEN"
-      description: "The update of a public Synthetic location."
+        regionCode:
+          type: "string"
+          description: "The region code of the location. \n\n To fetch the list of\
+            \ available region codes, use the [GET regions of the country](https://dt-url.net/az230x0)\
+            \ request."
+        status:
+          type: "string"
+          description: "The status of the location: \n\n* `ENABLED`: The location\
+            \ is displayed as active in the UI. You can assign monitors to the location.\
+            \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
+            \ can't assign monitors to the location. Monitors already assigned to\
+            \ the location will stay there and will be executed from the location.\
+            \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
+            \ monitors to the location. You can only set location as `HIDDEN` when\
+            \ no monitor is assigned to it."
+          enum:
+          - "DISABLED"
+          - "ENABLED"
+          - "HIDDEN"
+        type:
+          type: "string"
+          enum:
+          - "CLUSTER"
+          - "PRIVATE"
+          - "PUBLIC"
+        useNewKubernetesVersion:
+          type: "boolean"
+          description: "Containerized location property. Boolean value describes which\
+            \ kubernetes version will be used:\n\n* `false`: Version 1.23+ that is\
+            \ older than 1.26\n* `true`: Version 1.26+."
+      required:
+      - "latitude"
+      - "longitude"
+      - "name"
+      - "type"
+    SyntheticPublicLocationDto:
+      type: "object"
+      description: "Configuration of a public synthetic location."
+      example:
+        browserType: "Chrome"
+        browserVersion: "69.0.3497.81"
+        capabilities:
+        - "BROWSER"
+        - "HTTP"
+        city: "Amazon US East (N. Virginia)"
+        cloudPlatform: "AMAZON_EC2"
+        countryCode: "US"
+        id: "GEOLOCATION-95196F3C9A4F4215"
+        ips:
+        - "134.189.153.97"
+        - "134.189.153.98"
+        latitude: 39.0436
+        longitude: -77.4875
+        name: "Amazon US East"
+        regionCode: "VA"
+        stage: "GA"
+        status: "ENABLED"
+        type: "PUBLIC"
+      properties:
+        browserType:
+          type: "string"
+          description: "The type of the browser the location is using to execute browser\
+            \ monitors."
+        browserVersion:
+          type: "string"
+          description: "The version of the browser the location is using to execute\
+            \ browser monitors."
+        capabilities:
+          type: "array"
+          description: "A list of location capabilities."
+          items:
+            type: "string"
+        city:
+          type: "string"
+          description: "The city of the location."
+        cloudPlatform:
+          type: "string"
+          description: "The cloud provider where the location is hosted."
+          enum:
+          - "ALIBABA"
+          - "AMAZON_EC2"
+          - "AZURE"
+          - "DYNATRACE_CLOUD"
+          - "GOOGLE_CLOUD"
+          - "INTEROUTE"
+          - "OTHER"
+          - "UNDEFINED"
+        countryCode:
+          type: "string"
+          description: "The country code of the location. \n\n To fetch the list of\
+            \ available country codes, use the [GET all countries](https://dt-url.net/37030go)\
+            \ request."
+        countryName:
+          type: "string"
+          description: "The country name of the location."
+        geoLocationId:
+          type: "string"
+          description: "The Dynatrace GeoLocation ID."
+        id:
+          type: "string"
+          description: "The Dynatrace Location ID."
+        ips:
+          type: "array"
+          description: "The list of IP addresses assigned to the location."
+          items:
+            type: "string"
+          uniqueItems: true
+        latitude:
+          type: "number"
+          format: "double"
+          description: "The latitude of the location in `DDD.dddd` format."
+        longitude:
+          type: "number"
+          format: "double"
+          description: "The longitude of the location in `DDD.dddd` format."
+        name:
+          type: "string"
+          description: "The name of the location."
+        regionCode:
+          type: "string"
+          description: "The region code of the location. \n\n To fetch the list of\
+            \ available region codes, use the [GET regions of the country](https://dt-url.net/az230x0)\
+            \ request."
+        regionName:
+          type: "string"
+          description: "The region name of the location."
+        stage:
+          type: "string"
+          description: "The stage of the location."
+          enum:
+          - "BETA"
+          - "COMING_SOON"
+          - "DELETED"
+          - "GA"
+        status:
+          type: "string"
+          description: "The status of the location: \n\n* `ENABLED`: The location\
+            \ is displayed as active in the UI. You can assign monitors to the location.\
+            \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
+            \ can't assign monitors to the location. Monitors already assigned to\
+            \ the location will stay there and will be executed from the location.\
+            \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
+            \ monitors to the location. You can only set location as `HIDDEN` when\
+            \ no monitor is assigned to it."
+          enum:
+          - "DISABLED"
+          - "ENABLED"
+          - "HIDDEN"
+        type:
+          type: "string"
+          enum:
+          - "CLUSTER"
+          - "PRIVATE"
+          - "PUBLIC"
+      required:
+      - "browserType"
+      - "browserVersion"
+      - "cloudPlatform"
+      - "ips"
+      - "latitude"
+      - "longitude"
+      - "name"
+      - "stage"
+      - "type"
+    SyntheticPublicLocationUpdateRequest:
+      type: "object"
+      description: "The request to update of a public Synthetic location."
+      example:
+        status: "ENABLED"
+        type: "PUBLIC"
+      properties:
+        status:
+          type: "string"
+          description: "The status of the location: \n\n* `ENABLED`: The location\
+            \ is displayed as active in the UI. You can assign monitors to the location.\
+            \ \n* `DISABLED`: The location is displayed as inactive in the UI. You\
+            \ can't assign monitors to the location. Monitors already assigned to\
+            \ the location will stay there and will be executed from the location.\
+            \ \n* `HIDDEN`: The location is not displayed in the UI. You can't assign\
+            \ monitors to the location. You can only set location as `HIDDEN` when\
+            \ no monitor is assigned to it."
+          enum:
+          - "DISABLED"
+          - "ENABLED"
+          - "HIDDEN"
+        type:
+          type: "string"
+          enum:
+          - "CLUSTER"
+          - "PRIVATE"
+          - "PUBLIC"
       required:
       - "status"
       - "type"
-    SyntheticPublicLocationsStatus:
+    SyntheticPublicLocationsStatusDto:
       type: "object"
       description: "The status of public synthetic locations."
       properties:
-        publicLocationsEnabled:
+        enabled:
           type: "boolean"
           description: "Synthetic monitors can (`true`) or can't (`false`) run on\
             \ public synthetic locations."
       required:
-      - "publicLocationsEnabled"
+      - "enabled"
     SyntheticTagWithSourceDto:
       type: "object"
       description: "The tag with source of a monitored entity."
@@ -4374,19 +4843,19 @@ components:
         excludedElements:
           type: "array"
           description: "Query CSS selectors to specify mutation nodes (elements that\
-            \ change) to ignore in Visually complete and Speed index calculation. "
+            \ change) to ignore in Visually complete and Speed index calculation."
           items:
             type: "string"
             description: "Query CSS selectors to specify mutation nodes (elements\
-              \ that change) to ignore in Visually complete and Speed index calculation. "
+              \ that change) to ignore in Visually complete and Speed index calculation."
         excludedUrls:
           type: "array"
           description: "Use regular expressions to define URLs for images and iFrames\
-            \ to exclude from detection by the Visually complete module. "
+            \ to exclude from detection by the Visually complete module."
           items:
             type: "string"
             description: "Use regular expressions to define URLs for images and iFrames\
-              \ to exclude from detection by the Visually complete module. "
+              \ to exclude from detection by the Visually complete module."
         imageSizeThreshold:
           type: "integer"
           format: "int32"

@@ -237,11 +237,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegate-tokens:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegate.tokens:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all available ActiveGate tokens",
         "tags": [
           "Access Tokens - ActiveGate tokens"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "fleet-management:activegate.tokens:read"
         ],
         "x-token-scopes": [
           "activeGateTokenManagement.read"
@@ -306,6 +323,29 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegate-tokens:create"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegate-tokens:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegate.tokens:create"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegate.tokens:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new ActiveGate token",
@@ -313,6 +353,10 @@
           "Access Tokens - ActiveGate tokens"
         ],
         "x-legacy-permission": "fleet-management:activegate.tokens:create",
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "fleet-management:activegate.tokens:write"
+        ],
         "x-token-scopes": [
           "activeGateTokenManagement.create",
           "activeGateTokenManagement.write"
@@ -381,11 +425,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegate-tokens:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegate.tokens:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes an ActiveGate token",
         "tags": [
           "Access Tokens - ActiveGate tokens"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "fleet-management:activegate.tokens:write"
         ],
         "x-token-scopes": [
           "activeGateTokenManagement.write"
@@ -460,11 +521,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegate-tokens:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegate.tokens:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets metadata of an ActiveGate token",
         "tags": [
           "Access Tokens - ActiveGate tokens"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "fleet-management:activegate.tokens:read"
         ],
         "x-token-scopes": [
           "activeGateTokenManagement.read"
@@ -473,7 +551,7 @@
     },
     "/activeGates": {
       "get": {
-        "description": "The response includes all ActiveGates that are currently connected to the environment or have been connected during last 2 hours.",
+        "description": "The response includes all ActiveGates that are currently connected to the environment or have been connected during last 2 hours. Deprecated since version 1.343. Use DQL Smartscape nodes to query ActiveGate data instead. See https://dt-url.net/mf03894",
         "operationId": "getAllActiveGates",
         "parameters": [
           {
@@ -765,6 +843,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all available ActiveGates",
@@ -778,7 +869,8 @@
         "x-supports-personal-access-token": true,
         "x-token-scopes": [
           "activeGates.read"
-        ]
+        ],
+        "deprecated": true
       }
     },
     "/activeGates/autoUpdate": {
@@ -821,6 +913,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the global auto-update configuration of environment ActiveGates.",
@@ -889,6 +994,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Puts the global auto-update configuration of environment ActiveGates.",
@@ -959,6 +1077,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Validates the payload for the `POST /activeGates/autoUpdate` request.",
@@ -1013,6 +1144,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists ActiveGate groups",
@@ -1026,7 +1170,9 @@
         "x-supports-personal-access-token": true,
         "x-token-scopes": [
           "activeGates.read"
-        ]
+        ],
+        "deprecated": true,
+        "description": "Deprecated since version 1.343. Use DQL Smartscape nodes to query ActiveGate data instead. See https://dt-url.net/mf03894"
       }
     },
     "/activeGates/remoteConfigurationManagement": {
@@ -1086,6 +1232,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists finished ActiveGate remote configuration management jobs",
@@ -1162,6 +1316,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new remote configuration management job",
@@ -1220,6 +1382,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets remote configuration management job that is currently running",
@@ -1295,6 +1465,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a preview for remote configuration management job - applicable only to network zone and ActiveGate group",
@@ -1363,6 +1541,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Validates the payload for the `POST /activeGates/remoteConfigurationManagement` request.",
@@ -1438,6 +1624,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the specified remote configuration management job",
@@ -1492,6 +1686,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the status of ActiveGate tokens enforcement",
@@ -1648,6 +1850,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "List ActiveGates with update jobs",
@@ -1723,6 +1938,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the details of the specified ActiveGate",
@@ -1736,7 +1964,9 @@
         "x-supports-personal-access-token": true,
         "x-token-scopes": [
           "activeGates.read"
-        ]
+        ],
+        "deprecated": true,
+        "description": "Deprecated since version 1.343. Use DQL Smartscape nodes to query ActiveGate data instead. See https://dt-url.net/mf03894"
       }
     },
     "/activeGates/{agId}/autoUpdate": {
@@ -1800,6 +2030,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the configuration of auto-update for the specified ActiveGate",
@@ -1879,6 +2122,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates the configuration of auto-update for the specified ActiveGate",
@@ -1960,6 +2216,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Validates the payload for the `POST /activeGates/{agId}/autoUpdate` request.",
@@ -2124,6 +2393,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists update jobs for the specified ActiveGate",
@@ -2208,6 +2490,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new update job for the specified ActiveGate",
@@ -2287,6 +2582,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Validates the payload for the `POST /activeGates/{agId}/updateJobs` request.",
@@ -2374,6 +2682,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified update job",
@@ -2456,6 +2777,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:activegates:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the parameters of the specified update job",
@@ -2531,6 +2865,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:agent-connection-tokens:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagent.tokens:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the agent connection token | maturity=EARLY_ADOPTER",
@@ -2538,6 +2885,10 @@
           "Access Tokens - Agent tokens"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagent.tokens:read"
+        ],
         "x-token-scopes": [
           "agentTokenManagement.read"
         ]
@@ -2653,6 +3004,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:api-tokens:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "api-tokens:tokens:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all available API tokens",
@@ -2728,6 +3092,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:api-tokens:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "api-tokens:tokens:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new API token",
@@ -2797,6 +3174,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:api-tokens:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "api-tokens:tokens:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets API token metadata by token secret",
@@ -2804,6 +3194,10 @@
           "Access Tokens - API tokens"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer",
+          "api-tokens:tokens:read"
+        ],
         "x-token-scopes": []
       }
     },
@@ -2862,6 +3256,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:api-tokens:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "api-tokens:tokens:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes an API token",
@@ -2940,6 +3347,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:api-tokens:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "api-tokens:tokens:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets API token metadata by token ID",
@@ -3018,6 +3438,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:api-tokens:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "api-tokens:tokens:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates an API token",
@@ -3227,13 +3660,30 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "storage:events:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:bizevents:ingest"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Ingests a business event",
         "tags": [
           "Business Events"
         ],
+        "x-legacy-permission": "storage:events:write",
         "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "openpipeline:bizevents:ingest"
+        ],
         "x-token-scopes": [
           "bizevents.ingest"
         ]
@@ -3347,6 +3797,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:credentials:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all sets of credentials in your environment.",
@@ -3354,6 +3812,9 @@
           "Credential vault"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "credentialVault.read"
         ]
@@ -3417,6 +3878,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:credentials:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new credentials set.",
@@ -3424,6 +3893,9 @@
           "Credential vault"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "credentialVault.write"
         ]
@@ -3485,6 +3957,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:credentials:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified credentials set",
@@ -3492,6 +3972,9 @@
           "Credential vault"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "credentialVault.write"
         ]
@@ -3555,6 +4038,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:credentials:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the metadata of the specified credentials set.",
@@ -3562,6 +4053,9 @@
           "Credential vault"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "credentialVault.read"
         ]
@@ -3639,6 +4133,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:credentials:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates the specified credentials set.",
@@ -3646,6 +4148,9 @@
           "Credential vault"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "credentialVault.write"
         ]
@@ -3749,6 +4254,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:entities:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the information about monitored entities",
@@ -3830,6 +4343,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:entities:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates or updates a custom device",
@@ -3913,6 +4434,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the security context for all entities matching the entity selector.",
@@ -4005,6 +4534,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Sets the given security context for all entities matching the entity selector. ",
@@ -4095,6 +4632,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:entities:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the properties of the specified monitored entity",
@@ -4172,6 +4717,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:entities:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets a list of properties for all entity types",
@@ -4240,6 +4793,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:entities:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets a list of properties for the specified entity type",
@@ -4313,6 +4874,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "storage:events:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:events:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all event properties",
@@ -4379,6 +4953,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "storage:events:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:events:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the details of an event property",
@@ -4453,6 +5040,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "storage:events:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:events:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all event types",
@@ -4519,6 +5119,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "storage:events:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:events:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the properties of an event type",
@@ -4585,6 +5198,24 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:events.davis:ingest"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "storage:events:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:events:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Ingests a custom event",
@@ -4592,9 +5223,10 @@
           "Events"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-legacy-permission": "storage:events:write",
         "x-permissions": [
           "environment:roles:viewer",
-          "storage:events:write"
+          "openpipeline:events.davis:ingest"
         ],
         "x-supports-personal-access-token": true,
         "x-token-scopes": [
@@ -4667,6 +5299,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all the extensions 2.0 available in your environment",
@@ -4774,6 +5414,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Uploads or verifies a new extension 2.0",
@@ -4843,6 +5491,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "extensions:discovery.jmx:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all Java processes discovered in the environment that are available for JMX metric collection. | maturity=EARLY_ADOPTER",
@@ -4850,6 +5506,9 @@
           "Extensions 2.0"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "extensions:discovery.jmx:read"
+        ],
         "x-token-scopes": [
           "extensionDiscoveryJmx.read"
         ],
@@ -4934,6 +5593,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "extensions:discovery.jmx:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Retrieves details of a specified Java process discovered in the environment for JMX metric collection. | maturity=EARLY_ADOPTER",
@@ -4941,6 +5608,9 @@
           "Extensions 2.0"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "extensions:discovery.jmx:read"
+        ],
         "x-token-scopes": [
           "extensionDiscoveryJmx.read"
         ],
@@ -4999,6 +5669,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "extensions:discovery.pmi:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all Java processes discovered in the environment that are available for PMI metric collection. | maturity=EARLY_ADOPTER",
@@ -5006,6 +5684,9 @@
           "Extensions 2.0"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "extensions:discovery.pmi:read"
+        ],
         "x-token-scopes": [
           "extensionDiscoveryPmi.read"
         ],
@@ -5090,6 +5771,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "extensions:discovery.pmi:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Retrieves details of a specified Java process discovered in the environment for PMI metric collection. | maturity=EARLY_ADOPTER",
@@ -5097,6 +5786,9 @@
           "Extensions 2.0"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "extensions:discovery.pmi:read"
+        ],
         "x-token-scopes": [
           "extensionDiscoveryPmi.read"
         ],
@@ -5169,6 +5861,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all the extensions 2.0 available in your environment with additional metadata",
@@ -5225,6 +5925,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all the extension 2.0 schemas versions available in your environment",
@@ -5307,6 +6015,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all the files available for the specified extension 2.0 schema version",
@@ -5394,6 +6110,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the extension 2.0 schema file in the specified version",
@@ -5488,6 +6212,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all versions of the extension 2.0",
@@ -5581,6 +6313,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Installs Extension from HUB",
@@ -5658,6 +6398,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deactivates the environment configuration of the specified extension 2.0",
@@ -5734,6 +6482,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the active environment configuration version of the specified extension 2.0",
@@ -5831,6 +6587,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Activates the environment configuration from the specified version of the extension 2.0",
@@ -5928,6 +6692,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates the active environment configuration version of the extension 2.0",
@@ -6006,6 +6778,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the information about assets in an active extension 2.0",
@@ -6093,6 +6873,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets an alert template asset for given ID",
@@ -6214,6 +7002,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all the monitoring configurations of the specified extension 2.0",
@@ -6343,6 +7139,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates new monitoring configuration for the specified extension 2.0",
@@ -6423,6 +7227,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the most recent status of the execution of monitoring configurations of given extension",
@@ -6512,6 +7324,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified monitoring configuration",
@@ -6596,6 +7416,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the details of the specified monitoring configuration",
@@ -6701,6 +7529,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates the specified monitoring configuration",
@@ -6818,6 +7654,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configuration-actions:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Executes Data Source action of Active Gate or Host",
@@ -6946,6 +7790,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the audit logs of monitoring configuration of given extension",
@@ -7032,6 +7884,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the most recent status of the execution of given monitoring configuration",
@@ -7129,6 +7989,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified version of the extension 2.0",
@@ -7219,6 +8087,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets details of the specified version of the extension 2.0",
@@ -7306,6 +8182,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "List all activeGate groups available for extension",
@@ -7393,6 +8277,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extensions:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:extension-configurations:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the configuration schema of the specified version of the extension 2.0",
@@ -7419,6 +8316,14 @@
             "description": "Registry name containing the container images. For a list of registries, see [Dynatrace Documentation](https://dt-url.net/mf239va)",
             "in": "query",
             "name": "registry",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Partial registry name filter. Returns images for the first registry whose name contains this value. Ignored when 'registry' is provided.",
+            "in": "query",
+            "name": "registryFilter",
             "schema": {
               "type": "string"
             }
@@ -7479,11 +8384,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:container-images:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Returns container images data",
         "tags": [
           "Fleet Management container images"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:container-images:read"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -7546,6 +8468,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:delete"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified JavaScript mapping file",
@@ -7638,6 +8568,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists metadata of JavaScript mapping files",
@@ -7741,6 +8679,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Uploads new or updates existing JavaScript mapping file",
@@ -7834,6 +8780,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists metadata of JavaScript mapping files",
@@ -7920,6 +8874,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates metadata of the specified JavaScript mapping file",
@@ -7992,6 +8954,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:delete"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified JavaScript mapping file",
@@ -8094,6 +9064,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Uploads new or updates existing JavaScript mapping file",
@@ -8183,6 +9161,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates metadata of the specified JavaScript mapping file",
@@ -8591,11 +9577,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:logs:ingest"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "storage:logs:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Pushes log records to Dynatrace",
         "tags": [
           "Logs"
+        ],
+        "x-legacy-permission": "storage:logs:write",
+        "x-permissions": [
+          "openpipeline:logs:ingest"
         ],
         "x-token-scopes": [
           "logs.ingest"
@@ -8662,11 +9665,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "storage:metrics:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:metrics:ingest"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Pushes metric data points to Dynatrace",
         "tags": [
           "Metrics"
+        ],
+        "x-legacy-permission": "storage:metrics:write",
+        "x-permissions": [
+          "openpipeline:metrics:ingest"
         ],
         "x-token-scopes": [
           "metrics.ingest"
@@ -8765,6 +9785,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:entities:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists monitoring states of entities",
@@ -8982,6 +10010,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets remote configuration management job that is currently running",
@@ -9061,6 +10097,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a preview for remote configuration management job - applicable only to network zone and host group",
@@ -9130,6 +10174,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Validates the payload for the `POST /oneagents/remoteConfigurationManagement` request.",
@@ -9206,6 +10258,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the specified remote configuration management job",
@@ -9315,6 +10375,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:logs:ingest"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "storage:logs:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Implementation of the OTLP/HTTP protocol for logs ingest.",
@@ -9322,6 +10395,10 @@
           "OpenTelemetry Protocol (OTLP) Logs Ingest"
         ],
         "x-hidden-in-platform": true,
+        "x-legacy-permission": "storage:logs:write",
+        "x-permissions": [
+          "openpipeline:logs:ingest"
+        ],
         "x-token-scopes": [
           "logs.ingest"
         ]
@@ -9386,6 +10463,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:metrics:ingest"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Implementation of the OTLP/HTTP protocol for metric ingest.",
@@ -9393,6 +10478,9 @@
           "OpenTelemetry Protocol (OTLP) Metric Ingest"
         ],
         "x-hidden-in-platform": true,
+        "x-permissions": [
+          "openpipeline:metrics:ingest"
+        ],
         "x-token-scopes": [
           "metrics.ingest"
         ]
@@ -9457,6 +10545,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:traces:ingest"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Implementation of the OTLP/HTTP protocol for trace ingest.",
@@ -9464,6 +10560,9 @@
           "OpenTelemetry Protocol (OTLP) Trace Ingest"
         ],
         "x-hidden-in-platform": true,
+        "x-permissions": [
+          "openpipeline:traces:ingest"
+        ],
         "x-token-scopes": [
           "openTelemetryTrace.ingest"
         ]
@@ -9574,6 +10673,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists problems observed within the specified timeframe",
@@ -9647,6 +10754,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the properties of the specified problem",
@@ -9725,6 +10840,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "openpipeline:events.davis:ingest"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Closes the specified problem and adds a closing comment on it",
@@ -9733,7 +10861,8 @@
         ],
         "x-allow-access-with-management-zone-permissions": true,
         "x-permissions": [
-          "environment:roles:viewer"
+          "environment:roles:viewer",
+          "openpipeline:events.davis:ingest"
         ],
         "x-supports-personal-access-token": true,
         "x-token-scopes": [
@@ -9807,6 +10936,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets all comments on the specified problem",
@@ -9873,6 +11010,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Adds a new comment on the specified problem",
@@ -9940,6 +11085,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified comment from a problem",
@@ -10012,6 +11165,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the specified comment on a problem",
@@ -10087,6 +11248,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:problems:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates the specified comment on a problem",
@@ -10160,6 +11329,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:symbol-files:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all React Native files | maturity=EARLY_ADOPTER",
@@ -10167,6 +11349,10 @@
           "Mobile Deobfuscation and Symbolication"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "deobfuscation:symbol-files:read"
+        ],
         "x-token-scopes": [
           "DssFileManagement"
         ]
@@ -10242,6 +11428,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:symbol-files:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists React Native files belonging to certain application | maturity=EARLY_ADOPTER",
@@ -10249,6 +11448,10 @@
           "Mobile Deobfuscation and Symbolication"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "deobfuscation:symbol-files:read"
+        ],
         "x-token-scopes": [
           "DssFileManagement"
         ]
@@ -10340,6 +11543,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:delete"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes React Native mapping file | maturity=EARLY_ADOPTER",
@@ -10347,6 +11558,9 @@
           "Mobile Deobfuscation and Symbolication"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "deobfuscation:symbol-files:delete"
+        ],
         "x-token-scopes": [
           "DssFileManagement"
         ]
@@ -10450,6 +11664,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:symbol-files:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets content of React Native mapping file, as a single zipped file | maturity=EARLY_ADOPTER",
@@ -10457,6 +11684,10 @@
           "Mobile Deobfuscation and Symbolication"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "deobfuscation:symbol-files:read"
+        ],
         "x-token-scopes": [
           "DssFileManagement"
         ]
@@ -10574,6 +11805,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Adds new or updates existing React Native mapping file | maturity=EARLY_ADOPTER",
@@ -10581,6 +11820,9 @@
           "Mobile Deobfuscation and Symbolication"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "deobfuscation:symbol-files:write"
+        ],
         "x-token-scopes": [
           "DssFileManagement"
         ]
@@ -10690,6 +11932,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "deobfuscation:symbol-files:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates metadata of the specified React Native mapping file | maturity=EARLY_ADOPTER",
@@ -10697,6 +11947,9 @@
           "Mobile Deobfuscation and Symbolication"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "deobfuscation:symbol-files:write"
+        ],
         "x-token-scopes": [
           "DssFileManagement"
         ]
@@ -11003,6 +12256,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Download the inline code",
@@ -11089,6 +12350,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Download the JavaScript tag",
@@ -11167,6 +12436,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Download the OneAgent JavaScript tag",
@@ -11245,6 +12522,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Download the OneAgent JavaScript tag with SRI",
@@ -11419,14 +12704,115 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "adaptive-traffic-management:sampling-configuration:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets sampling configuration.",
         "tags": [
           "Adaptive Traffic Management"
         ],
+        "x-permissions": [
+          "adaptive-traffic-management:sampling-configuration:read"
+        ],
         "x-token-scopes": [
           "adaptiveTrafficManagement.read"
+        ]
+      }
+    },
+    "/settings/effective-permissions:resolve": {
+      "post": {
+        "operationId": "resolveEffectivePermissions",
+        "requestBody": {
+          "content": {
+            "application/json; charset=utf-8": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolutionRequest"
+              }
+            }
+          },
+          "description": "The JSON body of the request."
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EffectivePermission"
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Failed. Forbidden. No access to any settings."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "settings:schemas:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Get the effective settings permissions of the calling user in the environment",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "environment:roles:viewer",
+          "settings:schemas:read"
         ]
       }
     },
@@ -11532,6 +12918,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists effective settings values",
@@ -11685,6 +13079,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the history of settings objects",
@@ -11838,6 +13240,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists persisted settings objects",
@@ -11990,6 +13400,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new settings object",
@@ -12106,6 +13524,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified settings object",
@@ -12199,6 +13625,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the specified settings object",
@@ -12332,6 +13766,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates an existing settings object",
@@ -12346,6 +13788,919 @@
         "x-supports-personal-access-token": true,
         "x-token-scopes": [
           "settings.write"
+        ]
+      }
+    },
+    "/settings/objects/{objectId}/permissions": {
+      "get": {
+        "description": "Get current permissions on this object.",
+        "operationId": "getPermissions",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessorPermissionsList"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Get current permissions on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:read"
+        ]
+      },
+      "post": {
+        "description": "Add the permissions for a single accessor on this object, anyone with read/write permissions is allowed to add more permissions.",
+        "operationId": "addPermission",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json; charset=utf-8": {
+              "schema": {
+                "$ref": "#/components/schemas/AccessorPermissions"
+              }
+            }
+          },
+          "description": "The JSON body of the request."
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessorPermissions"
+                }
+              }
+            },
+            "description": "Created",
+            "headers": {
+              "location": {
+                "description": "The location of the new resource created by this request.",
+                "style": "simple"
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "If accessor id already exists."
+          },
+          "403": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Failed. Forbidden."
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Add the permissions for a single accessor on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:write"
+        ]
+      }
+    },
+    "/settings/objects/{objectId}/permissions/all-users": {
+      "delete": {
+        "description": "Remove the permissions for an existing all-users accessor on this object, anyone with read/write permissions is allowed to delete permissions.",
+        "operationId": "removePermissionAllUsers",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId or the all-users accessor doesn't have any permissions on this object."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Remove the permissions for an existing all-users accessor on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:write"
+        ]
+      },
+      "get": {
+        "description": "Get current permissions of the all-users accessor on this object.",
+        "operationId": "getPermissionAllUsers",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessorPermissions"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId or the all-users accessor doesn't have any permissions on this object."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Get current permissions of the all-users accessor on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:read"
+        ]
+      },
+      "put": {
+        "description": "Update the permissions for an existing all-users accessor on this object, anyone with read/write permissions is allowed to update permissions.",
+        "operationId": "updatePermissionAllUsers",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json; charset=utf-8": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePermissionsRequest"
+              }
+            }
+          },
+          "description": "The JSON body of the request."
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "If permission list is empty, contains unsupported entries or unsupported combinations of entries."
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId or the all-users accessor doesn't have any permissions on this object."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Update the permissions for an existing all-users accessor on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:write"
+        ]
+      }
+    },
+    "/settings/objects/{objectId}/permissions/{accessorType}/{accessorId}": {
+      "delete": {
+        "description": "Remove the permissions for an existing accessor on this object, anyone with read/write permissions is allowed to delete permissions.",
+        "operationId": "removePermission",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The type of the accessor.",
+            "in": "path",
+            "name": "accessorType",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "group",
+                "user"
+              ]
+            }
+          },
+          {
+            "description": "The user uuid or group uuid of the accessor, depending on the type.",
+            "in": "path",
+            "name": "accessorId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId or the accessor doesn't have any permissions on this object."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Remove the permissions for an existing accessor on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:write"
+        ]
+      },
+      "get": {
+        "description": "Get current permissions of the accessor on this object.",
+        "operationId": "getPermission",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The type of the accessor.",
+            "in": "path",
+            "name": "accessorType",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "group",
+                "user"
+              ]
+            }
+          },
+          {
+            "description": "The user uuid or group uuid of the accessor, depending on the type.",
+            "in": "path",
+            "name": "accessorId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessorPermissions"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId or the accessor doesn't have any permissions on this object."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Get current permissions of the accessor on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:read"
+        ]
+      },
+      "put": {
+        "description": "Update the permissions for an existing accessor on this object, anyone with read/write permissions is allowed to update permissions.",
+        "operationId": "updatePermission",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The type of the accessor.",
+            "in": "path",
+            "name": "accessorType",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "group",
+                "user"
+              ]
+            }
+          },
+          {
+            "description": "The user uuid or group uuid of the accessor, depending on the type.",
+            "in": "path",
+            "name": "accessorId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json; charset=utf-8": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePermissionsRequest"
+              }
+            }
+          },
+          "description": "The JSON body of the request."
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "If permission list is empty, contains unsupported entries or unsupported combinations of entries."
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId or the accessor doesn't have any permissions on this object."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Update the permissions for an existing accessor on this object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:write"
+        ]
+      }
+    },
+    "/settings/objects/{objectId}:transfer-ownership": {
+      "post": {
+        "description": "Transfer ownership of the object, only the owner or the main admin is allowed to transfer the ownership (IAM permission needed).",
+        "operationId": "transferOwnership",
+        "parameters": [
+          {
+            "description": "The ID of the required settings object.",
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If set to true and user has settings:objects:admin permission, the endpoint will act as if the user is the owner of all objects",
+            "in": "query",
+            "name": "adminAccess",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json; charset=utf-8": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferOwnershipRequest"
+              }
+            }
+          },
+          "description": "The JSON body of the request."
+        },
+        "responses": {
+          "204": {
+            "description": "Success. Response doesn't have a body."
+          },
+          "400": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Failed. The input is invalid."
+          },
+          "403": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Failed. Forbidden."
+          },
+          "404": {
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "No object available for the given objectId."
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Client side error."
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server side error."
+          }
+        },
+        "security": [
+          {
+            "ssoAuth": [
+              "settings:objects:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
+          }
+        ],
+        "summary": "Transfer ownership of the object.",
+        "tags": [
+          "Settings - Objects"
+        ],
+        "x-allow-access-with-management-zone-permissions": true,
+        "x-only-visible-in-saas": true,
+        "x-permissions": [
+          "settings:objects:write"
         ]
       }
     },
@@ -12398,6 +14753,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:schemas:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists available settings schemas",
@@ -12492,6 +14855,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "settings:schemas:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets parameters of the specified settings schema",
@@ -12547,6 +14918,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets set of synthetic related parameters defined for whole tenant (affects all monitors and all private locations). | maturity=EARLY_ADOPTER",
@@ -12554,6 +14933,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -12605,6 +14987,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates set of synthetic related parameters defined for whole tenant (affects all monitors and all private locations). | maturity=EARLY_ADOPTER",
@@ -12612,6 +15002,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.write"
         ]
@@ -12687,6 +15080,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-execution:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets detailed information about the last execution of the specified HTTP monitor",
@@ -12694,6 +15095,9 @@
           "Synthetic - HTTP monitor executions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "DataExport",
           "ExternalSyntheticIntegration",
@@ -12857,6 +15261,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-execution:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the list of all on-demand executions of synthetic monitors",
@@ -12864,6 +15276,9 @@
           "Synthetic - On-demand monitor executions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticExecutions.read",
           "ExternalSyntheticIntegration",
@@ -12940,6 +15355,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-execution:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Triggers on-demand executions for synthetic monitors",
@@ -12947,6 +15370,9 @@
           "Synthetic - On-demand monitor executions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticExecutions.write",
           "ExternalSyntheticIntegration"
@@ -13023,6 +15449,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-execution:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets summary information and the list of failed executions for the given batch ID",
@@ -13030,6 +15464,9 @@
           "Synthetic - On-demand monitor executions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticExecutions.read",
           "ExternalSyntheticIntegration",
@@ -13107,6 +15544,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-execution:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets basic results of the specified on-demand execution",
@@ -13114,6 +15559,9 @@
           "Synthetic - On-demand monitor executions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticExecutions.read",
           "ExternalSyntheticIntegration",
@@ -13189,6 +15637,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-execution:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Reruns specified on-demand execution of synthetic monitors",
@@ -13196,6 +15652,9 @@
           "Synthetic - On-demand monitor executions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticExecutions.write",
           "ExternalSyntheticIntegration"
@@ -13272,6 +15731,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-execution:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets detailed results of the specified on-demand execution",
@@ -13279,6 +15746,9 @@
           "Synthetic - On-demand monitor executions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticExecutions.read",
           "ExternalSyntheticIntegration",
@@ -13369,6 +15839,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all synthetic locations (both public and private) available for your environment",
@@ -13376,6 +15854,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -13428,11 +15909,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new private synthetic location",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "syntheticLocations.write"
@@ -13515,11 +16007,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets list of commands to deploy synthetic location in Kubernetes/Openshift cluster",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "syntheticLocations.read"
@@ -13586,6 +16089,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets list of commands to deploy metric adapter in Kubernetes/Openshift cluster | maturity=EARLY_ADOPTER",
@@ -13593,6 +16104,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -13650,6 +16164,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets list of commands to delete metric adapter in Kubernetes/Openshift cluster | maturity=EARLY_ADOPTER",
@@ -13657,6 +16179,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -13714,6 +16239,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets yaml file content to deploy metric adapter in Kubernetes/Openshift cluster | maturity=EARLY_ADOPTER",
@@ -13721,6 +16254,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -13764,6 +16300,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Checks the status of public synthetic locations",
@@ -13771,6 +16315,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -13819,11 +16366,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Changes the status of public synthetic locations",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "syntheticLocations.write"
@@ -13872,11 +16430,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified private synthetic location",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "syntheticLocations.write"
@@ -13937,6 +16506,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets properties of the specified location",
@@ -13944,6 +16521,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -14001,11 +16581,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates the specified synthetic location",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "syntheticLocations.write"
@@ -14081,11 +16672,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets list of commands to delete synthetic location in Kubernetes/Openshift cluster",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "syntheticLocations.read"
@@ -14177,11 +16779,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets yaml file content to deploy location in Kubernetes/Openshift cluster",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "syntheticLocations.read"
@@ -14236,6 +16849,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets all synthetic monitors. | maturity=EARLY_ADOPTER",
@@ -14310,6 +16931,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a synthetic monitor definition. | maturity=EARLY_ADOPTER",
@@ -14368,6 +16997,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes a synthetic monitor definition for the given monitor ID. | maturity=EARLY_ADOPTER",
@@ -14442,6 +17079,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets a synthetic monitor definition for the given monitor ID. | maturity=EARLY_ADOPTER",
@@ -14520,6 +17165,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates a synthetic monitor definition for the given monitor ID. | maturity=EARLY_ADOPTER",
@@ -14597,6 +17250,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all synthetic nodes available in your environment",
@@ -14604,6 +17265,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -14658,6 +17322,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists properties of the specified synthetic node",
@@ -14665,6 +17337,9 @@
           "Synthetic - Locations, nodes, and configuration"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "syntheticLocations.read"
         ]
@@ -14719,11 +17394,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:tenant-token-rotation:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:tenant-token:rotate"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Cancels tenant token rotation",
         "tags": [
           "Access tokens - Tenant tokens"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "fleet-management:tenant-token:rotate"
         ],
         "x-token-scopes": [
           "tenantTokenRotation.write"
@@ -14779,11 +17471,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:tenant-token-rotation:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:tenant-token:rotate"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Finishes tenant token rotation",
         "tags": [
           "Access tokens - Tenant tokens"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "fleet-management:tenant-token:rotate"
         ],
         "x-token-scopes": [
           "tenantTokenRotation.write"
@@ -14839,11 +17548,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:tenant-token-rotation:write"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:tenant-token:rotate"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Starts tenant token rotation",
         "tags": [
           "Access tokens - Tenant tokens"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings",
+          "fleet-management:tenant-token:rotate"
         ],
         "x-token-scopes": [
           "tenantTokenRotation.write"
@@ -14898,6 +17624,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Resolve a list of provided condition expressions | maturity=EARLY_ADOPTER",
@@ -14981,6 +17715,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Provides a screen definition for a given monitored entity and a screen type | maturity=EARLY_ADOPTER",
@@ -15046,6 +17788,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Provides a Inventory Explorer definition for a given id | maturity=EARLY_ADOPTER",
@@ -15101,6 +17851,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Provides a feature flags list | maturity=EARLY_ADOPTER",
@@ -15184,6 +17942,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Provides a list screen definition for a given monitored entity type | maturity=EARLY_ADOPTER",
@@ -15250,6 +18016,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Provides a screen definition schema for given explorer id | maturity=EARLY_ADOPTER",
@@ -15316,6 +18090,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Provides a screen definition schema for given entity type | maturity=EARLY_ADOPTER",
@@ -15398,6 +18180,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "unified-analysis:screen-definition:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Provides all service methods of a service entity by traversing the relationship chain through service method groups | maturity=EARLY_ADOPTER",
@@ -15485,6 +18275,43 @@
           "scopes",
           "type"
         ]
+      },
+      "AccessorPermissions": {
+        "type": "object",
+        "description": "An accessor identity and it's associated permissions.",
+        "properties": {
+          "accessor": {
+            "$ref": "#/components/schemas/Identity"
+          },
+          "permissions": {
+            "type": "array",
+            "description": "The permissions associated with the accessor.",
+            "items": {
+              "type": "string",
+              "description": "r = read, w = write",
+              "enum": [
+                "r",
+                "w"
+              ]
+            }
+          }
+        },
+        "required": [
+          "accessor",
+          "permissions"
+        ]
+      },
+      "AccessorPermissionsList": {
+        "type": "object",
+        "description": "All configured permissions of an object (excluding owner).",
+        "properties": {
+          "accessors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccessorPermissions"
+            }
+          }
+        }
       },
       "ActionDefinitionDto": {
         "type": "object",
@@ -15742,7 +18569,7 @@
       },
       "ActiveGateAutoUpdateConfig": {
         "type": "object",
-        "description": "Configuration of the ActiveGate auto-updates.",
+        "description": "Auto-update configuration for an individual environment ActiveGate.",
         "properties": {
           "effectiveSetting": {
             "type": "string",
@@ -15756,7 +18583,7 @@
           },
           "setting": {
             "type": "string",
-            "description": "The state of the ActiveGate auto-update: enabled, disabled, or inherited. \n\nIf set to `INHERITED`, the setting is inherited from the global configuration set on the environment or Managed cluster level.",
+            "description": "The state of the environment ActiveGate auto-update: enabled, disabled, or inherited. \n\nIf set to `INHERITED`, the setting is inherited from the global environment ActiveGate auto-update configuration.",
             "enum": [
               "DISABLED",
               "ENABLED",
@@ -15794,11 +18621,11 @@
       },
       "ActiveGateGlobalAutoUpdateConfig": {
         "type": "object",
-        "description": "Global configuration of ActiveGates auto-update.",
+        "description": "Global auto-update configuration for environment ActiveGates. Applies to all environment ActiveGates that have the `INHERITED` auto-update setting.",
         "properties": {
           "globalSetting": {
             "type": "string",
-            "description": "The state of auto-updates for all ActiveGates connected to the environment or Managed cluster. \n\nThis setting is inherited by all ActiveGates that have the `INHERITED` setting.",
+            "description": "The state of auto-updates for all environment ActiveGates. \n\nThis setting is inherited by all environment ActiveGates that have the `INHERITED` setting.",
             "enum": [
               "ENABLED",
               "DISABLED"
@@ -18073,6 +20900,7 @@
           "activegate",
           "codemodules",
           "database-datasource-executor",
+          "dynatrace-sql-extension-executor",
           "eec",
           "logmodule",
           "oneagent"
@@ -19198,6 +22026,30 @@
         },
         "required": [
           "value"
+        ]
+      },
+      "EffectivePermission": {
+        "type": "object",
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/PermissionContext"
+          },
+          "granted": {
+            "type": "string",
+            "enum": [
+              "condition",
+              "false",
+              "true"
+            ]
+          },
+          "permission": {
+            "type": "string",
+            "example": "settings:objects:write"
+          }
+        },
+        "required": [
+          "granted",
+          "permission"
         ]
       },
       "EffectiveSettingsValue": {
@@ -23688,6 +26540,26 @@
           "totalCount"
         ]
       },
+      "PermissionContext": {
+        "type": "object",
+        "description": "Optional context data",
+        "properties": {
+          "schemaId": {
+            "type": "string",
+            "description": "Settings schema id for conditional permission",
+            "example": "service:schema"
+          },
+          "scope": {
+            "type": "string",
+            "description": "Settings scope for conditional permission",
+            "example": "environment"
+          }
+        },
+        "required": [
+          "schemaId",
+          "scope"
+        ]
+      },
       "PlainAuthenticationDto": {
         "type": "object",
         "allOf": [
@@ -25099,6 +27971,20 @@
           "requestHeaders"
         ]
       },
+      "ResolutionRequest": {
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SinglePermissionRequest"
+            }
+          }
+        },
+        "required": [
+          "permissions"
+        ]
+      },
       "ResourceContext": {
         "type": "object",
         "description": "The resource context, which contains additional permission information about the object.",
@@ -26181,6 +29067,23 @@
           "value"
         ]
       },
+      "SinglePermissionRequest": {
+        "type": "object",
+        "description": "A list of permissions.",
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/PermissionContext"
+          },
+          "permission": {
+            "type": "string",
+            "description": "Permission to be probed",
+            "example": "settings:objects:write"
+          }
+        },
+        "required": [
+          "permission"
+        ]
+      },
       "Success": {
         "type": "object",
         "properties": {
@@ -26424,10 +29327,6 @@
               "key": "another sample key",
               "value": "another sample value"
             }
-          ],
-          "securityContext": [
-            "sample security context",
-            "another security context"
           ],
           "steps": [
             {
@@ -26734,15 +29633,6 @@
             "minItems": 0,
             "uniqueItems": true
           },
-          "securityContext": {
-            "type": "array",
-            "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed.",
-            "items": {
-              "type": "string",
-              "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed."
-            },
-            "uniqueItems": true
-          },
           "steps": {
             "type": "array",
             "description": "The steps of the monitor.",
@@ -26918,10 +29808,6 @@
               "key": "another sample key",
               "value": "another sample value"
             }
-          ],
-          "securityContext": [
-            "sample security context",
-            "another security context"
           ],
           "steps": [
             {
@@ -27243,15 +30129,6 @@
             "description": "Primary Grail tags as a list of key-value pairs. Up to 10 tags. Those fields are only available for SaaS and not for Managed.",
             "items": {
               "$ref": "#/components/schemas/SyntheticMonitorPrimaryGrailTagDto"
-            },
-            "uniqueItems": true
-          },
-          "securityContext": {
-            "type": "array",
-            "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed.",
-            "items": {
-              "type": "string",
-              "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed."
             },
             "uniqueItems": true
           },
@@ -27539,10 +30416,6 @@
               "value": "another sample value"
             }
           ],
-          "securityContext": [
-            "sample security context",
-            "another security context"
-          ],
           "steps": [
             {
               "authentication": {
@@ -27657,15 +30530,6 @@
             "minItems": 0,
             "uniqueItems": true
           },
-          "securityContext": {
-            "type": "array",
-            "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed.",
-            "items": {
-              "type": "string",
-              "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed."
-            },
-            "uniqueItems": true
-          },
           "steps": {
             "type": "array",
             "description": "The steps of the monitor.",
@@ -27746,10 +30610,6 @@
               "key": "another sample key",
               "value": "another sample value"
             }
-          ],
-          "securityContext": [
-            "sample security context",
-            "another security context"
           ],
           "steps": [
             {
@@ -27881,15 +30741,6 @@
             "description": "Primary Grail tags as a list of key-value pairs. Up to 10 tags. Those fields are only available for SaaS and not for Managed.",
             "items": {
               "$ref": "#/components/schemas/SyntheticMonitorPrimaryGrailTagDto"
-            },
-            "uniqueItems": true
-          },
-          "securityContext": {
-            "type": "array",
-            "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed.",
-            "items": {
-              "type": "string",
-              "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed."
             },
             "uniqueItems": true
           },
@@ -28445,7 +31296,11 @@
               "HTTP"
             ]
           }
-        }
+        },
+        "required": [
+          "entityId",
+          "type"
+        ]
       },
       "SyntheticMultiProtocolMonitorRequest": {
         "type": "object",
@@ -28480,10 +31335,6 @@
               "key": "another sample key",
               "value": "another sample value"
             }
-          ],
-          "securityContext": [
-            "sample security context",
-            "another security context"
           ],
           "steps": [
             {
@@ -28582,15 +31433,6 @@
             "minItems": 0,
             "uniqueItems": true
           },
-          "securityContext": {
-            "type": "array",
-            "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed.",
-            "items": {
-              "type": "string",
-              "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed."
-            },
-            "uniqueItems": true
-          },
           "steps": {
             "type": "array",
             "description": "The steps of the monitor.",
@@ -28661,10 +31503,6 @@
               "key": "another sample key",
               "value": "another sample value"
             }
-          ],
-          "securityContext": [
-            "sample security context",
-            "another security context"
           ],
           "steps": [
             {
@@ -28767,15 +31605,6 @@
             "description": "Primary Grail tags as a list of key-value pairs. Up to 10 tags. Those fields are only available for SaaS and not for Managed.",
             "items": {
               "$ref": "#/components/schemas/SyntheticMonitorPrimaryGrailTagDto"
-            },
-            "uniqueItems": true
-          },
-          "securityContext": {
-            "type": "array",
-            "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed.",
-            "items": {
-              "type": "string",
-              "description": "[FEATURE DISABLED] Security context as a list of strings. Up to 10 values, max 200 characters per value. Those fields are only available for SaaS and not for Managed."
             },
             "uniqueItems": true
           },
@@ -30085,6 +32914,15 @@
           "valueAfterChangePoint",
           "valueBeforeChangePoint"
         ]
+      },
+      "TransferOwnershipRequest": {
+        "type": "object",
+        "description": "The request to change ownership of an object.",
+        "properties": {
+          "newOwner": {
+            "$ref": "#/components/schemas/Identity"
+          }
+        }
       },
       "UAAnchorDto": {
         "type": "object",
@@ -32040,6 +34878,10 @@
           "ownerships": {
             "$ref": "#/components/schemas/UAOwnershipDefinition"
           },
+          "pageTheme": {
+            "type": "string",
+            "description": "Theme of the page, applies only to breadcrumbs color. Defaults to turquoise for entity list and blue for details page."
+          },
           "problems": {
             "$ref": "#/components/schemas/UAProblemDefinition"
           },
@@ -32754,6 +35596,10 @@
           },
           "optOut": {
             "$ref": "#/components/schemas/UAOptOutDefinition"
+          },
+          "pageTheme": {
+            "type": "string",
+            "description": "Theme of the page, applies only to breadcrumbs color. Defaults to turquoise for entity list and blue for details page."
           },
           "screenElementsOrder": {
             "type": "array",
@@ -34633,6 +37479,27 @@
           }
         }
       },
+      "UpdatePermissionsRequest": {
+        "type": "object",
+        "description": "The request to update the permissions of a specific accessor.",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "description": "The permissions to assign to the specified accessor.",
+            "items": {
+              "type": "string",
+              "description": "r = read, w = write",
+              "enum": [
+                "r",
+                "w"
+              ]
+            }
+          }
+        },
+        "required": [
+          "permissions"
+        ]
+      },
       "UpdateWindow": {
         "type": "object",
         "description": "Basic information about one maintenance window",
@@ -35086,6 +37953,84 @@
         "in": "header",
         "name": "Authorization",
         "type": "apiKey"
+      },
+      "ssoAuth": {
+        "description": "Dynatrace OAuth\n\n A Bearer token is passed in the **Authorization** header in the following format: `Authorization: Bearer abcdefjhij1234567890`.",
+        "flows": {
+          "clientCredentials": {
+            "scopes": {
+              "adaptive-traffic-management:sampling-configuration:read": "Read Adaptive Traffic Management sampling configuration",
+              "api-tokens:tokens:read": "Read API tokens",
+              "api-tokens:tokens:write": "Write API tokens",
+              "deobfuscation:symbol-files:delete": "Delete deobfuscation symbol/mapping files",
+              "deobfuscation:symbol-files:read": "Read deobfuscation symbol/mapping files",
+              "deobfuscation:symbol-files:write": "Write deobfuscation symbol/mapping files",
+              "environment-api:activegate-tokens:create": "Create ActiveGate tokens",
+              "environment-api:activegate-tokens:read": "Read ActiveGate tokens",
+              "environment-api:activegate-tokens:write": "Write ActiveGate tokens",
+              "environment-api:activegates:read": "Read ActiveGates",
+              "environment-api:activegates:write": "Write ActiveGates",
+              "environment-api:agent-connection-tokens:read": "Read agent connection tokens",
+              "environment-api:api-tokens:read": "Read API tokens",
+              "environment-api:api-tokens:write": "Write API tokens",
+              "environment-api:credentials:read": "Read credentials",
+              "environment-api:credentials:write": "Write credentials",
+              "environment-api:deployment:download": "Download installers",
+              "environment-api:entities:read": "Read entities",
+              "environment-api:entities:write": "Write entities",
+              "environment-api:events:read": "Read events",
+              "environment-api:events:write": "Write events",
+              "environment-api:extension-configuration-actions:write": "Actions for extension monitoring configuration",
+              "environment-api:extension-configurations:read": "Read extension monitoring configurations",
+              "environment-api:extension-configurations:write": "Write extension monitoring configurations",
+              "environment-api:extensions:read": "Read extensions",
+              "environment-api:extensions:write": "Write extensions",
+              "environment-api:problems:read": "Read problems",
+              "environment-api:problems:write": "Write problems",
+              "environment-api:rum:read": "Read RUM JavaScript tag",
+              "environment-api:symbol-files:read": "Read symbol/mapping files",
+              "environment-api:synthetic-execution:read": "Read Synthetic executions",
+              "environment-api:synthetic-execution:write": "Write Synthetic executions",
+              "environment-api:synthetic-monitors:read": "Read Synthetic monitors",
+              "environment-api:synthetic-monitors:write": "Write Synthetic monitors",
+              "environment-api:synthetic:read": "Read Synthetic",
+              "environment-api:synthetic:write": "Write Synthetic",
+              "environment-api:tenant-token-rotation:write": "Rotate Tenant token",
+              "extensions:discovery.jmx:read": "Read discovered JMX metrics via extensions",
+              "extensions:discovery.pmi:read": "Read discovered PMI metrics via extensions",
+              "fleet-management:activegate.tokens:create": "Create (only) ActiveGate tokens",
+              "fleet-management:activegate.tokens:read": "Read ActiveGate tokens",
+              "fleet-management:activegate.tokens:write": "Create and delete ActiveGate tokens",
+              "fleet-management:activegates:read": "Read ActiveGates",
+              "fleet-management:activegates:write": "Write ActiveGates",
+              "fleet-management:container-images:read": "Read URIs of container images",
+              "fleet-management:oneagent.tokens:read": "Read OneAgent tokens",
+              "fleet-management:oneagents:read": "Read OneAgents",
+              "fleet-management:oneagents:write": "Write OneAgents",
+              "fleet-management:tenant-token:rotate": "Rotate tenant token",
+              "openpipeline:bizevents:ingest": "Ingest business events into OpenPipeline",
+              "openpipeline:events.davis:ingest": "Ingest Davis events into OpenPipeline",
+              "openpipeline:logs:ingest": "Ingest logs into OpenPipeline",
+              "openpipeline:metrics:ingest": "Ingest metrics into OpenPipeline",
+              "openpipeline:traces:ingest": "Ingest traces into OpenPipeline",
+              "settings:objects:read": "Read settings objects",
+              "settings:objects:write": "Write settings objects",
+              "settings:schemas:read": "Read settings schemas",
+              "storage:events:read": "Read events",
+              "storage:events:write": "Write events",
+              "storage:logs:write": "Write logs",
+              "storage:metrics:write": "Write metrics",
+              "unified-analysis:screen-definition:read": "Read screen definition of unified analysis screen"
+            },
+            "tokenUrl": "https://hard.token.internal.dynatracelabs.com:443/sso/oauth2/token"
+          }
+        },
+        "type": "oauth2"
+      },
+      "ssoBearerAuth": {
+        "description": "The value can be either an OAuth2 access token or a platform token.</br>For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\" target=\"_blank\">Platform tokens - Dynatrace Docs</a>",
+        "scheme": "bearer",
+        "type": "http"
       }
     }
   }

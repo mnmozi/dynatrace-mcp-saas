@@ -4,7 +4,7 @@
   "displayName": "Slack",
   "description": "Authentication details for Slack API",
   "documentation": "(for more information read the [Slack api documentation](https://api.slack.com/authentication/basics/ \"Visit Slack document\"))",
-  "version": "0.1.1",
+  "version": "0.2",
   "multiObject": true,
   "ordered": false,
   "maxObjects": 100,
@@ -60,12 +60,44 @@
       "maxObjects": 1,
       "modificationPolicy": "DEFAULT",
       "default": ""
+    },
+    "externalApproval": {
+      "displayName": "External approval",
+      "description": "Accept external approvals can enable Slack users to directly respond to approval request.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": true,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "signingSecret": {
+      "displayName": "Signing secret",
+      "description": "The signing secret obtained from the Slack App Management UI.",
+      "documentation": "",
+      "type": "secret",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Signing secret has to be between 5 and 500 characters long",
+          "maxLength": 500,
+          "minLength": 5
+        }
+      ],
+      "precondition": {
+        "type": "EQUALS",
+        "property": "externalApproval",
+        "expectedValue": true
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
     }
   },
   "constraints": [
     {
       "type": "SECRET_RESUBMISSION",
-      "customMessage": "For security reasons please re-enter the API token before saving the configuration.",
+      "customMessage": "For security reasons please re-enter the API token / Signing Secret before saving the configuration.",
       "checkAllProperties": false
     }
   ],

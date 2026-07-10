@@ -3,7 +3,7 @@ info:
   description: "Documentation of the Dynatrace Record Deletion API for Grail.\nTo\
     \ read about use cases and examples, see\n[Dynatrace Documentation](https://dt-url.net/y603qnv)"
   title: "Grail Storage Record Deletion API"
-  version: "1.1.0"
+  version: "1.2.0"
   x-service-category: "grail"
   x-summary: "Allows deletion of records from Grail, designed primarily for sensitive\
     \ data removal. Leverages DQL to select records to be deleted."
@@ -177,13 +177,16 @@ paths:
       - "Record Deletion"
   /delete:status:
     post:
-      description: "Get status of previously started record deletion. There are five:\n\
-        1) Finished - Deletion has finished either completely successfully or partially\
-        \ with errors.\n2) Submitted - Deletion is waiting to be triggered.\n3) Processing\
-        \ - Deletion is in progress.\n4) Unknown - Status is not available anymore\
-        \ or deletion is not submitted/executed.\n5) Failed - Deletion has failed\
-        \ completely.\n\nRequired scopes: `storage:records:delete`, `storage:events:read`,\
-        \ `storage:logs:read`, `storage:bizevents:read`, `storage:spans:read`, `storage:buckets:read`"
+      description: "Returns the current status of a record deletion process. Possible\
+        \ statuses:\n\n- `submitted`: deletion is queued, not yet started.\n- `processing`:\
+        \ deletion is in progress; the `progress` field shows the percentage of segments\
+        \ \n  processed.\n- `finished`: all records were successfully deleted.\n-\
+        \ `incomplete`: deletion finished with partial failures; some segments could\
+        \ not be rewritten.\n- `failed`: deletion failed completely.\n- `cancelled`:\
+        \ deletion was cancelled before processing started.\n- `unknown`: no deletion\
+        \ task found for the provided ID.\n\nRequired scopes: `storage:records:delete`,\
+        \ `storage:events:read`, `storage:logs:read`, `storage:bizevents:read`, `storage:spans:read`,\
+        \ `storage:buckets:read`\n"
       operationId: "queryStatusOfDeleteRecords"
       requestBody:
         content:
@@ -202,29 +205,62 @@ paths:
           content:
             application/json:
               examples:
+                Cancelled:
+                  description: "Cancelled"
+                  value:
+                    status: "cancelled"
+                    message: "Deletion of records cancelled."
+                    submittedAt: "2026-04-01T03:15:12Z"
+                    rewrittenBytes: 0
                 Failed:
                   description: "Failed"
                   value:
                     status: "failed"
+                    message: "Records deletion failed. Please reach out to support\
+                      \ and/or try again later."
+                    submittedAt: "2026-04-01T03:15:12Z"
+                    rewrittenBytes: 0
                 Finished:
                   description: "Finished"
                   value:
                     status: "finished"
-                    message: "Records deletion has been successfully completed. 1\
-                      \ segment(s) have been rewritten."
+                    message: "Records deletion has been successfully completed. 1234567\
+                      \ byte(s) have been rewritten."
+                    submittedAt: "2026-04-01T03:15:12Z"
+                    rewrittenBytes: 1234567
+                Finished - Cancellation task:
+                  description: "Finished - Cancellation task"
+                  value:
+                    status: "finished"
+                    message: "Please check the status of the original deletion task\
+                      \ with ID: 49eb7d8e-806a-4829-9d29-c2a92e642366"
+                Incomplete:
+                  description: "Incomplete"
+                  value:
+                    status: "incomplete"
+                    message: "Records deletion failed partially. Approximately 34%\
+                      \ of data could not be rewritten. 5432554 byte(s) were successfully\
+                      \ rewritten. Please reach out to support and/or try again later."
+                    submittedAt: "2026-04-01T03:15:12Z"
+                    rewrittenBytes: 5432554
                 Processing:
                   description: "Processing"
                   value:
                     status: "processing"
-                    progress: "21%"
+                    message: "Deletion job is being processed."
+                    progress: "42%"
+                    submittedAt: "2026-04-01T03:15:12Z"
                 Submitted:
                   description: "Submitted"
                   value:
                     status: "submitted"
+                    message: "Deletion job was accepted and is queued for processing."
+                    submittedAt: "2026-04-01T03:15:12Z"
                 Unknown:
                   description: "Unknown"
                   value:
                     status: "unknown"
+                    message: "No deletion task found with provided id."
               schema:
                 $ref: "#/components/schemas/StatusDeleteRecordsResponse"
           description: "Successfully returned status of the record deletion process."
@@ -445,6 +481,10 @@ components:
         progress:
           type: "string"
           nullable: true
+        rewrittenBytes:
+          type: "integer"
+          format: "int64"
+          nullable: true
         status:
           type: "string"
           enum:
@@ -452,6 +492,13 @@ components:
           - "submitted"
           - "processing"
           - "unknown"
+          - "failed"
+          - "incomplete"
+          - "cancelled"
+        submittedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
     TimeFrame:
       type: "object"
       nullable: true

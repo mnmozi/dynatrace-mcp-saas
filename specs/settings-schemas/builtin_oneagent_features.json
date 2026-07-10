@@ -35,7 +35,7 @@
       "default": false
     },
     "instrumentation": {
-      "displayName": "Instrumentation enabled (change needs a process restart)",
+      "displayName": "Instrumentation enabled",
       "description": "",
       "documentation": "",
       "type": "boolean",

@@ -1,0 +1,648 @@
+openapi: "3.0.1"
+info:
+  description: "Providing different RUM APIs"
+  title: "RUM API"
+  version: "1.0.0"
+servers:
+- url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/rum/v1"
+  x-api-gateway-url: "/platform/rum/v1"
+tags:
+- description: "Read RUM cookie names"
+  name: "RUM cookie names"
+- description: "Create and delete RUM frontends"
+  name: "RUM frontends"
+- description: "Read RUM manual insertion tag JavaScript versions"
+  name: "RUM manual insertion tag management"
+- description: "Read RUM manual insertion tags"
+  name: "RUM manual insertion tags"
+paths:
+  /cookie-names:
+    get:
+      operationId: "getCookieNames"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CookieNames"
+          description: "Success. The response contains all RUM cookie names"
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:cookie-names:read"
+      - ssoBearerAuth: []
+      summary: "List all RUM cookie names | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM cookie names"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** rum:cookie-names:read"
+  /frontends:
+    post:
+      operationId: "createFrontend"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FrontendRequestDto"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/FrontendResponseDto"
+          description: "Frontend created. The response contains info about the created\
+            \ application including the new FRONTEND ID."
+          headers:
+            Location:
+              description: "Relative URL of the created frontend."
+              schema:
+                type: "string"
+              style: "simple"
+        "400":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:frontends:write"
+      - ssoBearerAuth: []
+      summary: "Create web or mobile frontend | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM frontends"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** rum:frontends:write"
+  /frontends/{id}:
+    delete:
+      operationId: "deleteFrontend"
+      parameters:
+      - description: "Smartscape FRONTEND id."
+        in: "path"
+        name: "id"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "Frontend deleted."
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request."
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Frontend not found."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:frontends:delete"
+      - ssoBearerAuth: []
+      summary: "Delete web or mobile frontend | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM frontends"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** rum:frontends:delete"
+  /manualInsertionTagManagement/availableVersions:
+    get:
+      operationId: "getAvailableJavaScriptVersions"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllAvailableVersionsDto"
+          description: "Success. The response contains all available RUM JavaScript\
+            \ versions."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:manual-insertion-tags:read"
+      - ssoBearerAuth: []
+      summary: "Get all available RUM JavaScript versions | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM manual insertion tag management"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** rum:manual-insertion-tags:read"
+  /manualInsertionTagManagement/configuredVersions:
+    get:
+      operationId: "getConfiguredJavaScriptVersions"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfiguredVersionsDto"
+          description: "Success. The response contains the configured RUM JavaScript\
+            \ versions."
+        "4XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:manual-insertion-tags:read"
+      - ssoBearerAuth: []
+      summary: "Get the configured latest stable, previous stable and custom RUM JavaScript\
+        \ versions | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM manual insertion tag management"
+      x-maturity: "EARLY_ADOPTER"
+      description: "**Required scope:** rum:manual-insertion-tags:read"
+  /manualInsertionTags/inlineCode/{id}:
+    get:
+      description: "**Required scope:** rum:manual-insertion-tags:read<br/><br/>Returns\
+        \ the inline code, which embeds the full RUM monitoring code and configuration\
+        \ directly into the page, minimizing additional web requests. It needs to\
+        \ be updated after configuration changes and monitoring code updates."
+      operationId: "getInlineCode"
+      parameters:
+      - description: "Smartscape FRONTEND id."
+        in: "path"
+        name: "id"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: "string"
+          description: "Success. The response contains the inline code."
+        "400":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request."
+        "404":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Frontend not found."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:manual-insertion-tags:read"
+      - ssoBearerAuth: []
+      summary: "Download the inline code | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM manual insertion tags"
+      x-maturity: "EARLY_ADOPTER"
+  /manualInsertionTags/javaScriptTag/{id}:
+    get:
+      description: "**Required scope:** rum:manual-insertion-tags:read<br/><br/>Returns\
+        \ the JavaScript tag, which references an external file containing monitoring\
+        \ code and configuration. Due to its dynamic update mechanism, it's recommended\
+        \ for most use cases."
+      operationId: "getJavaScriptTag"
+      parameters:
+      - description: "Smartscape FRONTEND id."
+        in: "path"
+        name: "id"
+        required: true
+        schema:
+          type: "string"
+      - description: "Specifies the script execution attribute: async, defer, or none.\
+          \ If specified, this overrides the configured value."
+        in: "query"
+        name: "scriptExecutionAttribute"
+        schema:
+          type: "string"
+          enum:
+          - "ASYNC"
+          - "DEFER"
+          - "NONE"
+      - description: "Indicates whether to add the crossorigin=\"anonymous\" attribute\
+          \ to the tag. If specified, this overrides the configured value."
+        in: "query"
+        name: "crossOriginAnonymous"
+        schema:
+          type: "boolean"
+      responses:
+        "200":
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: "string"
+          description: "Success. The response contains the JavaScript tag."
+        "400":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request."
+        "404":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Frontend not found."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:manual-insertion-tags:read"
+      - ssoBearerAuth: []
+      summary: "Download the JavaScript tag | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM manual insertion tags"
+      x-maturity: "EARLY_ADOPTER"
+  /manualInsertionTags/oneAgentJavaScriptTag/{id}:
+    get:
+      description: "**Required scope:** rum:manual-insertion-tags:read<br/><br/>Returns\
+        \ the OneAgent JavaScript tag, which includes configuration and a reference\
+        \ to an external file containing the monitoring code. It needs to be updated\
+        \ after configuration changes and monitoring code updates."
+      operationId: "getOneAgentJavaScriptTag"
+      parameters:
+      - description: "Smartscape FRONTEND id."
+        in: "path"
+        name: "id"
+        required: true
+        schema:
+          type: "string"
+      - description: "Specifies the script execution attribute: async, defer, or none.\
+          \ If specified, this overrides the configured value."
+        in: "query"
+        name: "scriptExecutionAttribute"
+        schema:
+          type: "string"
+          enum:
+          - "ASYNC"
+          - "DEFER"
+          - "NONE"
+      responses:
+        "200":
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: "string"
+          description: "Success. The response contains the OneAgent JavaScript tag."
+        "400":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request."
+        "404":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Frontend not found."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:manual-insertion-tags:read"
+      - ssoBearerAuth: []
+      summary: "Download the OneAgent JavaScript tag | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM manual insertion tags"
+      x-maturity: "EARLY_ADOPTER"
+  /manualInsertionTags/oneAgentJavaScriptTagWithSri/{id}:
+    get:
+      description: "**Required scope:** rum:manual-insertion-tags:read<br/><br/>Returns\
+        \ the OneAgent JavaScript tag with SRI. It includes configuration, a reference\
+        \ to an external file containing the monitoring code, and a hash that allows\
+        \ the browser to verify the integrity of the monitoring code before executing\
+        \ it using its Subresource Integrity (SRI) feature. It needs to be updated\
+        \ after configuration changes and monitoring code updates."
+      operationId: "getOneAgentJavaScriptTagWithSri"
+      parameters:
+      - description: "Smartscape FRONTEND id."
+        in: "path"
+        name: "id"
+        required: true
+        schema:
+          type: "string"
+      - description: "Specifies the script execution attribute: async, defer, or none.\
+          \ If specified, this overrides the configured value."
+        in: "query"
+        name: "scriptExecutionAttribute"
+        schema:
+          type: "string"
+          enum:
+          - "ASYNC"
+          - "DEFER"
+          - "NONE"
+      responses:
+        "200":
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: "string"
+          description: "Success. The response contains the OneAgent JavaScript tag\
+            \ with SRI."
+        "400":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Bad request."
+        "404":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Frontend not found."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Client error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: "Server error."
+      security:
+      - ssoAuth:
+        - "rum:manual-insertion-tags:read"
+      - ssoBearerAuth: []
+      summary: "Download the OneAgent JavaScript tag with SRI | maturity=EARLY_ADOPTER"
+      tags:
+      - "RUM manual insertion tags"
+      x-maturity: "EARLY_ADOPTER"
+components:
+  schemas:
+    AllAvailableVersionsDto:
+      type: "object"
+      description: "All available RUM JavaScript versions."
+      properties:
+        versions:
+          type: "array"
+          description: "All RUM JavaScript versions available for selection."
+          items:
+            type: "string"
+            description: "All RUM JavaScript versions available for selection."
+      required:
+      - "versions"
+    ConfiguredVersionsDto:
+      type: "object"
+      description: "Configured LATEST_STABLE, PREVIOUS_STABLE and CUSTOM RUM JavaScript\
+        \ versions."
+      properties:
+        custom:
+          type: "string"
+          description: "The custom configured version of the RUM JavaScript."
+        latestIE11Supported:
+          type: "string"
+          description: "The latest IE11 supported version of the RUM JavaScript."
+        latestIESupported:
+          type: "string"
+          description: "The latest IE7-10 supported version of the RUM JavaScript."
+        latestStable:
+          type: "string"
+          description: "The latest stable version of the RUM JavaScript."
+        previousStable:
+          type: "string"
+          description: "The previous stable version of the RUM JavaScript."
+    ConstraintViolation:
+      type: "object"
+      description: "A list of constraint violations"
+      properties:
+        location:
+          type: "string"
+        message:
+          type: "string"
+        parameterLocation:
+          type: "string"
+          enum:
+          - "HEADER"
+          - "PATH"
+          - "PAYLOAD_BODY"
+          - "QUERY"
+        path:
+          type: "string"
+    CookieNames:
+      type: "object"
+      description: "The list of all cookie names."
+      example:
+        domainValidationCookieName: "dtValidationCookie"
+        latencyCookieName: "dtLatC"
+        pageContextCookieName: "dtPC"
+        sessionCookieName: "dtCookie"
+        sessionReplayCookieName: "dtSR"
+        sessionReplayViewIdCookieName: "dtsrVID"
+        sessionTimeoutCookieName: "rxvt"
+        sourceActionCookieName: "dtSA"
+        visitorCookieName: "rxVisitor"
+      properties:
+        domainValidationCookieName:
+          type: "string"
+          description: "The name of the domain validation cookie."
+        latencyCookieName:
+          type: "string"
+          description: "The name of the latency cookie."
+        pageContextCookieName:
+          type: "string"
+          description: "The name of the page context cookie."
+        sessionCookieName:
+          type: "string"
+          description: "The name of the session cookie."
+        sessionReplayCookieName:
+          type: "string"
+          description: "The name of the session replay cookie."
+        sessionReplayViewIdCookieName:
+          type: "string"
+          description: "The name of the session replay view ID cookie."
+        sessionTimeoutCookieName:
+          type: "string"
+          description: "The name of the session timeout cookie."
+        sourceActionCookieName:
+          type: "string"
+          description: "The name of the source action cookie."
+        visitorCookieName:
+          type: "string"
+          description: "The name of the visitor cookie."
+    Error:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          description: "The HTTP status code"
+        constraintViolations:
+          type: "array"
+          description: "A list of constraint violations"
+          items:
+            $ref: "#/components/schemas/ConstraintViolation"
+        message:
+          type: "string"
+          description: "The error message"
+    ErrorEnvelope:
+      type: "object"
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+    FrontendRequestDto:
+      type: "object"
+      description: "Define your frontend"
+      properties:
+        displayName:
+          type: "string"
+          description: "The display name of the frontend."
+          maxLength: 255
+          minLength: 1
+        enableRum:
+          type: "boolean"
+          default: true
+          description: "Whether RUM should be enabled for this frontend. Also applies\
+            \ the same value to RUM's enabledOnGrail setting."
+        frontendName:
+          type: "string"
+          description: "The unique frontend name. Must be unique across web and mobile.\
+            \ Can't be changed later."
+          maxLength: 255
+          minLength: 1
+        type:
+          type: "string"
+          description: "The type of the frontend."
+          enum:
+          - "MOBILE"
+          - "WEB_AGENTLESS"
+          - "WEB_AUTO_INJECTED"
+      required:
+      - "displayName"
+      - "frontendName"
+      - "type"
+    FrontendResponseDto:
+      type: "object"
+      description: "Your frontend"
+      properties:
+        displayName:
+          type: "string"
+          description: "The display name of the frontend."
+        frontendName:
+          type: "string"
+          description: "The unique frontend name."
+        id:
+          type: "string"
+          description: "The Smartscape FRONTEND ID."
+        type:
+          type: "string"
+          description: "The type of the frontend."
+          enum:
+          - "MOBILE"
+          - "WEB_AGENTLESS"
+          - "WEB_AUTO_INJECTED"
+      required:
+      - "displayName"
+      - "frontendName"
+      - "id"
+      - "type"
+  securitySchemes:
+    ssoAuth:
+      description: "Dynatrace OAuth\n\n A Bearer token is passed in the **Authorization**\
+        \ header in the following format: `Authorization: Bearer abcdefjhij1234567890`."
+      flows:
+        clientCredentials:
+          scopes:
+            rum:cookie-names:read: "Read RUM cookie names"
+            rum:frontends:delete: "Delete RUM frontends"
+            rum:frontends:write: "Write RUM frontends"
+            rum:manual-insertion-tags:read: "Read RUM manual insertion tags"
+          tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
+      type: "oauth2"
+    ssoBearerAuth:
+      type: "http"
+      scheme: "bearer"
+      description: "The value can be either an OAuth2 access token or a platform token.</br>\
+        \ For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\"\
+        \ target=\"_blank\">Platform tokens - Dynatrace Docs</a>."

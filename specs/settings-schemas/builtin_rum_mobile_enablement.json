@@ -8,7 +8,7 @@
     "group:rum-general",
     "group:web-and-mobile-monitoring"
   ],
-  "version": "2.7.2",
+  "version": "2.7.3",
   "multiObject": false,
   "maxObjects": 1,
   "maturity": "GENERAL_AVAILABILITY",
@@ -129,8 +129,7 @@
             "expectedValue": true
           },
           "metadata": {
-            "featureFlag": "com.compuware.apm.webuiff.rum-show-session-replay-on-grail-switch.sr3gs.feature",
-            "maturity": "PREVIEW"
+            "maturity": "GENERAL_AVAILABILITY"
           },
           "maxObjects": 1,
           "modificationPolicy": "DEFAULT"
@@ -191,8 +190,7 @@
             "expectedValue": true
           },
           "metadata": {
-            "featureFlag": "com.compuware.apm.webuiff.rum-show-session-replay-on-grail-switch.sr3gs.feature",
-            "maturity": "PREVIEW"
+            "maturity": "GENERAL_AVAILABILITY"
           },
           "maxObjects": 1,
           "modificationPolicy": "DEFAULT"

@@ -331,6 +331,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:cluster-id:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:cluster-id:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the cluster id of the Dynatrace server",
@@ -338,6 +351,10 @@
           "Cluster config"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer",
+          "fleet-management:cluster-id:read"
+        ],
         "x-token-scopes": [
           "DataExport"
         ]
@@ -381,6 +398,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:cluster-version:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the current version of the Dynatrace server",
@@ -388,6 +413,9 @@
           "Cluster config"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "DataExport"
         ]
@@ -474,11 +502,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads BOSH release tarballs of the specified version, OneAgent included",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -565,11 +610,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the checksum of the specified BOSH release tarball",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -629,11 +691,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the list of available OneAgent versions for BOSH release tarballs",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -697,11 +776,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the latest available Agent image",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -750,11 +840,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the latest available ActiveGate image",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -826,11 +927,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagent.connection-info:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the connectivity information for OneAgent",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagent.connection-info:read"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -890,11 +1008,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagent.connection-info:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the list of the ActiveGate-Endpoints to be used for Agents ordered by networkzone-priorities.",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagent.connection-info:read"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -957,6 +1092,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the latest process grouping config. | maturity=EARLY_ADOPTER",
@@ -964,6 +1112,10 @@
           "Deployment"
         ],
         "x-maturity": "EARLY_ADOPTER",
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
+        ],
         "x-token-scopes": [
           "InstallerDownload"
         ]
@@ -1039,11 +1191,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the latest process module config",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -1154,11 +1323,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all available versions of OneAgent installer",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -1341,11 +1527,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the latest OneAgent installer",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -1471,11 +1674,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the latest available version of a OneAgent installer",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -1667,11 +1887,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads OneAgent installer of the specified version",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -1849,11 +2086,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the checksum of a non-customized OneAgent installer",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -1917,15 +2171,34 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegate.connection-info:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the connectivity information for Environment ActiveGate",
         "tags": [
           "Deployment"
         ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:activegate.connection-info:read"
+        ],
         "x-token-scopes": [
           "InstallerDownload"
-        ]
+        ],
+        "deprecated": true,
+        "description": "**Deprecation notice:** This endpoint is deprecated.Use the Fleet Management API endpoint `/platform/fleet-management/v1/activegate/connection-info`"
       }
     },
     "/deployment/installer/gateway/versions/{osType}": {
@@ -1999,15 +2272,34 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all available versions of ActiveGate installer",
         "tags": [
           "Deployment"
         ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:activegates:download"
+        ],
         "x-token-scopes": [
           "InstallerDownload"
-        ]
+        ],
+        "deprecated": true,
+        "description": "**Deprecation notice:** This endpoint is deprecated. Use the Fleet Management API endpoint `/platform/fleet-management/v1/activegate/installer/versions`"
       }
     },
     "/deployment/installer/gateway/{osType}/latest": {
@@ -2098,15 +2390,34 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the configured standard ActiveGate installer of the latest version for the specified OS",
         "tags": [
           "Deployment"
         ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:activegates:download"
+        ],
         "x-token-scopes": [
           "InstallerDownload"
-        ]
+        ],
+        "deprecated": true,
+        "description": "**Deprecation notice:** This endpoint is deprecated. Use the Fleet Management API endpoint `/platform/fleet-management/v1/activegate/installer/{os-type}/{arch}`"
       }
     },
     "/deployment/installer/gateway/{osType}/latest/metainfo": {
@@ -2177,15 +2488,34 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the latest available version of an ActiveGate installer",
         "tags": [
           "Deployment"
         ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:activegates:download"
+        ],
         "x-token-scopes": [
           "InstallerDownload"
-        ]
+        ],
+        "deprecated": true,
+        "description": "**Deprecation notice:** This endpoint is deprecated. Use the Fleet Management API endpoint `/platform/fleet-management/v1/activegate/installer/version`"
       }
     },
     "/deployment/installer/gateway/{osType}/version/{version}": {
@@ -2285,15 +2615,34 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:activegates:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the ActiveGate installer of the specified version",
         "tags": [
           "Deployment"
         ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:activegates:download"
+        ],
         "x-token-scopes": [
           "InstallerDownload"
-        ]
+        ],
+        "deprecated": true,
+        "description": "**Deprecation notice:** This endpoint is deprecated. Use the Fleet Management API endpoint `/platform/fleet-management/v1/activegate/installer/{os-type}/{arch}/{version}`"
       }
     },
     "/deployment/lambda/agent/latest": {
@@ -2335,11 +2684,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Get the latest version names of the OneAgent for AWS Lambda",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -2438,11 +2804,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Get the ARNs of the latest OneAgent for AWS Lambda layers",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -2507,11 +2890,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the latest OneAgent deployment orchestration tarball",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -2576,11 +2976,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the latest OneAgent deployment orchestration tarball's signature",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -2654,11 +3071,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the requested version matching OneAgent deployment orchestration tarball",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -2732,11 +3166,28 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:download"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the requested version matching OneAgent deployment orchestration tarball's signature",
         "tags": [
           "Deployment"
+        ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:oneagents:download"
         ],
         "x-token-scopes": [
           "InstallerDownload"
@@ -2745,7 +3196,7 @@
     },
     "/deployment/public/network": {
       "get": {
-        "description": "Returns the addresses of public endpoints, including the tenant domain, NLB domain names, and IP addresses. Outgoing connections to these addresses should be allowed.",
+        "description": "Returns the addresses of public endpoints, including the tenant domain, NLB domain names, and IP addresses. Outgoing connections to these addresses should be allowed. **Deprecation notice:** This endpoint is deprecated. Use the Fleet Management API endpoint `/platform/fleet-management/v1/network-addresses`",
         "operationId": "getPublicCommunicationAddresses",
         "responses": {
           "200": {
@@ -2782,15 +3233,33 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:deployment:download"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:public-addresses:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets public endpoints",
         "tags": [
           "Deployment"
         ],
+        "x-permissions": [
+          "environment:roles:agent-install",
+          "fleet-management:public-addresses:read"
+        ],
         "x-token-scopes": [
           "InstallerDownload"
-        ]
+        ],
+        "deprecated": true
       }
     },
     "/oneagents": {
@@ -3274,6 +3743,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:oneagents:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the list of hosts with OneAgent deployment information for each host",
@@ -3322,6 +3804,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:oneagents:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes all detected auto-update blocking problems for this environment.",
@@ -3374,6 +3869,19 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:oneagents:read"
+            ]
+          },
+          {
+            "ssoAuth": [
+              "fleet-management:oneagents:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets a list of cluster-side detected auto-update problems that may block further rollout of a OneAgent version on a particular OS.",
@@ -3440,11 +3948,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the version of the RUM JavaScript code injected into specified application",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3502,11 +4021,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the asynchronous code snippet",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3559,11 +4089,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets all available RUM JavaScript versions",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3614,11 +4155,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the configured Latest stable, Previous stable and Custom RUM JavaScript versions",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3677,11 +4229,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads inline code",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3727,11 +4290,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets the latest version of OneAgent JavaScript library",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3790,11 +4364,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads OneAgent JavaScript tag",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3853,11 +4438,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads JavaScript tag",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3916,11 +4512,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads OneAgent JavaScript tag with SRI",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -3976,11 +4583,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all manually injected applications",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -4038,11 +4656,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:rum:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Downloads the synchronous code snippet",
         "tags": [
           "RUM - JavaScript tag management"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "RumJavaScriptTagManagement"
@@ -4101,11 +4730,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-third-party-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Pushes third-party synthetic events to Dynatrace",
         "tags": [
           "Synthetic - Third party"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration"
@@ -4164,11 +4804,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-third-party-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Modifies the operation state of all third-party monitors",
         "tags": [
           "Synthetic - Third party"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration"
@@ -4227,11 +4878,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-third-party-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Pushes third-party synthetic monitors, locations, and results to Dynatrace",
         "tags": [
           "Synthetic - Third party"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration"
@@ -4776,6 +5438,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all synthetic monitors in your Dynatrace environment",
@@ -4783,6 +5453,9 @@
           "Synthetic - Monitors"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration",
           "DataExport",
@@ -4838,11 +5511,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Creates a new synthetic monitor",
         "tags": [
           "Synthetic - Monitors"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration"
@@ -4893,6 +5577,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Deletes the specified synthetic monitor",
@@ -4900,6 +5592,9 @@
           "Synthetic - Monitors"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration"
         ]
@@ -4954,6 +5649,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Gets parameters of the specified synthetic monitor",
@@ -4961,6 +5664,9 @@
           "Synthetic - Monitors"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration",
           "ReadSyntheticData"
@@ -5018,6 +5724,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic-monitors:write"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Updates parameters of the specified synthetic monitor",
@@ -5025,6 +5739,9 @@
           "Synthetic - Monitors"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:manage-settings"
+        ],
         "x-token-scopes": [
           "ExternalSyntheticIntegration"
         ]
@@ -5068,11 +5785,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists all synthetic nodes available in your environment",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "DataExport",
@@ -5130,11 +5858,22 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:synthetic:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Lists properties of the specified synthetic node",
         "tags": [
           "Synthetic - Locations, nodes, and configuration"
+        ],
+        "x-permissions": [
+          "environment:roles:manage-settings"
         ],
         "x-token-scopes": [
           "DataExport",
@@ -5314,6 +6053,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:usersessionquerylanguage:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Returns the result of the query as a table structure",
@@ -5321,6 +6068,9 @@
           "RUM - User sessions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "DTAQLAccess"
         ]
@@ -5437,6 +6187,14 @@
         "security": [
           {
             "Api-Token": []
+          },
+          {
+            "ssoAuth": [
+              "environment-api:usersessionquerylanguage:read"
+            ]
+          },
+          {
+            "ssoBearerAuth": []
           }
         ],
         "summary": "Returns the result of the query as a tree structure",
@@ -5444,6 +6202,9 @@
           "RUM - User sessions"
         ],
         "x-allow-access-with-management-zone-permissions": true,
+        "x-permissions": [
+          "environment:roles:viewer"
+        ],
         "x-token-scopes": [
           "DTAQLAccess"
         ]
@@ -9988,6 +10749,40 @@
         "in": "header",
         "name": "Authorization",
         "type": "apiKey"
+      },
+      "ssoAuth": {
+        "description": "Dynatrace OAuth\n\n A Bearer token is passed in the **Authorization** header in the following format: `Authorization: Bearer abcdefjhij1234567890`.",
+        "flows": {
+          "clientCredentials": {
+            "scopes": {
+              "environment-api:cluster-id:read": "Read cluster id",
+              "environment-api:cluster-version:read": "Read cluster version",
+              "environment-api:deployment:download": "Download installers",
+              "environment-api:oneagents:read": "Read OneAgents",
+              "environment-api:rum:read": "Read RUM JavaScript tag",
+              "environment-api:synthetic-monitors:read": "Read Synthetic monitors",
+              "environment-api:synthetic-monitors:write": "Write Synthetic monitors",
+              "environment-api:synthetic-third-party-monitors:write": "Write Synthetic third-party monitors",
+              "environment-api:synthetic:read": "Read Synthetic",
+              "environment-api:usersessionquerylanguage:read": "Query user sessions",
+              "fleet-management:activegate.connection-info:read": "Get ActiveGate connection details",
+              "fleet-management:activegates:download": "Download ActiveGate installers",
+              "fleet-management:cluster-id:read": "Read cluster ID",
+              "fleet-management:oneagent.connection-info:read": "Read OneAgent connection details",
+              "fleet-management:oneagents:download": "Download OneAgent installers",
+              "fleet-management:oneagents:read": "Read OneAgents",
+              "fleet-management:oneagents:write": "Write OneAgents",
+              "fleet-management:public-addresses:read": "List public IP addresses"
+            },
+            "tokenUrl": "https://hard.token.internal.dynatracelabs.com:443/sso/oauth2/token"
+          }
+        },
+        "type": "oauth2"
+      },
+      "ssoBearerAuth": {
+        "description": "The value can be either an OAuth2 access token or a platform token.</br>For further information about platform tokens see <a href=\"https://dt-url.net/platform-tokens\" target=\"_blank\">Platform tokens - Dynatrace Docs</a>",
+        "scheme": "bearer",
+        "type": "http"
       }
     }
   }

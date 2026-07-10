@@ -4,10 +4,10 @@
   "displayName": "Security Posture Management",
   "description": "Security Posture Management: Manage Security Standards",
   "documentation": "",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "multiObject": false,
   "maxObjects": 1,
-  "maturity": "EARLY_ADOPTER",
+  "maturity": "GENERAL_AVAILABILITY",
   "allowedScopes": [
     "environment"
   ],

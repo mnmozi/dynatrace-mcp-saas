@@ -1,0 +1,92 @@
+{
+  "dynatrace": "1",
+  "schemaId": "app:dynatrace.msteams:app-connection",
+  "displayName": "Microsoft Teams",
+  "description": "Connection details for the Microsoft Teams App",
+  "documentation": "",
+  "version": "0.0.2",
+  "multiObject": true,
+  "ordered": false,
+  "maxObjects": 100,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "name": {
+      "displayName": "Connection name",
+      "description": "The name of the connection",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Name has to be between 1 and 50 characters long",
+          "maxLength": 50,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "team": {
+      "displayName": "Team",
+      "description": "The Microsoft Teams team that provides the available channels",
+      "documentation": "",
+      "type": "text",
+      "nullable": true,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "customMessage": "Team name has to be between 1 and 100 characters long",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
+    "channels": {
+      "displayName": "Channels",
+      "description": "The channels this connection should work with",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "Channel name",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "LENGTH",
+            "customMessage": "Channel name has to be between 1 and 100 characters long",
+            "maxLength": 100,
+            "minLength": 1
+          }
+        ]
+      },
+      "nullable": false,
+      "minObjects": 0,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "customMessage": "A connection with the same name already exists. Please provide a different name.",
+      "uniqueProperties": [
+        "name"
+      ],
+      "flattenCollections": false
+    }
+  ],
+  "metadata": {
+    "appName": "Microsoft Teams"
+  },
+  "ownerBasedAccessControl": true
+}

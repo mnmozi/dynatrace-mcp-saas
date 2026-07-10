@@ -1,11 +1,11 @@
 openapi: "3.0.3"
 info:
-  version: "1.46.5"
+  version: "1.47.1"
   title: "Document"
   x-service-category: "Document"
   x-summary: "Create, update, list and organize documents, as well as manage their\
     \ access permissions."
-  description: "# Overview\n\nThis API allows you to create and manage documents,\
+  description: "# Overviews\n\nThis API allows you to create and manage documents,\
     \ as well as manage access to them.\n\nHave a look at the [service documentation](https://dt-url.net/platform-services-document-service)\
     \ to familiarize yourself with its key concepts.\n\nNote, that the document's\
     \ content isn't inspected by the document-store, therefore it can be entirely\
@@ -59,31 +59,33 @@ info:
     \ 5 snapshots per 60 seconds per document.\n\nThe maximum amount of snapshots\
     \ per document is 50. Additional snapshots result in the deletion of the oldest\
     \ existing snapshot.\n\nAll snapshots get automatically deleted after 30 days.\n\
-    \n## Snapshot Permissions\n\nAll users with read access to a document may read\
-    \ its snapshots.\n\nAll users with write access to a document may create snapshots\
-    \ of it.\n\nOnly the owner may restore or delete a snapshot.\n\n# Labels\n\nLabels\
-    \ allow the user to organize and search their documents.\n\nLabels are optional,\
-    \ a document may have zero or more. The maximum number of labels per document\
-    \ is 25 and the maximum length of each label is 80 characters.\n\n# Document Identity\n\
-    \nEach document is assigned a unique and immutable identifier (id) at the time\
-    \ of creation.\n\nThis identifier may be supplied by the user. If the user doesn't\
-    \ provide one, the system will generate it automatically.\n\nRegardless of its\
-    \ origin, the identifier is guaranteed to be unique across all documents and is\
-    \ immutable.\n\n# Admin Access\n\nRegular users can only access documents *owned\
-    \ by them* or *shared with them*.\n\nUsers with the permission `document:documents:admin`\
-    \ can act with elevated permission - they can access all users' documents of the\
-    \ current environment, regardless of ownership.\n\nThe admin-access can be enabled\
-    \ on a per-request basis, by setting the optional request parameter `admin-access`\
-    \ to `true.`\n\n# User Data\n\nNo user data like names or email addresses are\
-    \ stored. Instead, SSO ids are persisted.\n\nEvery user's last access to every\
-    \ document gets stored to allow ordering of results so that least recently accessed\
-    \ documents appear first.\n\n# System-owned Documents\n\nSome documents are created\
-    \ and maintained by the system itself, instead of being user-owned.\n\n## Ready-made\
-    \ Documents\nApps can contain documents which automatically become available to\
-    \ all users of the environment when the app gets installed or updated.\nThe property\
-    \ `originAppId` indicates app ownership.\n\n## Extension-shipped Documents\nExtensions\
+    \n## Snapshot Permissions\n\nAll users with write access to a document may list,\
+    \ read, create, or restore its snapshots.\n\nFor built-in (App-Shipped or Extension)\
+    \ documents, listing snapshots returns an empty list rather than a 403, since\
+    \ these documents don't support snapshots.\n\nOnly the document owner (or an admin)\
+    \ may delete a snapshot.\n\n# Labels\n\nLabels allow the user to organize and\
+    \ search their documents.\n\nLabels are optional, a document may have zero or\
+    \ more. The maximum number of labels per document is 25 and the maximum length\
+    \ of each label is 80 characters.\n\n# Document Identity\n\nEach document is assigned\
+    \ a unique and immutable identifier (id) at the time of creation.\n\nThis identifier\
+    \ may be supplied by the user. If the user doesn't provide one, the system will\
+    \ generate it automatically.\n\nRegardless of its origin, the identifier is guaranteed\
+    \ to be unique across all documents and is immutable.\n\n# Admin Access\n\nRegular\
+    \ users can only access documents *owned by them* or *shared with them*.\n\nUsers\
+    \ with the permission `document:documents:admin` can act with elevated permission\
+    \ - they can access all users' documents of the current environment, regardless\
+    \ of ownership.\n\nThe admin-access can be enabled on a per-request basis, by\
+    \ setting the optional request parameter `admin-access` to `true.`\n\n# User Data\n\
+    \nNo user data like names or email addresses are stored. Instead, SSO ids are\
+    \ persisted.\n\nEvery user's last access to every document gets stored to allow\
+    \ ordering of results so that least recently accessed documents appear first.\n\
+    \n# System-owned Documents\n\nSome documents are created and maintained by the\
+    \ system itself, instead of being user-owned.\n\n## Ready-made Documents\nApps\
     \ can contain documents which automatically become available to all users of the\
-    \ environment when the extension gets installed or updated.\nThe property `originExtensionId`\
+    \ environment when the app gets installed or updated.\nThe property `originAppId`\
+    \ indicates app ownership.\n\n## Extension-shipped Documents\nExtensions can contain\
+    \ documents which automatically become available to all users of the environment\
+    \ when the extension gets installed or updated.\nThe property `originExtensionId`\
     \ indicates extension ownership.\n"
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/document/v1"
@@ -640,10 +642,12 @@ paths:
       - ssoBearerAuth: []
       description: "**Required scope:** document:documents:read<br/><br/>Returns metadata\
         \ of all snapshots of the document, in descending order of the snapshot version.\
-        \ Requires write-access to the document.\n\nYou can apply pagination via the\
-        \ `pageKey` and `pageSize` parameters.\n\n*Note, that at the moment we offer\
-        \ a naive pagination, and therefore interim mutations can lead to result inconsistencies\
-        \ (such as duplicates, missing entries).*"
+        \ Requires write-access to the document. For built-in documents, this endpoint\
+        \ returns an empty list rather than a 403, since built-in documents don't\
+        \ support snapshots.\n\nYou can apply pagination via the `pageKey` and `pageSize`\
+        \ parameters.\n\n*Note, that at the moment we offer a naive pagination, and\
+        \ therefore interim mutations can lead to result inconsistencies (such as\
+        \ duplicates, missing entries).*"
       operationId: "listSnapshots"
       tags:
       - "Documents"
@@ -1742,21 +1746,21 @@ components:
         \ are legal filtering parameters - any other field names will result in a\
         \ HTTP 400 response:\n\n`id`, `name`, `type`, `version`, `owner`, `modificationInfo.createdTime`,\
         \ `modificationInfo.createdBy`, `modificationInfo.lastModifiedTime`, `modificationInfo.lastModifiedBy`,\
-        \ `originAppId`, `originExtensionId`, `labels`\n\nThe following constraints\
-        \ apply:\n\n* Parameter names are **case-sensitive**.\n\n* Maximum nesting\
-        \ depth (via brackets) is 3.\n\n* Maximum length is 1024 characters.\n\n*\
-        \ The `labels` field only supports the `contains` operator, which checks whether\
-        \ the document has a specific label assigned.\n  This is an **exact element\
-        \ match** against the labels array — not a substring search.\n  For example,\
-        \ `labels contains 'foo'` matches a document with the label `'foo'`, but **not**\
-        \ a document with the label `'foobar'`.\n  To find labels by partial name\
-        \ (substring), use the `listLabels` operation.\n\nExamples:\n\n* `name = 'my-document-name'`\n\
-        \n* `name == 'my-document-name'`\n\n* `(name starts-with 'awesome' or type\
-        \ != 'dashboard') and version >= 5`\n\n* `modificationInfo.lastModifiedTime\
+        \ `originAppId`, `originExtensionId`, `isPrivate`, `labels`\n\nThe following\
+        \ constraints apply:\n\n* Parameter names are **case-sensitive**.\n\n* Maximum\
+        \ nesting depth (via brackets) is 3.\n\n* Maximum length is 1024 characters.\n\
+        \n* The `labels` field only supports the `contains` operator, which checks\
+        \ whether the document has a specific label assigned.\n  This is an **exact\
+        \ element match** against the labels array. It's not a substring search.\n\
+        \  For example, `labels contains 'foo'` matches a document with the label\
+        \ `'foo'`, but **not** a document with the label `'foobar'`.\n  To find labels\
+        \ by partial name (substring), use the `listLabels` operation.\n\nExamples:\n\
+        \n* `name = 'my-document-name'`\n\n* `name == 'my-document-name'`\n\n* `(name\
+        \ starts-with 'awesome' or type != 'dashboard') and version >= 5`\n\n* `modificationInfo.lastModifiedTime\
         \ >= '2022-07-01T00:10:05.000Z' and not (name contains 'new')`\n\n* `originAppId\
         \ exists`\n\n* `originExtensionId exists`\n\n* `type in ('dashboard', 'notebook')\
-        \ and name contains 'report'`\n\n* `labels contains 'my-label'`\n\n* `labels\
-        \ contains 'my-label' and labels contains 'other-label'`\n"
+        \ and name contains 'report'`\n\n* `isPrivate = true`\n\n* `labels contains\
+        \ 'my-label'`\n\n* `labels contains 'my-label' and labels contains 'other-label'`\n"
       required: false
       schema:
         type: "string"

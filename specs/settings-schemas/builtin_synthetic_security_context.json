@@ -1,0 +1,46 @@
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:synthetic.security-context",
+  "displayName": "Synthetic monitor's security context",
+  "description": "Set synthetic monitor's security context.",
+  "documentation": "",
+  "version": "1.0.1",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "SYNTHETIC_TEST",
+    "HTTP_CHECK",
+    "MULTIPROTOCOL_MONITOR"
+  ],
+  "enums": {},
+  "types": {},
+  "properties": {
+    "securityContext": {
+      "displayName": "Security context",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "Security context value",
+        "description": "",
+        "documentation": "",
+        "type": "text",
+        "constraints": [
+          {
+            "type": "LENGTH",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          {
+            "type": "NOT_BLANK"
+          }
+        ]
+      },
+      "nullable": false,
+      "minObjects": 0,
+      "maxObjects": 10,
+      "modificationPolicy": "DEFAULT"
+    }
+  }
+}

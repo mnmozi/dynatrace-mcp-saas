@@ -1,13 +1,13 @@
 {
   "dynatrace": "1",
   "schemaId": "builtin:deployment.management.update-windows",
-  "displayName": "Update windows for OneAgent updates",
-  "description": "Define update windows for how often and when to update your OneAgent instances. You will be able to apply these windows to OneAgents, Host Groups or your whole Environment in Automatic Update settings screens.",
+  "displayName": "Update windows for OneAgent and ActiveGate",
+  "description": "Define when automatic updates for OneAgent and ActiveGate should run.\n\nApply update windows at these scopes:\n\n- **OneAgent:** environment, host group, or individual host.\n - **ActiveGate:** environment or individual ActiveGate.",
   "documentation": "",
   "schemaGroups": [
     "group:updates"
   ],
-  "version": "0.63.2",
+  "version": "0.63.3",
   "multiObject": true,
   "ordered": false,
   "maxObjects": 100,
@@ -724,6 +724,12 @@
   ],
   "metadata": {
     "itemDisplayName": "New update window",
-    "addItemButton": "Create update window"
-  }
+    "addItemButton": "Add update window"
+  },
+  "deletionConstraints": [
+    {
+      "customValidatorId": "update-window-deletion-validator",
+      "type": "CUSTOM_VALIDATOR_REF"
+    }
+  ]
 }

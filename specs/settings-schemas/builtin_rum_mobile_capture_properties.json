@@ -1,0 +1,114 @@
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:rum.mobile.capture-properties",
+  "displayName": "Capture properties",
+  "description": "Capture and collect properties.",
+  "documentation": "",
+  "version": "0.5",
+  "multiObject": false,
+  "maxObjects": 1,
+  "maturity": "EARLY_ADOPTER",
+  "allowedScopes": [
+    "MOBILE_APPLICATION"
+  ],
+  "enums": {},
+  "types": {
+    "AllowedApiReportedProperty": {
+      "version": "0.3",
+      "versionInfo": "",
+      "displayName": "",
+      "summaryPattern": "{propertyKey}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "propertyKey": {
+          "displayName": "Property key",
+          "description": "",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "LENGTH"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Please choose a valid property key.",
+              "pattern": "^[a-zA-Z0-9._]+$"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Property key must not contain 'event_properties.'",
+              "pattern": "^((?!event_properties\\.).)*$"
+            },
+            {
+              "type": "PATTERN",
+              "customMessage": "Property key must not contain 'session_properties.'",
+              "pattern": "^((?!session_properties\\.).)*$"
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        },
+        "caseInsensitivePropertyKey": {
+          "displayName": "Property key validation should be case-insensitive.",
+          "description": "",
+          "documentation": "",
+          "type": "boolean",
+          "nullable": false,
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": false
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "allowedApiReportedProperties": {
+      "displayName": "Allowed API-reported properties",
+      "description": "",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/AllowedApiReportedProperty"
+        }
+      },
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "UNIQUE",
+          "customMessage": "Duplicate property keys are not allowed.",
+          "uniqueProperties": [
+            "propertyKey"
+          ]
+        }
+      ],
+      "metadata": {
+        "addItemButton": "New allowed API-reported property"
+      },
+      "minObjects": 0,
+      "maxObjects": 1000,
+      "modificationPolicy": "DEFAULT"
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "Duplicate property keys of case-insensitive properties are not allowed.",
+      "customValidatorId": "mrumCapturePropertiesCaseInsensitiveValidator",
+      "skipAsyncValidation": false
+    },
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customMessage": "The number of API-reported properties or property key length exceeds the configured limit.",
+      "customValidatorId": "mrumCapturePropertiesLimitsValidator",
+      "skipAsyncValidation": false
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "dynatrace": "1",
+  "schemaId": "builtin:openpipeline.primary-grail-tag",
+  "displayName": "Ingest primary Grail tag processing rules",
+  "description": "Global rules for primary Grail tag extraction and processing during ingest",
+  "documentation": "",
+  "version": "1",
+  "multiObject": true,
+  "ordered": true,
+  "maxObjects": 20,
+  "maturity": "GENERAL_AVAILABILITY",
+  "allowedScopes": [
+    "environment"
+  ],
+  "enums": {},
+  "types": {
+    "PrimaryGrailTagSourceField": {
+      "version": "0",
+      "versionInfo": "",
+      "displayName": "PrimaryGrailTagSourceField",
+      "summaryPattern": "{fieldExpression}",
+      "description": "",
+      "documentation": "",
+      "properties": {
+        "fieldExpression": {
+          "displayName": "Field expression",
+          "description": "A DQL field access expression identifying the source field",
+          "documentation": "",
+          "type": "text",
+          "nullable": false,
+          "constraints": [
+            {
+              "type": "NOT_BLANK"
+            },
+            {
+              "type": "LENGTH",
+              "maxLength": 256
+            }
+          ],
+          "maxObjects": 1,
+          "modificationPolicy": "DEFAULT",
+          "default": ""
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "ruleName": {
+      "displayName": "Rule name",
+      "description": "A descriptive name for this rule",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 256
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "primaryTagFieldName": {
+      "displayName": "Primary tag field name",
+      "description": "The unique target identifier within the primary_tags namespace. Must be unique across all rules.",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 256
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "matchingCondition": {
+      "displayName": "Matching condition",
+      "description": "A DQL expression that determines which records this rule applies to",
+      "documentation": "",
+      "type": "text",
+      "nullable": false,
+      "constraints": [
+        {
+          "type": "NOT_BLANK"
+        },
+        {
+          "type": "LENGTH",
+          "maxLength": 4096
+        }
+      ],
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": ""
+    },
+    "keepFields": {
+      "displayName": "Keep fields",
+      "description": "Whether to keep (true) or drop (false) the source field",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": false
+    },
+    "sourceFields": {
+      "displayName": "Source fields",
+      "description": "Ordered list of source fields to consider. The first field that exist should be considered a source value for the primary tag",
+      "documentation": "",
+      "type": "list",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/PrimaryGrailTagSourceField"
+        }
+      },
+      "nullable": false,
+      "minObjects": 1,
+      "maxObjects": 10,
+      "modificationPolicy": "DEFAULT"
+    },
+    "enabled": {
+      "displayName": "Enabled",
+      "description": "Whether this rule is active",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": false,
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": true
+    }
+  },
+  "constraints": [
+    {
+      "type": "CUSTOM_VALIDATOR_REF",
+      "customValidatorId": "primary-grail-tag-validator",
+      "skipAsyncValidation": false
+    }
+  ],
+  "schemaConstraints": [
+    {
+      "type": "UNIQUE",
+      "uniqueProperties": [
+        "primaryTagFieldName"
+      ],
+      "flattenCollections": false
+    }
+  ]
+}

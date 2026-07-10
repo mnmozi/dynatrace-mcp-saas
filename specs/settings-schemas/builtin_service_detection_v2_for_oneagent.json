@@ -2,12 +2,12 @@
   "dynatrace": "1",
   "schemaId": "builtin:service-detection-v2-for-oneagent",
   "displayName": "Service Detection v2 for OneAgent",
-  "description": "Enabling SDv2 for OneAgent will use the same attribute-based rules as OpenTelemetry for detecting services, endpoints, and failures. Refer to the [SDv2 documentation](https://dt-url.net/5e0309z) for more information.\n\nThis is a **Public Preview** feature. You must complete the [access request form and agree to preview terms](https://dt-url.net/cb300tiz) before enabling.\n\n**Important**\n\nThe services matching your conditions will get new metric keys, breaking existing API queries, dashboards, and service names. Custom, opaque, third party, database, and message queue services are detected differently in SDv2. Analysis views for service to database and message queue operations will be announced in upcoming releases.",
+  "description": "Enabling SDv2 for OneAgent will use the same attribute-based rules as OpenTelemetry for detecting services, endpoints, and failures. Refer to the [SDv2 documentation](https://dt-url.net/5e0309z) for more information.\n\n**Important**\n\nThe services matching your conditions will get new metric keys, breaking existing API queries, dashboards, and service names. Custom, opaque, third party, database, and message queue services are detected differently in SDv2. Analysis views for service to database and message queue operations will be announced in upcoming releases.",
   "documentation": "",
   "schemaGroups": [
     "group:service-detection"
   ],
-  "version": "0.8.2",
+  "version": "1",
   "multiObject": false,
   "maxObjects": 1,
   "maturity": "GENERAL_AVAILABILITY",
@@ -81,10 +81,6 @@
       "documentation": "",
       "type": "boolean",
       "nullable": true,
-      "metadata": {
-        "featureFlag": "com.compuware.enable-sdv2-faas-toggle.feature",
-        "maturity": "IN_DEVELOPMENT"
-      },
       "maxObjects": 1,
       "modificationPolicy": "DEFAULT"
     },
@@ -133,8 +129,21 @@
       "modificationPolicy": "DEFAULT",
       "default": "isNotNull(aws.region) and isNotNull(aws.account.id)"
     },
+    "enableSDV2ForAnyWorkload": {
+      "displayName": "Enable Service detection v2 for generic workloads",
+      "description": "Ensure that your [service detection](builtin:service-detection-rules) and [splitting rules](builtin:service-splitting-rules) are up to date for these workloads.",
+      "documentation": "",
+      "type": "boolean",
+      "nullable": true,
+      "metadata": {
+        "featureFlag": "com.compuware.enable-sdv2-any-workload-toggle.feature",
+        "maturity": "IN_DEVELOPMENT"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT"
+    },
     "conditionForAnyWorkload": {
-      "displayName": "Matching condition for any workload",
+      "displayName": "Matching condition for generic workloads",
       "description": "Limits the opt-in’s scope by filtering with [DQL matcher](https://dt-url.net/l603wby) conditions on a selected set of attributes. Resource attributes must be present.",
       "documentation": "Service detection v2 is only applied if this condition matches. \nAllowed attributes: Resource attributes, and custom attributes.\nIf empty, the condition will always match.\nIf the set of resource attributes is missing or empty, the condition will be considered not to match.",
       "type": "text",
@@ -176,7 +185,7 @@
       },
       "maxObjects": 1,
       "modificationPolicy": "DEFAULT",
-      "default": ""
+      "default": "false // safe default. Scope SDv2 with a condition, e.g. dt.host_group.id == \"my-host-group\""
     }
   }
 }

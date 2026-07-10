@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: "Notification v2"
-  version: "1.4284.1"
+  version: "1.4376.1"
   description: "Manage resource/event notifications with the Notification Service\
     \ API."
   x-service-category: "Notification"

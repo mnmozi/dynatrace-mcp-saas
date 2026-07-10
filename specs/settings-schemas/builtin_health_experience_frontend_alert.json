@@ -4,10 +4,10 @@
   "displayName": "Frontend health alerts",
   "description": "Settings schema for frontend health alerts",
   "documentation": "",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "multiObject": true,
   "ordered": false,
-  "maxObjects": 300,
+  "maxObjects": 1000,
   "maturity": "GENERAL_AVAILABILITY",
   "allowedScopes": [
     "environment"

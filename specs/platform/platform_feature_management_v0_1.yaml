@@ -1,6 +1,6 @@
 openapi: "3.0.4"
 info:
-  version: "0.1.52"
+  version: "0.1.56"
   title: "Feature Management API"
   x-service-category: "Feature Management"
   x-summary: "Provide functionality for Feature Management."
@@ -34,6 +34,7 @@ paths:
       - $ref: "#/components/parameters/pageParam"
       - $ref: "#/components/parameters/pageSizeParam"
       - $ref: "#/components/parameters/sort"
+      - $ref: "#/components/parameters/addFieldsParamListProject"
       security:
       - ssoAuth:
         - "feature-management:projects:read"
@@ -100,6 +101,7 @@ paths:
       - ssoBearerAuth: []
       parameters:
       - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamProject"
       responses:
         "200":
           description: "The project configuration"
@@ -234,7 +236,7 @@ paths:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/sort"
       - $ref: "#/components/parameters/filter"
-      - $ref: "#/components/parameters/addFieldsParam"
+      - $ref: "#/components/parameters/addFieldsParamListContextAttributes"
       responses:
         "200":
           description: "A paged array of context attributes"
@@ -266,7 +268,7 @@ paths:
       parameters:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/contextAttributeKeyPathParam"
-      - $ref: "#/components/parameters/addFieldsParam"
+      - $ref: "#/components/parameters/addFieldsParamContextAttribute"
       responses:
         "200":
           description: "The context attribute"
@@ -391,6 +393,7 @@ paths:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/pageParam"
       - $ref: "#/components/parameters/pageSizeParam"
+      - $ref: "#/components/parameters/addFieldsParamListReleaseStage"
       security:
       - ssoAuth:
         - "feature-management:projects:read"
@@ -505,6 +508,7 @@ paths:
       parameters:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamReleaseStage"
       responses:
         "200":
           description: "The release stage details"
@@ -701,6 +705,7 @@ paths:
       - $ref: "#/components/parameters/sort"
       - $ref: "#/components/parameters/pageSizeParam"
       - $ref: "#/components/parameters/projectKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamListFeature"
       responses:
         "200":
           description: "A paged array of features"
@@ -766,6 +771,7 @@ paths:
       parameters:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamFeature"
       security:
       - ssoAuth:
         - "feature-management:features:read"
@@ -910,6 +916,7 @@ paths:
       parameters:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamListFeatureReleaseStageTargeting"
       responses:
         "200":
           description: "An array of feature release stage targeting for the feature"
@@ -942,6 +949,7 @@ paths:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/featureKeyPathParam"
       - $ref: "#/components/parameters/releaseStageKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamFeatureReleaseStageTargeting"
       responses:
         "200":
           description: "Feature release stage targeting for the feature"
@@ -1015,6 +1023,7 @@ paths:
       - $ref: "#/components/parameters/pageSizeParam"
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/featureKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamListFlag"
       responses:
         "200":
           description: "A paged array of flags"
@@ -1082,6 +1091,7 @@ paths:
       - $ref: "#/components/parameters/projectKeyPathParam"
       - $ref: "#/components/parameters/featureKeyPathParam"
       - $ref: "#/components/parameters/flagKeyPathParam"
+      - $ref: "#/components/parameters/addFieldsParamFlag"
       security:
       - ssoAuth:
         - "feature-management:features:read"
@@ -1240,15 +1250,174 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/ContextAttributeKey"
-    addFieldsParam:
+    addFieldsParamProject:
       name: "add-fields"
       in: "query"
       description: "Additional fields to include in the response. Repeat the parameter\
-        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\n"
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
       schema:
         type: "array"
         items:
           type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamListContextAttributes:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `usages.count`, `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "usages.count"
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamListProject:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamListFeature:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamListFlag:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamListReleaseStage:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamListFeatureReleaseStageTargeting:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamContextAttribute:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `usages.count`, `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "usages.count"
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamReleaseStage:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamFeature:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamFlag:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
+      style: "form"
+      explode: true
+    addFieldsParamFeatureReleaseStageTargeting:
+      name: "add-fields"
+      in: "query"
+      description: "Additional fields to include in the response. Repeat the parameter\
+        \ to request multiple fields (e.g. `?add-fields=foo&add-fields=bar`).\nSupported\
+        \ values: `resource.context`.\n"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "resource.context"
       style: "form"
       explode: true
   schemas:
@@ -1658,7 +1827,7 @@ components:
       - "ENTITLEMENTS"
       - "EXPERIMENT"
       - "OPS"
-      default: "OPS"
+      default: "RELEASE"
     FeatureStatus:
       type: "string"
       enum:
@@ -2257,9 +2426,18 @@ components:
     ResourceContext:
       type: "object"
       readOnly: true
+      description: "Describes the operations the authenticated caller is permitted\
+        \ to perform on this resource or collection. Only operations that are actually\
+        \ allowed for the caller are included—the absence of an operation means the\
+        \ corresponding action is forbidden. `read` is always present when a resource\
+        \ is returned. On collection responses, `delete` is never present (collections\
+        \ can't be deleted); `write` indicates the caller may create new items in\
+        \ the collection.\n"
       properties:
         operations:
           type: "array"
+          description: "Set of permitted operations for the caller on this resource\
+            \ or collection."
           items:
             type: "string"
             enum:

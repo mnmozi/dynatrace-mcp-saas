@@ -7,13 +7,16 @@ info:
     \ we try to avoid this.\n* We may add new enum constants without incrementing\
     \ the API version; thus, clients need to handle unknown enum constants gracefully."
   title: "OpenPipeline v1"
-  version: "1.39.0"
+  version: "1.41.0"
   x-service-category: "OpenPipeline"
   x-summary: "Fetch and update OpenPipeline configurations for different data sources."
 servers:
 - url: "https://asn8731h.sprint.apps.dynatracelabs.com/platform/openpipeline/v1"
   x-api-gateway-url: "/platform/openpipeline/v1"
 tags:
+- description: "Allows you to translate the tenant's classic pipeline configuration\
+    \ into an OpenPipeline configuration pipeline."
+  name: "Classic Pipeline Translation"
 - description: "Allows you to view and update your configurations."
   name: "Configurations"
 - description: "Allows you to verify and retrieve suggestions for DQL processor scripts."
@@ -25,6 +28,72 @@ tags:
 - description: "Allows you to view all technology bundles and the associated processors."
   name: "Technology"
 paths:
+  /classic-pipelines/translate:
+    get:
+      operationId: "translateClassicPipeline"
+      parameters:
+      - description: "Configuration scope to translate, either 'logs' or 'bizevents'."
+        in: "query"
+        name: "configuration"
+        required: true
+        schema:
+          type: "string"
+      - description: "Include processor sample data in the translation."
+        in: "query"
+        name: "includeSampleData"
+        schema:
+          type: "boolean"
+          default: true
+      - description: "Skip disabled rules during translation."
+        in: "query"
+        name: "skipDisabledRules"
+        schema:
+          type: "boolean"
+          default: false
+      - description: "Skip built-in processing rules during translation."
+        in: "query"
+        name: "skipBuiltinProcessingRules"
+        schema:
+          type: "boolean"
+          default: true
+      responses:
+        "200":
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/ClassicPipelineTranslationResult"
+          description: "The translated OpenPipeline configuration pipeline."
+        "4XX":
+          content:
+            application/json; charset=utf-8:
+              example:
+                error:
+                  code: 400
+                  message: "Bad request."
+              schema:
+                $ref: "#/components/schemas/ErrorResponseEnvelope"
+          description: "Client-side error."
+        "5XX":
+          content:
+            application/json; charset=utf-8:
+              example:
+                error:
+                  code: 500
+                  message: "Internal server error."
+              schema:
+                $ref: "#/components/schemas/ErrorResponseEnvelope"
+          description: "Server-side error."
+      security:
+      - ssoAuth:
+        - "settings:objects:read"
+      - ssoBearerAuth: []
+      summary: "Translates the tenant's classic pipeline for the requested config\
+        \ scope into an OpenPipeline configuration pipeline. | maturity=EARLY_ADOPTER"
+      tags:
+      - "Classic Pipeline Translation"
+      x-maturity: "EARLY_ADOPTER"
+      x-only-visible-in-saas: true
+      description: "**Required scope:** settings:objects:read"
   /configurations:
     get:
       operationId: "configurations"
@@ -967,6 +1036,19 @@ components:
       required:
       - "bucketTable"
       - "defaultBucket"
+    ClassicPipelineTranslationResult:
+      type: "object"
+      description: "Result of translating a classic pipeline into an OpenPipeline\
+        \ configuration pipeline."
+      properties:
+        value:
+          $ref: "#/components/schemas/PipelineSettingsValue"
+        withWarning:
+          type: "boolean"
+          description: "Indicates whether at least one processor couldn't be translated\
+            \ automatically and needs manual review."
+      required:
+      - "withWarning"
     ConfigurationListItem:
       type: "object"
       description: "Basic information about a configuration."
@@ -1552,6 +1634,45 @@ components:
           description: "The severity of the notification, currently: INFO, WARN, ERROR."
         syntaxPosition:
           $ref: "#/components/schemas/TokenPosition"
+    PipelineSettingsValue:
+      type: "object"
+      description: "The translated OpenPipeline configuration pipeline. The structure\
+        \ is compliant with builtin:openpipeline.logs.pipelines or builtin:openpipeline.bizevents.pipelines\
+        \ schemas, corresponding to the requested `configuration` parameter value.\
+        \ Note: the raw result may not fully pass validation against the Settings\
+        \ API. "
+      example:
+        customId: "defaultTranslatedFromClassic"
+        displayName: "defaultTranslatedFromClassic"
+        processing:
+          processors:
+          - id: "hostname-field-normalizer"
+            type: "dql"
+            matcher: "isNotNull(\"hostname\")"
+            description: "hostname-field-normalizer"
+            sampleData: "{\n  \"hostname\": \"raspberry-pi 4\",\n  \"ip\": \"10.0.0.123\"\
+              \n}"
+            enabled: true
+            dql:
+              script: "fieldsRename host.name = hostname\n| fieldsRename ip.address\
+                \ = ip"
+        securityContext: {}
+        costAllocation: {}
+        productAllocation: {}
+        storage:
+          processors:
+          - id: "default"
+            type: "bucketAssignment"
+            matcher: "true"
+            description: "default"
+            enabled: true
+            bucketAssignment:
+              bucketName: "default_logs"
+        smartscapeNodeExtraction: {}
+        smartscapeEdgeExtraction: {}
+        metricExtraction: {}
+        davis: {}
+        dataExtraction: {}
     PipelinesSpecification:
       type: "object"
       description: "Contains information about allowed processors, grouped by stages,\
@@ -1829,7 +1950,7 @@ components:
           description: "Indicates if Dynatrace provides the object or if it's customer-defined."
         customMatcher:
           type: "string"
-          description: "Optional customer-defined matching condition, that is used\
+          description: "Optional customer-defined matching condition, that's used\
             \ in place of the main technology matcher."
           nullable: true
         editable:
@@ -1889,6 +2010,7 @@ components:
         clientCredentials:
           scopes:
             openpipeline:configurations:read: "Read the OpenPipeline configuration"
+            settings:objects:read: "Read settings objects"
           tokenUrl: "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
       type: "oauth2"
     ssoBearerAuth:

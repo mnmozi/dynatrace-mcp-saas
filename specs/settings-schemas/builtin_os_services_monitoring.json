@@ -7,7 +7,7 @@
   "schemaGroups": [
     "group:monitoring"
   ],
-  "version": "1.3.13",
+  "version": "1.3.14",
   "multiObject": true,
   "ordered": true,
   "maxObjects": 400,
@@ -324,7 +324,7 @@
         "startupCondition": {
           "displayName": "Condition",
           "description": "",
-          "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(enabled)` – Matches services with startup type equal to enabled.\n\nAvailable logic operations:\n- `$not($eq(enabled))` – Matches services with startup type different from enabled.\n- `$or($eq(enabled),$eq(disabled))` - Matches services that are either enabled or disabled.\n\nUse one of the following values as a parameter for this condition:\n\n- `enabled`\n- `enabled-runtime`\n- `static`\n- `disabled`",
+          "documentation": "This string has to match a required format. See [OS services monitoring](https://dt-url.net/vl03xzk).\n\n- `$eq(enabled)` – Matches services with startup type equal to enabled.\n\nAvailable logic operations:\n- `$not($eq(enabled))` – Matches services with startup type different from enabled.\n- `$or($eq(enabled),$eq(disabled))` - Matches services that are either enabled or disabled.\n\nUse one of the following values as a parameter for this condition:\n\n- `enabled`\n- `enabled-runtime`\n- `static`\n- `disabled`\n- `indirect`\n- `linked`\n- `linked-runtime`",
           "type": "text",
           "nullable": false,
           "constraints": [

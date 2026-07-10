@@ -2,7 +2,7 @@ openapi: "3.1.0"
 info:
   title: "Email"
   description: "APIs that allow sending emails."
-  version: "1.1.243"
+  version: "1.1.248"
   x-service-category: "Email"
   x-summary: "Allows sending email notifications."
 servers:

@@ -7,7 +7,7 @@
   "schemaGroups": [
     "group:updates"
   ],
-  "version": "1.0.3",
+  "version": "1.0.4",
   "multiObject": false,
   "maxObjects": 1,
   "maturity": "GENERAL_AVAILABILITY",
@@ -66,15 +66,72 @@
     }
   },
   "properties": {
-    "autoUpdate": {
-      "displayName": "Automatic updates at earliest convenience",
+    "targetVersion": {
+      "displayName": "Target version",
       "description": "",
       "documentation": "",
-      "type": "boolean",
+      "type": "text",
+      "subType": "datasource",
+      "datasource": {
+        "identifier": "PrivateActiveGateAutoUpdateVersionsDataSource",
+        "filterProperties": [],
+        "resetValue": "NEVER",
+        "validate": true,
+        "fullContext": false,
+        "useApiSearch": false
+      },
       "nullable": false,
+      "constraints": [
+        {
+          "type": "LENGTH",
+          "maxLength": 500,
+          "minLength": 1
+        }
+      ],
       "maxObjects": 1,
       "modificationPolicy": "DEFAULT",
-      "default": true
+      "default": "latest"
+    },
+    "updateMode": {
+      "displayName": "Update mode",
+      "description": "",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/UpdateMode"
+      },
+      "nullable": false,
+      "metadata": {
+        "sortItems": "disabled"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "AUTOMATIC"
+    },
+    "updateWindows": {
+      "displayName": "Update windows",
+      "description": "",
+      "documentation": "",
+      "type": "set",
+      "items": {
+        "displayName": "",
+        "description": "",
+        "documentation": "",
+        "type": {
+          "$ref": "#/types/updateWindow"
+        }
+      },
+      "nullable": false,
+      "precondition": {
+        "type": "EQUALS",
+        "property": "updateMode",
+        "expectedValue": "AUTOMATIC_DURING_UW"
+      },
+      "metadata": {
+        "addItemButton": "Add update window"
+      },
+      "minObjects": 1,
+      "maxObjects": 100,
+      "modificationPolicy": "DEFAULT"
     }
   }
 }

@@ -7,7 +7,7 @@
   "schemaGroups": [
     "group:service-detection"
   ],
-  "version": "1.0.3",
+  "version": "1.0.4",
   "multiObject": true,
   "ordered": true,
   "maxObjects": 1000,

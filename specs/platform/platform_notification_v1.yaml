@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: "Notification"
-  version: "1.4284.1"
+  version: "1.4376.1"
   description: "Manage self notifications with the Notification Service API. This\
     \ is deprecated, use event notifications provided in the Notification Service\
     \ v2 API instead."

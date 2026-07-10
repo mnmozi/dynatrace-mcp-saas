@@ -8,7 +8,7 @@
     "group:log-monitoring",
     "group:log-monitoring.ingest-and-processing"
   ],
-  "version": "1.1.17",
+  "version": "1.1.18",
   "multiObject": false,
   "maxObjects": 1,
   "maturity": "GENERAL_AVAILABILITY",
@@ -18,7 +18,24 @@
     "HOST_GROUP",
     "environment"
   ],
-  "enums": {},
+  "enums": {
+    "BinaryDetectionMode": {
+      "displayName": "Binary detection mode",
+      "description": "",
+      "documentation": "",
+      "items": [
+        {
+          "value": "BinaryPerLogSource",
+          "displayName": "Per log source"
+        },
+        {
+          "value": "BinaryPerLogFile",
+          "displayName": "Per log file"
+        }
+      ],
+      "type": "enum"
+    }
+  },
   "types": {},
   "properties": {
     "LAConfigOpenLogFilesDetectionEnabled": {
@@ -235,6 +252,22 @@
       "maxObjects": 1,
       "modificationPolicy": "DEFAULT",
       "default": 512
+    },
+    "BinaryDetectionMode": {
+      "displayName": "Binary detection mode",
+      "description": "Specifies the granularity at which binary log files are detected. 'Per log source' applies binary detection at the log source level, 'Per log file' evaluates each log file individually.",
+      "documentation": "",
+      "type": {
+        "$ref": "#/enums/BinaryDetectionMode"
+      },
+      "nullable": false,
+      "metadata": {
+        "sortItems": "disabled",
+        "minAgentVersion": "1.343"
+      },
+      "maxObjects": 1,
+      "modificationPolicy": "DEFAULT",
+      "default": "BinaryPerLogSource"
     }
   }
 }

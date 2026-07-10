@@ -4,7 +4,7 @@
   "displayName": "Cloud health alerts settings",
   "description": "Cloud health alerts settings for AWS & Azure services",
   "documentation": "",
-  "version": "1.21",
+  "version": "1.25",
   "multiObject": true,
   "ordered": false,
   "maxObjects": 1000,
