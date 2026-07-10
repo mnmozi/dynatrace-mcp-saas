@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.18.1
+
+- New iam_reference tool + knowledge/iam doc: IAM policy statement syntax (ALLOW/DENY, service:resource:action, WHERE operators, AND-only, DENY-override), boundary syntax (field/op/value, one condition per line, IN/startsWith, max 10, no AND), permission vocabulary, and the create→bind loop — grounds create_policy/create_policy_boundary. Grammar from Dynatrace docs; examples live-verified
+
 ## 0.18.0
 
 - IAM policies + bindings tools (Account Management Repo API), completing the IAM triad with the existing boundary tools:

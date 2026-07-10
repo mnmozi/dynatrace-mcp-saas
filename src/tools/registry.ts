@@ -37,6 +37,7 @@ import { registerDavisAnalyzerTools } from "./davis-analyzers.js";
 import { registerRawTools } from "./raw.js";
 import { registerIamBoundaryTools } from "./iam-boundaries.js";
 import { registerIamPolicyTools } from "./iam-policies.js";
+import { registerIamReferenceTools } from "./iam-reference.js";
 
 export interface ToolDeps {
   client: DynatraceClient;
@@ -80,4 +81,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerRawTools(server, deps);
   registerIamBoundaryTools(server, deps);
   registerIamPolicyTools(server, deps);
+  registerIamReferenceTools(server);
 }
