@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.21.0
+
+- Account Platform Tokens tools: list/create/delete_platform_token (/iam/v1/accounts/{uuid}/platform-tokens). create takes userUuid — the token is OWNED BY and ACTS AS that user, enforcing their IAM permissions/boundaries. Enables testing a user's effective access without them logging in. Writes need account-idm-write; token secrets are shown once — treat as credentials
+
 ## 0.20.1
 
 - fix get_account_group and describe_group_permissions: the account IDM API has NO single-group GET (/iam/v1/accounts/{uuid}/groups/{groupUuid} → 404, while the list and the /users + /permissions sub-resources work). Both now resolve the group from the list endpoint via a shared findAccountGroup helper; missing groups give a clear error
