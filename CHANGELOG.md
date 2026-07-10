@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.19.2
+
+- Account user & membership tools (Account Management IDM API, account-idm-read): list_account_users, get_account_user (by email, incl. groups), list_group_members — closes the group-membership gap. The platform-host IAM endpoints 403 without an account-scoped platform token carrying iam:users:read; the account IDM API needs no platform token at all
+- Live-verified end-to-end (group membership auditable via API for the first time)
+
 ## 0.19.1
 
 - fix bind_policy_to_groups: "update bindings of a policy" is a POST, not a PUT — PUT /bindings/{policyUuid} does not exist (404 live-verified)
