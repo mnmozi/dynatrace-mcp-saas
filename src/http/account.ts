@@ -15,6 +15,7 @@ export class AccountClient {
   private readonly tokenUrl: string;
   private readonly base: string;
   private readonly timeoutMs: number;
+  private readonly scope: string;
 
   private cachedToken: { value: string; expiresAt: number } | null = null;
 
@@ -28,6 +29,7 @@ export class AccountClient {
     this.tokenUrl = cfg.ssoTokenUrl ?? "https://sso.dynatrace.com/sso/oauth2/token";
     this.base = cfg.accountApiUrl ?? "https://api.dynatrace.com";
     this.timeoutMs = cfg.timeoutMs;
+    this.scope = cfg.oauthScope ?? "iam-policies-management";
   }
 
   /** The account UUID derived from the URN (urn:dtaccount:<uuid>). */
@@ -44,7 +46,10 @@ export class AccountClient {
       grant_type: "client_credentials",
       client_id: this.clientId,
       client_secret: this.clientSecret,
-      scope: "account-idm-read account-idm-write iam-policies-management iam:boundaries:read iam:boundaries:write",
+      // Single scope: SSO rejects multi-scope requests for these clients with
+      // 400 invalid_request (live-verified). iam-policies-management covers
+      // policy + boundary + binding management. Override via DT_OAUTH_SCOPE.
+      scope: this.scope,
       resource: this.accountUrn,
     });
 

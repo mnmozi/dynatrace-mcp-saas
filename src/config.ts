@@ -70,6 +70,7 @@ export function loadConfig(env: Env = process.env): Config {
     oauthClientSecret,
     accountUrn,
     ssoTokenUrl: optional(env, "DT_SSO_TOKEN_URL") ?? "https://sso.dynatrace.com/sso/oauth2/token",
+    oauthScope: optional(env, "DT_OAUTH_SCOPE"),
     accountApiUrl: stripSlash(optional(env, "DT_ACCOUNT_API_URL") ?? "https://api.dynatrace.com"),
     timeoutMs: env.DT_HTTP_TIMEOUT_MS ? Number(env.DT_HTTP_TIMEOUT_MS) : 30000,
     maxRetries: env.DT_MAX_RETRIES ? Number(env.DT_MAX_RETRIES) : 3,

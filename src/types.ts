@@ -12,6 +12,7 @@ export interface Config {
   oauthClientSecret?: string;
   accountUrn?: string;
   ssoTokenUrl?: string;
+  oauthScope?: string;
   accountApiUrl?: string;
   maxRetries: number;
   retryBaseMs: number;
