@@ -90,12 +90,24 @@ storage:event.type = "order.attempt";
 ## The create → assign loop (what makes it live)
 
 ```
+create_account_group(name)                                → groupUuid   (account-idm-write)
 create_policy(name, statementQuery)                       → policyUuid
 create_policy_boundary(name, boundaryQuery)               → boundaryUuid
-bind_policy_to_groups(policyUuid, [groupUuid], [boundaryUuid])   ← now effective
+set_group_policies(groupUuid, [policyUuid])               ← now effective (documented path)
 ```
 Boundaries and policies are inert on their own; the **binding** is the switch.
-Group UUIDs come from the account's groups (IAM group tools / the userinfo groups list).
+
+### Binding endpoints (two variants — mind the METHOD)
+| Intent | Method + path | Body |
+|---|---|---|
+| Set a **group's** policies (recommended) | `PUT /bindings/groups/{groupUuid}` | `{ policyUuids: [...] }` → 204 |
+| Update a **policy's** bindings | `POST /bindings/{policyUuid}` | `{ groups: [...], boundaries: [...] }` |
+| Remove one policy↔group binding | `DELETE /bindings/{policyUuid}/{groupUuid}` | — |
+
+- `PUT /bindings/{policyUuid}` does **NOT** exist → 404 (live-verified). Use POST there.
+- `set_group_policies` **replaces** the group's whole set: any policy not in the request is
+  discarded. Pass the full desired list.
+- Attaching boundaries goes through the policy-centric POST variant.
 
 ## Gotchas
 - Policy conditions allow `AND`; boundaries do NOT (one condition per line only).

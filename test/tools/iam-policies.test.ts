@@ -102,6 +102,38 @@ describe("create_policy", () => {
   });
 });
 
+describe("set_group_policies", () => {
+  it("is write-gated", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({
+      name: "set_group_policies",
+      arguments: { groupUuid: "g1", policyUuids: ["p1"] },
+    });
+    expect(res.isError).toBe(true);
+    expect(text(res)).toMatch(/DT_ENABLE_WRITES/);
+  });
+
+  it("PUTs {policyUuids} to /bindings/groups/{groupUuid} (documented, replaces the set)", async () => {
+    let body: Record<string, unknown> = {};
+    let url = "";
+    mswServer.use(
+      http.put(`${REPO}/bindings/groups/g1`, async ({ request }) => {
+        url = request.url;
+        body = (await request.json()) as Record<string, unknown>;
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+    const client = await makeClient({ ...cfg, enableWrites: true });
+    const res = await client.callTool({
+      name: "set_group_policies",
+      arguments: { groupUuid: "g1", policyUuids: ["p1", "p2"] },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(url).toContain("/bindings/groups/g1");
+    expect(body.policyUuids).toEqual(["p1", "p2"]);
+  });
+});
+
 describe("bind_policy_to_groups", () => {
   it("is write-gated", async () => {
     const client = await makeClient();
@@ -113,11 +145,11 @@ describe("bind_policy_to_groups", () => {
     expect(text(res)).toMatch(/DT_ENABLE_WRITES/);
   });
 
-  it("PUTs the policy binding with groups + optional boundaries", async () => {
+  it("POSTs (not PUTs) the policy binding with groups + optional boundaries", async () => {
     let body: Record<string, unknown> = {};
     let url = "";
     mswServer.use(
-      http.put(`${REPO}/bindings/p1`, async ({ request }) => {
+      http.post(`${REPO}/bindings/p1`, async ({ request }) => {
         url = request.url;
         body = (await request.json()) as Record<string, unknown>;
         return new HttpResponse(null, { status: 204 });

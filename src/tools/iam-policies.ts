@@ -193,10 +193,42 @@ export function registerIamPolicyTools(server: McpServer, deps: ToolDeps): void 
   );
 
   server.registerTool(
+    "set_group_policies",
+    {
+      description:
+        "Set the policies bound to a GROUP at a level (WRITE, Account Management Repo API). " +
+        "PUT /bindings/groups/{groupUuid} with {policyUuids} — this REPLACES the group's bindings: " +
+        "any policy not present in the request is discarded (pass the full desired set). " +
+        "This is the documented, reliable way to assign policies to a group. Returns 204. " +
+        OAUTH_NOTE,
+      inputSchema: {
+        groupUuid: z.string().describe("The group whose policy bindings are being set."),
+        policyUuids: z
+          .array(z.string())
+          .describe("Full desired set of policy UUIDs for this group (omitted policies are unbound)."),
+        levelType: LEVEL_TYPE,
+        levelId: LEVEL_ID,
+      },
+    },
+    async ({ groupUuid, policyUuids, levelType, levelId }) => {
+      requireWrites(deps.config);
+      return jsonResult(
+        await deps.client
+          .requireAccount()
+          .put(`${levelPath(deps, "bindings/groups", levelType, levelId)}/${encodeURIComponent(groupUuid)}`, {
+            policyUuids,
+          }),
+      );
+    },
+  );
+
+  server.registerTool(
     "bind_policy_to_groups",
     {
       description:
-        "Bind a policy to one or more groups at a level (WRITE, idempotent replace, Account Management Repo API). " +
+        "Bind a policy to one or more groups at a level (WRITE, Account Management Repo API). " +
+        "POST /bindings/{policyUuid} — the policy-centric variant; use set_group_policies for the " +
+        "documented group-centric assignment. " +
         "This is the step that makes a policy take effect. Optionally restrict the binding with boundary UUIDs " +
         "(from list_policy_boundaries) — the group then gets the policy ONLY within those boundaries. " +
         "Sets the full group/boundary set for the policy (replaces existing). " +
@@ -214,12 +246,13 @@ export function registerIamPolicyTools(server: McpServer, deps: ToolDeps): void 
     },
     async ({ policyUuid, groups, boundaries, levelType, levelId }) => {
       requireWrites(deps.config);
+      // "Update bindings of a policy" is a POST (a PUT here 404s — live-verified).
       const body: Record<string, unknown> = { policyUuid, groups };
       if (boundaries?.length) body.boundaries = boundaries;
       return jsonResult(
         await deps.client
           .requireAccount()
-          .put(`${levelPath(deps, "bindings", levelType, levelId)}/${encodeURIComponent(policyUuid)}`, body),
+          .post(`${levelPath(deps, "bindings", levelType, levelId)}/${encodeURIComponent(policyUuid)}`, body),
       );
     },
   );

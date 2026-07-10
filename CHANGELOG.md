@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.1
+
+- fix bind_policy_to_groups: "update bindings of a policy" is a POST, not a PUT — PUT /bindings/{policyUuid} does not exist (404 live-verified)
+- new set_group_policies: PUT /bindings/groups/{groupUuid} with {policyUuids} — the documented, reliable group-centric assignment (replaces the group's whole set; returns 204)
+- iam_reference doc updated with the binding endpoint table (method matters) and the corrected create→assign loop
+
 ## 0.19.0
 
 - Cost & consumption tools (Dynatrace Platform Subscription API, /sub/v2): list_subscriptions, get_subscription, get_subscription_cost (breakdown, filter by environment/capability/cluster), get_subscription_usage. Read-only, routed through the multi-scope account client with the account-uac-read scope
