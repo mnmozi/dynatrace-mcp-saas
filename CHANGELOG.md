@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.2
+
+- Account group tools (Account Management IDM API): list/get/create/update/delete_account_group. Groups are a SEPARATE API from policies/boundaries and need different OAuth scopes — account-idm-read (reads) / account-idm-write (writes)
+- AccountClient is now multi-scope: fetches + caches a token PER scope (SSO rejects multi-scope requests), so the same OAuth client serves iam-policies-management (repo API) and account-idm-* (groups) side by side
+- Live-verified: list_account_groups returns real groups via account-idm-read. create/update/delete require the OAuth client to also carry account-idm-write
+
 ## 0.18.1
 
 - New iam_reference tool + knowledge/iam doc: IAM policy statement syntax (ALLOW/DENY, service:resource:action, WHERE operators, AND-only, DENY-override), boundary syntax (field/op/value, one condition per line, IN/startsWith, max 10, no AND), permission vocabulary, and the create→bind loop — grounds create_policy/create_policy_boundary. Grammar from Dynatrace docs; examples live-verified

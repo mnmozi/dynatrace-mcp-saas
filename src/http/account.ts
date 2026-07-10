@@ -15,9 +15,10 @@ export class AccountClient {
   private readonly tokenUrl: string;
   private readonly base: string;
   private readonly timeoutMs: number;
-  private readonly scope: string;
+  private readonly defaultScope: string;
 
-  private cachedToken: { value: string; expiresAt: number } | null = null;
+  /** One cached token per scope — different account APIs require different scopes. */
+  private readonly tokenCache = new Map<string, { value: string; expiresAt: number }>();
 
   constructor(cfg: Config) {
     if (!cfg.oauthClientId || !cfg.oauthClientSecret || !cfg.accountUrn) {
@@ -29,7 +30,7 @@ export class AccountClient {
     this.tokenUrl = cfg.ssoTokenUrl ?? "https://sso.dynatrace.com/sso/oauth2/token";
     this.base = cfg.accountApiUrl ?? "https://api.dynatrace.com";
     this.timeoutMs = cfg.timeoutMs;
-    this.scope = cfg.oauthScope ?? "iam-policies-management";
+    this.defaultScope = cfg.oauthScope ?? "iam-policies-management";
   }
 
   /** The account UUID derived from the URN (urn:dtaccount:<uuid>). */
@@ -37,19 +38,21 @@ export class AccountClient {
     return this.accountUrn.replace(/^urn:dtaccount:/, "");
   }
 
-  private async getToken(): Promise<string> {
-    if (this.cachedToken && Date.now() < this.cachedToken.expiresAt) {
-      return this.cachedToken.value;
+  private async getToken(scope: string): Promise<string> {
+    const cached = this.tokenCache.get(scope);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.value;
     }
 
+    // NOTE: request a SINGLE scope — the SSO rejects multi-scope client-credentials
+    // requests for these clients with 400 invalid_request (live-verified). Different
+    // account APIs need different scopes (iam-policies-management for the repo API;
+    // account-idm-read/write for group/user management), so tokens are cached per scope.
     const body = new URLSearchParams({
       grant_type: "client_credentials",
       client_id: this.clientId,
       client_secret: this.clientSecret,
-      // Single scope: SSO rejects multi-scope requests for these clients with
-      // 400 invalid_request (live-verified). iam-policies-management covers
-      // policy + boundary + binding management. Override via DT_OAUTH_SCOPE.
-      scope: this.scope,
+      scope,
       resource: this.accountUrn,
     });
 
@@ -68,7 +71,7 @@ export class AccountClient {
       parsed = text;
     }
     if (!res.ok) {
-      throw new DynatraceApiError(res.status, "account", parsed, "(sso token endpoint)");
+      throw new DynatraceApiError(res.status, "account", parsed, `(sso token endpoint, scope="${scope}")`);
     }
 
     const tok = parsed as { access_token?: string; expires_in?: number };
@@ -77,12 +80,18 @@ export class AccountClient {
     }
     // Refresh 60s before actual expiry.
     const ttlMs = Math.max(((tok.expires_in ?? 300) - 60) * 1000, 30_000);
-    this.cachedToken = { value: tok.access_token, expiresAt: Date.now() + ttlMs };
+    this.tokenCache.set(scope, { value: tok.access_token, expiresAt: Date.now() + ttlMs });
     return tok.access_token;
   }
 
-  private async request<T>(method: string, path: string, body?: unknown, query?: QueryParams): Promise<T> {
-    const token = await this.getToken();
+  private async request<T>(
+    method: string,
+    path: string,
+    body?: unknown,
+    query?: QueryParams,
+    scope?: string,
+  ): Promise<T> {
+    const token = await this.getToken(scope ?? this.defaultScope);
     const url = new URL(this.base + path);
     if (query) {
       for (const [k, v] of Object.entries(query)) {
@@ -114,17 +123,17 @@ export class AccountClient {
     return (parsed ?? { success: true }) as T;
   }
 
-  get<T = unknown>(path: string, query?: QueryParams): Promise<T> {
-    return this.request<T>("GET", path, undefined, query);
+  get<T = unknown>(path: string, query?: QueryParams, scope?: string): Promise<T> {
+    return this.request<T>("GET", path, undefined, query, scope);
   }
-  post<T = unknown>(path: string, body?: unknown, query?: QueryParams): Promise<T> {
-    return this.request<T>("POST", path, body, query);
+  post<T = unknown>(path: string, body?: unknown, query?: QueryParams, scope?: string): Promise<T> {
+    return this.request<T>("POST", path, body, query, scope);
   }
-  put<T = unknown>(path: string, body?: unknown, query?: QueryParams): Promise<T> {
-    return this.request<T>("PUT", path, body, query);
+  put<T = unknown>(path: string, body?: unknown, query?: QueryParams, scope?: string): Promise<T> {
+    return this.request<T>("PUT", path, body, query, scope);
   }
-  del<T = unknown>(path: string, query?: QueryParams): Promise<T> {
-    return this.request<T>("DELETE", path, undefined, query);
+  del<T = unknown>(path: string, query?: QueryParams, scope?: string): Promise<T> {
+    return this.request<T>("DELETE", path, undefined, query, scope);
   }
 }
 
