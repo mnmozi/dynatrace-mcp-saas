@@ -73,6 +73,38 @@ describe("list_account_groups", () => {
   });
 });
 
+describe("get_account_group", () => {
+  // Regression: the IDM API has NO single-group GET (/groups/{uuid} → 404). This tool
+  // must resolve from the LIST endpoint. Only the list route is mocked, so any request
+  // to /groups/{uuid} fails the test via onUnhandledRequest:"error".
+  it("resolves the group from the list endpoint (never GETs /groups/{uuid})", async () => {
+    mswServer.use(
+      http.get(GROUPS, () =>
+        HttpResponse.json({
+          count: 2,
+          items: [
+            { uuid: "g1", name: "Account Admins" },
+            { uuid: "g2", name: "demo-group" },
+          ],
+        }),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "get_account_group", arguments: { groupUuid: "g2" } });
+    expect(res.isError).toBeFalsy();
+    expect(text(res)).toContain("demo-group");
+    expect(text(res)).not.toContain("Account Admins");
+  });
+
+  it("errors clearly when the group is not on the account", async () => {
+    mswServer.use(http.get(GROUPS, () => HttpResponse.json({ count: 0, items: [] })));
+    const client = await makeClient();
+    const res = await client.callTool({ name: "get_account_group", arguments: { groupUuid: "nope" } });
+    expect(res.isError).toBe(true);
+    expect(text(res)).toContain("not found");
+  });
+});
+
 describe("create_account_group", () => {
   it("is write-gated", async () => {
     const client = await makeClient();

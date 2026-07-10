@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
+import { findAccountGroup } from "../util/account-groups.js";
 
 /**
  * Effective-permission inspection.
@@ -100,11 +101,21 @@ export function registerPermissionTools(server: McpServer, deps: ToolDeps): void
       const repo = `/iam/v1/repo/${lt}/${encodeURIComponent(lid)}`;
       const acct = `/iam/v1/accounts/${encodeURIComponent(account.accountUuid)}`;
 
-      const group = await account.get<Record<string, unknown>>(
-        `${acct}/groups/${encodeURIComponent(groupUuid)}`,
-        undefined,
-        IDM_SCOPE,
-      );
+      // The IDM API has no single-group GET (404) — resolve from the list.
+      const group = await findAccountGroup(account, groupUuid);
+
+      // Legacy account-role permissions (distinct from IAM policy permissions; usually []).
+      let legacyPermissions: unknown = undefined;
+      try {
+        const gp = await account.get<{ permissions?: unknown }>(
+          `${acct}/groups/${encodeURIComponent(groupUuid)}/permissions`,
+          undefined,
+          IDM_SCOPE,
+        );
+        legacyPermissions = gp.permissions ?? [];
+      } catch {
+        legacyPermissions = undefined;
+      }
 
       const members =
         includeMembers === false
@@ -140,13 +151,15 @@ export function registerPermissionTools(server: McpServer, deps: ToolDeps): void
       return jsonResult({
         level: { levelType: lt, levelId: lid },
         group,
+        legacyPermissions,
         members,
         bindingCount: resolved.length,
         bindings: resolved,
         note:
           "Composed from authored objects (bindings → policies → boundaries). A policy with no boundaries is " +
           "unconditional at this level; boundaries are evaluated per boundary (effective statements are computed " +
-          "separately for each).",
+          "separately for each). legacyPermissions are the old account-role grants — distinct from IAM policy " +
+          "permissions and typically empty for policy-only groups.",
       });
     },
   );

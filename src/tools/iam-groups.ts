@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import { findAccountGroup } from "../util/account-groups.js";
 
 /**
  * Account groups — Account Management IDM API (/iam/v1/accounts/{uuid}/groups).
@@ -39,15 +40,13 @@ export function registerIamGroupTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "get_account_group",
     {
-      description: "Get an account group by UUID (Account Management IDM API). " + READ_NOTE,
+      description:
+        "Get an account group by UUID (Account Management IDM API). NOTE: the API has no single-group GET " +
+        "(/groups/{uuid} 404s), so this resolves the group from the group list. " +
+        READ_NOTE,
       inputSchema: { groupUuid: z.string() },
     },
-    async ({ groupUuid }) =>
-      jsonResult(
-        await deps.client
-          .requireAccount()
-          .get(`${groupsBase(deps)}/${encodeURIComponent(groupUuid)}`, undefined, READ_SCOPE),
-      ),
+    async ({ groupUuid }) => jsonResult(await findAccountGroup(deps.client.requireAccount(), groupUuid)),
   );
 
   server.registerTool(

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.20.1
+
+- fix get_account_group and describe_group_permissions: the account IDM API has NO single-group GET (/iam/v1/accounts/{uuid}/groups/{groupUuid} → 404, while the list and the /users + /permissions sub-resources work). Both now resolve the group from the list endpoint via a shared findAccountGroup helper; missing groups give a clear error
+- describe_group_permissions also surfaces legacyPermissions (the old account-role grants, distinct from IAM policy permissions — empty for policy-only groups)
+- Regression test: get_account_group must never request /groups/{uuid} (it had zero coverage, which is how the dead route shipped)
+
 ## 0.20.0
 
 - resolve_effective_permissions: typed tool for POST /platform/management/v1/effective-permissions:resolve (caller-identity only, optional context key-values) — the raw escape hatch is GET-only, so this endpoint needed a typed tool
