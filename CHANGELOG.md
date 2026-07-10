@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.20.0
+
+- resolve_effective_permissions: typed tool for POST /platform/management/v1/effective-permissions:resolve (caller-identity only, optional context key-values) — the raw escape hatch is GET-only, so this endpoint needed a typed tool
+- describe_group_permissions: composes a group's full effective IAM permission set deterministically from the authored objects (group → members → bindings → policy statementQuery → boundary boundaryQuery). API-derived ground truth for auditing / diffing against the UI resolver
+- raw_get gains host="account" (+ optional scope) so the Account Management API is reachable ad hoc
+- Probed: no account-level "resolve for user X" endpoint exists (all /users/{id}/permissions variants 404); /groups/{g}/permissions returns only LEGACY account roles (empty here), not IAM policy permissions
+
 ## 0.19.2
 
 - Account user & membership tools (Account Management IDM API, account-idm-read): list_account_users, get_account_user (by email, incl. groups), list_group_members — closes the group-membership gap. The platform-host IAM endpoints 403 without an account-scoped platform token carrying iam:users:read; the account IDM API needs no platform token at all

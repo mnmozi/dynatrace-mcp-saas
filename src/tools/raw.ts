@@ -18,13 +18,22 @@ export function registerRawTools(server: McpServer, deps: ToolDeps): void {
       description:
         "Perform a raw GET against the Dynatrace API (read-only escape hatch for endpoints/query params " +
         "not yet covered by a typed tool). host='platform' targets the platform host (/platform/*), " +
-        "host='classic' targets the classic host (/api/v1, /api/v2). Query params are passed verbatim; " +
+        "host='classic' targets the classic host (/api/v1, /api/v2), host='account' the Account Management API " +
+        "(OAuth; pass scope). Query params are passed verbatim; " +
         "repeat a param by passing an array value. No writes — POST/PUT/DELETE are not exposed raw.",
       inputSchema: {
         host: z
-          .enum(["platform", "classic", "iam"])
+          .enum(["platform", "classic", "iam", "account"])
           .describe(
-            "Which host/credential to use: platform, classic, or iam (platform host with DT_IAM_TOKEN if configured).",
+            "Which host/credential to use: platform, classic, iam (platform host with DT_IAM_TOKEN if configured), " +
+              "or account (Account Management API via the OAuth client).",
+          ),
+        scope: z
+          .string()
+          .optional()
+          .describe(
+            "For host='account' only: the OAuth scope to request (e.g. account-idm-read, iam-policies-management, " +
+              "account-uac-read). Defaults to DT_OAUTH_SCOPE.",
           ),
         path: z
           .string()
@@ -36,7 +45,10 @@ export function registerRawTools(server: McpServer, deps: ToolDeps): void {
           .describe("Query parameters; array values are sent as repeated params (add-fields=A&add-fields=B)."),
       },
     },
-    async ({ host, path, query }) => {
+    async ({ host, path, query, scope }) => {
+      if (host === "account") {
+        return jsonResult(await deps.client.requireAccount().get(path, query, scope));
+      }
       const client =
         host === "platform" ? deps.client.platform : host === "iam" ? deps.client.iam : deps.client.classic;
       return jsonResult(await client.get(path, query));

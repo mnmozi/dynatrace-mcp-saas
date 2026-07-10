@@ -41,6 +41,7 @@ import { registerIamReferenceTools } from "./iam-reference.js";
 import { registerIamGroupTools } from "./iam-groups.js";
 import { registerCostTools } from "./cost.js";
 import { registerIamUserTools } from "./iam-users.js";
+import { registerPermissionTools } from "./permissions.js";
 
 export interface ToolDeps {
   client: DynatraceClient;
@@ -88,4 +89,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerIamGroupTools(server, deps);
   registerCostTools(server, deps);
   registerIamUserTools(server, deps);
+  registerPermissionTools(server, deps);
 }
