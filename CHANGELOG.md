@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.18.0
+
+- IAM policies + bindings tools (Account Management Repo API), completing the IAM triad with the existing boundary tools:
+  - Policies: list/list_aggregate/get/create/update/delete_policy (statementQuery-based)
+  - Bindings: list_policy_bindings, get_group_policy_bindings, bind_policy_to_groups (policy→groups, optional boundaries — the step that makes a policy take effect), unbind_policy_from_group
+  - All support account/environment/global levels (levelType/levelId)
+- Confirmed the sprint account IAM API is reachable at api-hardening.internal.dynatracelabs.com (see 0.17.1)
+
 ## 0.17.1
 
 - New optional DT_IAM_TOKEN: a dedicated platform token carrying iam:* scopes. IAM tools (users/groups/service-users) use it when set and fall back to DT_PLATFORM_TOKEN otherwise — the main token stays unchanged and the IAM token needs ONLY the iam scopes
