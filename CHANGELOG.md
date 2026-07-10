@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.17.1
+
+- New optional DT_IAM_TOKEN: a dedicated platform token carrying iam:* scopes. IAM tools (users/groups/service-users) use it when set and fall back to DT_PLATFORM_TOKEN otherwise — the main token stays unchanged and the IAM token needs ONLY the iam scopes
+- raw_get gains host="iam" (platform host with the IAM token) for probing IAM routes
+- get_server_info reports configured.iamToken
+
 ## 0.17.0
 
 - IAM policy boundaries (Account Management API): list/get/create/update/delete_policy_boundary — boundaries restrict where policy bindings apply via boundary queries

@@ -25,6 +25,7 @@ export function registerServerInfoTools(server: McpServer, deps: ToolDeps): void
           platform: !!(deps.config.platformUrl && deps.config.platformToken),
           classic: !!(deps.config.classicUrl && deps.config.apiToken),
           account: !!(deps.config.oauthClientId && deps.config.oauthClientSecret && deps.config.accountUrn),
+          iamToken: !!deps.config.iamToken,
         },
       });
     },

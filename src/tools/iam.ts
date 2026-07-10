@@ -34,7 +34,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ levelType, levelId }) =>
       jsonResult(
-        await deps.client.platform.get(
+        await deps.client.iam.get(
           `${BASE}/organizational-levels/${encodeURIComponent(levelType)}/${encodeURIComponent(levelId)}/users`,
         ),
       ),
@@ -53,7 +53,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ levelType, levelId, uuid }) =>
       jsonResult(
-        await deps.client.platform.get(
+        await deps.client.iam.get(
           `${BASE}/organizational-levels/${encodeURIComponent(levelType)}/${encodeURIComponent(levelId)}/users/${encodeURIComponent(uuid)}`,
         ),
       ),
@@ -75,7 +75,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     async ({ levelType, levelId, user }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.post(
+        await deps.client.iam.post(
           `${BASE}/organizational-levels/${encodeURIComponent(levelType)}/${encodeURIComponent(levelId)}/users`,
           user,
         ),
@@ -98,7 +98,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ levelType, levelId }) =>
       jsonResult(
-        await deps.client.platform.get(
+        await deps.client.iam.get(
           `${BASE}/organizational-levels/${encodeURIComponent(levelType)}/${encodeURIComponent(levelId)}/service-users`,
         ),
       ),
@@ -121,7 +121,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ levelType, levelId }) =>
       jsonResult(
-        await deps.client.platform.get(
+        await deps.client.iam.get(
           `${BASE}/organizational-levels/${encodeURIComponent(levelType)}/${encodeURIComponent(levelId)}/groups`,
         ),
       ),
@@ -142,7 +142,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     async ({ levelType, levelId, group }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.post(
+        await deps.client.iam.post(
           `${BASE}/organizational-levels/${encodeURIComponent(levelType)}/${encodeURIComponent(levelId)}/groups`,
           group,
         ),
@@ -164,7 +164,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ accountUuid }) =>
       jsonResult(
-        await deps.client.platform.get(
+        await deps.client.iam.get(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies`,
         ),
       ),
@@ -181,7 +181,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ accountUuid, trustPolicyUuid }) =>
       jsonResult(
-        await deps.client.platform.get(
+        await deps.client.iam.get(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies/${encodeURIComponent(trustPolicyUuid)}`,
         ),
       ),
@@ -202,7 +202,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     async ({ accountUuid, trustPolicy }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.post(
+        await deps.client.iam.post(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies`,
           trustPolicy,
         ),
@@ -225,7 +225,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     async ({ accountUuid, trustPolicyUuid, trustPolicy }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.put(
+        await deps.client.iam.put(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies/${encodeURIComponent(trustPolicyUuid)}`,
           trustPolicy,
         ),
@@ -247,7 +247,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     async ({ accountUuid, trustPolicyUuid }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.del(
+        await deps.client.iam.del(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies/${encodeURIComponent(trustPolicyUuid)}`,
         ),
       );
@@ -267,7 +267,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ accountUuid, trustPolicyUuid }) =>
       jsonResult(
-        await deps.client.platform.get(
+        await deps.client.iam.get(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies/${encodeURIComponent(trustPolicyUuid)}/mappings`,
         ),
       ),
@@ -290,7 +290,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     async ({ accountUuid, trustPolicyUuid, mapping }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.post(
+        await deps.client.iam.post(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies/${encodeURIComponent(trustPolicyUuid)}/mappings`,
           mapping,
         ),
@@ -313,7 +313,7 @@ export function registerIamTools(server: McpServer, deps: ToolDeps): void {
     async ({ accountUuid, trustPolicyUuid, mappingUuid }) => {
       requireWrites(deps.config);
       return jsonResult(
-        await deps.client.platform.del(
+        await deps.client.iam.del(
           `${BASE}/organizational-levels/accounts/${encodeURIComponent(accountUuid)}/wif/trust-policies/${encodeURIComponent(trustPolicyUuid)}/mappings/${encodeURIComponent(mappingUuid)}`,
         ),
       );

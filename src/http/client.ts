@@ -236,6 +236,12 @@ export class DynatraceClient {
   readonly platform: HostClient;
   /** Account Management API client (OAuth client-credentials); null when not configured. */
   readonly account: AccountClient | null;
+  /**
+   * Platform-host client for IAM tools. Uses the dedicated DT_IAM_TOKEN when set
+   * (a token carrying iam:* scopes), otherwise falls back to the regular platform
+   * client — so IAM tools work either way, with whatever scopes that token has.
+   */
+  readonly iam: HostClient;
 
   constructor(private readonly cfg: Config) {
     const maxRetries = cfg.maxRetries ?? 3;
@@ -266,6 +272,18 @@ export class DynatraceClient {
         : unconfiguredHost("platform", "DT_PLATFORM_URL + DT_PLATFORM_TOKEN");
 
     this.account = cfg.oauthClientId && cfg.oauthClientSecret && cfg.accountUrn ? new AccountClient(cfg) : null;
+
+    this.iam =
+      cfg.platformUrl && cfg.iamToken
+        ? new HostClientImpl(
+            cfg.platformUrl,
+            `Bearer ${cfg.iamToken}`,
+            "platform",
+            cfg.timeoutMs,
+            maxRetries,
+            retryBaseMs,
+          )
+        : this.platform;
   }
 
   /** The account client, or a clear error when the OAuth trio is not configured. */

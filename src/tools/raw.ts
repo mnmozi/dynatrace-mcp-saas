@@ -21,7 +21,11 @@ export function registerRawTools(server: McpServer, deps: ToolDeps): void {
         "host='classic' targets the classic host (/api/v1, /api/v2). Query params are passed verbatim; " +
         "repeat a param by passing an array value. No writes — POST/PUT/DELETE are not exposed raw.",
       inputSchema: {
-        host: z.enum(["platform", "classic"]).describe("Which host to call."),
+        host: z
+          .enum(["platform", "classic", "iam"])
+          .describe(
+            "Which host/credential to use: platform, classic, or iam (platform host with DT_IAM_TOKEN if configured).",
+          ),
         path: z
           .string()
           .regex(/^\//, "path must start with /")
@@ -33,7 +37,8 @@ export function registerRawTools(server: McpServer, deps: ToolDeps): void {
       },
     },
     async ({ host, path, query }) => {
-      const client = host === "platform" ? deps.client.platform : deps.client.classic;
+      const client =
+        host === "platform" ? deps.client.platform : host === "iam" ? deps.client.iam : deps.client.classic;
       return jsonResult(await client.get(path, query));
     },
   );

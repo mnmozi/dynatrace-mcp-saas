@@ -5,6 +5,8 @@ export interface Config {
   apiToken: string | undefined;
   enableWrites: boolean;
   timeoutMs: number;
+  /** Optional dedicated platform token carrying iam:* scopes; IAM tools prefer it. */
+  iamToken?: string;
   /** Account Management API (OAuth client-credentials) — all three set, or none. */
   oauthClientId?: string;
   oauthClientSecret?: string;

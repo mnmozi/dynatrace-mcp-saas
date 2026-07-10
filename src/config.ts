@@ -31,6 +31,12 @@ export function loadConfig(env: Env = process.env): Config {
     throw new Error("DT_API_TOKEN is set but DT_CLASSIC_URL is missing (provide both or neither).");
   }
 
+  // Optional dedicated IAM platform token (iam:* scopes). Needs the platform host.
+  const iamToken = optional(env, "DT_IAM_TOKEN");
+  if (iamToken && !platformUrl) {
+    throw new Error("DT_IAM_TOKEN is set but DT_PLATFORM_URL is missing — the IAM token targets the platform host.");
+  }
+
   // Account Management API OAuth client (optional) — all three or none.
   const oauthClientId = optional(env, "DT_OAUTH_CLIENT_ID");
   const oauthClientSecret = optional(env, "DT_OAUTH_CLIENT_SECRET");
@@ -59,6 +65,7 @@ export function loadConfig(env: Env = process.env): Config {
     platformToken,
     apiToken,
     enableWrites: env.DT_ENABLE_WRITES === "true",
+    iamToken,
     oauthClientId,
     oauthClientSecret,
     accountUrn,
