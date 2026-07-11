@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.1
+
+- fix iam boundary tools level handling: LEVEL_TYPE now includes 'global' (was account/environment only) and repoPath throws when levelType='environment' is passed without a levelId — matching the policies contract (previously it silently built /repo/environment/<accountUuid>/... , a wrong path)
+- fix DQL execute: a SUCCEEDED response with no result object (empty result set) now returns normalize(undefined) instead of throwing a misleading "no requestToken" error
+- config: numeric env tunables (DT_HTTP_TIMEOUT_MS/DT_MAX_RETRIES/DT_RETRY_BASE_MS) fall back to defaults when non-finite, not NaN
+
 ## 0.21.0
 
 - Account Platform Tokens tools: list/create/delete_platform_token (/iam/v1/accounts/{uuid}/platform-tokens). create takes userUuid — the token is OWNED BY and ACTS AS that user, enforcing their IAM permissions/boundaries. Enables testing a user's effective access without them logging in. Writes need account-idm-write; token secrets are shown once — treat as credentials

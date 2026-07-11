@@ -18,18 +18,28 @@ const OAUTH_NOTE =
   "Requires the account OAuth client config (DT_OAUTH_CLIENT_ID, DT_OAUTH_CLIENT_SECRET, DT_ACCOUNT_URN) " +
   "with the iam-policies-management scope.";
 
-const LEVEL_TYPE = z.enum(["account", "environment"]).optional().describe("Organisational level (default 'account').");
+const LEVEL_TYPE = z
+  .enum(["account", "environment", "global"])
+  .optional()
+  .describe("Organisational level (default 'account').");
 
 const LEVEL_ID = z
   .string()
   .optional()
-  .describe("Level UUID/id. Defaults to the account UUID derived from DT_ACCOUNT_URN.");
+  .describe(
+    "Level id. Defaults: account→account UUID (from DT_ACCOUNT_URN), global→'global'. Required for 'environment' (the environment id).",
+  );
 
 function repoPath(deps: ToolDeps, levelType?: string, levelId?: string): string {
   const account = deps.client.requireAccount();
   const lt = levelType ?? "account";
-  const lid = levelId ?? account.accountUuid;
-  return `/iam/v1/repo/${encodeURIComponent(lt)}/${encodeURIComponent(lid)}/boundaries`;
+  let lid = levelId;
+  if (!lid) {
+    if (lt === "account") lid = account.accountUuid;
+    else if (lt === "global") lid = "global";
+    else throw new Error("levelId (the environment id) is required when levelType is 'environment'.");
+  }
+  return `/iam/v1/repo/${lt}/${encodeURIComponent(lid)}/boundaries`;
 }
 
 export function registerIamBoundaryTools(server: McpServer, deps: ToolDeps): void {

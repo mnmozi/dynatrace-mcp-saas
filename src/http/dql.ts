@@ -36,7 +36,9 @@ export async function dqlExecute(
     fetchTimeoutSeconds: 60,
   });
 
-  if (start.state === "SUCCEEDED" && start.result) return normalize(start.result);
+  // SUCCEEDED can arrive with no `result` object for an empty result set — normalize()
+  // handles undefined, so return on ANY SUCCEEDED rather than gating on start.result.
+  if (start.state === "SUCCEEDED") return normalize(start.result);
   const token = start.requestToken;
   if (!token) throw new Error("DQL execute returned no requestToken and was not SUCCEEDED");
 

@@ -72,8 +72,17 @@ export function loadConfig(env: Env = process.env): Config {
     ssoTokenUrl: optional(env, "DT_SSO_TOKEN_URL") ?? "https://sso.dynatrace.com/sso/oauth2/token",
     oauthScope: optional(env, "DT_OAUTH_SCOPE"),
     accountApiUrl: stripSlash(optional(env, "DT_ACCOUNT_API_URL") ?? "https://api.dynatrace.com"),
-    timeoutMs: env.DT_HTTP_TIMEOUT_MS ? Number(env.DT_HTTP_TIMEOUT_MS) : 30000,
-    maxRetries: env.DT_MAX_RETRIES ? Number(env.DT_MAX_RETRIES) : 3,
-    retryBaseMs: env.DT_RETRY_BASE_MS ? Number(env.DT_RETRY_BASE_MS) : 500,
+    // Numeric tunables: fall back to the default if the env var is missing OR not a finite
+    // number (a typo'd DT_MAX_RETRIES would otherwise become NaN and break every request).
+    timeoutMs: numberEnv(env.DT_HTTP_TIMEOUT_MS, 30000),
+    maxRetries: numberEnv(env.DT_MAX_RETRIES, 3),
+    retryBaseMs: numberEnv(env.DT_RETRY_BASE_MS, 500),
   };
+}
+
+/** Parse a numeric env var, falling back to `fallback` when absent or non-finite. */
+function numberEnv(raw: string | undefined, fallback: number): number {
+  if (raw === undefined || raw.trim() === "") return fallback;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : fallback;
 }
