@@ -79,3 +79,48 @@ describe("raw_get", () => {
     expect(res.isError).toBe(true);
   });
 });
+
+const writeCfg: Config = { ...cfg, enableWrites: true };
+const txt = (r: Awaited<ReturnType<Client["callTool"]>>) => (r.content as Array<{ text: string }>)[0].text;
+
+describe("raw_post", () => {
+  it("POSTs a body to a /platform/ingest/* path on the classic (environment) host", async () => {
+    let hit = "";
+    let body: unknown;
+    mswServer.use(
+      http.post(`${CLASSIC}/platform/ingest/custom/events/my-endpoint`, async ({ request }) => {
+        hit = new URL(request.url).pathname;
+        body = await request.json();
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "raw_post",
+      arguments: { path: "/platform/ingest/custom/events/my-endpoint", body: { "event.type": "x" } },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(hit).toBe("/platform/ingest/custom/events/my-endpoint");
+    expect((body as Record<string, unknown>)["event.type"]).toBe("x");
+  });
+
+  it("rejects a non-ingest path (schema regex) — keeps config writes locked down", async () => {
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "raw_post",
+      arguments: { path: "/platform/settings/v1/objects", body: {} },
+    });
+    expect(res.isError).toBe(true);
+    expect(txt(res)).toMatch(/platform\/ingest/);
+  });
+
+  it("is write-gated", async () => {
+    const client = await makeClient(); // enableWrites: false
+    const res = await client.callTool({
+      name: "raw_post",
+      arguments: { path: "/platform/ingest/v1/events", body: {} },
+    });
+    expect(res.isError).toBe(true);
+    expect(txt(res)).toMatch(/DT_ENABLE_WRITES/);
+  });
+});

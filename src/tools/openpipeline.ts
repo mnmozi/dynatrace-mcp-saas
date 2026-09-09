@@ -80,6 +80,7 @@ interface VerifyResult {
   location: string;
   valid: boolean;
   errors?: string[];
+  warnings?: string[];
 }
 
 interface RawVerifyResponse {
@@ -87,13 +88,19 @@ interface RawVerifyResponse {
   notifications?: Array<{ severity?: string; message?: string }>;
 }
 
-function interpretVerifyResponse(raw: RawVerifyResponse): { valid: boolean; errors: string[] } {
-  // Primary signal: `valid` boolean
+function interpretVerifyResponse(raw: RawVerifyResponse): { valid: boolean; errors: string[]; warnings: string[] } {
+  // Fail-transparent 3-case: block ONLY on an explicit failure signal — either
+  // valid===false, or an ERROR-severity notification. Ambiguity (no `valid` field,
+  // only WARN notifications) is NOT a block; it proceeds, but the non-blocking
+  // warnings are surfaced so the caller can see what the online check flagged.
   const valid = raw.valid !== false && !(raw.notifications ?? []).some((n) => n.severity === "ERROR");
   const errors = (raw.notifications ?? [])
     .filter((n) => n.severity === "ERROR")
     .map((n) => n.message ?? "Unknown error");
-  return { valid, errors };
+  const warnings = (raw.notifications ?? [])
+    .filter((n) => n.severity && n.severity !== "ERROR")
+    .map((n) => n.message ?? "Unknown warning");
+  return { valid, errors, warnings };
 }
 
 export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): void {
@@ -412,16 +419,16 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
             script: item.script,
             configurationId: id,
           });
-          const { valid, errors } = interpretVerifyResponse(raw);
-          return { kind: "dql", location: item.location, valid, errors };
+          const { valid, errors, warnings } = interpretVerifyResponse(raw);
+          return { kind: "dql", location: item.location, valid, errors, warnings };
         }),
         ...matcherItems.map(async (item): Promise<VerifyResult> => {
           const raw = await deps.client.platform.post<RawVerifyResponse>(`${BASE}/matcher/verify`, {
             query: item.value,
             configurationId: id,
           });
-          const { valid, errors } = interpretVerifyResponse(raw);
-          return { kind: "matcher", location: item.location, valid, errors };
+          const { valid, errors, warnings } = interpretVerifyResponse(raw);
+          return { kind: "matcher", location: item.location, valid, errors, warnings };
         }),
       ]);
 
@@ -431,19 +438,23 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         return jsonResult({ valid: false, problems });
       }
 
+      // Non-blocking warnings from the online checks — surfaced but never block the write.
+      const warnings = results.filter((r) => (r.warnings?.length ?? 0) > 0).map((r) => ({ location: r.location, warnings: r.warnings }));
+      const warningField = warnings.length > 0 ? { validationWarnings: warnings } : {};
+
       // 4. dryRun: all valid, return counts without applying
       if (dryRun) {
         return jsonResult({
           valid: true,
           verified: { dqlProcessors: dqlItems.length, matchers: matcherItems.length },
+          ...warningField,
         });
       }
 
       // 5. Require writes, then PUT
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.platform.put(`${BASE}/configurations/${encodeURIComponent(id)}`, configuration),
-      );
+      const putResult = await deps.client.platform.put(`${BASE}/configurations/${encodeURIComponent(id)}`, configuration);
+      return jsonResult(warnings.length > 0 ? { result: putResult, ...warningField } : putResult);
     },
   );
 }

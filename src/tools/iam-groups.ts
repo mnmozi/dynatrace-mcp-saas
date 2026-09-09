@@ -4,6 +4,7 @@ import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
 import { findAccountGroup } from "../util/account-groups.js";
+import { ACCOUNT_SCOPES, ACCOUNT_NOTES, accountBase } from "../util/account-iam.js";
 
 /**
  * Account groups — Account Management IDM API (/iam/v1/accounts/{uuid}/groups).
@@ -14,18 +15,13 @@ import { findAccountGroup } from "../util/account-groups.js";
  * 400 invalid_request otherwise.) Reuses the same OAuth account client.
  */
 
-const READ_SCOPE = "account-idm-read";
-const WRITE_SCOPE = "account-idm-write";
+const READ_SCOPE = ACCOUNT_SCOPES.idmRead;
+const WRITE_SCOPE = ACCOUNT_SCOPES.idmWrite;
 
-const READ_NOTE =
-  "Requires the account OAuth client (DT_OAUTH_CLIENT_ID/SECRET, DT_ACCOUNT_URN) with the account-idm-read scope.";
-const WRITE_NOTE =
-  "WRITE. Requires the account OAuth client with the account-idm-write scope (the client must be created with it).";
+const READ_NOTE = ACCOUNT_NOTES.idmRead;
+const WRITE_NOTE = ACCOUNT_NOTES.idmWrite;
 
-function groupsBase(deps: ToolDeps): string {
-  const account = deps.client.requireAccount();
-  return `/iam/v1/accounts/${encodeURIComponent(account.accountUuid)}/groups`;
-}
+const groupsBase = (deps: ToolDeps): string => `${accountBase(deps)}/groups`;
 
 export function registerIamGroupTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(

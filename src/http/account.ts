@@ -1,5 +1,6 @@
 import type { Config, QueryParams } from "../types.js";
 import { DynatraceApiError } from "./errors.js";
+import { runWithRetry, type RequestOpts, type RetryEngineConfig } from "./retry.js";
 
 /**
  * Client for the Dynatrace Account Management API (api.dynatrace.com).
@@ -15,6 +16,8 @@ export class AccountClient {
   private readonly tokenUrl: string;
   private readonly base: string;
   private readonly timeoutMs: number;
+  private readonly maxRetries: number;
+  private readonly retryBaseMs: number;
   private readonly defaultScope: string;
 
   /** One cached token per scope — different account APIs require different scopes. */
@@ -30,7 +33,13 @@ export class AccountClient {
     this.tokenUrl = cfg.ssoTokenUrl ?? "https://sso.dynatrace.com/sso/oauth2/token";
     this.base = cfg.accountApiUrl ?? "https://api.dynatrace.com";
     this.timeoutMs = cfg.timeoutMs;
+    this.maxRetries = cfg.maxRetries ?? 3;
+    this.retryBaseMs = cfg.retryBaseMs ?? 500;
     this.defaultScope = cfg.oauthScope ?? "iam-policies-management";
+  }
+
+  private engineCfg(): RetryEngineConfig {
+    return { maxRetries: this.maxRetries, baseMs: this.retryBaseMs, timeoutMs: this.timeoutMs };
   }
 
   /** The account UUID derived from the URN (urn:dtaccount:<uuid>). */
@@ -56,12 +65,24 @@ export class AccountClient {
       resource: this.accountUrn,
     });
 
-    const res = await fetch(this.tokenUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-      signal: AbortSignal.timeout(this.timeoutMs),
-    });
+    const serialized = body.toString();
+    // The token request is effectively idempotent (re-requesting just mints another
+    // token) — route it through the shared engine so it gets retry + wrapped timeouts.
+    const outcome = await runWithRetry(
+      (signal) =>
+        fetch(this.tokenUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: serialized,
+          signal,
+        }),
+      this.engineCfg(),
+      "POST",
+      { retryClass: "idempotent" },
+    );
+    // getToken never supplies a verifier, so the outcome is always a Response here.
+    const res = outcome.kind === "response" ? outcome.response : undefined;
+    if (!res) throw new Error("SSO token request returned no response.");
 
     const text = await res.text();
     let parsed: unknown;
@@ -90,6 +111,7 @@ export class AccountClient {
     body?: unknown,
     query?: QueryParams,
     scope?: string,
+    opts?: RequestOpts,
   ): Promise<T> {
     const token = await this.getToken(scope ?? this.defaultScope);
     const url = new URL(this.base + path);
@@ -104,17 +126,22 @@ export class AccountClient {
       }
     }
 
-    const res = await fetch(url.toString(), {
+    // Serialize once so the body can be reused across retries.
+    const serialized = body !== undefined ? JSON.stringify(body) : undefined;
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+    };
+    const outcome = await runWithRetry(
+      (signal) => fetch(url.toString(), { method, headers, body: serialized, signal }),
+      this.engineCfg(),
       method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
-      },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(this.timeoutMs),
-    });
+      opts,
+    );
+    if (outcome.kind === "verified") return outcome.value as T;
 
+    const res = outcome.response;
     const text = await res.text();
     const parsed = text ? safeJson(text) : undefined;
     if (!res.ok) {
@@ -126,14 +153,14 @@ export class AccountClient {
   get<T = unknown>(path: string, query?: QueryParams, scope?: string): Promise<T> {
     return this.request<T>("GET", path, undefined, query, scope);
   }
-  post<T = unknown>(path: string, body?: unknown, query?: QueryParams, scope?: string): Promise<T> {
-    return this.request<T>("POST", path, body, query, scope);
+  post<T = unknown>(path: string, body?: unknown, query?: QueryParams, scope?: string, opts?: RequestOpts): Promise<T> {
+    return this.request<T>("POST", path, body, query, scope, opts);
   }
-  put<T = unknown>(path: string, body?: unknown, query?: QueryParams, scope?: string): Promise<T> {
-    return this.request<T>("PUT", path, body, query, scope);
+  put<T = unknown>(path: string, body?: unknown, query?: QueryParams, scope?: string, opts?: RequestOpts): Promise<T> {
+    return this.request<T>("PUT", path, body, query, scope, opts);
   }
-  del<T = unknown>(path: string, query?: QueryParams, scope?: string): Promise<T> {
-    return this.request<T>("DELETE", path, undefined, query, scope);
+  del<T = unknown>(path: string, query?: QueryParams, scope?: string, opts?: RequestOpts): Promise<T> {
+    return this.request<T>("DELETE", path, undefined, query, scope, opts);
   }
 }
 

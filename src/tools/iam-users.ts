@@ -2,6 +2,8 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
+import { requireWrites } from "../util/guards.js";
+import { ACCOUNT_SCOPES, ACCOUNT_NOTES, accountBase } from "../util/account-iam.js";
 
 /**
  * Account users & group membership — Account Management IDM API.
@@ -10,18 +12,17 @@ import { jsonResult } from "../util/result.js";
  * 403 without an account-scoped platform token carrying iam:users:read. This API is the
  * working door: same OAuth account client, account-idm-read scope. Live-verified.
  *
- * Read-only for now — membership writes exist but their request shapes are not yet
- * verified against the live API (see the bindings lesson: guessed write shapes 404'd).
+ * Membership is USER-centric: the user resource carries `groups: [{uuid, ...}]`, and you
+ * change membership on the user (POST /users/{email} to add, DELETE /groups/{g}/users/{email}
+ * to remove) — NOT via a group-side "add member" endpoint (there isn't one). The read shape
+ * is live-verified; the write endpoints follow the documented Account Management API and are
+ * write-gated — confirm once against a throwaway group before trusting in automation.
  */
 
-const READ_SCOPE = "account-idm-read";
-const READ_NOTE =
-  "Requires the account OAuth client (DT_OAUTH_CLIENT_ID/SECRET, DT_ACCOUNT_URN) with the account-idm-read scope.";
-
-function accountBase(deps: ToolDeps): string {
-  const account = deps.client.requireAccount();
-  return `/iam/v1/accounts/${encodeURIComponent(account.accountUuid)}`;
-}
+const READ_SCOPE = ACCOUNT_SCOPES.idmRead;
+const READ_NOTE = ACCOUNT_NOTES.idmRead;
+const WRITE_SCOPE = ACCOUNT_SCOPES.idmWrite;
+const WRITE_NOTE = ACCOUNT_NOTES.idmWrite;
 
 export function registerIamUserTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
@@ -65,5 +66,57 @@ export function registerIamUserTools(server: McpServer, deps: ToolDeps): void {
           .requireAccount()
           .get(`${accountBase(deps)}/groups/${encodeURIComponent(groupUuid)}/users`, undefined, READ_SCOPE),
       ),
+  );
+
+  server.registerTool(
+    "add_user_to_groups",
+    {
+      description:
+        "Add an account user to one or more groups (WRITE, Account Management IDM API). " +
+        "POST /iam/v1/accounts/{uuid}/users/{email} with an array of group UUIDs — ADDITIVE (the user keeps " +
+        "existing groups). This is the account-API path for group membership; there is no group-side " +
+        "'add member' endpoint. Get UUIDs from list_account_groups; verify with get_account_user afterward. " +
+        WRITE_NOTE,
+      inputSchema: {
+        email: z.string().describe("The user's email address."),
+        groupUuids: z.array(z.string()).min(1).describe("Group UUIDs to add the user to (additive)."),
+      },
+    },
+    async ({ email, groupUuids }) => {
+      requireWrites(deps.config);
+      // The add endpoint takes a bare JSON array of group UUIDs.
+      return jsonResult(
+        await deps.client
+          .requireAccount()
+          .post(`${accountBase(deps)}/users/${encodeURIComponent(email)}`, groupUuids, undefined, WRITE_SCOPE),
+      );
+    },
+  );
+
+  server.registerTool(
+    "remove_user_from_group",
+    {
+      description:
+        "Remove an account user from a single group (WRITE, Account Management IDM API). " +
+        "DELETE /iam/v1/accounts/{uuid}/groups/{groupUuid}/users/{email}. Does not delete the user or the " +
+        "group — only the membership. " +
+        WRITE_NOTE,
+      inputSchema: {
+        email: z.string().describe("The user's email address."),
+        groupUuid: z.string().describe("The group UUID to remove the user from."),
+      },
+    },
+    async ({ email, groupUuid }) => {
+      requireWrites(deps.config);
+      return jsonResult(
+        await deps.client
+          .requireAccount()
+          .del(
+            `${accountBase(deps)}/groups/${encodeURIComponent(groupUuid)}/users/${encodeURIComponent(email)}`,
+            undefined,
+            WRITE_SCOPE,
+          ),
+      );
+    },
   );
 }

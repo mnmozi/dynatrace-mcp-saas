@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import { ACCOUNT_SCOPES, ACCOUNT_NOTES, accountBase } from "../util/account-iam.js";
 
 /**
  * Account Platform Tokens API (/iam/v1/accounts/{uuid}/platform-tokens).
@@ -16,15 +17,12 @@ import { requireWrites } from "../util/guards.js";
  * secrets — they are shown once.
  */
 
-const READ_SCOPE = "account-idm-read";
-const WRITE_SCOPE = "account-idm-write";
-const READ_NOTE = "Requires the account OAuth client with account-idm-read.";
-const WRITE_NOTE = "WRITE. Requires the account OAuth client with account-idm-write.";
+const READ_SCOPE = ACCOUNT_SCOPES.idmRead;
+const WRITE_SCOPE = ACCOUNT_SCOPES.idmWrite;
+const READ_NOTE = ACCOUNT_NOTES.idmRead;
+const WRITE_NOTE = ACCOUNT_NOTES.idmWrite;
 
-function base(deps: ToolDeps): string {
-  const account = deps.client.requireAccount();
-  return `/iam/v1/accounts/${encodeURIComponent(account.accountUuid)}/platform-tokens`;
-}
+const base = (deps: ToolDeps): string => `${accountBase(deps)}/platform-tokens`;
 
 export function registerPlatformTokenTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(

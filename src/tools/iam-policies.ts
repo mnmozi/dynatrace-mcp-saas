@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
+import { OAUTH_NOTE, LEVEL_TYPE, LEVEL_ID, repoLevelPath } from "../util/account-iam.js";
 
 /**
  * IAM policies + bindings — Account Management "Repo" API.
@@ -17,34 +18,8 @@ import { requireWrites } from "../util/guards.js";
  * client (DT_OAUTH_CLIENT_ID / DT_OAUTH_CLIENT_SECRET / DT_ACCOUNT_URN).
  */
 
-const OAUTH_NOTE =
-  "Requires the account OAuth client config (DT_OAUTH_CLIENT_ID, DT_OAUTH_CLIENT_SECRET, DT_ACCOUNT_URN) " +
-  "with the iam-policies-management scope.";
-
-const LEVEL_TYPE = z
-  .enum(["account", "environment", "global"])
-  .optional()
-  .describe("Organisational level (default 'account').");
-
-const LEVEL_ID = z
-  .string()
-  .optional()
-  .describe(
-    "Level id. Defaults: account→account UUID (from DT_ACCOUNT_URN), global→'global'. Required for 'environment' (the environment id).",
-  );
-
-/** Resolve the /iam/v1/repo/{level}/{id} base for a resource, defaulting level id sensibly. */
-function levelPath(deps: ToolDeps, resource: string, level?: string, levelId?: string): string {
-  const account = deps.client.requireAccount();
-  const lt = level ?? "account";
-  let lid = levelId;
-  if (!lid) {
-    if (lt === "account") lid = account.accountUuid;
-    else if (lt === "global") lid = "global";
-    else throw new Error("levelId (the environment id) is required when levelType is 'environment'.");
-  }
-  return `/iam/v1/repo/${lt}/${encodeURIComponent(lid)}/${resource}`;
-}
+/** Resolve the /iam/v1/repo/{level}/{id}/{resource} base, defaulting level id sensibly. */
+const levelPath = repoLevelPath;
 
 export function registerIamPolicyTools(server: McpServer, deps: ToolDeps): void {
   // ── Policies ────────────────────────────────────────────────────────────────
@@ -278,6 +253,60 @@ export function registerIamPolicyTools(server: McpServer, deps: ToolDeps): void 
             `${levelPath(deps, "bindings", levelType, levelId)}/${encodeURIComponent(policyUuid)}/${encodeURIComponent(groupUuid)}`,
           ),
       );
+    },
+  );
+
+  server.registerTool(
+    "rebind_policy_boundaries",
+    {
+      description:
+        "Change the boundaries on an EXISTING policy→group binding (WRITE, Account Management Repo API). " +
+        "Bindings are create-only — you cannot edit their boundaries in place (POST/PUT on an existing binding " +
+        "400s 'binding already exists'). So this does the documented delete-and-recreate: unbind the group " +
+        "(DELETE /bindings/{policyUuid}/{groupUuid}) then re-bind it with the NEW boundary set " +
+        "(POST /bindings/{policyUuid}). Composes two live-verified calls — no new endpoint. " +
+        "Pass boundaries:[] to strip all boundaries (make the binding unconditional). Scope: single (policy, " +
+        "group) pair; call once per group. If the unbind succeeds but the re-bind fails, the group is left " +
+        "UNBOUND — the response surfaces both steps so you can see and recover. " +
+        OAUTH_NOTE,
+      inputSchema: {
+        policyUuid: z.string().describe("The bound policy."),
+        groupUuid: z.string().describe("The group whose binding boundaries are being replaced."),
+        boundaries: z
+          .array(z.string())
+          .describe("The NEW full boundary UUID set for the binding (empty array = unconditional)."),
+        levelType: LEVEL_TYPE,
+        levelId: LEVEL_ID,
+      },
+    },
+    async ({ policyUuid, groupUuid, boundaries, levelType, levelId }) => {
+      requireWrites(deps.config);
+      const account = deps.client.requireAccount();
+      const base = levelPath(deps, "bindings", levelType, levelId);
+      const pid = encodeURIComponent(policyUuid);
+
+      // Step 1: unbind (DELETE the existing (policy, group) binding).
+      const unbind = await account.del(`${base}/${pid}/${encodeURIComponent(groupUuid)}`);
+
+      // Step 2: re-bind the same group with the new boundary set. If this throws, the
+      // group is now unbound — surface that explicitly rather than swallowing it.
+      const body: Record<string, unknown> = { policyUuid, groups: [groupUuid] };
+      if (boundaries.length) body.boundaries = boundaries;
+      try {
+        const bind = await account.post(`${base}/${pid}`, body);
+        return jsonResult({ rebound: true, policyUuid, groupUuid, boundaries, steps: { unbind, bind } });
+      } catch (err) {
+        return jsonResult({
+          rebound: false,
+          policyUuid,
+          groupUuid,
+          warning:
+            "Unbind succeeded but re-bind FAILED — the group is currently UNBOUND from this policy. " +
+            "Re-run bind_policy_to_groups to restore it.",
+          error: (err as Error).message,
+          steps: { unbind },
+        });
+      }
     },
   );
 }

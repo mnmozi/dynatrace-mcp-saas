@@ -38,6 +38,7 @@ import { registerRawTools } from "./raw.js";
 import { registerIamBoundaryTools } from "./iam-boundaries.js";
 import { registerIamPolicyTools } from "./iam-policies.js";
 import { registerIamReferenceTools } from "./iam-reference.js";
+import { registerOpenPipelineReferenceTools } from "./openpipeline-reference.js";
 import { registerIamGroupTools } from "./iam-groups.js";
 import { registerCostTools } from "./cost.js";
 import { registerIamUserTools } from "./iam-users.js";
@@ -87,6 +88,7 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerIamBoundaryTools(server, deps);
   registerIamPolicyTools(server, deps);
   registerIamReferenceTools(server);
+  registerOpenPipelineReferenceTools(server);
   registerIamGroupTools(server, deps);
   registerCostTools(server, deps);
   registerIamUserTools(server, deps);

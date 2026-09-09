@@ -221,6 +221,99 @@ describe("list_hosts useClassic: true", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Entity security context (classic POST/DELETE /api/v2/entities/securityContext)
+// ---------------------------------------------------------------------------
+
+async function makeWritesClient() {
+  const wcfg: Config = { ...cfg, enableWrites: true };
+  const mcp = new McpServer({ name: "t", version: "0" });
+  registerEntitiesTools(mcp, { client: new DynatraceClient(wcfg), config: wcfg });
+  const [a, b] = InMemoryTransport.createLinkedPair();
+  const client = new Client({ name: "c", version: "0" });
+  await Promise.all([mcp.connect(a), client.connect(b)]);
+  return client;
+}
+const txt = (r: Awaited<ReturnType<Client["callTool"]>>) => (r.content as Array<{ text: string }>)[0].text;
+
+describe("set_entity_security_context", () => {
+  it("POSTs {securityContext} with the entitySelector as a QUERY param (not in the body)", async () => {
+    let body: unknown;
+    let url = "";
+    server.use(
+      http.post("https://classic.example.com/api/v2/entities/securityContext", async ({ request }) => {
+        body = await request.json();
+        url = request.url;
+        return HttpResponse.json({ entityIds: ["SERVICE-1", "SERVICE-2"], managementZoneIds: [] });
+      }),
+    );
+    const client = await makeWritesClient();
+    const res = await client.callTool({
+      name: "set_entity_security_context",
+      arguments: { entitySelector: 'type(SERVICE),tag("app:kargo")', securityContext: ["app-kargo"] },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(body).toEqual({ securityContext: ["app-kargo"] });
+    expect(decodeURIComponent(new URL(url).searchParams.get("entitySelector")!)).toBe('type(SERVICE),tag("app:kargo")');
+    expect(txt(res)).toContain("SERVICE-1");
+  });
+
+  it("dryRun resolves the selector read-only and does NOT write", async () => {
+    let wrote = false;
+    server.use(
+      http.get("https://classic.example.com/api/v2/entities", () =>
+        HttpResponse.json({ entities: [{ entityId: "SERVICE-1" }], totalCount: 1 }),
+      ),
+      http.post("https://classic.example.com/api/v2/entities/securityContext", () => {
+        wrote = true;
+        return HttpResponse.json({});
+      }),
+    );
+    const client = await makeWritesClient();
+    const res = await client.callTool({
+      name: "set_entity_security_context",
+      arguments: { entitySelector: "type(SERVICE)", securityContext: ["app-kargo"], dryRun: true },
+    });
+    const out = JSON.parse(txt(res));
+    expect(out.dryRun).toBe(true);
+    expect(out.wouldAssign).toEqual(["app-kargo"]);
+    expect(out.note).toMatch(/management-zone rules/i); // MZ side-effect surfaced
+    expect(wrote).toBe(false);
+  });
+
+  it("is write-gated when DT_ENABLE_WRITES is not set", async () => {
+    const client = await makeClient(); // enableWrites: false
+    const res = await client.callTool({
+      name: "set_entity_security_context",
+      arguments: { entitySelector: "type(SERVICE)", securityContext: ["x"] },
+    });
+    expect(res.isError).toBe(true);
+    expect(txt(res)).toMatch(/write/i);
+  });
+});
+
+describe("delete_entity_security_context", () => {
+  it("DELETEs with the entitySelector query param", async () => {
+    let method = "";
+    let url = "";
+    server.use(
+      http.delete("https://classic.example.com/api/v2/entities/securityContext", ({ request }) => {
+        method = request.method;
+        url = request.url;
+        return HttpResponse.json({ entityIds: ["SERVICE-1"], managementZoneIds: [7] });
+      }),
+    );
+    const client = await makeWritesClient();
+    const res = await client.callTool({
+      name: "delete_entity_security_context",
+      arguments: { entitySelector: "type(SERVICE)" },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(method).toBe("DELETE");
+    expect(decodeURIComponent(new URL(url).searchParams.get("entitySelector")!)).toBe("type(SERVICE)");
+  });
+});
+
 describe("list_entity_types useClassic: true", () => {
   it("calls classic entityTypes API and returns its payload", async () => {
     server.use(

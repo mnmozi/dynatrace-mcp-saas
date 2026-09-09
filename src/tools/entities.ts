@@ -2,7 +2,27 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
+import { requireWrites } from "../util/guards.js";
 import { escapeQuotes } from "../util/escape.js";
+
+/** Shared inputs for the entity security-context write endpoints. */
+const SECURITY_CONTEXT_INPUTS = {
+  entitySelector: z
+    .string()
+    .describe(
+      'REQUIRED entity selector choosing which entities are affected, e.g. type(SERVICE),tag("app:kargo") or entityId("SERVICE-123").',
+    ),
+  from: z.string().optional().describe("Timeframe start (default now-3d), e.g. 'now-7d'."),
+  to: z.string().optional().describe("Timeframe end (default now)."),
+  dryRun: z
+    .boolean()
+    .optional()
+    .describe("If true, resolve the entitySelector and return the entities that WOULD be affected — no write."),
+};
+
+const MZ_WARNING =
+  "WARNING: management-zone rules STOP applying to any entity that has a security context set; " +
+  "delete_entity_security_context restores them. ";
 
 /** Map an entity id prefix (e.g. "HOST-ABC") or selector type (e.g. "HOST") to its Grail table. */
 function entityTypeToTable(type: string): string {
@@ -214,6 +234,69 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
         useClassicNote:
           "For a full list of entity types on a Gen2 tenant, call list_entity_types with useClassic:true.",
       });
+    },
+  );
+
+  // ── Entity security context (classic Entities v2) ──────────────────────────
+  // This is the ENTITY-side dt.security_context mechanism. On Gen3/Grail-first
+  // tenants the settings schema builtin:monitoredentities.grail.security.context
+  // is often absent (404) — this API is then the only way to set it. Needs the
+  // classic token with the settings.write scope.
+
+  server.registerTool(
+    "set_entity_security_context",
+    {
+      description:
+        "Assign a security context to monitored entities matching an entitySelector (WRITE, classic " +
+        "POST /api/v2/entities/securityContext). This sets dt.security_context on the ENTITIES, which is what " +
+        "IAM policy boundaries evaluate for entity-scoped access — the entity-side counterpart to the " +
+        "OpenPipeline securityContext processor (which stamps records). Use this when the settings schema " +
+        "builtin:monitoredentities.grail.security.context is unavailable (404 on Gen3 builds). " +
+        "Returns the affected entityIds + managementZoneIds. Pass dryRun:true to preview which entities match " +
+        "before writing. " +
+        MZ_WARNING +
+        "Requires DT_ENABLE_WRITES=true and a classic API token with the settings.write scope.",
+      inputSchema: {
+        ...SECURITY_CONTEXT_INPUTS,
+        securityContext: z
+          .array(z.string())
+          .min(1)
+          .describe('The security context value(s) to assign, e.g. ["app-kargo"].'),
+      },
+    },
+    async ({ entitySelector, securityContext, from, to, dryRun }) => {
+      const query = { entitySelector, from, to };
+      if (dryRun) {
+        // The API has no dry-run; resolve the selector read-only so the caller sees the blast radius.
+        const matched = await deps.client.classic.get("/api/v2/entities", { ...query, pageSize: 500 });
+        return jsonResult({ dryRun: true, wouldAssign: securityContext, wouldAffect: matched, note: MZ_WARNING });
+      }
+      requireWrites(deps.config);
+      return jsonResult(
+        await deps.client.classic.post("/api/v2/entities/securityContext", { securityContext }, query),
+      );
+    },
+  );
+
+  server.registerTool(
+    "delete_entity_security_context",
+    {
+      description:
+        "Remove the security context from monitored entities matching an entitySelector (WRITE, destructive, " +
+        "classic DELETE /api/v2/entities/securityContext). Deleting the security context also RESTORES " +
+        "management-zone rule evaluation for those entities. Returns the affected entityIds + managementZoneIds. " +
+        "Pass dryRun:true to preview which entities match before removing. " +
+        "Requires DT_ENABLE_WRITES=true and a classic API token with the settings.write scope.",
+      inputSchema: SECURITY_CONTEXT_INPUTS,
+    },
+    async ({ entitySelector, from, to, dryRun }) => {
+      const query = { entitySelector, from, to };
+      if (dryRun) {
+        const matched = await deps.client.classic.get("/api/v2/entities", { ...query, pageSize: 500 });
+        return jsonResult({ dryRun: true, wouldRemoveSecurityContextFrom: matched });
+      }
+      requireWrites(deps.config);
+      return jsonResult(await deps.client.classic.del("/api/v2/entities/securityContext", query));
     },
   );
 }

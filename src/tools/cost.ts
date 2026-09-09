@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import type { QueryParams } from "../types.js";
 import { jsonResult } from "../util/result.js";
+import { ACCOUNT_SCOPES, ACCOUNT_NOTES } from "../util/account-iam.js";
 
 /**
  * Cost & consumption — Dynatrace Platform Subscription API (/sub/v2/accounts/{uuid}/…).
@@ -11,11 +12,11 @@ import { jsonResult } from "../util/result.js";
  * ("read access for usage and consumption resources") — distinct from the repo
  * (iam-policies-management) and IDM (account-idm-*) scopes. The OAuth client must
  * be created with account-uac-read; otherwise the SSO refuses the token.
+ * Note: this API is under /sub/v2, NOT the /iam/v1/accounts IDM base.
  */
 
-const UAC_SCOPE = "account-uac-read";
-const NOTE =
-  "Requires the account OAuth client (DT_OAUTH_CLIENT_ID/SECRET, DT_ACCOUNT_URN) with the account-uac-read scope.";
+const UAC_SCOPE = ACCOUNT_SCOPES.uacRead;
+const NOTE = ACCOUNT_NOTES.uacRead;
 
 function subsBase(deps: ToolDeps): string {
   const account = deps.client.requireAccount();

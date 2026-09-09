@@ -109,6 +109,13 @@ export function registerDavisAnalyzerTools(server: McpServer, deps: ToolDeps): v
       const encoded = encodeURIComponent(name);
 
       // Deterministic pre-execution guard: Dynatrace's own online validation.
+      // Three cases (fail-transparent, never block on API ambiguity):
+      //   valid === false  → an EXPLICIT rejection: block, return the details.
+      //   valid === true   → a clean pass: proceed silently.
+      //   anything else    → INCONCLUSIVE (no `valid` field, unexpected shape): proceed
+      //                      anyway but surface a validationWarning so the caller knows
+      //                      the online pre-check couldn't confirm — the execute call is
+      //                      still the source of truth and will report its own errors.
       const validation = await deps.client.platform.post<AnalyzerValidationResult>(
         `${BASE}/${encoded}:validate`,
         input,
@@ -116,6 +123,10 @@ export function registerDavisAnalyzerTools(server: McpServer, deps: ToolDeps): v
       if (validation.valid === false) {
         return jsonResult({ executed: false, valid: false, details: validation.details ?? null });
       }
+      const validationWarning =
+        validation.valid === true
+          ? undefined
+          : "Online validation was inconclusive (no explicit valid=true); proceeding — the execute response is authoritative.";
 
       let res = await deps.client.platform.post<AnalyzerExecuteResult>(`${BASE}/${encoded}:execute`, input);
 
@@ -132,6 +143,7 @@ export function registerDavisAnalyzerTools(server: McpServer, deps: ToolDeps): v
             note: "Polling timed out; execution may still be running.",
             requestToken: res.requestToken,
             partial: res,
+            ...(validationWarning ? { validationWarning } : {}),
           });
         }
         await sleep(waitMs);
@@ -141,7 +153,7 @@ export function registerDavisAnalyzerTools(server: McpServer, deps: ToolDeps): v
         });
       }
 
-      return jsonResult({ executed: true, completed: true, ...res });
+      return jsonResult({ executed: true, completed: true, ...res, ...(validationWarning ? { validationWarning } : {}) });
     },
   );
 }

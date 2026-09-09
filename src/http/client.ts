@@ -3,6 +3,7 @@ import { DynatraceApiError, type HostKind, type QueryParams } from "./errors.js"
 import type { HostClient } from "../types.js";
 import { dqlExecute, type DqlResult } from "./dql.js";
 import { AccountClient } from "./account.js";
+import { runWithRetry, type RequestOpts, type RetryEngineConfig, type RetryOutcome } from "./retry.js";
 
 function buildUrl(base: string, path: string, query?: QueryParams): string {
   const url = new URL(base + path);
@@ -19,43 +20,6 @@ function buildUrl(base: string, path: string, query?: QueryParams): string {
   return url.toString();
 }
 
-/** Statuses that should trigger a retry. */
-function isRetryableStatus(status: number): boolean {
-  return status === 429 || status === 408 || status >= 500;
-}
-
-/**
- * Parse a Retry-After header value.
- * Returns the number of milliseconds to wait, capped at 30 000 ms.
- * Returns null if the header is absent or unparseable.
- */
-function parseRetryAfterMs(header: string | null): number | null {
-  if (!header) return null;
-  const trimmed = header.trim();
-  // Integer seconds?
-  const seconds = Number(trimmed);
-  if (!Number.isNaN(seconds) && /^\d+$/.test(trimmed)) {
-    return Math.min(seconds * 1000, 30_000);
-  }
-  // HTTP-date?
-  const dateMs = Date.parse(trimmed);
-  if (!Number.isNaN(dateMs)) {
-    const waitMs = dateMs - Date.now();
-    return Math.min(Math.max(waitMs, 0), 30_000);
-  }
-  return null;
-}
-
-/** Exponential backoff with jitter, capped at 10 s. */
-function backoffMs(baseMs: number, attemptIndex: number): number {
-  const exponential = baseMs * Math.pow(2, attemptIndex);
-  const jitter = Math.random() * 100;
-  return Math.min(exponential + jitter, 10_000);
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 class HostClientImpl implements HostClient {
   constructor(
@@ -67,110 +31,76 @@ class HostClientImpl implements HostClient {
     private readonly retryBaseMs: number,
   ) {}
 
-  /**
-   * Execute a single fetch attempt with its own AbortController timeout.
-   * Returns the raw Response — the caller decides whether to retry.
-   */
-  private async attempt(fetchFn: (signal: AbortSignal) => Promise<Response>): Promise<Response> {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-    try {
-      return await fetchFn(controller.signal);
-    } finally {
-      clearTimeout(timer);
-    }
+  private engineCfg(): RetryEngineConfig {
+    return { maxRetries: this.maxRetries, baseMs: this.retryBaseMs, timeoutMs: this.timeoutMs };
   }
 
-  /**
-   * Shared retry routine. Calls `attemptFn` up to `maxRetries + 1` times.
-   * Retries on: 429, 408, >=500, or network errors.
-   * On 429 honours Retry-After (capped at 30 s); otherwise uses exponential backoff.
-   * Non-retryable responses (other 4xx, 2xx, 3xx) are returned immediately.
-   * After exhausting retries, returns the last Response or rethrows the last error.
-   */
-  private async withRetry(fetchFn: (signal: AbortSignal) => Promise<Response>): Promise<Response> {
-    let lastError: unknown = undefined;
-    let lastResponse: Response | undefined = undefined;
-
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      try {
-        const res = await this.attempt(fetchFn);
-        if (!isRetryableStatus(res.status)) {
-          // Success or non-retryable client error — return immediately.
-          return res;
-        }
-        lastResponse = res;
-        if (attempt < this.maxRetries) {
-          // Determine wait time.
-          let waitMs: number;
-          if (res.status === 429) {
-            const fromHeader = parseRetryAfterMs(res.headers.get("Retry-After"));
-            waitMs = fromHeader !== null ? fromHeader : backoffMs(this.retryBaseMs, attempt);
-          } else {
-            waitMs = backoffMs(this.retryBaseMs, attempt);
-          }
-          await sleep(waitMs);
-        }
-      } catch (err) {
-        lastError = err;
-        if (attempt < this.maxRetries) {
-          await sleep(backoffMs(this.retryBaseMs, attempt));
-        }
-      }
-    }
-
-    if (lastResponse !== undefined) {
-      return lastResponse;
-    }
-    throw lastError;
+  /** Turn a retry outcome into the parsed body (or the verifier-supplied value). */
+  private async finishJson<T>(outcome: RetryOutcome, path: string): Promise<T> {
+    if (outcome.kind === "verified") return outcome.value as T;
+    const res = outcome.response;
+    const text = await res.text();
+    const parsed = text ? safeJson(text) : undefined;
+    if (!res.ok) throw new DynatraceApiError(res.status, this.host, parsed ?? text, path);
+    return parsed as T;
   }
 
-  private async request<T>(method: string, path: string, body?: unknown, query?: QueryParams): Promise<T> {
+  private async request<T>(
+    method: string,
+    path: string,
+    body?: unknown,
+    query?: QueryParams,
+    opts?: RequestOpts,
+  ): Promise<T> {
     const url = buildUrl(this.base, path, query);
     // Serialize body once so it can be reused across retries.
     const serializedBody = body === undefined ? undefined : JSON.stringify(body);
     const headers: Record<string, string> = {
       Authorization: this.authHeader,
-      "Content-Type": "application/json",
+      "Content-Type": opts?.contentType ?? "application/json",
       Accept: "application/json",
     };
-
-    const res = await this.withRetry((signal) => fetch(url, { method, headers, body: serializedBody, signal }));
-
-    const text = await res.text();
-    const parsed = text ? safeJson(text) : undefined;
-    if (!res.ok) {
-      throw new DynatraceApiError(res.status, this.host, parsed ?? text, path);
-    }
-    return parsed as T;
+    const outcome = await runWithRetry(
+      (signal) => fetch(url, { method, headers, body: serializedBody, signal }),
+      this.engineCfg(),
+      method,
+      opts,
+    );
+    return this.finishJson<T>(outcome, path);
   }
 
-  private async requestForm<T>(method: string, path: string, form: FormData, query?: QueryParams): Promise<T> {
+  private async requestForm<T>(
+    method: string,
+    path: string,
+    form: FormData,
+    query?: QueryParams,
+    opts?: RequestOpts,
+  ): Promise<T> {
     const url = buildUrl(this.base, path, query);
     // Do NOT set Content-Type — let fetch set it with the multipart boundary.
     const headers: Record<string, string> = {
       Authorization: this.authHeader,
       Accept: "application/json",
     };
-
-    const res = await this.withRetry((signal) => fetch(url, { method, headers, body: form, signal }));
-
-    const text = await res.text();
-    const parsed = text ? safeJson(text) : undefined;
-    if (!res.ok) {
-      throw new DynatraceApiError(res.status, this.host, parsed ?? text, path);
-    }
-    return parsed as T;
+    const outcome = await runWithRetry(
+      (signal) => fetch(url, { method, headers, body: form, signal }),
+      this.engineCfg(),
+      method,
+      opts,
+    );
+    return this.finishJson<T>(outcome, path);
   }
 
   private async requestText(path: string, query?: QueryParams): Promise<string> {
     const url = buildUrl(this.base, path, query);
-    const headers: Record<string, string> = {
-      Authorization: this.authHeader,
-    };
-
-    const res = await this.withRetry((signal) => fetch(url, { method: "GET", headers, signal }));
-
+    const headers: Record<string, string> = { Authorization: this.authHeader };
+    const outcome = await runWithRetry(
+      (signal) => fetch(url, { method: "GET", headers, signal }),
+      this.engineCfg(),
+      "GET",
+    );
+    if (outcome.kind === "verified") return String(outcome.value);
+    const res = outcome.response;
     const text = await res.text();
     if (!res.ok) {
       const parsed = text ? safeJson(text) : undefined;
@@ -182,20 +112,20 @@ class HostClientImpl implements HostClient {
   get<T>(path: string, query?: QueryParams) {
     return this.request<T>("GET", path, undefined, query);
   }
-  post<T>(path: string, body?: unknown, query?: QueryParams) {
-    return this.request<T>("POST", path, body, query);
+  post<T>(path: string, body?: unknown, query?: QueryParams, opts?: RequestOpts) {
+    return this.request<T>("POST", path, body, query, opts);
   }
-  put<T>(path: string, body?: unknown, query?: QueryParams) {
-    return this.request<T>("PUT", path, body, query);
+  put<T>(path: string, body?: unknown, query?: QueryParams, opts?: RequestOpts) {
+    return this.request<T>("PUT", path, body, query, opts);
   }
-  del<T>(path: string, query?: QueryParams) {
-    return this.request<T>("DELETE", path, undefined, query);
+  del<T>(path: string, query?: QueryParams, opts?: RequestOpts) {
+    return this.request<T>("DELETE", path, undefined, query, opts);
   }
-  postForm<T>(path: string, form: FormData, query?: QueryParams) {
-    return this.requestForm<T>("POST", path, form, query);
+  postForm<T>(path: string, form: FormData, query?: QueryParams, opts?: RequestOpts) {
+    return this.requestForm<T>("POST", path, form, query, opts);
   }
-  patchForm<T>(path: string, form: FormData, query?: QueryParams) {
-    return this.requestForm<T>("PATCH", path, form, query);
+  patchForm<T>(path: string, form: FormData, query?: QueryParams, opts?: RequestOpts) {
+    return this.requestForm<T>("PATCH", path, form, query, opts);
   }
   getText(path: string, query?: QueryParams) {
     return this.requestText(path, query);

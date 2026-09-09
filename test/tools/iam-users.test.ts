@@ -98,6 +98,63 @@ describe("list_account_users", () => {
   });
 });
 
+const wcfg: Config = { ...cfg, enableWrites: true };
+
+describe("add_user_to_groups", () => {
+  it("POSTs a bare UUID array to /users/{email} with account-idm-write", async () => {
+    let body: unknown;
+    let auth = "";
+    mswServer.use(
+      http.post(`${ACC}/users/:email`, async ({ request }) => {
+        body = await request.json();
+        auth = request.headers.get("authorization") ?? "";
+        return HttpResponse.json({ email: "a@b.com", groups: [{ uuid: "g1" }, { uuid: "g2" }] });
+      }),
+    );
+    const client = await makeClient(wcfg);
+    const res = await client.callTool({
+      name: "add_user_to_groups",
+      arguments: { email: "a@b.com", groupUuids: ["g1", "g2"] },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(body).toEqual(["g1", "g2"]); // bare array, not wrapped
+    expect(auth).toBe("Bearer tok-account-idm-write");
+  });
+
+  it("is write-gated (fails when DT_ENABLE_WRITES is not set)", async () => {
+    const client = await makeClient(); // cfg has enableWrites:false
+    const res = await client.callTool({
+      name: "add_user_to_groups",
+      arguments: { email: "a@b.com", groupUuids: ["g1"] },
+    });
+    expect(res.isError).toBe(true);
+    expect(text(res)).toMatch(/write/i);
+  });
+});
+
+describe("remove_user_from_group", () => {
+  it("DELETEs /groups/{g}/users/{email} with account-idm-write", async () => {
+    let method = "";
+    let url = "";
+    mswServer.use(
+      http.delete(`${ACC}/groups/:g/users/:email`, ({ request }) => {
+        method = request.method;
+        url = request.url;
+        return HttpResponse.json({ success: true });
+      }),
+    );
+    const client = await makeClient(wcfg);
+    const res = await client.callTool({
+      name: "remove_user_from_group",
+      arguments: { email: "a+x@b.com", groupUuid: "g-demo" },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(method).toBe("DELETE");
+    expect(url).toContain("/groups/g-demo/users/");
+    expect(url).toContain("a%2Bx%40b.com"); // email url-encoded
+  });
+});
+
 describe("not configured", () => {
   it("errors clearly without the OAuth trio", async () => {
     const bare: Config = { ...cfg, oauthClientId: undefined, oauthClientSecret: undefined, accountUrn: undefined };

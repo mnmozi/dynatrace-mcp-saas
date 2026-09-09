@@ -186,6 +186,65 @@ describe("unbind_policy_from_group", () => {
   });
 });
 
+describe("rebind_policy_boundaries", () => {
+  it("unbinds then re-binds the group with the new boundary set (delete-and-recreate)", async () => {
+    const seq: string[] = [];
+    let bindBody: unknown;
+    mswServer.use(
+      http.delete(`${REPO}/bindings/p1/g1`, () => {
+        seq.push("DELETE");
+        return HttpResponse.json({ success: true });
+      }),
+      http.post(`${REPO}/bindings/p1`, async ({ request }) => {
+        seq.push("POST");
+        bindBody = await request.json();
+        return HttpResponse.json({ success: true });
+      }),
+    );
+    const client = await makeClient({ ...cfg, enableWrites: true });
+    const res = await client.callTool({
+      name: "rebind_policy_boundaries",
+      arguments: { policyUuid: "p1", groupUuid: "g1", boundaries: ["b-new"] },
+    });
+    const out = JSON.parse(text(res));
+    expect(out.rebound).toBe(true);
+    expect(seq).toEqual(["DELETE", "POST"]); // order matters
+    expect(bindBody).toEqual({ policyUuid: "p1", groups: ["g1"], boundaries: ["b-new"] });
+  });
+
+  it("omits boundaries from the re-bind body when given an empty array (unconditional)", async () => {
+    let bindBody: unknown;
+    mswServer.use(
+      http.delete(`${REPO}/bindings/p1/g1`, () => HttpResponse.json({ success: true })),
+      http.post(`${REPO}/bindings/p1`, async ({ request }) => {
+        bindBody = await request.json();
+        return HttpResponse.json({ success: true });
+      }),
+    );
+    const client = await makeClient({ ...cfg, enableWrites: true });
+    await client.callTool({
+      name: "rebind_policy_boundaries",
+      arguments: { policyUuid: "p1", groupUuid: "g1", boundaries: [] },
+    });
+    expect(bindBody).toEqual({ policyUuid: "p1", groups: ["g1"] }); // no boundaries key
+  });
+
+  it("surfaces rebound:false with a recovery warning when the re-bind fails after a successful unbind", async () => {
+    mswServer.use(
+      http.delete(`${REPO}/bindings/p1/g1`, () => HttpResponse.json({ success: true })),
+      http.post(`${REPO}/bindings/p1`, () => HttpResponse.json({ error: "boom" }, { status: 500 })),
+    );
+    const client = await makeClient({ ...cfg, enableWrites: true });
+    const res = await client.callTool({
+      name: "rebind_policy_boundaries",
+      arguments: { policyUuid: "p1", groupUuid: "g1", boundaries: ["b-new"] },
+    });
+    const out = JSON.parse(text(res));
+    expect(out.rebound).toBe(false);
+    expect(out.warning).toMatch(/UNBOUND/);
+  });
+});
+
 describe("not-configured error", () => {
   it("errors clearly when the OAuth trio is absent", async () => {
     const bare: Config = { ...cfg, oauthClientId: undefined, oauthClientSecret: undefined, accountUrn: undefined };

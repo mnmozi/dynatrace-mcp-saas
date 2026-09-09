@@ -112,3 +112,134 @@ describe("ingest_logs array form", () => {
     expect(posted[1].content).toBe("b");
   });
 });
+
+const txt = (r: Awaited<ReturnType<Client["callTool"]>>) => (r.content as Array<{ text: string }>)[0].text;
+
+// ── ingest_bizevents content-type (the bug fix) ──────────────────────────────
+
+describe("ingest_bizevents content-type", () => {
+  it("default (no cloudEvent) sends application/json with literal keys passed through", async () => {
+    let ct = "";
+    let body: unknown;
+    mswServer.use(
+      http.post(`${CLASSIC}/api/v2/bizevents/ingest`, async ({ request }) => {
+        ct = request.headers.get("content-type") ?? "";
+        body = await request.json();
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "ingest_bizevents",
+      arguments: { bizevent: { "event.type": "order.attempt", "event.provider": "checkout", amount: 42 } },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(ct).toContain("application/json");
+    expect((body as Record<string, unknown>)["event.type"]).toBe("order.attempt");
+  });
+
+  it("cloudEvent:true (single) sends application/cloudevent+json", async () => {
+    let ct = "";
+    mswServer.use(
+      http.post(`${CLASSIC}/api/v2/bizevents/ingest`, ({ request }) => {
+        ct = request.headers.get("content-type") ?? "";
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    const client = await makeClient(writeCfg);
+    await client.callTool({
+      name: "ingest_bizevents",
+      arguments: { bizevent: { specversion: "1.0", source: "checkout", type: "order.attempt", id: "1" }, cloudEvent: true },
+    });
+    expect(ct).toContain("application/cloudevent+json");
+  });
+
+  it("cloudEvent:true with an array sends the batch content-type", async () => {
+    let ct = "";
+    mswServer.use(
+      http.post(`${CLASSIC}/api/v2/bizevents/ingest`, ({ request }) => {
+        ct = request.headers.get("content-type") ?? "";
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    const client = await makeClient(writeCfg);
+    await client.callTool({
+      name: "ingest_bizevents",
+      arguments: { bizevent: [{ specversion: "1.0", source: "s", type: "t", id: "1" }], cloudEvent: true },
+    });
+    expect(ct).toContain("application/cloudevents-batch+json");
+  });
+});
+
+// ── ingest_openpipeline_events (platform ingest) ─────────────────────────────
+
+describe("ingest_openpipeline_events", () => {
+  it("posts to the platform /platform/ingest/v1/events endpoint for dataType=events", async () => {
+    let hit = "";
+    let body: unknown;
+    mswServer.use(
+      http.post(`${CLASSIC}/platform/ingest/v1/events`, async ({ request }) => {
+        hit = new URL(request.url).pathname;
+        body = await request.json();
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "ingest_openpipeline_events",
+      arguments: { dataType: "events", events: { "event.type": "deploy" } },
+    });
+    expect(res.isError).toBeFalsy();
+    expect(hit).toBe("/platform/ingest/v1/events");
+    expect((body as Record<string, unknown>)["event.type"]).toBe("deploy");
+  });
+
+  it("maps dataType=sdlc to /platform/ingest/v1/events.sdlc", async () => {
+    let hit = "";
+    mswServer.use(
+      http.post(`${CLASSIC}/platform/ingest/v1/events.sdlc`, ({ request }) => {
+        hit = new URL(request.url).pathname;
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    const client = await makeClient(writeCfg);
+    await client.callTool({ name: "ingest_openpipeline_events", arguments: { dataType: "sdlc", events: {} } });
+    expect(hit).toBe("/platform/ingest/v1/events.sdlc");
+  });
+
+  it("routes to a custom endpoint under the dataType's category", async () => {
+    let hit = "";
+    mswServer.use(
+      http.post(`${CLASSIC}/platform/ingest/custom/security.events/my-scanner`, ({ request }) => {
+        hit = new URL(request.url).pathname;
+        return HttpResponse.json({}, { status: 202 });
+      }),
+    );
+    const client = await makeClient(writeCfg);
+    await client.callTool({
+      name: "ingest_openpipeline_events",
+      arguments: { dataType: "security", events: {}, customEndpoint: "my-scanner" },
+    });
+    expect(hit).toBe("/platform/ingest/custom/security.events/my-scanner");
+  });
+
+  it("errors when a custom endpoint is requested for smartscape (no custom category)", async () => {
+    const client = await makeClient(writeCfg);
+    const res = await client.callTool({
+      name: "ingest_openpipeline_events",
+      arguments: { dataType: "smartscape", events: {}, customEndpoint: "x" },
+    });
+    expect(res.isError).toBe(true);
+    expect(txt(res)).toMatch(/not supported/i);
+  });
+
+  it("is write-gated", async () => {
+    const client = await makeClient(); // enableWrites: false
+    const res = await client.callTool({
+      name: "ingest_openpipeline_events",
+      arguments: { dataType: "events", events: {} },
+    });
+    expect(res.isError).toBe(true);
+    expect(txt(res)).toMatch(/DT_ENABLE_WRITES/);
+  });
+});

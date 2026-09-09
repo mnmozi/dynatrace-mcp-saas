@@ -1,3 +1,6 @@
+import type { RequestOpts } from "./http/retry.js";
+export type { RequestOpts } from "./http/retry.js";
+
 export interface Config {
   platformUrl: string | undefined;
   classicUrl: string | undefined;
@@ -22,13 +25,13 @@ export type QueryParams = Record<string, string | number | boolean | readonly st
 
 export interface HostClient {
   get<T = unknown>(path: string, query?: QueryParams): Promise<T>;
-  post<T = unknown>(path: string, body?: unknown, query?: QueryParams): Promise<T>;
-  put<T = unknown>(path: string, body?: unknown, query?: QueryParams): Promise<T>;
-  del<T = unknown>(path: string, query?: QueryParams): Promise<T>;
+  post<T = unknown>(path: string, body?: unknown, query?: QueryParams, opts?: RequestOpts): Promise<T>;
+  put<T = unknown>(path: string, body?: unknown, query?: QueryParams, opts?: RequestOpts): Promise<T>;
+  del<T = unknown>(path: string, query?: QueryParams, opts?: RequestOpts): Promise<T>;
   /** Send a multipart/form-data POST. Let fetch set the Content-Type boundary automatically. */
-  postForm<T = unknown>(path: string, form: FormData, query?: QueryParams): Promise<T>;
+  postForm<T = unknown>(path: string, form: FormData, query?: QueryParams, opts?: RequestOpts): Promise<T>;
   /** Send a multipart/form-data PATCH. Let fetch set the Content-Type boundary automatically. */
-  patchForm<T = unknown>(path: string, form: FormData, query?: QueryParams): Promise<T>;
+  patchForm<T = unknown>(path: string, form: FormData, query?: QueryParams, opts?: RequestOpts): Promise<T>;
   /** GET raw text (e.g. document content). Returns the raw response text. */
   getText(path: string, query?: QueryParams): Promise<string>;
 }

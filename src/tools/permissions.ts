@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { findAccountGroup } from "../util/account-groups.js";
+import { ACCOUNT_SCOPES, accountBase } from "../util/account-iam.js";
 
 /**
  * Effective-permission inspection.
@@ -23,7 +24,7 @@ import { findAccountGroup } from "../util/account-groups.js";
  *     and is what you diff against the UI resolver's answer.
  */
 
-const IDM_SCOPE = "account-idm-read";
+const IDM_SCOPE = ACCOUNT_SCOPES.idmRead;
 
 interface PolicyBinding {
   policyUuid: string;
@@ -99,7 +100,7 @@ export function registerPermissionTools(server: McpServer, deps: ToolDeps): void
       const lt = levelType ?? "account";
       const lid = levelId ?? (lt === "global" ? "global" : account.accountUuid);
       const repo = `/iam/v1/repo/${lt}/${encodeURIComponent(lid)}`;
-      const acct = `/iam/v1/accounts/${encodeURIComponent(account.accountUuid)}`;
+      const acct = accountBase(deps);
 
       // The IDM API has no single-group GET (404) — resolve from the list.
       const group = await findAccountGroup(account, groupUuid);
