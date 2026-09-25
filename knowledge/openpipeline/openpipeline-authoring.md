@@ -19,7 +19,7 @@ For a given `<type>`:
 | **Pipeline** | `builtin:openpipeline.<type>.pipelines` | multi (≤100) | the stages+processors that transform records (see the processors topic). `displayName`, `customId`, `groupRole`, `routing`. |
 | **Routing** | `builtin:openpipeline.<type>.routing` | single | ordered `routingEntries[]` of `{matcher, pipelineId}` deciding which records enter which pipeline; unmatched → the base/default pipeline. |
 | **Pipeline group** | `builtin:openpipeline.<type>.pipeline-groups` | multi (≤100) | governance: wrap member pipelines with mandated/restricted stages (see the pipeline-groups topic). |
-| **Ingest sources / endpoints** | `builtin:openpipeline.<type>.ingest_sources` (+ related) | — | where data enters. |
+| **Ingest sources / endpoints** | `builtin:openpipeline.<type>.ingest-sources` (+ related) | — | where data enters. |
 
 **How a record flows:** ingest → **routing** matcher picks a pipeline → the **pipeline**'s
 stages run in canonical order → (if the pipeline is a group member) the **group**
@@ -102,9 +102,13 @@ NOT the record `securityContext` processor; it's a distinct tagging mechanism.
 - **`event.id` is required** on each ingested event (single object or array); include it or the
   request is rejected. Success is `202` with an empty body — don't wait for a payload.
 - **Wrong "language":** matcher vs dql-script are different subsets (see the scripting topic).
-- **Migration state:** on some builds the legacy `/platform/openpipeline/v1/configurations`
-  API returns "Migration in-progress/completed" and won't accept writes — use the Settings
-  2.0 objects above instead. `update_openpipeline_configuration` targets the v1 surface.
+- **Configurations API is END OF LIFE (2026-06-29).** `PUT /platform/openpipeline/v1/configurations/{id}`
+  no longer accepts writes anywhere (tenants answer "Migration in-progress/completed"). Author the
+  Settings 2.0 objects instead: `builtin:openpipeline.<scope>.pipelines` / `.routing` / `.ingest-sources`.
+  `update_openpipeline_configuration` therefore no longer writes — it only batch-verifies DQL/matchers.
+  The **GET** still works but returns only each scope's *capability definition* (allowed processors
+  per stage, custom-endpoint base path, default bucket) — NOT the pipelines/routing. Use it as the
+  per-scope processor allow-list; read real config from Settings 2.0.
 - **schemaId hyphens:** it's `pipeline-groups` (hyphen), not `pipeline_groups`.
 - **References:** `memberPipelines` / `routingEntries[].pipelineId` / `composition[].pipelineId`
   reference a pipeline's **object id** — create the pipelines first, then use the returned

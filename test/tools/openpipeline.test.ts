@@ -348,13 +348,13 @@ describe("convert_lql_to_dql — typed body acceptance", () => {
   });
 });
 
-describe("update_openpipeline_configuration — typed body acceptance", () => {
-  it("preserves definition tree fields when using typed configuration schema", async () => {
-    let capturedBody: unknown = null;
+describe("update_openpipeline_configuration — typed body acceptance (Configurations API EOL: never PUTs)", () => {
+  it("accepts the typed configuration (passthrough fields) and returns the deprecation redirect without PUTting", async () => {
+    let putCalled = false;
 
     mswServer.use(
-      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, async ({ request }) => {
-        capturedBody = await request.json();
+      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
+        putCalled = true;
         return HttpResponse.json({ id: "logs" });
       }),
     );
@@ -372,19 +372,19 @@ describe("update_openpipeline_configuration — typed body acceptance", () => {
             pipelinesSpecification: { processing: ["fieldsAdd"] },
             catchAllPipeline: { id: "default" },
           },
-          // extra field — must be preserved by passthrough
+          // extra field — the typed schema must still accept it (passthrough)
           customField: "preserved",
         },
       },
     });
 
+    // Typed schema accepted the config (no zod error) …
     expect(res.isError).toBeFalsy();
-    const posted = capturedBody as Record<string, unknown>;
-    expect(posted.id).toBe("logs");
-    expect(posted.editable).toBe(true);
-    expect(posted.customField).toBe("preserved");
-    const def = posted.definition as Record<string, unknown>;
-    expect(def.catchAllPipeline).toBeDefined();
+    const out = JSON.parse((res.content as Array<{ text: string }>)[0].text);
+    // … but the EOL'd write is never attempted.
+    expect(out.applied).toBe(false);
+    expect(out.deprecated).toBe(true);
+    expect(putCalled).toBe(false);
   });
 });
 
@@ -493,8 +493,8 @@ describe("update_openpipeline_configuration — invalid DQL → problems, no PUT
   });
 });
 
-describe("update_openpipeline_configuration — all valid + writes enabled → verify THEN PUT", () => {
-  it("calls verify endpoints and then PUTs when all valid and writes enabled", async () => {
+describe("update_openpipeline_configuration — all valid + writes enabled → verify THEN deprecation redirect (never PUTs)", () => {
+  it("calls verify endpoints, then returns the Settings 2.0 redirect instead of the EOL'd PUT", async () => {
     let dqlVerifyCalled = false;
     let matcherVerifyCalled = false;
     let putCalled = false;
@@ -522,11 +522,22 @@ describe("update_openpipeline_configuration — all valid + writes enabled → v
     });
 
     expect(res.isError).toBeFalsy();
-    const text = (res.content as Array<{ text: string }>)[0].text;
-    expect(text).toContain("updated");
+    const out = JSON.parse((res.content as Array<{ text: string }>)[0].text);
+    // Verification still ran (the still-supported APIs) …
     expect(dqlVerifyCalled).toBe(true);
     expect(matcherVerifyCalled).toBe(true);
-    expect(putCalled).toBe(true);
+    expect(out.verified.dqlProcessors).toBeGreaterThanOrEqual(1);
+    expect(out.verified.matchers).toBeGreaterThanOrEqual(1);
+    // … the dead PUT was NOT attempted, and the redirect names the exact Settings 2.0 schemas.
+    expect(putCalled).toBe(false);
+    expect(out.applied).toBe(false);
+    expect(out.deprecated).toBe(true);
+    expect(out.reason).toMatch(/2026-06-29/);
+    expect(out.useInstead.schemas).toEqual([
+      "builtin:openpipeline.logs.pipelines",
+      "builtin:openpipeline.logs.routing",
+      "builtin:openpipeline.logs.ingest-sources",
+    ]);
   });
 });
 
@@ -553,8 +564,8 @@ describe("update_openpipeline_configuration — writes disabled + dryRun false +
   });
 });
 
-describe("update_openpipeline_configuration — config with no DQL/matcher → zero verify calls, proceeds to PUT", () => {
-  it("skips verify entirely and PUTs directly when no DQL processors or matchers", async () => {
+describe("update_openpipeline_configuration — config with no DQL/matcher → zero verify calls, deprecation redirect, never PUTs", () => {
+  it("skips verify entirely and returns the redirect without PUTting", async () => {
     let putCalled = false;
 
     mswServer.use(
@@ -579,7 +590,10 @@ describe("update_openpipeline_configuration — config with no DQL/matcher → z
     });
 
     expect(res.isError).toBeFalsy();
-    expect(putCalled).toBe(true);
+    const out = JSON.parse((res.content as Array<{ text: string }>)[0].text);
+    expect(out.verified).toEqual({ dqlProcessors: 0, matchers: 0 });
+    expect(out.deprecated).toBe(true);
+    expect(putCalled).toBe(false);
   });
 });
 

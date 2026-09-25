@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.22.1
+
+- OpenPipeline Configurations API reached END OF LIFE on 2026-06-29 (docs-confirmed verbatim). `update_openpipeline_configuration` no longer attempts the dead `PUT /platform/openpipeline/v1/configurations/{id}`: it keeps the still-supported batch-verify of every DQL processor + matcher and, on the write path (write-gate unchanged), returns a deterministic `{applied:false, deprecated:true, useInstead:{schemas:[builtin:openpipeline.<scope>.pipelines / .routing / .ingest-sources]}}` redirect instead of a confusing "Migration completed" 4xx
+- `get_openpipeline_configuration` / `list_openpipeline_configurations` descriptions corrected: the GET still works but returns each scope's capability DEFINITION (per-stage processor allow-list, custom-endpoint base path, default bucket) — NOT the pipelines/routing, which are Settings 2.0 objects. Scope ids corrected to the live values (security.events, events.sdlc, davis.events, davis.problems, user.events, usersessions, smartscape.events, system.events)
+- knowledge: openpipeline-authoring gotcha upgraded from "on some builds" to the definitive EOL + what GET now returns; fixed `.ingest-sources` (hyphen, was underscore); openpipeline-processors gains the live per-scope processor allow-list matrix (technology only on logs/security.events; bizevent extractor never on bizevents; metrics has no extraction/davis/storage; system.events has an EMPTY processing stage; only events/security.events/events.sdlc expose custom endpoints)
+- Re-verified against Sep 2026 docs: OpenPipeline ingest endpoints (paths, host, dual scope spellings) unchanged; `security.events` (the non-legacy path) is what we use
+
 ## 0.22.0
 
 - new ingest_openpipeline_events: OpenPipeline ingest (POST /platform/ingest/v1/{events|events.sdlc|security.events|smartscape.events}, or a custom endpoint via /platform/ingest/custom/<category>/<name>). HOST: these /platform/ingest/* endpoints are data-plane and served on the ENVIRONMENT/classic host (…dynatracelabs.com), NOT the apps host — so the tool routes through the classic client (Api-Token), and the classic API token (DT_API_TOKEN) must carry the matching openpipeline.* scope. Append retry-class (never retries 5xx/network — a retry would duplicate the record)

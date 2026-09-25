@@ -110,9 +110,12 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
     "list_openpipeline_configurations",
     {
       description:
-        "List all OpenPipeline configurations (one per data type: logs, events, bizevents, " +
-        "metrics, spans, davis, sdlcEvents, securityEvents, etc.). " +
-        "Returns the available data-type configurations with their editable status.",
+        "List the OpenPipeline data-type scopes (logs, events, bizevents, metrics, spans, security.events, " +
+        "events.sdlc, davis.events, davis.problems, user.events, usersessions, smartscape.events, system.events) " +
+        "with each scope's capability DEFINITION: allowed processors per stage, custom-endpoint base path, default " +
+        "bucket. NOTE: the actual pipelines/routing/ingest-sources are NOT here — they are Settings 2.0 objects " +
+        "(builtin:openpipeline.<scope>.pipelines / .routing / .ingest-sources); read them with list_settings_objects. " +
+        "The Configurations API WRITE path reached end-of-life 2026-06-29; this read still serves the definition.",
       inputSchema: {},
     },
     async () => jsonResult(await deps.client.platform.get(`${BASE}/configurations`)),
@@ -122,15 +125,20 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
     "get_openpipeline_configuration",
     {
       description:
-        "Get the full OpenPipeline configuration for a specific data type (id). " +
-        "Returns all endpoints, pipelines, and routing rules. " +
-        "Use this to inspect or fetch the config before modifying it with update_openpipeline_configuration.",
+        "Get a data-type scope's OpenPipeline capability DEFINITION (id): the per-stage processor allow-list " +
+        "(pipelinesSpecification), whether custom endpoints exist + their base path (endpointsSpecification), " +
+        "and the default bucket/table (bucketsSpecification). Use it to learn WHICH processor types a scope " +
+        "supports before authoring (e.g. 'metrics' has no metricExtraction/storage; 'spans' uses samplingAware*; " +
+        "'system.events' has an empty processing stage). It does NOT return the actual pipelines or routing — " +
+        "those are Settings 2.0 objects (builtin:openpipeline.<scope>.pipelines / .routing); read them with " +
+        "get/list_settings_objects.",
       inputSchema: {
         id: z
           .string()
           .describe(
-            "Configuration id / data type, e.g. 'logs', 'events', 'bizevents', 'metrics', " +
-              "'spans', 'davis', 'sdlcEvents', 'securityEvents'.",
+            "Scope id / data type, e.g. 'logs', 'events', 'bizevents', 'metrics', 'spans', " +
+              "'security.events', 'events.sdlc', 'davis.events', 'davis.problems', 'user.events', " +
+              "'usersessions', 'smartscape.events', 'system.events'.",
           ),
       },
     },
@@ -382,18 +390,20 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
     "update_openpipeline_configuration",
     {
       description:
-        "Replace the full OpenPipeline configuration for a specific data type (WRITE, requires DT_ENABLE_WRITES=true). " +
-        "Fetch the current configuration first with get_openpipeline_configuration, modify it, then PUT it back. " +
-        "Before applying, automatically verifies every DQL processor (type=dql, dqlScript field) and every matcher " +
-        "string in the configuration via the online verify endpoints. If any item is invalid, returns the problems " +
-        "without writing. Supports dryRun to verify-only without applying.",
+        "DEPRECATED WRITE — the OpenPipeline Configurations API (PUT /platform/openpipeline/v1/configurations/{id}) " +
+        "reached END OF LIFE on 2026-06-29; configuration writes are no longer accepted anywhere, so this tool no " +
+        "longer PUTs. What it STILL does (useful): batch-verify every DQL processor and matcher in a configuration " +
+        "object via the still-supported verify endpoints and return the problems — use dryRun:true for that. " +
+        "To CHANGE OpenPipeline config, author the Settings 2.0 objects instead: builtin:openpipeline.<scope>.pipelines " +
+        "/ .routing / .ingest-sources via create/update_settings_object (they auto-validate, dryRun supported). " +
+        "See openpipeline_reference topic 'authoring'.",
       inputSchema: {
         id: z
           .string()
           .describe("Configuration id / data type to update, e.g. 'logs', 'events', 'bizevents', 'metrics'."),
         configuration: openPipelineConfigurationSchema.describe(
-          "Full configuration object (typically fetched via get_openpipeline_configuration, then modified). " +
-            "PUT replaces the whole configuration.",
+          "Configuration object whose DQL processors and matchers are verified. It is NOT written " +
+            "(Configurations API EOL 2026-06-29) — author Settings 2.0 objects to change config.",
         ),
         dryRun: z
           .boolean()
@@ -451,10 +461,29 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         });
       }
 
-      // 5. Require writes, then PUT
+      // 5. Write path: the Configurations API reached END OF LIFE on 2026-06-29 — the PUT is
+      // dead everywhere (tenants answer "Migration in-progress/completed"). Do NOT attempt it:
+      // a doomed request would surface a confusing 4xx instead of the truth. Keep the write-gate
+      // so the tool's permission semantics are unchanged, then say exactly what to do instead.
       requireWrites(deps.config);
-      const putResult = await deps.client.platform.put(`${BASE}/configurations/${encodeURIComponent(id)}`, configuration);
-      return jsonResult(warnings.length > 0 ? { result: putResult, ...warningField } : putResult);
+      return jsonResult({
+        applied: false,
+        deprecated: true,
+        reason:
+          "The OpenPipeline Configurations API (PUT /platform/openpipeline/v1/configurations/{id}) reached " +
+          "end of life on 2026-06-29. Configuration writes are not accepted.",
+        verified: { dqlProcessors: dqlItems.length, matchers: matcherItems.length },
+        useInstead: {
+          how: "Author the Settings 2.0 objects with create/update_settings_object (auto-validated, dryRun supported).",
+          schemas: [
+            `builtin:openpipeline.${id}.pipelines`,
+            `builtin:openpipeline.${id}.routing`,
+            `builtin:openpipeline.${id}.ingest-sources`,
+          ],
+          reference: "openpipeline_reference topic 'authoring'",
+        },
+        ...warningField,
+      });
     },
   );
 }

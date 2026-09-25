@@ -54,9 +54,27 @@ dataExtraction`. A processor lives in the stage whose `processors[]` array you p
 | | `securityEvent` (securityEvent) | extract a security event (fieldExtraction) |
 | | `azureLogForwarding` (azureLogForwarding) | forward to an Azure forwarder (forwarderConfigId, fieldExtraction) |
 
-25 processor types total. Not every type exists for every signal (e.g. `bizevent`
-extraction lives on log/event pipelines, not on the bizevents pipeline itself) — the live
-schema for each `builtin:openpipeline.<type>.pipelines` is authoritative.
+25 processor types total — but **each scope allows a different subset**. The live per-scope
+allow-list comes from `get_openpipeline_configuration` (`pipelinesSpecification`; verified on a
+Gen3 tenant 2026-09). The contrastive facts that trip people up:
+
+| Scope | Notable allow-list facts |
+|---|---|
+| `logs` | fullest: all processing types incl. `technology`; dataExtraction = bizevent + securityEvent + sdlcEvent |
+| `events` | like logs but **no `technology`**; dataExtraction = securityEvent + sdlcEvent; **custom endpoints** at `/platform/ingest/custom/events` |
+| `security.events` | has `technology`; **custom endpoints** at `/platform/ingest/custom/security.events` |
+| `events.sdlc` | dataExtraction = securityEvent only; **custom endpoints** at `/platform/ingest/custom/events.sdlc` |
+| `bizevents` | no `technology`; dataExtraction = securityEvent + sdlcEvent — **not `bizevent`** (that extractor runs on logs/spans/user.events, never on bizevents itself); no custom endpoints |
+| `spans` | metricExtraction = the **`samplingAware*`** variants (+ counter/value); dataExtraction = bizevent + sdlcEvent |
+| `metrics` | **NO** dataExtraction, davis, metricExtraction, or storage stages — only processing / securityContext / cost / product |
+| `system.events` | **processing stage is EMPTY** (no processing processors allowed); has smartscape node/edge, securityEvent, davis, metricExtraction; no cost/product/storage |
+| `smartscape.events` | minimal: processing (dql / fieldsRename / drop / fieldsAdd / fieldsRemove only) + securityContext; **no** extraction / davis / metrics / storage |
+| `usersessions` | no cost/product allocation; dataExtraction = bizevent + securityEvent + sdlcEvent |
+| `davis.problems` / `davis.events` | **no** davis or metricExtraction stages; davis.problems also lacks cost/product |
+| `user.events` | like logs without `technology`; dataExtraction = bizevent + securityEvent + sdlcEvent |
+
+Only `events`, `security.events`, `events.sdlc` expose **custom ingest endpoints**. When unsure, call
+`get_openpipeline_configuration` for the scope — its `pipelinesSpecification` is authoritative.
 
 ## Attribute shapes (the type-specific object)
 
