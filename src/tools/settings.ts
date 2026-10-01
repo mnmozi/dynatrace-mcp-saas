@@ -3,43 +3,68 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
-import { DynatraceApiError } from "../http/errors.js";
+import { DynatraceApiError, extractApiErrorReason, extractConstraintViolations } from "../http/errors.js";
 import type { HostClient } from "../types.js";
 
 /** Discriminated result from a validateOnly call. */
-type ValidationResult = { valid: true } | { valid: false; violations: unknown };
+type ValidationResult = { valid: true } | { valid: false; violations: unknown[]; reason: string };
 
 /**
- * Run a Settings 2.0 validateOnly POST and return a discriminated result.
+ * Run a Settings 2.0 validateOnly request and return a discriminated result.
  * Returns { valid: true } on 200.
- * Returns { valid: false, violations } on 400 with constraintViolations.
+ * Returns { valid: false, violations, reason } on any 400: violations may be empty
+ * (Dynatrace rejects some objects with only a message), reason is its own explanation.
  * Rethrows any other error.
  */
-async function validateSettingsValue(
+async function runSettingsValidation(request: () => Promise<unknown>): Promise<ValidationResult> {
+  try {
+    await request();
+    return { valid: true };
+  } catch (err) {
+    if (err instanceof DynatraceApiError && err.status === 400) {
+      return {
+        valid: false,
+        violations: extractConstraintViolations(err.body),
+        reason: extractApiErrorReason(err.body),
+      };
+    }
+    throw err;
+  }
+}
+
+/** Validate a CREATE: validateOnly POST of a new object to the collection. */
+function validateSettingsValue(
   client: HostClient,
   schemaId: string,
   scope: string,
   value: Record<string, unknown>,
 ): Promise<ValidationResult> {
-  try {
-    await client.post("/api/v2/settings/objects", [{ schemaId, scope, value }], { validateOnly: true });
-    return { valid: true };
-  } catch (err) {
-    if (
-      err instanceof DynatraceApiError &&
-      err.status === 400 &&
-      typeof err.body === "object" &&
-      err.body !== null &&
-      "error" in err.body &&
-      typeof (err.body as Record<string, unknown>).error === "object" &&
-      (err.body as Record<string, unknown>).error !== null &&
-      "constraintViolations" in ((err.body as Record<string, unknown>).error as Record<string, unknown>)
-    ) {
-      const apiError = err.body as { error: { constraintViolations: unknown } };
-      return { valid: false, violations: apiError.error.constraintViolations };
-    }
-    throw err;
-  }
+  return runSettingsValidation(() =>
+    client.post("/api/v2/settings/objects", [{ schemaId, scope, value }], { validateOnly: true }),
+  );
+}
+
+/**
+ * Validate an UPDATE: validateOnly PUT to the object itself. Schemas whose validator depends on
+ * the object's identity (e.g. builtin:hyperscaler-authentication.connections.azure, which signs
+ * with subject dt:connection-id/<objectId>) fail a create-validation, which has no objectId.
+ */
+function validateSettingsUpdate(
+  client: HostClient,
+  objectId: string,
+  value: Record<string, unknown>,
+): Promise<ValidationResult> {
+  return runSettingsValidation(() =>
+    client.put(`/api/v2/settings/objects/${encodeURIComponent(objectId)}`, { value }, { validateOnly: true }),
+  );
+}
+
+function invalidResult(validation: { violations: unknown[]; reason: string }) {
+  return jsonResult({
+    valid: false,
+    violations: validation.violations,
+    ...(validation.reason ? { reason: validation.reason } : {}),
+  });
 }
 
 export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
@@ -120,7 +145,7 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
     "validate_settings_object",
     {
       description:
-        "Validate a Settings 2.0 object payload WITHOUT persisting it (validateOnly=true). Returns constraint violations if invalid. Always safe (read-only).",
+        "Validate a Settings 2.0 object payload WITHOUT persisting it (validateOnly=true). Returns constraint violations and Dynatrace's reason if invalid. Always safe (read-only).",
       inputSchema: {
         schemaId: z.string(),
         scope: z.string().describe("e.g. 'environment' or an entity id."),
@@ -130,7 +155,7 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
     async ({ schemaId, scope, value }) => {
       const result = await validateSettingsValue(deps.client.classic, schemaId, scope, value);
       if (!result.valid) {
-        return jsonResult({ valid: false, violations: result.violations });
+        return invalidResult(result);
       }
       return jsonResult({ valid: true });
     },
@@ -140,7 +165,7 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
     "create_settings_object",
     {
       description:
-        "Create a Settings 2.0 object (WRITE). Validates against the live schema first (validateOnly); returns constraintViolations without creating if invalid. Pass dryRun:true to validate only.",
+        "Create a Settings 2.0 object (WRITE). Validates against the live schema first (validateOnly); returns violations + reason without creating if invalid. Pass dryRun:true to validate only.",
       inputSchema: {
         schemaId: z.string(),
         scope: z.string(),
@@ -157,7 +182,7 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
       // Step 1: validate against the live schema
       const validation = await validateSettingsValue(deps.client.classic, schemaId, scope, value);
       if (!validation.valid) {
-        return jsonResult({ valid: false, violations: validation.violations });
+        return invalidResult(validation);
       }
 
       // Step 2: if dryRun, return early without persisting
@@ -177,7 +202,7 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
     "update_settings_object",
     {
       description:
-        "Update an existing Settings 2.0 object by objectId (WRITE). Validates against the live schema first (validateOnly); returns constraintViolations without updating if invalid. Pass dryRun:true to validate only.",
+        "Update an existing Settings 2.0 object by objectId (WRITE). Validates against the live schema first (validateOnly); returns violations + reason without updating if invalid. Pass dryRun:true to validate only.",
       inputSchema: {
         objectId: z.string(),
         value: z.record(z.unknown()),
@@ -190,30 +215,21 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
       },
     },
     async ({ objectId, value, dryRun }) => {
-      // Step 1: GET the existing object to learn schemaId + scope
-      const existing = await deps.client.classic.get<{
-        schemaId: string;
-        scope: string;
-        value: Record<string, unknown>;
-      }>(`/api/v2/settings/objects/${encodeURIComponent(objectId)}`);
-
-      const { schemaId, scope } = existing;
-
-      // Step 2: validate against the live schema
-      const validation = await validateSettingsValue(deps.client.classic, schemaId, scope, value);
+      // Step 1: validate the update itself (validateOnly PUT to the object)
+      const validation = await validateSettingsUpdate(deps.client.classic, objectId, value);
       if (!validation.valid) {
-        return jsonResult({ valid: false, violations: validation.violations });
+        return invalidResult(validation);
       }
 
-      // Step 3: if dryRun, return early without persisting
+      // Step 2: if dryRun, return early without persisting
       if (dryRun) {
         return jsonResult({ valid: true, dryRun: true });
       }
 
-      // Step 4: require writes before persisting
+      // Step 3: require writes before persisting
       requireWrites(deps.config);
 
-      // Step 5: persist via PUT
+      // Step 4: persist via PUT
       return jsonResult(
         await deps.client.classic.put(`/api/v2/settings/objects/${encodeURIComponent(objectId)}`, { value }),
       );

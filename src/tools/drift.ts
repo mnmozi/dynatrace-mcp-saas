@@ -6,7 +6,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { diffStringSets, diffVersionMap, diffObjectKeyPaths, diffOperations } from "../util/diff.js";
-import { DynatraceApiError } from "../http/errors.js";
+import { DynatraceApiError, extractApiErrorReason, extractConstraintViolations } from "../http/errors.js";
 
 const SPECS_DIR = fileURLToPath(new URL("../../specs/", import.meta.url));
 
@@ -215,7 +215,8 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
 
       // Validate via POST with validateOnly=true
       let valid: boolean;
-      let violations: unknown;
+      let violations: unknown[];
+      let reason = "";
 
       try {
         await deps.client.classic.post(
@@ -226,14 +227,11 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
         valid = true;
         violations = [];
       } catch (err) {
-        if (err instanceof DynatraceApiError) {
-          valid = false;
-          violations =
-            (err.body as { error?: { constraintViolations?: unknown } } | null)?.error?.constraintViolations ??
-            err.body;
-        } else {
-          throw err;
-        }
+        // Only a 400 is a validation verdict; 401/403/404/5xx say nothing about the value.
+        if (!(err instanceof DynatraceApiError) || err.status !== 400) throw err;
+        valid = false;
+        violations = extractConstraintViolations(err.body);
+        reason = extractApiErrorReason(err.body);
       }
 
       // Compute corrected value — filter to keys known in liveSchema.properties
@@ -248,7 +246,7 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
       // Compute required-missing
       const requiredMissing = (liveSchema?.required ?? []).filter((k) => !(k in value));
 
-      return jsonResult({ valid, violations, requiredMissing, correctedValue });
+      return jsonResult({ valid, violations, ...(reason ? { reason } : {}), requiredMissing, correctedValue });
     },
   );
 }

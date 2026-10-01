@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { DynatraceApiError, friendlyMessage, extractDqlErrorDetail, formatDqlErrorSuffix } from "../src/http/errors.js";
+import { DynatraceApiError, friendlyMessage, extractDqlErrorDetail, formatDqlErrorSuffix, extractApiErrorReason, extractConstraintViolations } from "../src/http/errors.js";
 
 // Real 400 envelope captured from the tenant for a field-not-found DQL error.
 const FIELD_NOT_FOUND_BODY = {
@@ -83,5 +83,76 @@ describe("DynatraceApiError", () => {
     expect(e.message).toContain("line 1, col 56");
     expect(e.detail.errorType).toBe("FIELD_DOES_NOT_EXIST");
     expect(e.detail.position).toEqual({ line: 1, column: 56 });
+  });
+
+  it("leaves the DQL message unchanged (no duplicated reason)", () => {
+    const e = new DynatraceApiError(400, "platform", FIELD_NOT_FOUND_BODY, "/q");
+    expect(e.message).toBe(
+      "400: request failed. (platform /q) — The field content doesn't exist. [FIELD_DOES_NOT_EXIST @ line 1, col 56]",
+    );
+  });
+
+  it("includes error.message from a plain 4xx envelope", () => {
+    const e = new DynatraceApiError(400, "classic", { error: { code: 400, message: "boom" } }, "/api/v2/settings/objects");
+    expect(e.message).toContain("boom");
+    expect(e.message.match(/boom/g)).toHaveLength(1);
+  });
+
+  it("includes path and message from a Settings 2.0 array body with constraintViolations", () => {
+    const body = [
+      {
+        code: 400,
+        error: {
+          code: 400,
+          message: "Validation failed",
+          constraintViolations: [{ path: "azure/clientSecret", message: "must not be empty", parameterLocation: "PAYLOAD_BODY" }],
+        },
+      },
+      { code: 200, objectId: "ok" },
+    ];
+    const e = new DynatraceApiError(400, "classic", body, "/api/v2/settings/objects");
+    expect(e.message).toBe(
+      "400: request failed. (classic /api/v2/settings/objects) — Validation failed; azure/clientSecret: must not be empty",
+    );
+  });
+
+  it("truncates a long reason and skips it for 5xx", () => {
+    const long = "x".repeat(2000);
+    const e = new DynatraceApiError(400, "classic", [{ error: { message: long } }], "/p");
+    expect(extractApiErrorReason([{ error: { message: long } }]).length).toBe(600);
+    expect(e.message.length).toBeLessThan(700);
+    expect(new DynatraceApiError(500, "classic", [{ error: { message: "nope" } }], "/p").message).not.toContain("nope");
+  });
+
+  it("reads platform-style details: constraintViolations and missingScopes", () => {
+    const body = {
+      error: {
+        code: 403,
+        message: "Forbidden",
+        details: {
+          missingScopes: ["document:documents:write"],
+          constraintViolations: [{ path: "name", message: "must not be blank" }],
+        },
+      },
+    };
+    expect(extractApiErrorReason(body)).toBe(
+      "Forbidden; name: must not be blank; missing scopes: document:documents:write",
+    );
+    expect(extractConstraintViolations(body)).toEqual([{ path: "name", message: "must not be blank" }]);
+  });
+
+  it("reads a top-level message (account management API)", () => {
+    expect(extractApiErrorReason({ code: 400, message: "Group name already exists" })).toBe("Group name already exists");
+  });
+
+  it("reads an OAuth error envelope (SSO token endpoint)", () => {
+    expect(extractApiErrorReason({ error: "invalid_scope", error_description: "Scope not granted to client" })).toBe(
+      "invalid_scope; Scope not granted to client",
+    );
+  });
+
+  it("uses a plain-text body but ignores an HTML error page", () => {
+    expect(extractApiErrorReason("Constraints violated.")).toBe("Constraints violated.");
+    expect(extractApiErrorReason("<html><body>Bad Request</body></html>")).toBe("");
   });
 });

@@ -50,6 +50,51 @@ const FIELD_NOT_FOUND_BODY = {
 };
 
 describe("execute_dql tool", () => {
+  it("surfaces Grail notifications as warnings, plus scannedBytes", async () => {
+    server.use(
+      http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
+        HttpResponse.json({
+          state: "SUCCEEDED",
+          result: {
+            records: [{ n: 1 }],
+            metadata: {
+              grail: {
+                scannedBytes: 1234,
+                notifications: [
+                  {
+                    severity: "WARNING",
+                    notificationType: "RELATIONSHIP_RESULT_SIZE_LIMIT",
+                    message:
+                      "The number of entity IDs in the relationship fields has been limited. Please try filtering or narrowing your timeframe.",
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "execute_dql", arguments: { query: "fetch dt.entity.kubernetes_cluster" } });
+    const body = JSON.parse((res.content as Array<{ text: string }>)[0].text);
+    expect(body.scannedBytes).toBe(1234);
+    expect(body.warnings).toEqual([
+      {
+        severity: "WARNING",
+        type: "RELATIONSHIP_RESULT_SIZE_LIMIT",
+        message:
+          "The number of entity IDs in the relationship fields has been limited. Please try filtering or narrowing your timeframe.",
+      },
+    ]);
+  });
+
+  it("omits warnings when Grail sends none", async () => {
+    const client = await makeClient();
+    const res = await client.callTool({ name: "execute_dql", arguments: { query: "fetch logs | limit 1" } });
+    const body = JSON.parse((res.content as Array<{ text: string }>)[0].text);
+    expect(body.warnings).toBeUndefined();
+  });
+
   it("returns records as JSON text", async () => {
     const client = await makeClient();
     const res = await client.callTool({ name: "execute_dql", arguments: { query: "fetch logs | limit 1" } });

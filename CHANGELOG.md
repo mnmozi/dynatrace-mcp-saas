@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.22.2
+
+- execute_dql now returns Grail's result notifications as `warnings` (severity, type, message) and `scannedBytes`; verify_dql returns `warnings` too. Previously the metadata was fetched and dropped, so warnings a dashboard tile shows (e.g. "The number of entity IDs in the relationship fields has been limited") were invisible to the caller. Keys are omitted when absent
+- Every 4xx error now carries Dynatrace's own reason: `error.message` plus `constraintViolations` (`path: message`) are appended to the error text for all APIs, not only DQL (deduplicated, capped at 600 chars, skipped for 5xx). Previously a non-DQL 400 was flattened to "request failed" and the body discarded. Shapes handled: classic `error.constraintViolations`, platform `error.details.constraintViolations` + `error.details.missingScopes`, account-API top-level `message`, SSO `error` / `error_description`, the Settings 2.0 per-object array, and plain-text bodies (HTML pages ignored)
+- validate_settings_object / create_settings_object / update_settings_object: any validateOnly 400 now returns `{valid:false, violations, reason}`. The Settings 2.0 per-object array body is recognised (it was thrown as an error before), and a 400 with a message but no constraintViolations returns `violations: []` plus `reason` instead of throwing
+- validate_against_live_schema uses the same parser: adds `reason`, `violations` is always an array (it fell back to the raw body before), and non-400 failures (401/403/404/5xx) are now thrown instead of being reported as `valid:false`
+
 ## 0.22.1
 
 - OpenPipeline Configurations API reached END OF LIFE on 2026-06-29 (docs-confirmed verbatim). `update_openpipeline_configuration` no longer attempts the dead `PUT /platform/openpipeline/v1/configurations/{id}`: it keeps the still-supported batch-verify of every DQL processor + matcher and, on the write path (write-gate unchanged), returns a deterministic `{applied:false, deprecated:true, useInstead:{schemas:[builtin:openpipeline.<scope>.pipelines / .routing / .ingest-sources]}}` redirect instead of a confusing "Migration completed" 4xx

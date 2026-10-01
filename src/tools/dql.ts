@@ -4,6 +4,31 @@ import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { DynatraceApiError } from "../http/errors.js";
 
+interface GrailNotification {
+  severity?: string;
+  notificationType?: string;
+  message?: string;
+}
+
+/**
+ * Pull the parts of Grail's result metadata worth showing: notifications are the
+ * warnings a dashboard tile displays (e.g. "The number of entity IDs in the
+ * relationship fields has been limited"), scannedBytes is what DPS bills on.
+ * Keys are omitted when absent so clean results stay unchanged.
+ */
+export function grailInfo(metadata?: Record<string, unknown>): Record<string, unknown> {
+  const grail = (metadata?.grail ?? {}) as { notifications?: GrailNotification[]; scannedBytes?: number };
+  const warnings = (grail.notifications ?? []).map((n) => ({
+    severity: n.severity,
+    type: n.notificationType,
+    message: n.message,
+  }));
+  return {
+    ...(warnings.length ? { warnings } : {}),
+    ...(typeof grail.scannedBytes === "number" ? { scannedBytes: grail.scannedBytes } : {}),
+  };
+}
+
 /**
  * Turn a thrown DQL error into a structured, AI- and human-readable result.
  * Surfaces Dynatrace's own validation detail (human message, error type, and the
@@ -31,6 +56,8 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
         "Execute a Dynatrace Query Language (DQL) statement against Grail and return the result records. " +
         "Use for logs, spans/traces, events, metrics, and entities. " +
         "Example: 'fetch logs | filter loglevel == \"ERROR\" | limit 50'. " +
+        "Returns `warnings` when Grail attaches notifications (the same warnings a dashboard tile shows) " +
+        "and `scannedBytes` (what DPS bills on). " +
         "If you are unsure of DQL syntax, call dql_reference first for embedded Grail DQL knowledge.",
       inputSchema: {
         query: z.string().describe("The DQL statement to execute."),
@@ -46,7 +73,7 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
     async ({ query, maxResultRecords }) => {
       try {
         const result = await deps.client.dqlExecute(query, { maxResultRecords });
-        return jsonResult({ recordCount: result.records.length, records: result.records });
+        return jsonResult({ recordCount: result.records.length, ...grailInfo(result.metadata), records: result.records });
       } catch (e) {
         return dqlErrorResult(e);
       }
@@ -66,8 +93,9 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
     },
     async ({ query }) => {
       try {
-        await deps.client.dqlExecute(`${query} | limit 0`, { maxResultRecords: 1 });
-        return jsonResult({ ok: true });
+        const result = await deps.client.dqlExecute(`${query} | limit 0`, { maxResultRecords: 1 });
+        const { warnings } = grailInfo(result.metadata);
+        return jsonResult({ ok: true, ...(warnings ? { warnings } : {}) });
       } catch (e) {
         return dqlErrorResult(e);
       }
