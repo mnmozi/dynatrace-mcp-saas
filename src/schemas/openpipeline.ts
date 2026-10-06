@@ -37,8 +37,8 @@ export const openPipelineProcessorSchema = z
   .passthrough();
 
 /**
- * Full OpenPipeline configuration object (for update). Kept lenient: the definition
- * tree is large and tenant/version-specific.
+ * An OpenPipeline object to batch-verify. Kept lenient: verification walks the whole tree,
+ * whose shape is large and tenant/version-specific.
  */
 export const openPipelineConfigurationSchema = z
   .object({
@@ -48,9 +48,8 @@ export const openPipelineConfigurationSchema = z
       .record(z.unknown())
       .optional()
       .describe(
-        "The configuration definition tree (endpointsSpecification, pipelinesSpecification, " +
-          "routing/catchAllPipeline, bucketsSpecification, …). " +
-          "Fetch with get_openpipeline_configuration, modify, then send back.",
+        "A definition tree in the retired Configurations API shape (pipelines, routing, …); walked like " +
+          "every other property.",
       ),
   })
   .passthrough();

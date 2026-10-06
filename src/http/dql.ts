@@ -1,5 +1,5 @@
 import type { HostClient } from "../types.js";
-import { extractDqlErrorDetail, formatDqlErrorSuffix } from "./errors.js";
+import { extractApiErrorDetail, formatApiErrorDetail } from "./errors.js";
 
 export interface DqlResult {
   records: Array<Record<string, unknown>>;
@@ -46,8 +46,8 @@ export async function dqlExecute(
     const poll = await platform.get<PollResponse>(`${BASE}/query:poll`, { "request-token": token });
     if (poll.state === "SUCCEEDED") return normalize(poll.result);
     if (poll.state === "FAILED" || poll.state === "CANCELLED") {
-      const suffix = formatDqlErrorSuffix(extractDqlErrorDetail(poll));
-      throw new Error(`DQL query ${poll.state}${suffix || `: ${JSON.stringify(poll)}`}`);
+      const reason = formatApiErrorDetail(extractApiErrorDetail(poll));
+      throw new Error(`DQL query ${poll.state}${reason ? ` — ${reason}` : `: ${JSON.stringify(poll)}`}`);
     }
     await sleep(pollIntervalMs);
   }

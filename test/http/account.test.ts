@@ -107,3 +107,42 @@ describe("AccountClient retry wiring", () => {
     expect(calls).toBe(1);
   });
 });
+
+describe("AccountClient error messages", () => {
+  const once: Config = { ...cfg, maxRetries: 0 };
+  const accountOnce = () => new DynatraceClient(once).requireAccount();
+
+  it("points a 401 at the OAuth client, not the classic Api-Token", async () => {
+    server.use(
+      http.post(SSO, okToken),
+      http.get(`${API}/groups`, () => HttpResponse.json({ message: "Token expired" }, { status: 401 })),
+    );
+    const failure = (await accountOnce()
+      .get("/groups")
+      .catch((e: unknown) => e)) as Error;
+    expect(failure.message).toContain("DT_OAUTH_CLIENT_ID");
+    expect(failure.message).not.toContain("DT_API_TOKEN");
+    expect(failure.message).toContain("(account /groups) — Token expired");
+  });
+
+  it("explains a rejected SSO token request with the OAuth error and description", async () => {
+    server.use(
+      http.post(SSO, () =>
+        HttpResponse.json(
+          { error: "invalid_scope", error_description: "Scope not allowed for this client" },
+          { status: 400 },
+        ),
+      ),
+    );
+    await expect(accountOnce().get("/groups")).rejects.toThrow(
+      '400: request failed. (account SSO token endpoint, scope="iam-policies-management") — invalid_scope; Scope not allowed for this client',
+    );
+  });
+
+  it("names the SSO token endpoint when it cannot be reached", async () => {
+    server.use(http.post(SSO, () => HttpResponse.error()));
+    await expect(accountOnce().get("/groups")).rejects.toThrow(
+      /^Could not reach Dynatrace \(account POST SSO token endpoint, scope="iam-policies-management"\): /,
+    );
+  });
+});

@@ -38,24 +38,24 @@ async function makeClient(config: Config = cfg) {
   return client;
 }
 
-describe("list_openpipeline_configurations", () => {
-  it("returns configuration list containing 'logs'", async () => {
+describe("list_openpipeline_scopes", () => {
+  it("returns the scope list containing 'logs'", async () => {
     const client = await makeClient();
-    const res = await client.callTool({ name: "list_openpipeline_configurations", arguments: {} });
+    const res = await client.callTool({ name: "list_openpipeline_scopes", arguments: {} });
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("logs");
   });
 });
 
-describe("get_openpipeline_configuration", () => {
-  it("returns the config directly when GET-by-id works", async () => {
+describe("get_openpipeline_scope_definition", () => {
+  it("returns the definition directly when GET-by-id works", async () => {
     mswServer.use(
       http.get(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () =>
         HttpResponse.json({ id: "logs", editable: true, definition: { pipelines: ["p1"] } }),
       ),
     );
     const client = await makeClient();
-    const res = await client.callTool({ name: "get_openpipeline_configuration", arguments: { id: "logs" } });
+    const res = await client.callTool({ name: "get_openpipeline_scope_definition", arguments: { id: "logs" } });
     expect(res.isError).toBeFalsy();
     expect((res.content as Array<{ text: string }>)[0].text).toContain("p1");
   });
@@ -73,7 +73,7 @@ describe("get_openpipeline_configuration", () => {
       ),
     );
     const client = await makeClient();
-    const res = await client.callTool({ name: "get_openpipeline_configuration", arguments: { id: "logs" } });
+    const res = await client.callTool({ name: "get_openpipeline_scope_definition", arguments: { id: "logs" } });
     expect(res.isError).toBeFalsy();
     expect((res.content as Array<{ text: string }>)[0].text).toContain("from-list");
   });
@@ -103,18 +103,6 @@ describe("preview_openpipeline_processor", () => {
     expect(res.isError).toBeFalsy();
     const text = (res.content as Array<{ text: string }>)[0].text;
     expect(text).toContain("host.name");
-  });
-});
-
-describe("update_openpipeline_configuration write-gate", () => {
-  it("returns DT_ENABLE_WRITES error when writes are disabled", async () => {
-    const client = await makeClient();
-    const res = await client.callTool({
-      name: "update_openpipeline_configuration",
-      arguments: { id: "logs", configuration: {} },
-    });
-    expect(res.isError).toBe(true);
-    expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
   });
 });
 
@@ -348,49 +336,9 @@ describe("convert_lql_to_dql — typed body acceptance", () => {
   });
 });
 
-describe("update_openpipeline_configuration — typed body acceptance (Configurations API EOL: never PUTs)", () => {
-  it("accepts the typed configuration (passthrough fields) and returns the deprecation redirect without PUTting", async () => {
-    let putCalled = false;
+// ── verify_openpipeline_configuration ────────────────────────────────────────
 
-    mswServer.use(
-      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
-        putCalled = true;
-        return HttpResponse.json({ id: "logs" });
-      }),
-    );
-
-    const writeCfg: Config = { ...cfg, enableWrites: true };
-    const client = await makeClient(writeCfg);
-    const res = await client.callTool({
-      name: "update_openpipeline_configuration",
-      arguments: {
-        id: "logs",
-        configuration: {
-          id: "logs",
-          editable: true,
-          definition: {
-            pipelinesSpecification: { processing: ["fieldsAdd"] },
-            catchAllPipeline: { id: "default" },
-          },
-          // extra field — the typed schema must still accept it (passthrough)
-          customField: "preserved",
-        },
-      },
-    });
-
-    // Typed schema accepted the config (no zod error) …
-    expect(res.isError).toBeFalsy();
-    const out = JSON.parse((res.content as Array<{ text: string }>)[0].text);
-    // … but the EOL'd write is never attempted.
-    expect(out.applied).toBe(false);
-    expect(out.deprecated).toBe(true);
-    expect(putCalled).toBe(false);
-  });
-});
-
-// ── update_openpipeline_configuration auto-verify guard ──────────────────────
-
-/** A minimal config with one DQL processor and one matcher string */
+/** A Configurations-API-shaped tree with one DQL processor and two matchers. */
 const dqlAndMatcherConfig = {
   definition: {
     pipelines: [
@@ -415,185 +363,132 @@ const dqlAndMatcherConfig = {
   },
 };
 
-describe("update_openpipeline_configuration — dryRun verifies, never PUTs", () => {
-  it("returns valid:true with counts when all verify pass and dryRun=true", async () => {
-    let putCalled = false;
+interface VerifyRequests {
+  dqlProcessors: Array<Record<string, unknown>>;
+  matchers: Array<Record<string, unknown>>;
+}
 
-    mswServer.use(
-      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () =>
-        HttpResponse.json({ valid: true, notifications: [] }),
-      ),
-      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () =>
-        HttpResponse.json({ valid: true, notifications: [] }),
-      ),
-      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
-        putCalled = true;
-        return HttpResponse.json({ id: "logs" });
-      }),
-    );
+/** Answer both verify endpoints, recording the request bodies each one received. */
+function serveVerify(answers: { dqlProcessor?: unknown; matcher?: unknown } = {}): VerifyRequests {
+  const requests: VerifyRequests = { dqlProcessors: [], matchers: [] };
+  mswServer.use(
+    http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, async ({ request }) => {
+      requests.dqlProcessors.push((await request.json()) as Record<string, unknown>);
+      return HttpResponse.json(answers.dqlProcessor ?? { valid: true, notifications: [] });
+    }),
+    http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, async ({ request }) => {
+      requests.matchers.push((await request.json()) as Record<string, unknown>);
+      return HttpResponse.json(answers.matcher ?? { valid: true, notifications: [] });
+    }),
+  );
+  return requests;
+}
 
-    const writeCfg: Config = { ...cfg, enableWrites: true };
-    const client = await makeClient(writeCfg);
-    const res = await client.callTool({
-      name: "update_openpipeline_configuration",
-      arguments: { id: "logs", configuration: dqlAndMatcherConfig, dryRun: true },
-    });
-
-    expect(res.isError).toBeFalsy();
-    const text = (res.content as Array<{ text: string }>)[0].text;
-    const result = JSON.parse(text) as { valid: boolean; verified: { dqlProcessors: number; matchers: number } };
-    expect(result.valid).toBe(true);
-    // 1 DQL processor, 2 matchers (one from the processor, one from routingRules)
-    expect(result.verified.dqlProcessors).toBe(1);
-    expect(result.verified.matchers).toBe(2);
-    expect(putCalled).toBe(false);
+async function verifyConfiguration(configuration: unknown) {
+  const client = await makeClient();
+  const res = await client.callTool({
+    name: "verify_openpipeline_configuration",
+    arguments: { id: "logs", configuration },
   });
-});
+  expect(res.isError).toBeFalsy();
+  return JSON.parse((res.content as Array<{ text: string }>)[0].text);
+}
 
-describe("update_openpipeline_configuration — invalid DQL → problems, no PUT", () => {
-  it("returns valid:false with problems and does NOT PUT when DQL verify fails", async () => {
-    let putCalled = false;
+describe("verify_openpipeline_configuration", () => {
+  it("verifies every DQL processor and matcher against the scope and reports the counts", async () => {
+    const requests = serveVerify();
 
-    mswServer.use(
-      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () =>
-        HttpResponse.json({
-          valid: false,
-          notifications: [
-            {
-              severity: "ERROR",
-              message: "There's been an error during parsing: There's no command `parsee`.",
-            },
-          ],
-        }),
-      ),
-      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () =>
-        HttpResponse.json({ valid: true, notifications: [] }),
-      ),
-      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
-        putCalled = true;
-        return HttpResponse.json({ id: "logs" });
-      }),
-    );
+    // Read-only tool: the default cfg has enableWrites:false and it must still run.
+    const result = await verifyConfiguration(dqlAndMatcherConfig);
 
-    const writeCfg: Config = { ...cfg, enableWrites: true };
-    const client = await makeClient(writeCfg);
-    const res = await client.callTool({
-      name: "update_openpipeline_configuration",
-      arguments: { id: "logs", configuration: dqlAndMatcherConfig },
-    });
-
-    // Should NOT be an MCP-level error — returns a structured result
-    expect(res.isError).toBeFalsy();
-    const text = (res.content as Array<{ text: string }>)[0].text;
-    const result = JSON.parse(text) as { valid: boolean; problems: Array<{ kind: string; location: string }> };
-    expect(result.valid).toBe(false);
-    expect(result.problems.length).toBeGreaterThan(0);
-    expect(result.problems.some((p) => p.kind === "dql")).toBe(true);
-    expect(putCalled).toBe(false);
-  });
-});
-
-describe("update_openpipeline_configuration — all valid + writes enabled → verify THEN deprecation redirect (never PUTs)", () => {
-  it("calls verify endpoints, then returns the Settings 2.0 redirect instead of the EOL'd PUT", async () => {
-    let dqlVerifyCalled = false;
-    let matcherVerifyCalled = false;
-    let putCalled = false;
-
-    mswServer.use(
-      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () => {
-        dqlVerifyCalled = true;
-        return HttpResponse.json({ valid: true, notifications: [] });
-      }),
-      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () => {
-        matcherVerifyCalled = true;
-        return HttpResponse.json({ valid: true, notifications: [] });
-      }),
-      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
-        putCalled = true;
-        return HttpResponse.json({ id: "logs", updated: true });
-      }),
-    );
-
-    const writeCfg: Config = { ...cfg, enableWrites: true };
-    const client = await makeClient(writeCfg);
-    const res = await client.callTool({
-      name: "update_openpipeline_configuration",
-      arguments: { id: "logs", configuration: dqlAndMatcherConfig },
-    });
-
-    expect(res.isError).toBeFalsy();
-    const out = JSON.parse((res.content as Array<{ text: string }>)[0].text);
-    // Verification still ran (the still-supported APIs) …
-    expect(dqlVerifyCalled).toBe(true);
-    expect(matcherVerifyCalled).toBe(true);
-    expect(out.verified.dqlProcessors).toBeGreaterThanOrEqual(1);
-    expect(out.verified.matchers).toBeGreaterThanOrEqual(1);
-    // … the dead PUT was NOT attempted, and the redirect names the exact Settings 2.0 schemas.
-    expect(putCalled).toBe(false);
-    expect(out.applied).toBe(false);
-    expect(out.deprecated).toBe(true);
-    expect(out.reason).toMatch(/2026-06-29/);
-    expect(out.useInstead.schemas).toEqual([
-      "builtin:openpipeline.logs.pipelines",
-      "builtin:openpipeline.logs.routing",
-      "builtin:openpipeline.logs.ingest-sources",
+    expect(result).toEqual({ valid: true, verified: { dqlProcessors: 1, matchers: 2 } });
+    expect(requests.dqlProcessors).toEqual([{ script: 'parse content, "SIMPLE_TEXT:msg"', configurationId: "logs" }]);
+    expect(requests.matchers).toEqual([
+      { query: "isNotNull(content)", configurationId: "logs" },
+      { query: 'matchesValue(type, "logs")', configurationId: "logs" },
     ]);
   });
-});
 
-describe("update_openpipeline_configuration — writes disabled + dryRun false + all valid → write-gate blocks", () => {
-  it("blocks with DT_ENABLE_WRITES after verify passes when writes disabled", async () => {
-    mswServer.use(
-      http.post(`${PLATFORM}/platform/openpipeline/v1/dqlProcessor/verify`, () =>
-        HttpResponse.json({ valid: true, notifications: [] }),
-      ),
-      http.post(`${PLATFORM}/platform/openpipeline/v1/matcher/verify`, () =>
-        HttpResponse.json({ valid: true, notifications: [] }),
-      ),
-    );
+  it("verifies the script of a Settings 2.0 pipeline processor (nested under dql.script)", async () => {
+    const requests = serveVerify();
 
-    // default cfg has enableWrites: false
-    const client = await makeClient();
-    const res = await client.callTool({
-      name: "update_openpipeline_configuration",
-      arguments: { id: "logs", configuration: dqlAndMatcherConfig },
-    });
-
-    expect(res.isError).toBe(true);
-    expect((res.content as Array<{ text: string }>)[0].text).toMatch(/DT_ENABLE_WRITES/);
-  });
-});
-
-describe("update_openpipeline_configuration — config with no DQL/matcher → zero verify calls, deprecation redirect, never PUTs", () => {
-  it("skips verify entirely and returns the redirect without PUTting", async () => {
-    let putCalled = false;
-
-    mswServer.use(
-      http.put(`${PLATFORM}/platform/openpipeline/v1/configurations/logs`, () => {
-        putCalled = true;
-        return HttpResponse.json({ id: "logs" });
-      }),
-    );
-
-    const writeCfg: Config = { ...cfg, enableWrites: true };
-    const client = await makeClient(writeCfg);
-    const res = await client.callTool({
-      name: "update_openpipeline_configuration",
-      arguments: {
-        id: "logs",
-        configuration: {
-          id: "logs",
-          editable: true,
-          definition: { pipelinesSpecification: { processing: ["fieldsAdd"] } },
-        },
+    const result = await verifyConfiguration({
+      customId: "orders",
+      displayName: "Orders",
+      processing: {
+        processors: [
+          {
+            type: "dql",
+            id: "parse-order",
+            enabled: true,
+            matcher: "true",
+            dql: { script: "parse content, \"LD 'order=' INT:order.id\"" },
+          },
+        ],
       },
     });
 
-    expect(res.isError).toBeFalsy();
-    const out = JSON.parse((res.content as Array<{ text: string }>)[0].text);
-    expect(out.verified).toEqual({ dqlProcessors: 0, matchers: 0 });
-    expect(out.deprecated).toBe(true);
-    expect(putCalled).toBe(false);
+    expect(requests.dqlProcessors).toEqual([
+      { script: "parse content, \"LD 'order=' INT:order.id\"", configurationId: "logs" },
+    ]);
+    expect(result.verified).toEqual({ dqlProcessors: 1, matchers: 1 });
+  });
+
+  it("returns the invalid items with their location and Dynatrace's errors", async () => {
+    serveVerify({
+      dqlProcessor: {
+        valid: false,
+        notifications: [
+          { severity: "ERROR", message: "There's been an error during parsing: There's no command `parsee`." },
+        ],
+      },
+    });
+
+    const result = await verifyConfiguration(dqlAndMatcherConfig);
+
+    expect(result).toEqual({
+      valid: false,
+      problems: [
+        {
+          kind: "dql",
+          location: "configuration.definition.pipelines[0].processing[0]",
+          valid: false,
+          errors: ["There's been an error during parsing: There's no command `parsee`."],
+          warnings: [],
+        },
+      ],
+    });
+  });
+
+  it("surfaces non-blocking warnings without failing the verification", async () => {
+    serveVerify({
+      matcher: { valid: true, notifications: [{ severity: "WARN", message: "Field `type` may not exist." }] },
+    });
+
+    const result = await verifyConfiguration({ routingRules: [{ matcher: 'matchesValue(type, "logs")' }] });
+
+    expect(result).toEqual({
+      valid: true,
+      verified: { dqlProcessors: 0, matchers: 1 },
+      validationWarnings: [
+        { location: "configuration.routingRules[0].matcher", warnings: ["Field `type` may not exist."] },
+      ],
+    });
+  });
+
+  it("accepts a tree with nothing to verify and calls no verify endpoint", async () => {
+    const requests = serveVerify();
+
+    const result = await verifyConfiguration({
+      id: "logs",
+      editable: true,
+      definition: { pipelinesSpecification: { processing: ["fieldsAdd"] } },
+      // extra field — the lenient schema must still accept it (passthrough)
+      customField: "preserved",
+    });
+
+    expect(result).toEqual({ valid: true, verified: { dqlProcessors: 0, matchers: 0 } });
+    expect(requests).toEqual({ dqlProcessors: [], matchers: [] });
   });
 });
 

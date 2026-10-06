@@ -6,7 +6,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { diffStringSets, diffVersionMap, diffObjectKeyPaths, diffOperations } from "../util/diff.js";
-import { DynatraceApiError, extractApiErrorReason, extractConstraintViolations } from "../http/errors.js";
+import { DynatraceApiError } from "../http/errors.js";
 
 const SPECS_DIR = fileURLToPath(new URL("../../specs/", import.meta.url));
 
@@ -230,8 +230,8 @@ export function registerDriftTools(server: McpServer, deps: ToolDeps): void {
         // Only a 400 is a validation verdict; 401/403/404/5xx say nothing about the value.
         if (!(err instanceof DynatraceApiError) || err.status !== 400) throw err;
         valid = false;
-        violations = extractConstraintViolations(err.body);
-        reason = extractApiErrorReason(err.body);
+        violations = err.detail.violations;
+        reason = err.reason;
       }
 
       // Compute corrected value — filter to keys known in liveSchema.properties

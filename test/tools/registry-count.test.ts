@@ -41,6 +41,11 @@ describe("registry", () => {
       "create_slo",
       "list_monitors",
       "list_vulnerabilities",
+      "list_oneagent_features",
+      "get_trace_sampling_config",
+      "list_openpipeline_scopes",
+      "get_openpipeline_scope_definition",
+      "verify_openpipeline_configuration",
     ]) {
       expect(names).toContain(expected);
     }

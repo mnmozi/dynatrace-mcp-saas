@@ -105,7 +105,8 @@ NOT the record `securityContext` processor; it's a distinct tagging mechanism.
 - **Configurations API is END OF LIFE (2026-06-29).** `PUT /platform/openpipeline/v1/configurations/{id}`
   no longer accepts writes anywhere (tenants answer "Migration in-progress/completed"). Author the
   Settings 2.0 objects instead: `builtin:openpipeline.<scope>.pipelines` / `.routing` / `.ingest-sources`.
-  `update_openpipeline_configuration` therefore no longer writes — it only batch-verifies DQL/matchers.
+  The write tool is gone; `verify_openpipeline_configuration` batch-verifies every DQL script and
+  matcher in the Settings 2.0 value you are about to write (read-only).
   The **GET** still works but returns only each scope's *capability definition* (allowed processors
   per stage, custom-endpoint base path, default bucket) — NOT the pipelines/routing. Use it as the
   per-scope processor allow-list; read real config from Settings 2.0.

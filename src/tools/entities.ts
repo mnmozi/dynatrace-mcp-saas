@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
+import { runGeneratedDql } from "../util/generated-dql.js";
 import { requireWrites } from "../util/guards.js";
 import { escapeQuotes } from "../util/escape.js";
 
@@ -69,7 +70,7 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
       // Default: Grail DQL
       const limit = pageSize ?? 100;
       const query = `fetch dt.entity.host | limit ${limit}`;
-      const result = await deps.client.dqlExecute(query, { maxResultRecords: limit });
+      const result = await runGeneratedDql(deps.client, query, limit);
       const response: Record<string, unknown> = {
         source: "grail-dql",
         query,
@@ -140,7 +141,7 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
       }
       query += ` | limit ${limit}`;
 
-      const result = await deps.client.dqlExecute(query, { maxResultRecords: limit });
+      const result = await runGeneratedDql(deps.client, query, limit);
       return jsonResult({
         source: "grail-dql",
         query,
@@ -179,7 +180,7 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
       const type = entityId.slice(0, entityId.lastIndexOf("-"));
       const table = entityTypeToTable(type);
       const query = `fetch ${table} | filter id == "${escapeQuotes(entityId)}" | limit 1`;
-      const result = await deps.client.dqlExecute(query, { maxResultRecords: 1 });
+      const result = await runGeneratedDql(deps.client, query, 1);
       return jsonResult({
         source: "grail-dql",
         query,
@@ -272,9 +273,7 @@ export function registerEntitiesTools(server: McpServer, deps: ToolDeps): void {
         return jsonResult({ dryRun: true, wouldAssign: securityContext, wouldAffect: matched, note: MZ_WARNING });
       }
       requireWrites(deps.config);
-      return jsonResult(
-        await deps.client.classic.post("/api/v2/entities/securityContext", { securityContext }, query),
-      );
+      return jsonResult(await deps.client.classic.post("/api/v2/entities/securityContext", { securityContext }, query));
     },
   );
 

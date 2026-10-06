@@ -3,7 +3,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
 import { requireWrites } from "../util/guards.js";
-import { DynatraceApiError, extractApiErrorReason, extractConstraintViolations } from "../http/errors.js";
+import { containsIgnoreCase } from "../util/text-match.js";
+import { DynatraceApiError } from "../http/errors.js";
 import type { HostClient } from "../types.js";
 
 /** Discriminated result from a validateOnly call. */
@@ -22,11 +23,7 @@ async function runSettingsValidation(request: () => Promise<unknown>): Promise<V
     return { valid: true };
   } catch (err) {
     if (err instanceof DynatraceApiError && err.status === 400) {
-      return {
-        valid: false,
-        violations: extractConstraintViolations(err.body),
-        reason: extractApiErrorReason(err.body),
-      };
+      return { valid: false, violations: err.detail.violations, reason: err.reason };
     }
     throw err;
   }
@@ -67,13 +64,41 @@ function invalidResult(validation: { violations: unknown[]; reason: string }) {
   });
 }
 
+interface SchemaStub {
+  schemaId?: string;
+  displayName?: string;
+}
+
+interface SchemaList {
+  items?: SchemaStub[];
+  totalCount?: number;
+}
+
+/** The schemas endpoint has no server-side filter, so the query is applied to the response. */
+function keepSchemasMatching(list: SchemaList, query: string) {
+  const items = (list.items ?? []).filter(
+    (schema) => containsIgnoreCase(schema.schemaId ?? "", query) || containsIgnoreCase(schema.displayName ?? "", query),
+  );
+  return { ...list, items, matchedCount: items.length };
+}
+
 export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
   server.registerTool(
     "list_settings_schemas",
     {
       description:
-        "List Settings 2.0 schema ids (classic). These identify configurable settings types. Returns one page; pass nextPageKey to page through results.",
+        "List Settings 2.0 schema ids (classic). These identify configurable settings types. A tenant has several " +
+        "hundred: pass query to get only the ones you need (e.g. 'sampling', 'oneagent.features'). " +
+        "Returns one page; pass nextPageKey to page through results.",
       inputSchema: {
+        query: z
+          .string()
+          .min(1)
+          .optional()
+          .describe(
+            "Keep only schemas whose schemaId or displayName contains this text (case-insensitive substring). " +
+              "The response then adds matchedCount; totalCount stays the tenant's total.",
+          ),
         pageSize: z.number().int().positive().max(500).optional(),
         nextPageKey: z
           .string()
@@ -83,13 +108,13 @@ export function registerSettingsTools(server: McpServer, deps: ToolDeps): void {
           ),
       },
     },
-    async ({ pageSize, nextPageKey }) =>
-      jsonResult(
-        await deps.client.classic.get(
-          "/api/v2/settings/schemas",
-          nextPageKey ? { nextPageKey } : { pageSize: pageSize ?? 500 },
-        ),
-      ),
+    async ({ query, pageSize, nextPageKey }) => {
+      const list = await deps.client.classic.get<SchemaList>(
+        "/api/v2/settings/schemas",
+        nextPageKey ? { nextPageKey } : { pageSize: pageSize ?? 500 },
+      );
+      return jsonResult(query ? keepSchemasMatching(list, query) : list);
+    },
   );
 
   server.registerTool(

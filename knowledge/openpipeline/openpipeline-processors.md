@@ -55,7 +55,7 @@ dataExtraction`. A processor lives in the stage whose `processors[]` array you p
 | | `azureLogForwarding` (azureLogForwarding) | forward to an Azure forwarder (forwarderConfigId, fieldExtraction) |
 
 25 processor types total — but **each scope allows a different subset**. The live per-scope
-allow-list comes from `get_openpipeline_configuration` (`pipelinesSpecification`; verified on a
+allow-list comes from `get_openpipeline_scope_definition` (`pipelinesSpecification`; verified on a
 Gen3 tenant 2026-09). The contrastive facts that trip people up:
 
 | Scope | Notable allow-list facts |
@@ -74,7 +74,7 @@ Gen3 tenant 2026-09). The contrastive facts that trip people up:
 | `user.events` | like logs without `technology`; dataExtraction = bizevent + securityEvent + sdlcEvent |
 
 Only `events`, `security.events`, `events.sdlc` expose **custom ingest endpoints**. When unsure, call
-`get_openpipeline_configuration` for the scope — its `pipelinesSpecification` is authoritative.
+`get_openpipeline_scope_definition` for the scope — its `pipelinesSpecification` is authoritative.
 
 ## Attribute shapes (the type-specific object)
 

@@ -1,5 +1,6 @@
 import type { Config, QueryParams } from "../types.js";
-import { DynatraceApiError } from "./errors.js";
+import { DynatraceApiError, type RequestTarget } from "./errors.js";
+import { fetchForTarget } from "./fetch.js";
 import { runWithRetry, type RequestOpts, type RetryEngineConfig } from "./retry.js";
 
 /**
@@ -42,6 +43,10 @@ export class AccountClient {
     return { maxRetries: this.maxRetries, baseMs: this.retryBaseMs, timeoutMs: this.timeoutMs };
   }
 
+  private target(method: string, path: string): RequestTarget {
+    return { host: "account", method, path, timeoutMs: this.timeoutMs };
+  }
+
   /** The account UUID derived from the URN (urn:dtaccount:<uuid>). */
   get accountUuid(): string {
     return this.accountUrn.replace(/^urn:dtaccount:/, "");
@@ -66,11 +71,12 @@ export class AccountClient {
     });
 
     const serialized = body.toString();
+    const tokenEndpoint = `SSO token endpoint, scope="${scope}"`;
     // The token request is effectively idempotent (re-requesting just mints another
     // token) — route it through the shared engine so it gets retry + wrapped timeouts.
     const outcome = await runWithRetry(
       (signal) =>
-        fetch(this.tokenUrl, {
+        fetchForTarget(this.target("POST", tokenEndpoint), this.tokenUrl, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: serialized,
@@ -92,7 +98,7 @@ export class AccountClient {
       parsed = text;
     }
     if (!res.ok) {
-      throw new DynatraceApiError(res.status, "account", parsed, `(sso token endpoint, scope="${scope}")`);
+      throw DynatraceApiError.fromResponse(res, "account", parsed, tokenEndpoint);
     }
 
     const tok = parsed as { access_token?: string; expires_in?: number };
@@ -134,7 +140,8 @@ export class AccountClient {
       ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
     };
     const outcome = await runWithRetry(
-      (signal) => fetch(url.toString(), { method, headers, body: serialized, signal }),
+      (signal) =>
+        fetchForTarget(this.target(method, path), url.toString(), { method, headers, body: serialized, signal }),
       this.engineCfg(),
       method,
       opts,
@@ -145,7 +152,7 @@ export class AccountClient {
     const text = await res.text();
     const parsed = text ? safeJson(text) : undefined;
     if (!res.ok) {
-      throw new DynatraceApiError(res.status, "account", parsed ?? text, path);
+      throw DynatraceApiError.fromResponse(res, "account", parsed ?? text, path);
     }
     return (parsed ?? { success: true }) as T;
   }

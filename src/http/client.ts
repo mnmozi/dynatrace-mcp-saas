@@ -1,5 +1,6 @@
 import type { Config } from "../types.js";
-import { DynatraceApiError, type HostKind, type QueryParams } from "./errors.js";
+import { DynatraceApiError, type HostKind, type QueryParams, type RequestTarget } from "./errors.js";
+import { fetchForTarget } from "./fetch.js";
 import type { HostClient } from "../types.js";
 import { dqlExecute, type DqlResult } from "./dql.js";
 import { AccountClient } from "./account.js";
@@ -20,7 +21,6 @@ function buildUrl(base: string, path: string, query?: QueryParams): string {
   return url.toString();
 }
 
-
 class HostClientImpl implements HostClient {
   constructor(
     private readonly base: string,
@@ -35,13 +35,17 @@ class HostClientImpl implements HostClient {
     return { maxRetries: this.maxRetries, baseMs: this.retryBaseMs, timeoutMs: this.timeoutMs };
   }
 
+  private target(method: string, path: string): RequestTarget {
+    return { host: this.host, method, path, timeoutMs: this.timeoutMs };
+  }
+
   /** Turn a retry outcome into the parsed body (or the verifier-supplied value). */
   private async finishJson<T>(outcome: RetryOutcome, path: string): Promise<T> {
     if (outcome.kind === "verified") return outcome.value as T;
     const res = outcome.response;
     const text = await res.text();
     const parsed = text ? safeJson(text) : undefined;
-    if (!res.ok) throw new DynatraceApiError(res.status, this.host, parsed ?? text, path);
+    if (!res.ok) throw DynatraceApiError.fromResponse(res, this.host, parsed ?? text, path);
     return parsed as T;
   }
 
@@ -61,7 +65,7 @@ class HostClientImpl implements HostClient {
       Accept: "application/json",
     };
     const outcome = await runWithRetry(
-      (signal) => fetch(url, { method, headers, body: serializedBody, signal }),
+      (signal) => fetchForTarget(this.target(method, path), url, { method, headers, body: serializedBody, signal }),
       this.engineCfg(),
       method,
       opts,
@@ -83,7 +87,7 @@ class HostClientImpl implements HostClient {
       Accept: "application/json",
     };
     const outcome = await runWithRetry(
-      (signal) => fetch(url, { method, headers, body: form, signal }),
+      (signal) => fetchForTarget(this.target(method, path), url, { method, headers, body: form, signal }),
       this.engineCfg(),
       method,
       opts,
@@ -95,7 +99,7 @@ class HostClientImpl implements HostClient {
     const url = buildUrl(this.base, path, query);
     const headers: Record<string, string> = { Authorization: this.authHeader };
     const outcome = await runWithRetry(
-      (signal) => fetch(url, { method: "GET", headers, signal }),
+      (signal) => fetchForTarget(this.target("GET", path), url, { method: "GET", headers, signal }),
       this.engineCfg(),
       "GET",
     );
@@ -104,7 +108,7 @@ class HostClientImpl implements HostClient {
     const text = await res.text();
     if (!res.ok) {
       const parsed = text ? safeJson(text) : undefined;
-      throw new DynatraceApiError(res.status, this.host, parsed ?? text, path);
+      throw DynatraceApiError.fromResponse(res, this.host, parsed ?? text, path);
     }
     return text;
   }

@@ -137,7 +137,7 @@ Set `DT_ENABLE_WRITES=true` in your `.env` (or in the MCP client env config) to 
 | `search_logs`          | Search logs via DQL                             |
 | `search_spans`         | Search spans/traces via DQL                     |
 | `get_trace`            | Retrieve a trace by trace ID                    |
-| `list_metrics`         | List available metric descriptors               |
+| `list_metrics`         | Search metric keys (Grail) or list descriptors  |
 | `get_metric_metadata`  | Get metadata for a specific metric              |
 | `query_metric`         | Query metric data points                        |
 | `list_hosts`           | List host entities                              |
@@ -151,7 +151,11 @@ Set `DT_ENABLE_WRITES=true` in your `.env` (or in the MCP client env config) to 
 
 ### Configuration
 
-**Settings (8 tools):** `list_settings_schemas`, `get_settings_schema`, `list_settings_objects`, `get_settings_object`, `validate_settings_object`, `create_settings_object`, `update_settings_object`, `delete_settings_object`
+**Settings (8 tools):** `list_settings_schemas` (filter with `query`), `get_settings_schema`, `list_settings_objects`, `get_settings_object`, `validate_settings_object`, `create_settings_object`, `update_settings_object`, `delete_settings_object`
+
+**OneAgent (1 tool):** `list_oneagent_features` — exact feature keys, flags and objectIds from `builtin:oneagent.features`
+
+**Trace sampling (1 tool):** `get_trace_sampling_config` — the trace ingest-control and URL/RPC sampling settings of one scope, in one call
 
 **Dashboards (5 tools):** `list_dashboards`, `get_dashboard`, `create_dashboard`, `update_dashboard`, `delete_dashboard`
 

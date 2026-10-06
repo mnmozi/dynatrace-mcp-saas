@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
-import { requireWrites } from "../util/guards.js";
+import type { HostClient } from "../types.js";
 import {
   openPipelineProcessorSchema,
   openPipelineConfigurationSchema,
@@ -33,7 +33,7 @@ type CollectedItem = DqlItem | MatcherItem;
 
 /**
  * Recursively walks `node` and collects:
- *  - DQL processors: any object with `type === "dql"`, capturing `dqlScript ?? script`
+ *  - DQL processors: any object with `type === "dql"`, capturing its script (see dqlProcessorScript)
  *  - Matchers: any property literally named `matcher` whose value is a non-empty string
  */
 function collectVerifyItems(node: unknown, path: string, out: CollectedItem[]): void {
@@ -46,14 +46,8 @@ function collectVerifyItems(node: unknown, path: string, out: CollectedItem[]): 
 
   const obj = node as Record<string, unknown>;
 
-  // Check for DQL processor (type === "dql")
   if (obj["type"] === "dql") {
-    const script =
-      typeof obj["dqlScript"] === "string" && obj["dqlScript"]
-        ? obj["dqlScript"]
-        : typeof obj["script"] === "string" && obj["script"]
-          ? obj["script"]
-          : null;
+    const script = dqlProcessorScript(obj);
     if (script) {
       out.push({ kind: "dql", location: path, script });
     }
@@ -75,6 +69,21 @@ function collectVerifyItems(node: unknown, path: string, out: CollectedItem[]): 
   }
 }
 
+/**
+ * A DQL processor keeps its script in a different place per API generation: Settings 2.0
+ * pipelines nest it as `dql.script`; the retired Configurations API shape carried it on the
+ * processor itself as `dqlScript` (or `script`).
+ */
+function dqlProcessorScript(processor: Record<string, unknown>): string | undefined {
+  const nested = processor["dql"];
+  const candidates = [
+    processor["dqlScript"],
+    processor["script"],
+    nested !== null && typeof nested === "object" ? (nested as Record<string, unknown>)["script"] : undefined,
+  ];
+  return candidates.find((candidate): candidate is string => typeof candidate === "string" && candidate.length > 0);
+}
+
 interface VerifyResult {
   kind: "dql" | "matcher";
   location: string;
@@ -89,10 +98,10 @@ interface RawVerifyResponse {
 }
 
 function interpretVerifyResponse(raw: RawVerifyResponse): { valid: boolean; errors: string[]; warnings: string[] } {
-  // Fail-transparent 3-case: block ONLY on an explicit failure signal — either
+  // Fail-transparent 3-case: invalid ONLY on an explicit failure signal — either
   // valid===false, or an ERROR-severity notification. Ambiguity (no `valid` field,
-  // only WARN notifications) is NOT a block; it proceeds, but the non-blocking
-  // warnings are surfaced so the caller can see what the online check flagged.
+  // only WARN notifications) still counts as valid, but the warnings are surfaced
+  // so the caller can see what the online check flagged.
   const valid = raw.valid !== false && !(raw.notifications ?? []).some((n) => n.severity === "ERROR");
   const errors = (raw.notifications ?? [])
     .filter((n) => n.severity === "ERROR")
@@ -103,26 +112,40 @@ function interpretVerifyResponse(raw: RawVerifyResponse): { valid: boolean; erro
   return { valid, errors, warnings };
 }
 
+/** Verify one collected DQL script or matcher through its online verify endpoint. */
+async function verifyItem(platform: HostClient, scopeId: string, item: CollectedItem): Promise<VerifyResult> {
+  const raw =
+    item.kind === "dql"
+      ? await platform.post<RawVerifyResponse>(`${BASE}/dqlProcessor/verify`, {
+          script: item.script,
+          configurationId: scopeId,
+        })
+      : await platform.post<RawVerifyResponse>(`${BASE}/matcher/verify`, {
+          query: item.value,
+          configurationId: scopeId,
+        });
+  return { kind: item.kind, location: item.location, ...interpretVerifyResponse(raw) };
+}
+
 export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): void {
   // ── Read-only tools ─────────────────────────────────────────────────────────
 
   server.registerTool(
-    "list_openpipeline_configurations",
+    "list_openpipeline_scopes",
     {
       description:
         "List the OpenPipeline data-type scopes (logs, events, bizevents, metrics, spans, security.events, " +
         "events.sdlc, davis.events, davis.problems, user.events, usersessions, smartscape.events, system.events) " +
         "with each scope's capability DEFINITION: allowed processors per stage, custom-endpoint base path, default " +
         "bucket. NOTE: the actual pipelines/routing/ingest-sources are NOT here — they are Settings 2.0 objects " +
-        "(builtin:openpipeline.<scope>.pipelines / .routing / .ingest-sources); read them with list_settings_objects. " +
-        "The Configurations API WRITE path reached end-of-life 2026-06-29; this read still serves the definition.",
+        "(builtin:openpipeline.<scope>.pipelines / .routing / .ingest-sources); read them with list_settings_objects.",
       inputSchema: {},
     },
     async () => jsonResult(await deps.client.platform.get(`${BASE}/configurations`)),
   );
 
   server.registerTool(
-    "get_openpipeline_configuration",
+    "get_openpipeline_scope_definition",
     {
       description:
         "Get a data-type scope's OpenPipeline capability DEFINITION (id): the per-stage processor allow-list " +
@@ -188,8 +211,8 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
       description:
         "Validate a DQL processor script without mutating any configuration (safe, read-only). " +
         "Returns validation errors or a success indicator. " +
-        "Use this to author and validate DQL processing scripts before applying them with " +
-        "update_openpipeline_configuration.",
+        "Use this to author and validate a DQL processing script before writing it into a pipeline with " +
+        "create/update_settings_object (builtin:openpipeline.<scope>.pipelines).",
       inputSchema: {
         body: dqlProcessorVerifySchema.describe(
           "DQL processor verify request: script (the DQL script to validate), optional configurationId, protectedFields.",
@@ -219,7 +242,8 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
     {
       description:
         "Validate a matcher (routing condition) expression without mutating any configuration (safe, read-only). " +
-        "Use this to validate routing conditions before applying them with update_openpipeline_configuration.",
+        "Use this to validate a routing or processor condition before writing it with " +
+        "create/update_settings_object (builtin:openpipeline.<scope>.routing / .pipelines).",
       inputSchema: {
         body: matcherVerifySchema.describe(
           "Matcher verify request: query (the matcher expression), optional configurationId, context, restrictedFields.",
@@ -266,7 +290,8 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
         "Preview the effect of a pipeline processor on sample data without mutating any configuration " +
         "(safe, read-only). " +
         "Returns per-record match and transformed record results. " +
-        "Use this to author and validate processors before applying them with update_openpipeline_configuration. " +
+        "Use this to author and validate a processor before writing it into a pipeline with " +
+        "create/update_settings_object (builtin:openpipeline.<scope>.pipelines). " +
         "Include a 'sampleData' string field (JSON-encoded record) inside the processor definition.",
       inputSchema: {
         processor: openPipelineProcessorSchema.describe(
@@ -384,105 +409,52 @@ export function registerOpenPipelineTools(server: McpServer, deps: ToolDeps): vo
     },
   );
 
-  // ── Write tool (gated) ───────────────────────────────────────────────────────
-
   server.registerTool(
-    "update_openpipeline_configuration",
+    "verify_openpipeline_configuration",
     {
       description:
-        "DEPRECATED WRITE — the OpenPipeline Configurations API (PUT /platform/openpipeline/v1/configurations/{id}) " +
-        "reached END OF LIFE on 2026-06-29; configuration writes are no longer accepted anywhere, so this tool no " +
-        "longer PUTs. What it STILL does (useful): batch-verify every DQL processor and matcher in a configuration " +
-        "object via the still-supported verify endpoints and return the problems — use dryRun:true for that. " +
-        "To CHANGE OpenPipeline config, author the Settings 2.0 objects instead: builtin:openpipeline.<scope>.pipelines " +
-        "/ .routing / .ingest-sources via create/update_settings_object (they auto-validate, dryRun supported). " +
-        "See openpipeline_reference topic 'authoring'.",
+        "Batch-verify every DQL processor script and every matcher found anywhere in an OpenPipeline object, via " +
+        "the online verify endpoints (safe, read-only). Pass the value you are about to write with " +
+        "create/update_settings_object (builtin:openpipeline.<scope>.pipelines / .routing): the whole tree is " +
+        "walked, so one call covers all its processors and routing conditions. Returns valid:true with the counts " +
+        "verified, or valid:false with each failing item's location and Dynatrace's errors. This tool writes " +
+        "nothing: OpenPipeline is changed through those Settings 2.0 objects (see openpipeline_reference topic " +
+        "'authoring').",
       inputSchema: {
         id: z
           .string()
-          .describe("Configuration id / data type to update, e.g. 'logs', 'events', 'bizevents', 'metrics'."),
-        configuration: openPipelineConfigurationSchema.describe(
-          "Configuration object whose DQL processors and matchers are verified. It is NOT written " +
-            "(Configurations API EOL 2026-06-29) — author Settings 2.0 objects to change config.",
-        ),
-        dryRun: z
-          .boolean()
-          .optional()
           .describe(
-            "If true, only verify all DQL processors and matchers in the configuration (no update). " +
-              "Does not require DT_ENABLE_WRITES.",
+            "Scope id / data type the scripts and matchers are verified against, e.g. 'logs', 'events', " +
+              "'bizevents', 'spans'.",
           ),
+        configuration: openPipelineConfigurationSchema.describe(
+          "The object to verify: a Settings 2.0 pipelines or routing value, or any JSON tree holding DQL " +
+            "processors (type:'dql') and matcher strings.",
+        ),
       },
     },
-    async ({ id, configuration, dryRun }) => {
-      // 1. Collect all DQL processors and matchers via deep-walk
+    async ({ id, configuration }) => {
       const items: CollectedItem[] = [];
       collectVerifyItems(configuration, "configuration", items);
 
-      const dqlItems = items.filter((i): i is DqlItem => i.kind === "dql");
-      const matcherItems = items.filter((i): i is MatcherItem => i.kind === "matcher");
+      const results = await Promise.all(items.map((item) => verifyItem(deps.client.platform, id, item)));
 
-      // 2. Verify each item in parallel via online endpoints
-      const results: VerifyResult[] = await Promise.all([
-        ...dqlItems.map(async (item): Promise<VerifyResult> => {
-          const raw = await deps.client.platform.post<RawVerifyResponse>(`${BASE}/dqlProcessor/verify`, {
-            script: item.script,
-            configurationId: id,
-          });
-          const { valid, errors, warnings } = interpretVerifyResponse(raw);
-          return { kind: "dql", location: item.location, valid, errors, warnings };
-        }),
-        ...matcherItems.map(async (item): Promise<VerifyResult> => {
-          const raw = await deps.client.platform.post<RawVerifyResponse>(`${BASE}/matcher/verify`, {
-            query: item.value,
-            configurationId: id,
-          });
-          const { valid, errors, warnings } = interpretVerifyResponse(raw);
-          return { kind: "matcher", location: item.location, valid, errors, warnings };
-        }),
-      ]);
-
-      // 3. Guard: if any item is invalid, return problems without persisting
-      const problems = results.filter((r) => !r.valid);
+      const problems = results.filter((result) => !result.valid);
       if (problems.length > 0) {
         return jsonResult({ valid: false, problems });
       }
 
-      // Non-blocking warnings from the online checks — surfaced but never block the write.
-      const warnings = results.filter((r) => (r.warnings?.length ?? 0) > 0).map((r) => ({ location: r.location, warnings: r.warnings }));
-      const warningField = warnings.length > 0 ? { validationWarnings: warnings } : {};
-
-      // 4. dryRun: all valid, return counts without applying
-      if (dryRun) {
-        return jsonResult({
-          valid: true,
-          verified: { dqlProcessors: dqlItems.length, matchers: matcherItems.length },
-          ...warningField,
-        });
-      }
-
-      // 5. Write path: the Configurations API reached END OF LIFE on 2026-06-29 — the PUT is
-      // dead everywhere (tenants answer "Migration in-progress/completed"). Do NOT attempt it:
-      // a doomed request would surface a confusing 4xx instead of the truth. Keep the write-gate
-      // so the tool's permission semantics are unchanged, then say exactly what to do instead.
-      requireWrites(deps.config);
+      // The online checks can pass an item and still flag it; surface that without failing.
+      const warnings = results
+        .filter((result) => (result.warnings?.length ?? 0) > 0)
+        .map((result) => ({ location: result.location, warnings: result.warnings }));
       return jsonResult({
-        applied: false,
-        deprecated: true,
-        reason:
-          "The OpenPipeline Configurations API (PUT /platform/openpipeline/v1/configurations/{id}) reached " +
-          "end of life on 2026-06-29. Configuration writes are not accepted.",
-        verified: { dqlProcessors: dqlItems.length, matchers: matcherItems.length },
-        useInstead: {
-          how: "Author the Settings 2.0 objects with create/update_settings_object (auto-validated, dryRun supported).",
-          schemas: [
-            `builtin:openpipeline.${id}.pipelines`,
-            `builtin:openpipeline.${id}.routing`,
-            `builtin:openpipeline.${id}.ingest-sources`,
-          ],
-          reference: "openpipeline_reference topic 'authoring'",
+        valid: true,
+        verified: {
+          dqlProcessors: items.filter((item) => item.kind === "dql").length,
+          matchers: items.filter((item) => item.kind === "matcher").length,
         },
-        ...warningField,
+        ...(warnings.length > 0 ? { validationWarnings: warnings } : {}),
       });
     },
   );

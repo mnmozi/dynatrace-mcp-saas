@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
+import { runGeneratedDql } from "../util/generated-dql.js";
 import { DynatraceApiError } from "../http/errors.js";
 
 const SCHEMA_INCOMING = "builtin:bizevents.http.incoming";
@@ -121,7 +122,7 @@ export function registerExtractionTools(server: McpServer, deps: ToolDeps): void
       if (filter) q += ` | filter ${filter}`;
       q += ` | filter isNotNull(content) and startsWith(content, "{") | parse content, "JSON:parsed" | fieldsKeep parsed | limit ${limit ?? 100}`;
 
-      const result = await deps.client.dqlExecute(q, { maxResultRecords: limit ?? 100 });
+      const result = await runGeneratedDql(deps.client, q, limit ?? 100);
 
       const fieldSet = new Set<string>();
       for (const r of result.records) {

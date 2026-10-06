@@ -7,8 +7,9 @@ group them. Verified live on `asn8731h.sprint` (a SaaS-demo EKS tenant — **299
 
 ## 1. There is no classic Metrics API on Gen3
 
-`list_metrics` / `get_metric_metadata` (classic Metrics v2) are **gone** — they need `metrics.read`
-which Grail tenants don't have. Everything is DQL-native:
+The classic Metrics v2 API (`list_metrics` with `selector`, `get_metric_metadata`) is **gone** — it needs
+`metrics.read`, which Grail tenants don't have. Everything is DQL-native (`list_metrics` with `search`
+runs the first query below, filtered to keys containing the text):
 
 | Goal | Command |
 |------|---------|

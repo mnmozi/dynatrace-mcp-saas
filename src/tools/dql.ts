@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
-import { jsonResult } from "../util/result.js";
+import { jsonErrorResult, jsonResult } from "../util/result.js";
 import { DynatraceApiError } from "../http/errors.js";
 
 interface GrailNotification {
@@ -30,22 +30,26 @@ export function grailInfo(metadata?: Record<string, unknown>): Record<string, un
 }
 
 /**
- * Turn a thrown DQL error into a structured, AI- and human-readable result.
- * Surfaces Dynatrace's own validation detail (human message, error type, and the
- * exact line/column) instead of the generic "request failed" envelope.
+ * Grail rejected the query itself (syntax, unknown field, wrong type). Auth, rate-limit,
+ * server and transport failures are not query problems: callers rethrow those so the
+ * standard message (status, host, token hint) reaches the caller intact.
  */
-function dqlErrorResult(e: unknown): ReturnType<typeof jsonResult> {
-  if (e instanceof DynatraceApiError) {
-    const d = e.detail;
-    return jsonResult({
-      ok: false,
-      error: d.message ?? e.message,
-      ...(d.errorType ? { errorType: d.errorType } : {}),
-      ...(d.exceptionType ? { exceptionType: d.exceptionType } : {}),
-      ...(d.position ? { position: d.position } : {}),
-    });
-  }
-  return jsonResult({ ok: false, error: e instanceof Error ? e.message : String(e) });
+function isQueryRejection(e: unknown): e is DynatraceApiError {
+  if (!(e instanceof DynatraceApiError) || e.status !== 400) return false;
+  const { errorType, exceptionType, position } = e.detail;
+  return Boolean(errorType || exceptionType || position);
+}
+
+/** Dynatrace's own validation detail: human message, error type, and the exact line/column. */
+function queryRejection(e: DynatraceApiError) {
+  const { message, errorType, exceptionType, position } = e.detail;
+  return {
+    ok: false,
+    error: message ?? errorType ?? e.message,
+    ...(errorType ? { errorType } : {}),
+    ...(exceptionType ? { exceptionType } : {}),
+    ...(position ? { position } : {}),
+  };
 }
 
 export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
@@ -58,6 +62,7 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
         "Example: 'fetch logs | filter loglevel == \"ERROR\" | limit 50'. " +
         "Returns `warnings` when Grail attaches notifications (the same warnings a dashboard tile shows) " +
         "and `scannedBytes` (what DPS bills on). " +
+        "A query Grail rejects returns ok=false with its message, errorType and the exact line/column. " +
         "If you are unsure of DQL syntax, call dql_reference first for embedded Grail DQL knowledge.",
       inputSchema: {
         query: z.string().describe("The DQL statement to execute."),
@@ -73,9 +78,14 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
     async ({ query, maxResultRecords }) => {
       try {
         const result = await deps.client.dqlExecute(query, { maxResultRecords });
-        return jsonResult({ recordCount: result.records.length, ...grailInfo(result.metadata), records: result.records });
+        return jsonResult({
+          recordCount: result.records.length,
+          ...grailInfo(result.metadata),
+          records: result.records,
+        });
       } catch (e) {
-        return dqlErrorResult(e);
+        if (!isQueryRejection(e)) throw e;
+        return jsonErrorResult(queryRejection(e));
       }
     },
   );
@@ -97,7 +107,9 @@ export function registerDqlTools(server: McpServer, deps: ToolDeps): void {
         const { warnings } = grailInfo(result.metadata);
         return jsonResult({ ok: true, ...(warnings ? { warnings } : {}) });
       } catch (e) {
-        return dqlErrorResult(e);
+        if (!isQueryRejection(e)) throw e;
+        // A rejected query is this tool's answer, not a failure of the tool.
+        return jsonResult(queryRejection(e));
       }
     },
   );

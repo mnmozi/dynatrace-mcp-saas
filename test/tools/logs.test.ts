@@ -51,4 +51,38 @@ describe("search_logs", () => {
     expect(text).toContain("from:now()-1h");
     expect(text).not.toContain("from:now-1h");
   });
+
+  it("shows the query it generated when Grail rejects it, so the reported position can be located", async () => {
+    server.use(
+      http.post("https://plat.example.com/platform/storage/query/v1/query:execute", () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 400,
+              message: "NAMED_PARAMETER_HAS_TO_BE_CONSTANT",
+              details: {
+                exceptionType: "DQL-SYNTAX-ERROR",
+                errorType: "NAMED_PARAMETER_HAS_TO_BE_CONSTANT",
+                errorMessage: "The parameter `from` has to be constant, but `bogus` accesses data.",
+                syntaxErrorPosition: {
+                  start: { column: 18, index: 17, line: 1 },
+                  end: { column: 22, index: 21, line: 1 },
+                },
+              },
+            },
+          },
+          { status: 400 },
+        ),
+      ),
+    );
+    const client = await makeClient();
+    const res = await client.callTool({ name: "search_logs", arguments: { from: "bogus" } });
+    expect(res.isError).toBe(true);
+    expect((res.content as Array<{ text: string }>)[0].text).toBe(
+      "400: request failed. (platform /platform/storage/query/v1/query:execute) — " +
+        "The parameter `from` has to be constant, but `bogus` accesses data. " +
+        "[NAMED_PARAMETER_HAS_TO_BE_CONSTANT @ line 1, col 18]\n" +
+        "Generated DQL: fetch logs, from:bogus | sort timestamp desc | limit 100",
+    );
+  });
 });

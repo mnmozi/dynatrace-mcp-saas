@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { jsonResult, textResult } from "../src/util/result.js";
+import { jsonErrorResult, jsonResult, textResult } from "../src/util/result.js";
 
 describe("jsonResult", () => {
   it("serializes an object to JSON text", () => {
@@ -13,6 +13,12 @@ describe("jsonResult", () => {
     // must be a string, never the value `undefined` (would be an invalid MCP result)
     expect(typeof r.content[0].text).toBe("string");
     expect(r.content[0].text).toContain("success");
+  });
+
+  it("jsonErrorResult keeps the structured payload and flags it as an error", () => {
+    const r = jsonErrorResult({ ok: false });
+    expect(r.isError).toBe(true);
+    expect(r.content[0].text).toContain('"ok": false');
   });
 
   it("textResult wraps a string", () => {

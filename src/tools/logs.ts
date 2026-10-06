@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolDeps } from "./registry.js";
 import { jsonResult } from "../util/result.js";
+import { runGeneratedDql } from "../util/generated-dql.js";
 import { escapeQuotes } from "../util/escape.js";
 
 export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
@@ -29,7 +30,7 @@ export function registerLogsTools(server: McpServer, deps: ToolDeps): void {
       let q = `fetch logs, from:${from ?? "now()-1h"}`;
       if (filters.length) q += ` | filter ${filters.join(" and ")}`;
       q += ` | sort timestamp desc | limit ${limit ?? 100}`;
-      const result = await deps.client.dqlExecute(q, { maxResultRecords: limit ?? 100 });
+      const result = await runGeneratedDql(deps.client, q, limit ?? 100);
       return jsonResult({ query: q, recordCount: result.records.length, records: result.records });
     },
   );

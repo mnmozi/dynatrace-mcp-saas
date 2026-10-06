@@ -38,4 +38,23 @@ describe("dqlExecute", () => {
     const r = await c.dqlExecute("fetch dt.entity.host | limit 1", { pollIntervalMs: 1 });
     expect(r.records).toEqual([{ host: "h1" }]);
   });
+
+  it("reports a query that FAILED while polling with Grail's message and error type", async () => {
+    server.use(
+      http.get("https://plat.example.com/platform/storage/query/v1/query:poll", () =>
+        HttpResponse.json({
+          state: "FAILED",
+          error: {
+            code: 400,
+            message: "QUERY_TIMEOUT",
+            details: { errorType: "QUERY_TIMEOUT", errorMessage: "Query exceeded the time limit." },
+          },
+        }),
+      ),
+    );
+    const c = new DynatraceClient(cfg);
+    await expect(c.dqlExecute("fetch logs", { pollIntervalMs: 1 })).rejects.toThrow(
+      "DQL query FAILED — Query exceeded the time limit. [QUERY_TIMEOUT]",
+    );
+  });
 });

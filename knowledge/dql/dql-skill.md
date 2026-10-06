@@ -54,8 +54,8 @@ substituted *before* the query runs (a raw API call with an unbound `$x` errors)
 **NOT fetchable (hard 400):**
 - **`fetch dt.slo.*`** — no Grail SLO surface. Use MCP tools `list_slos` / `evaluate_slo` /
   `list_objective_templates`, or compute the SLI via `timeseries` over `dt.service.request.*`.
-- **Classic Metrics v2 API** (`list_metrics`, `get_metric_metadata`) — gone on Gen3 (needs `metrics.read`).
-  Discover metrics via `fetch metric.series | summarize by: {metric.key}` instead.
+- **Classic Metrics v2 API** (`list_metrics` with `selector`, `get_metric_metadata`) — gone on Gen3 (needs `metrics.read`).
+  Discover metrics via `list_metrics` with `search`, or `fetch metric.series | summarize by: {metric.key}`.
 
 ---
 
@@ -147,7 +147,7 @@ take `filter: {…}`.
 | 12 | **No `fetch dt.slo.*`** (hard 400). | `fetch dt.slo.…` | MCP `list_slos`/`evaluate_slo`/`list_objective_templates`, or compute SLI via `timeseries` over `dt.service.request.*` |
 | 13 | **Davis problems are a STREAM of status rows.** `event.kind` has 3 values (DAVIS_PROBLEM/DAVIS_EVENT/FLEET_EVENT). | filter a constant field after summarize (bug #1) | dedup by `display_id` or `countDistinct(display_id)` |
 | 14 | **k8s pod/container counts: `count()` of series or `sum`, never `avg`** (gauge is 1 per pod). | `avg(dt.kubernetes.pods)` → "1 per ns" | `fetch metric.series \| summarize count(), by:{…}` |
-| 15 | **`get_openpipeline_configuration` returns the SPEC** (allowed processor types), not concrete instances. | read it for actual routing | `dt.openpipeline.pipelines` is an array → `summarize by:{dt.openpipeline.pipelines}` |
+| 15 | **`get_openpipeline_scope_definition` returns the SPEC** (allowed processor types), not concrete instances. | read it for actual routing | `dt.openpipeline.pipelines` is an array → `summarize by:{dt.openpipeline.pipelines}` |
 | 16 | **DIAGNOSTIC DISCIPLINE** — an opaque `400: request failed` can be a transient backend outage (the `timeseries` metric path had one), NOT a query-shape bug. | "fix" a query that was never broken | re-run a known-good control of the SAME kind (`fetch spans \| summarize count()`) to isolate subsystem (timeseries vs fetch vs data) before concluding |
 | — | **invalid entity/metric attribute names error the whole query**; **`describe`/`fieldsSummary` first.** | guess attr names | `describe dt.entity.host` → `fieldsSummary f` → real query |
 

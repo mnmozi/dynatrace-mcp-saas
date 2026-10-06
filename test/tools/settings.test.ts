@@ -59,6 +59,56 @@ describe("list_settings_schemas", () => {
     const res = await client.callTool({ name: "list_settings_schemas", arguments: {} });
     expect((res.content as Array<{ text: string }>)[0].text).toContain("builtin:tags");
   });
+
+  describe("query filter", () => {
+    const schemas = [
+      { schemaId: "builtin:tags", displayName: "Tags" },
+      { schemaId: "builtin:url-based-sampling", displayName: "URL-based sampling" },
+      { schemaId: "builtin:trace.ingest.control", displayName: "Trace sampling for HTTP requests" },
+      { schemaId: "builtin:oneagent.features", displayName: "OneAgent features" },
+    ];
+
+    async function listSchemas(args: Record<string, unknown>) {
+      server.use(
+        http.get("https://classic.example.com/api/v2/settings/schemas", () =>
+          HttpResponse.json({ items: schemas, totalCount: 4 }),
+        ),
+      );
+      const client = await makeClient();
+      const res = await client.callTool({ name: "list_settings_schemas", arguments: args });
+      expect(res.isError).toBeFalsy();
+      return JSON.parse((res.content as Array<{ text: string }>)[0].text);
+    }
+
+    it("keeps only schemas whose schemaId contains the query", async () => {
+      const body = await listSchemas({ query: "oneagent" });
+      expect(body.items).toEqual([{ schemaId: "builtin:oneagent.features", displayName: "OneAgent features" }]);
+    });
+
+    it("matches the displayName as well, ignoring case", async () => {
+      const body = await listSchemas({ query: "SAMPLING" });
+      expect(body.items.map((s: { schemaId: string }) => s.schemaId)).toEqual([
+        "builtin:url-based-sampling",
+        "builtin:trace.ingest.control",
+      ]);
+    });
+
+    it("reports how many matched next to the tenant's total", async () => {
+      const body = await listSchemas({ query: "sampling" });
+      expect(body.matchedCount).toBe(2);
+      expect(body.totalCount).toBe(4);
+    });
+
+    it("returns an empty list, not an error, when nothing matches", async () => {
+      const body = await listSchemas({ query: "no-such-schema" });
+      expect(body).toEqual({ items: [], totalCount: 4, matchedCount: 0 });
+    });
+
+    it("returns the response untouched when no query is given", async () => {
+      const body = await listSchemas({});
+      expect(body).toEqual({ items: schemas, totalCount: 4 });
+    });
+  });
 });
 
 describe("list_settings_objects pagination", () => {

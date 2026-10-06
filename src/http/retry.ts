@@ -109,8 +109,10 @@ function sleep(ms: number): Promise<void> {
 /**
  * Run a fetch with retries. `attempt` performs one request with the given abort signal;
  * the engine handles timeout, the retry decision, backoff, Retry-After, verifyApplied,
- * and the DELETE-404-on-retry=success case. Returns a RetryOutcome; on a terminal
- * network error it rethrows the underlying error for the caller to normalize.
+ * and the DELETE-404-on-retry=success case. Returns a RetryOutcome. When the retry budget
+ * runs out, the last HTTP response any attempt received wins; only when no attempt got a
+ * response does it rethrow what `attempt` threw (the clients' attempts throw a
+ * DynatraceNetworkError naming the request).
  */
 export async function runWithRetry(
   attempt: (signal: AbortSignal) => Promise<Response>,
@@ -169,7 +171,9 @@ export async function runWithRetry(
       if (verified) return verified;
 
       const waitMs =
-        res.status === 429 ? (parseRetryAfterMs(res.headers.get("Retry-After")) ?? backoffMs(cfg.baseMs, attemptIdx)) : backoffMs(cfg.baseMs, attemptIdx);
+        res.status === 429
+          ? (parseRetryAfterMs(res.headers.get("Retry-After")) ?? backoffMs(cfg.baseMs, attemptIdx))
+          : backoffMs(cfg.baseMs, attemptIdx);
       await sleep(waitMs);
     } catch (err) {
       clearTimeout(timer);

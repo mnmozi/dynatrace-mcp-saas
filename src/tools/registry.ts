@@ -44,6 +44,7 @@ import { registerCostTools } from "./cost.js";
 import { registerIamUserTools } from "./iam-users.js";
 import { registerPermissionTools } from "./permissions.js";
 import { registerPlatformTokenTools } from "./platform-tokens.js";
+import { registerOneAgentTools } from "./oneagent.js";
 
 export interface ToolDeps {
   client: DynatraceClient;
@@ -94,4 +95,5 @@ export function registerAllTools(server: McpServer, deps: ToolDeps): void {
   registerIamUserTools(server, deps);
   registerPermissionTools(server, deps);
   registerPlatformTokenTools(server, deps);
+  registerOneAgentTools(server, deps);
 }
