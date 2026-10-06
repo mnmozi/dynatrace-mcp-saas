@@ -36,7 +36,8 @@ const oauthClientPrefix = "Requires the account OAuth client (DT_OAUTH_CLIENT_ID
 /** Standard tool-description notes, one per scope — keeps the wording consistent. */
 export const ACCOUNT_NOTES = {
   idmRead: `${oauthClientPrefix} with the account-idm-read scope.`,
-  idmWrite: "WRITE. Requires the account OAuth client with the account-idm-write scope (the client must be created with it).",
+  idmWrite:
+    "WRITE. Requires the account OAuth client with the account-idm-write scope (the client must be created with it).",
   uacRead: `${oauthClientPrefix} with the account-uac-read scope.`,
 } as const;
 

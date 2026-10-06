@@ -92,9 +92,7 @@ export function registerRawTools(server: McpServer, deps: ToolDeps): void {
       }
       requireWrites(deps.config);
       // /platform/ingest/* is served on the environment/classic host, not the apps host.
-      return jsonResult(
-        await deps.client.classic.post(path, body, query, { retryClass: "append", contentType }),
-      );
+      return jsonResult(await deps.client.classic.post(path, body, query, { retryClass: "append", contentType }));
     },
   );
 }

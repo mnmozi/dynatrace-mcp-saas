@@ -9,3 +9,6 @@ knowledge
 
 # Lockfile
 package-lock.json
+
+# Claude Code session worktrees (.claude/worktrees/) — other sessions' checkouts, not ours to reformat
+.claude

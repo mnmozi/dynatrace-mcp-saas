@@ -24,7 +24,9 @@ export function registerIngestTools(server: McpServer, deps: ToolDeps): void {
       requireWrites(deps.config);
       // Data ingest is append-only with no stable record identity — never retry on
       // 5xx/network (a retry would duplicate the record). Only 429/408 (pre-processing) retry.
-      return jsonResult(await deps.client.classic.post("/api/v2/logs/ingest", logs, undefined, { retryClass: "append" }));
+      return jsonResult(
+        await deps.client.classic.post("/api/v2/logs/ingest", logs, undefined, { retryClass: "append" }),
+      );
     },
   );
 

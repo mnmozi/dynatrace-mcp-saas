@@ -153,7 +153,12 @@ export function registerDavisAnalyzerTools(server: McpServer, deps: ToolDeps): v
         });
       }
 
-      return jsonResult({ executed: true, completed: true, ...res, ...(validationWarning ? { validationWarning } : {}) });
+      return jsonResult({
+        executed: true,
+        completed: true,
+        ...res,
+        ...(validationWarning ? { validationWarning } : {}),
+      });
     },
   );
 }

@@ -33,9 +33,7 @@ const cfg: Config = {
   retryBaseMs: 1,
 };
 
-const mswServer = setupServer(
-  http.post(SSO, () => HttpResponse.json({ access_token: "oauth-tok", expires_in: 300 })),
-);
+const mswServer = setupServer(http.post(SSO, () => HttpResponse.json({ access_token: "oauth-tok", expires_in: 300 })));
 
 beforeAll(() => mswServer.listen({ onUnhandledRequest: "error" }));
 afterEach(() => mswServer.resetHandlers());
@@ -56,7 +54,12 @@ const text = (r: Awaited<ReturnType<Client["callTool"]>>) => (r.content as Array
 function stubGroupWorld(bindings: unknown[]) {
   mswServer.use(
     http.get(`${ACCT}/groups`, () =>
-      HttpResponse.json({ items: [{ uuid: GROUP, name: "SRE" }, { uuid: "other", name: "Other" }] }),
+      HttpResponse.json({
+        items: [
+          { uuid: GROUP, name: "SRE" },
+          { uuid: "other", name: "Other" },
+        ],
+      }),
     ),
     http.get(`${ACCT}/groups/${GROUP}/permissions`, () => HttpResponse.json({ permissions: [] })),
     http.get(`${ACCT}/groups/${GROUP}/users`, () => HttpResponse.json([{ uid: "u1", email: "a@b.co" }])),

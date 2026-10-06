@@ -1,12 +1,13 @@
 // Flat ESLint config (ESLint 9). Lints application + test TypeScript only.
-// Vendored data (specs/, knowledge/) and build output (dist/) are excluded.
+// Vendored data (specs/, knowledge/) and build output (dist/) are excluded, as are
+// Claude Code session worktrees (.claude/worktrees/) — other sessions' checkouts.
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "node_modules/**", "specs/**", "knowledge/**", "coverage/**"],
+    ignores: ["dist/**", "node_modules/**", "specs/**", "knowledge/**", "coverage/**", ".claude/**"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

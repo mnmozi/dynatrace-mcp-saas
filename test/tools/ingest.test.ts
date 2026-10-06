@@ -149,7 +149,10 @@ describe("ingest_bizevents content-type", () => {
     const client = await makeClient(writeCfg);
     await client.callTool({
       name: "ingest_bizevents",
-      arguments: { bizevent: { specversion: "1.0", source: "checkout", type: "order.attempt", id: "1" }, cloudEvent: true },
+      arguments: {
+        bizevent: { specversion: "1.0", source: "checkout", type: "order.attempt", id: "1" },
+        cloudEvent: true,
+      },
     });
     expect(ct).toContain("application/cloudevent+json");
   });
