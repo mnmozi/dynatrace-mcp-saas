@@ -89,6 +89,7 @@ Needed for DQL/Grail, document APIs, SLOs, synthetic, and vulnerabilities:
 - `slo:slos:read`, `slo:slos:write`
 - `automation:workflows:read` (optional, for synthetic execution)
 - `securitySensor:vulnerabilities:read`
+- `settings:objects:read`, `settings:objects:write` (for Gen3 anomaly detectors, `builtin:davis.anomaly-detectors`, see below)
 
 ---
 
@@ -152,6 +153,8 @@ Set `DT_ENABLE_WRITES=true` in your `.env` (or in the MCP client env config) to 
 ### Configuration
 
 **Settings (8 tools):** `list_settings_schemas` (filter with `query`), `get_settings_schema`, `list_settings_objects`, `get_settings_object`, `validate_settings_object`, `create_settings_object`, `update_settings_object`, `delete_settings_object`
+
+Settings requests go to the classic host with the Api-Token, with one exception. Gen3 anomaly detectors (`builtin:davis.anomaly-detectors`, the metric alerts of a Grail tenant) are accepted only from a request that carries a user identity, so validate, create, update and delete for that schema go to the same Settings API on the platform host (`/platform/classic/environment-api/v2/settings/objects`) with the platform token. Dynatrace sets `executionSettings.actor` to the token's user; pass `executionSettings: {}`. A result that used the platform host is `{via, result}`.
 
 **OneAgent (1 tool):** `list_oneagent_features` — exact feature keys, flags and objectIds from `builtin:oneagent.features`
 

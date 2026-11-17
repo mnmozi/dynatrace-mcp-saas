@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.23.1
+
+- create_settings_object / update_settings_object / delete_settings_object / validate_settings_object can now manage Gen3 anomaly detectors (`builtin:davis.anomaly-detectors`, the metric alerts of a Grail tenant). Dynatrace accepts these objects only from a request that carries a user identity: on the classic host with the Api-Token it answers `executionSettings/actor: Must not be null` and `analyzer: Could not do validation as request was not done using oAuth.` The tools now send this schema to the Settings API mounted on the platform host (`/platform/classic/environment-api/v2/settings/objects`) with `DT_PLATFORM_TOKEN`, which needs the scopes `settings:objects:read` and `settings:objects:write`. Update and delete recognise a detector by the schemaId embedded in its base64url objectId. Any other schema that the classic host refuses with the same "not done using oAuth" violation is retried on the platform host. A result that used the platform host is `{via, result}`; classic results are unchanged
+- Verified live on a sprint tenant: a platform token is enough (no OAuth client needed), `executionSettings: {}` is accepted and Dynatrace sets `executionSettings.actor` to the token's user, and a create / read / update / delete round trip through the tools leaves nothing behind. Reads (get_settings_object, list_settings_objects) work on the classic host for this schema and stay there
+- Failures say what is missing: without a platform token the validation result adds a `hint` naming `DT_PLATFORM_URL` / `DT_PLATFORM_TOKEN` and the two scopes; a 401/403 from the platform host on a settings request names the scopes the platform token needs
+- The create_settings_object description carries the detector value shape (static-threshold analyzer, string inputs, event template), so a session can build one without reading the schema first
+
 ## 0.23.0
 
 - BREAKING — OpenPipeline tools renamed to say what they return. `list_openpipeline_configurations` → `list_openpipeline_scopes` and `get_openpipeline_configuration` → `get_openpipeline_scope_definition`: both return each scope's capability DEFINITION (processor allow-list per stage, custom-endpoint base path, default bucket), never the pipelines or routing, and the old names invited reading them as the latter. No aliases — an alias would keep the trap

@@ -395,3 +395,190 @@ describe("validate_settings_object — 400 body shapes", () => {
     });
   });
 });
+
+describe("schemas that need a user identity go through the platform host", () => {
+  const PLATFORM_OBJECTS = "https://p/platform/classic/environment-api/v2/settings/objects";
+  const CLASSIC_OBJECTS = "https://classic.example.com/api/v2/settings/objects";
+  const DETECTOR_SCHEMA = "builtin:davis.anomaly-detectors";
+  /** Real objectIds are base64url with the schemaId embedded as text. */
+  const detectorObjectId = Buffer.from(`\u0000\u0001${DETECTOR_SCHEMA}\u0000tenant\u0000abc`).toString("base64url");
+  const detector = { enabled: true, title: "RDS CPU high" };
+  const missingIdentity = {
+    error: {
+      code: 400,
+      message: "Validation failed",
+      constraintViolations: [
+        { path: "x/0/analyzer", message: "Could not do validation as request was not done using oAuth." },
+      ],
+    },
+  };
+
+  function bodyOf(res: Awaited<ReturnType<Client["callTool"]>>) {
+    return JSON.parse((res.content as Array<{ text: string }>)[0].text);
+  }
+
+  it("creates an anomaly detector on the platform host with the platform token, never the classic host", async () => {
+    const authHeaders: string[] = [];
+    server.use(
+      http.post(PLATFORM_OBJECTS, ({ request }) => {
+        authHeaders.push(request.headers.get("authorization") ?? "");
+        const validateOnly = new URL(request.url).searchParams.get("validateOnly") === "true";
+        return HttpResponse.json(validateOnly ? {} : [{ objectId: "det-1", code: 200 }]);
+      }),
+    );
+
+    const client = await makeClient(cfgWritesEnabled);
+    const res = await client.callTool({
+      name: "create_settings_object",
+      arguments: { schemaId: DETECTOR_SCHEMA, scope: "environment", value: detector },
+    });
+
+    expect(res.isError).toBeFalsy();
+    expect(authHeaders).toEqual(["Bearer P", "Bearer P"]);
+    expect(bodyOf(res)).toEqual({
+      via: "platform host (platform token identity)",
+      result: [{ objectId: "det-1", code: 200 }],
+    });
+  });
+
+  it("falls back to the platform host when the classic host refuses an unlisted schema for lack of identity", async () => {
+    const calls: string[] = [];
+    server.use(
+      http.post(CLASSIC_OBJECTS, () => {
+        calls.push("classic");
+        return HttpResponse.json(missingIdentity, { status: 400 });
+      }),
+      http.post(PLATFORM_OBJECTS, ({ request }) => {
+        const validateOnly = new URL(request.url).searchParams.get("validateOnly") === "true";
+        calls.push(validateOnly ? "platform-validate" : "platform-persist");
+        return HttpResponse.json(validateOnly ? {} : [{ objectId: "other-1", code: 200 }]);
+      }),
+    );
+
+    const client = await makeClient(cfgWritesEnabled);
+    const res = await client.callTool({
+      name: "create_settings_object",
+      arguments: { schemaId: "builtin:some.future.identity-bound", scope: "environment", value: {} },
+    });
+
+    expect(calls).toEqual(["classic", "platform-validate", "platform-persist"]);
+    expect(bodyOf(res).result).toEqual([{ objectId: "other-1", code: 200 }]);
+  });
+
+  it("returns the platform host's violations when the detector payload itself is wrong", async () => {
+    server.use(
+      http.post(PLATFORM_OBJECTS, () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 400,
+              constraintViolations: [{ path: "x/0/executionSettings/actor", message: "Must not be null" }],
+            },
+          },
+          { status: 400 },
+        ),
+      ),
+    );
+
+    const client = await makeClient(cfgWritesEnabled);
+    const res = await client.callTool({
+      name: "create_settings_object",
+      arguments: { schemaId: DETECTOR_SCHEMA, scope: "environment", value: detector },
+    });
+
+    expect(bodyOf(res).violations).toEqual([{ path: "x/0/executionSettings/actor", message: "Must not be null" }]);
+  });
+
+  it("without a platform token the detector stays on the classic host and its refusal is returned", async () => {
+    server.use(http.post(CLASSIC_OBJECTS, () => HttpResponse.json(missingIdentity, { status: 400 })));
+
+    const client = await makeClient({ ...cfgWritesEnabled, platformToken: undefined });
+    const res = await client.callTool({
+      name: "create_settings_object",
+      arguments: { schemaId: DETECTOR_SCHEMA, scope: "environment", value: detector },
+    });
+
+    expect(bodyOf(res).valid).toBe(false);
+    expect(bodyOf(res).reason).toContain("not done using oAuth");
+  });
+
+  it("tells the caller to configure a platform token when the classic host refuses for lack of identity", async () => {
+    server.use(http.post(CLASSIC_OBJECTS, () => HttpResponse.json(missingIdentity, { status: 400 })));
+
+    const client = await makeClient({ ...cfgWritesEnabled, platformToken: undefined });
+    const res = await client.callTool({
+      name: "create_settings_object",
+      arguments: { schemaId: DETECTOR_SCHEMA, scope: "environment", value: detector },
+    });
+
+    expect(bodyOf(res).hint).toContain("DT_PLATFORM_TOKEN");
+    expect(bodyOf(res).hint).toContain("settings:objects:write");
+  });
+
+  it("gives no platform-token hint for an ordinary classic violation", async () => {
+    server.use(
+      http.post(CLASSIC_OBJECTS, () =>
+        HttpResponse.json(
+          { error: { code: 400, constraintViolations: [{ path: "x/0/name", message: "Must not be blank" }] } },
+          { status: 400 },
+        ),
+      ),
+    );
+
+    const client = await makeClient(cfgWritesEnabled);
+    const res = await client.callTool({
+      name: "create_settings_object",
+      arguments: { schemaId: "builtin:tags", scope: "environment", value: {} },
+    });
+
+    expect(bodyOf(res)).not.toHaveProperty("hint");
+  });
+
+  it("names the scopes the platform token needs when the platform host answers 403", async () => {
+    server.use(
+      http.post(PLATFORM_OBJECTS, () =>
+        HttpResponse.json({ error: { code: 403, message: "Forbidden" } }, { status: 403 }),
+      ),
+    );
+
+    const client = await makeClient(cfgWritesEnabled);
+    const res = await client.callTool({
+      name: "create_settings_object",
+      arguments: { schemaId: DETECTOR_SCHEMA, scope: "environment", value: detector },
+    });
+    const message = (res.content as Array<{ text: string }>)[0].text;
+
+    expect(res.isError).toBe(true);
+    expect(message).toContain("403 Forbidden");
+    expect(message).toContain("DT_PLATFORM_TOKEN needs the scopes settings:objects:read and settings:objects:write");
+  });
+
+  it("updates and deletes a detector by objectId on the platform host", async () => {
+    const calls: string[] = [];
+    const objectUrl = `${PLATFORM_OBJECTS}/${encodeURIComponent(detectorObjectId)}`;
+    server.use(
+      http.put(objectUrl, ({ request }) => {
+        calls.push(new URL(request.url).searchParams.get("validateOnly") === "true" ? "validate" : "put");
+        return HttpResponse.json({ objectId: detectorObjectId, code: 200 });
+      }),
+      http.delete(objectUrl, () => {
+        calls.push("delete");
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    const client = await makeClient(cfgWritesEnabled);
+    const updated = await client.callTool({
+      name: "update_settings_object",
+      arguments: { objectId: detectorObjectId, value: detector },
+    });
+    const deleted = await client.callTool({
+      name: "delete_settings_object",
+      arguments: { objectId: detectorObjectId },
+    });
+
+    expect(updated.isError).toBeFalsy();
+    expect(deleted.isError).toBeFalsy();
+    expect(calls).toEqual(["validate", "put", "delete"]);
+  });
+});
